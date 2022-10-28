@@ -1,9 +1,13 @@
 name: Java CI
 
-on: [push]
+on:
+  push:
+    tags:
+      - "v*"
 
 jobs:
-  build:
+  tagged-release:
+    name: "Tagged Release"
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +31,10 @@ jobs:
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
       - run: mkdir staging && cp drools-ansible-rulebook-integration-durable-rest/target/*-runner.jar staging
-      - uses: actions/upload-artifact@v3
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          name: Package
-          path: staging
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            staging/*.jar
