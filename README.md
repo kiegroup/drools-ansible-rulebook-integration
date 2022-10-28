@@ -1,8 +1,8 @@
-# Drools with yaml/json rules
+# Drools integration with Ansible Rulebook
 
 ## Description
 
-A rest service to define and execute a drools rules set in yaml/json format.
+An integration layer allowing Ansible Rulebook to use Drools as rule engine for rules evaluation. Drools can be invoked from Ansible either via a REST API or natively through [jpy](https://pypi.org/project/jpy/).
 
 ## Installing and Running
 
