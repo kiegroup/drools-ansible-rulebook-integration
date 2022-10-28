@@ -43,17 +43,17 @@ unknown_Java        : 336 (3.36%)
   [37] ThreadPoolExecutor.runWorker
   [38] ThreadPoolExecutor$Worker.run
   [39] Thread.run
-  [40] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [40] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 1530015244 ns (1.53%), 153 samples
   [ 0] NamedEntryPoint.insert
   [ 1] [unknown_Java]
-  [ 2] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [ 2] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 1080015668 ns (1.08%), 108 samples
   [ 0] NamedEntryPoint.deleteStated
   [ 1] [unknown_Java]
-  [ 2] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [ 2] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 1030025803 ns (1.03%), 103 samples
   [ 0] ObjectSynchronizer::FastHashCode(Thread*, oopDesc*)
@@ -87,7 +87,7 @@ unknown_Java        : 336 (3.36%)
   [28] ThreadPoolExecutor.runWorker
   [29] ThreadPoolExecutor$Worker.run
   [30] Thread.run
-  [31] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [31] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 960032340 ns (0.96%), 96 samples
   [ 0] __tls_get_addr
@@ -121,7 +121,7 @@ unknown_Java        : 336 (3.36%)
   [28] ThreadPoolExecutor.runWorker
   [29] ThreadPoolExecutor$Worker.run
   [30] Thread.run
-  [31] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [31] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 840011675 ns (0.84%), 84 samples
   [ 0] AbstractStringBuilder.ensureCapacityInternal
@@ -147,7 +147,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 810019342 ns (0.81%), 81 samples
   [ 0] DefaultAgenda$ConcurrentExecutionStateMachine.setCurrentState
@@ -176,7 +176,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 790028031 ns (0.79%), 79 samples
   [ 0] NamedEntryPoint.createHandle
@@ -204,7 +204,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 779926081 ns (0.78%), 78 samples
   [ 0] SynchronizedPropagationList.takeAll
@@ -232,7 +232,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 760005253 ns (0.76%), 76 samples
   [ 0] ConcurrentHashMap.get
@@ -272,7 +272,7 @@ unknown_Java        : 336 (3.36%)
   [34] ThreadPoolExecutor.runWorker
   [35] ThreadPoolExecutor$Worker.run
   [36] Thread.run
-  [37] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [37] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 740001560 ns (0.74%), 74 samples
   [ 0] SynchronizedPropagationList.takeAll
@@ -301,7 +301,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 690014819 ns (0.69%), 69 samples
   [ 0] PhreakPropagationContext.<init>
@@ -331,7 +331,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 670031170 ns (0.67%), 67 samples
   [ 0] ThreadStateTransition::transition_from_native(JavaThread*, JavaThreadState) [clone .constprop.209]
@@ -362,12 +362,12 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 660014224 ns (0.66%), 66 samples
   [ 0] RulesExecutor.populateFact
   [ 1] [unknown_Java]
-  [ 2] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [ 2] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 649987521 ns (0.65%), 65 samples
   [ 0] PhreakPropagationContext.<init>
@@ -409,7 +409,7 @@ unknown_Java        : 336 (3.36%)
   [36] ThreadPoolExecutor.runWorker
   [37] ThreadPoolExecutor$Worker.run
   [38] Thread.run
-  [39] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [39] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 610012988 ns (0.61%), 61 samples
   [ 0] HashMapFactImpl.<init>
@@ -436,7 +436,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 600011342 ns (0.60%), 60 samples
   [ 0] AbstractStringBuilder.ensureCapacityInternal
@@ -464,7 +464,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 590007306 ns (0.59%), 59 samples
   [ 0] ThreadStateTransition::transition_from_native(JavaThread*, JavaThreadState) [clone .constprop.209]
@@ -498,7 +498,7 @@ unknown_Java        : 336 (3.36%)
   [28] ThreadPoolExecutor.runWorker
   [29] ThreadPoolExecutor$Worker.run
   [30] Thread.run
-  [31] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [31] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 580005591 ns (0.58%), 58 samples
   [ 0] SynchronizedPropagationList.takeAll
@@ -527,7 +527,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 549989425 ns (0.55%), 55 samples
   [ 0] ConcurrentHashMap.replaceNode
@@ -563,7 +563,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 540012383 ns (0.54%), 54 samples
   [ 0] System.identityHashCode
@@ -595,7 +595,7 @@ unknown_Java        : 336 (3.36%)
   [26] ThreadPoolExecutor.runWorker
   [27] ThreadPoolExecutor$Worker.run
   [28] Thread.run
-  [29] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [29] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 530026976 ns (0.53%), 53 samples
   [ 0] BiasedLocking::revoke_and_rebias(Handle, bool, Thread*)
@@ -630,7 +630,7 @@ unknown_Java        : 336 (3.36%)
   [29] ThreadPoolExecutor.runWorker
   [30] ThreadPoolExecutor$Worker.run
   [31] Thread.run
-  [32] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [32] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 520026167 ns (0.52%), 52 samples
   [ 0] Object.notifyAll
@@ -659,7 +659,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 510017477 ns (0.51%), 51 samples
   [ 0] PipelineHelper.<init>
@@ -686,7 +686,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 499997655 ns (0.50%), 50 samples
   [ 0] Arrays.hashCode
@@ -725,7 +725,7 @@ unknown_Java        : 336 (3.36%)
   [33] ThreadPoolExecutor.runWorker
   [34] ThreadPoolExecutor$Worker.run
   [35] Thread.run
-  [36] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [36] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 479997061 ns (0.48%), 48 samples
   [ 0] StringLatin1.hashCode
@@ -767,7 +767,7 @@ unknown_Java        : 336 (3.36%)
   [36] ThreadPoolExecutor.runWorker
   [37] ThreadPoolExecutor$Worker.run
   [38] Thread.run
-  [39] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [39] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 469993888 ns (0.47%), 47 samples
   [ 0] ClassAwareObjectStore$ConcreteIdentityClassStore.isConcrete
@@ -798,7 +798,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 469992283 ns (0.47%), 47 samples
   [ 0] JSONObject.<init>
@@ -819,7 +819,7 @@ unknown_Java        : 336 (3.36%)
   [15] ThreadPoolExecutor.runWorker
   [16] ThreadPoolExecutor$Worker.run
   [17] Thread.run
-  [18] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [18] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 460002869 ns (0.46%), 46 samples
   [ 0] StatefulKnowledgeSessionImpl.isAlive
@@ -857,7 +857,7 @@ unknown_Java        : 336 (3.36%)
   [32] ThreadPoolExecutor.runWorker
   [33] ThreadPoolExecutor$Worker.run
   [34] Thread.run
-  [35] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [35] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 450016578 ns (0.45%), 45 samples
   [ 0] ThreadInVMfromNative::~ThreadInVMfromNative()
@@ -891,7 +891,7 @@ unknown_Java        : 336 (3.36%)
   [28] ThreadPoolExecutor.runWorker
   [29] ThreadPoolExecutor$Worker.run
   [30] Thread.run
-  [31] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [31] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 449997720 ns (0.45%), 45 samples
   [ 0] NamedEntryPoint.insert
@@ -918,7 +918,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 449996017 ns (0.45%), 45 samples
   [ 0] AbstractPipeline.<init>
@@ -944,7 +944,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 440011136 ns (0.44%), 44 samples
   [ 0] ThreadInVMfromNative::~ThreadInVMfromNative()
@@ -975,7 +975,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 439996189 ns (0.44%), 44 samples
   [ 0] IdentityHashMap.get
@@ -1005,7 +1005,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 420005982 ns (0.42%), 42 samples
   [ 0] ReferencePipeline$3$1.accept
@@ -1035,7 +1035,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 410008654 ns (0.41%), 41 samples
   [ 0] AbstractStringBuilder.ensureCapacityInternal
@@ -1063,7 +1063,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 410004060 ns (0.41%), 41 samples
   [ 0] ConcurrentHashMap$Node.<init>
@@ -1099,7 +1099,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 410001017 ns (0.41%), 41 samples
   [ 0] ConcurrentHashMap.casTabAt
@@ -1135,7 +1135,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 399999422 ns (0.40%), 40 samples
   [ 0] String.charAt
@@ -1160,7 +1160,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 399991256 ns (0.40%), 40 samples
   [ 0] DefaultAgenda$ConcurrentExecutionStateMachine.internalHalt
@@ -1190,7 +1190,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 389987622 ns (0.39%), 39 samples
   [ 0] AbstractPipeline.<init>
@@ -1216,7 +1216,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 380014767 ns (0.38%), 38 samples
   [ 0] ConcurrentHashMap.get
@@ -1245,7 +1245,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 380002113 ns (0.38%), 38 samples
   [ 0] JSONTokener.nextValue
@@ -1269,7 +1269,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 379999641 ns (0.38%), 38 samples
   [ 0] String.hashCode
@@ -1299,7 +1299,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 359998584 ns (0.36%), 36 samples
   [ 0] ReferencePipeline$3.<init>
@@ -1322,7 +1322,7 @@ unknown_Java        : 336 (3.36%)
   [17] ThreadPoolExecutor.runWorker
   [18] ThreadPoolExecutor$Worker.run
   [19] Thread.run
-  [20] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [20] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 359998437 ns (0.36%), 36 samples
   [ 0] FactFactory.createMapBasedFact
@@ -1347,7 +1347,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 350001770 ns (0.35%), 35 samples
   [ 0] ObjectTypeConfigurationRegistry.getObjectTypeConf
@@ -1386,7 +1386,7 @@ unknown_Java        : 336 (3.36%)
   [33] ThreadPoolExecutor.runWorker
   [34] ThreadPoolExecutor$Worker.run
   [35] Thread.run
-  [36] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [36] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 350001416 ns (0.35%), 35 samples
   [ 0] AgendaGroupsManager$SimpleAgendaGroupsManager.deactivateMainGroupWhenEmpty
@@ -1414,7 +1414,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 349994591 ns (0.35%), 35 samples
   [ 0] RulesExecutor.insertFact
@@ -1437,7 +1437,7 @@ unknown_Java        : 336 (3.36%)
   [17] ThreadPoolExecutor.runWorker
   [18] ThreadPoolExecutor$Worker.run
   [19] Thread.run
-  [20] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [20] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 349988196 ns (0.35%), 35 samples
   [ 0] ClassAwareObjectStore$FactHandleMap.get
@@ -1466,7 +1466,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 340009815 ns (0.34%), 34 samples
   [ 0] AbstractPipeline.<init>
@@ -1492,7 +1492,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 340005887 ns (0.34%), 34 samples
   [ 0] DefaultFactHandle.<init>
@@ -1527,7 +1527,7 @@ unknown_Java        : 336 (3.36%)
   [29] ThreadPoolExecutor.runWorker
   [30] ThreadPoolExecutor$Worker.run
   [31] Thread.run
-  [32] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [32] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 340004006 ns (0.34%), 34 samples
   [ 0] StatefulKnowledgeSessionImpl.delete
@@ -1563,7 +1563,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 339998701 ns (0.34%), 34 samples
   [ 0] DefaultAgenda$ConcurrentExecutionStateMachine.immediateHalt
@@ -1591,7 +1591,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 330006151 ns (0.33%), 33 samples
   [ 0] StreamOpFlag.combineOpFlags
@@ -1618,7 +1618,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 330004492 ns (0.33%), 33 samples
   [ 0] ConcurrentHashMap.get
@@ -1647,7 +1647,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 330001464 ns (0.33%), 33 samples
   [ 0] NamedEntryPoint.insert
@@ -1674,7 +1674,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 329998096 ns (0.33%), 33 samples
   [ 0] ConcurrentHashMap.addCount
@@ -1710,7 +1710,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 319991591 ns (0.32%), 32 samples
   [ 0] NamedEntryPoint.lock
@@ -1748,7 +1748,7 @@ unknown_Java        : 336 (3.36%)
   [32] ThreadPoolExecutor.runWorker
   [33] ThreadPoolExecutor$Worker.run
   [34] Thread.run
-  [35] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [35] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 319988090 ns (0.32%), 32 samples
   [ 0] DefaultAgenda$RestHandler$FireAllRulesRestHandler.handleRest
@@ -1776,7 +1776,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 310027091 ns (0.31%), 31 samples
   [ 0] AgendaGroupsManager$SimpleAgendaGroupsManager.getNextFocus
@@ -1804,7 +1804,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 310009590 ns (0.31%), 31 samples
   [ 0] TupleList.removeFirst
@@ -1837,7 +1837,7 @@ unknown_Java        : 336 (3.36%)
   [27] ThreadPoolExecutor.runWorker
   [28] ThreadPoolExecutor$Worker.run
   [29] Thread.run
-  [30] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [30] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 310002984 ns (0.31%), 31 samples
   [ 0] JSONTokener.<init>
@@ -1859,7 +1859,7 @@ unknown_Java        : 336 (3.36%)
   [16] ThreadPoolExecutor.runWorker
   [17] ThreadPoolExecutor$Worker.run
   [18] Thread.run
-  [19] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [19] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 309989288 ns (0.31%), 31 samples
   [ 0] ReentrantLock.unlock
@@ -1898,7 +1898,7 @@ unknown_Java        : 336 (3.36%)
   [33] ThreadPoolExecutor.runWorker
   [34] ThreadPoolExecutor$Worker.run
   [35] Thread.run
-  [36] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [36] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 309984100 ns (0.31%), 31 samples
   [ 0] JSONTokener.<init>
@@ -1920,7 +1920,7 @@ unknown_Java        : 336 (3.36%)
   [16] ThreadPoolExecutor.runWorker
   [17] ThreadPoolExecutor$Worker.run
   [18] Thread.run
-  [19] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [19] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 300009853 ns (0.30%), 30 samples
   [ 0] DefaultFactHandle.<init>
@@ -1953,7 +1953,7 @@ unknown_Java        : 336 (3.36%)
   [27] ThreadPoolExecutor.runWorker
   [28] ThreadPoolExecutor$Worker.run
   [29] Thread.run
-  [30] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [30] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 300009084 ns (0.30%), 30 samples
   [ 0] ConcurrentHashMap.computeIfAbsent
@@ -1980,7 +1980,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 299995158 ns (0.30%), 30 samples
   [ 0] DefaultAgenda$ConcurrentExecutionStateMachine.immediateHalt
@@ -2008,7 +2008,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 290014966 ns (0.29%), 29 samples
   [ 0] AbstractOwnableSynchronizer.setExclusiveOwnerThread
@@ -2050,7 +2050,7 @@ unknown_Java        : 336 (3.36%)
   [36] ThreadPoolExecutor.runWorker
   [37] ThreadPoolExecutor$Worker.run
   [38] Thread.run
-  [39] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [39] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 290001582 ns (0.29%), 29 samples
   [ 0] RulesExecutor$$Lambda$112/494288933.<init>
@@ -2075,7 +2075,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 290001169 ns (0.29%), 29 samples
   [ 0] NamedEntryPoint.delete
@@ -2114,7 +2114,7 @@ unknown_Java        : 336 (3.36%)
   [33] ThreadPoolExecutor.runWorker
   [34] ThreadPoolExecutor$Worker.run
   [35] Thread.run
-  [36] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [36] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 289999486 ns (0.29%), 29 samples
   [ 0] StatefulKnowledgeSessionImpl.delete
@@ -2150,7 +2150,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 289998086 ns (0.29%), 29 samples
   [ 0] RuleExecutor.reEvaluateNetwork
@@ -2181,7 +2181,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 280004576 ns (0.28%), 28 samples
   [ 0] NamedEntryPoint.insert
@@ -2208,7 +2208,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 280003432 ns (0.28%), 28 samples
   [ 0] DefaultAgenda$RestHandler$FireAllRulesRestHandler.handleRest
@@ -2236,7 +2236,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 280001323 ns (0.28%), 28 samples
   [ 0] AtomicLong.incrementAndGet
@@ -2268,7 +2268,7 @@ unknown_Java        : 336 (3.36%)
   [26] ThreadPoolExecutor.runWorker
   [27] ThreadPoolExecutor$Worker.run
   [28] Thread.run
-  [29] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [29] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 280000642 ns (0.28%), 28 samples
   [ 0] StringReader.read
@@ -2295,7 +2295,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 270016892 ns (0.27%), 27 samples
   [ 0] BaseNode.getSinks
@@ -2330,7 +2330,7 @@ unknown_Java        : 336 (3.36%)
   [29] ThreadPoolExecutor.runWorker
   [30] ThreadPoolExecutor$Worker.run
   [31] Thread.run
-  [32] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [32] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 270014719 ns (0.27%), 27 samples
   [ 0] ConcurrentHashMap.get
@@ -2359,7 +2359,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 270007608 ns (0.27%), 27 samples
   [ 0] HashMap.resize
@@ -2383,7 +2383,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 270004124 ns (0.27%), 27 samples
   [ 0] HashMap.entrySet
@@ -2405,7 +2405,7 @@ unknown_Java        : 336 (3.36%)
   [16] ThreadPoolExecutor.runWorker
   [17] ThreadPoolExecutor$Worker.run
   [18] Thread.run
-  [19] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [19] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 260006559 ns (0.26%), 26 samples
   [ 0] StatefulKnowledgeSessionImpl.getNextPropagationIdCounter
@@ -2445,7 +2445,7 @@ unknown_Java        : 336 (3.36%)
   [34] ThreadPoolExecutor.runWorker
   [35] ThreadPoolExecutor$Worker.run
   [36] Thread.run
-  [37] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [37] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 260002367 ns (0.26%), 26 samples
   [ 0] SynchronizedPropagationList.internalAddEntry
@@ -2490,7 +2490,7 @@ unknown_Java        : 336 (3.36%)
   [39] ThreadPoolExecutor.runWorker
   [40] ThreadPoolExecutor$Worker.run
   [41] Thread.run
-  [42] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [42] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 250014673 ns (0.25%), 25 samples
   [ 0] ConcurrentHashMap.addCount
@@ -2527,7 +2527,7 @@ unknown_Java        : 336 (3.36%)
   [31] ThreadPoolExecutor.runWorker
   [32] ThreadPoolExecutor$Worker.run
   [33] Thread.run
-  [34] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [34] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 250001019 ns (0.25%), 25 samples
   [ 0] JSONTokener.nextClean
@@ -2551,7 +2551,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 249999537 ns (0.25%), 25 samples
   [ 0] HashMap.resize
@@ -2576,7 +2576,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 249995407 ns (0.25%), 25 samples
   [ 0] NamedEntryPoint.unlock
@@ -2614,7 +2614,7 @@ unknown_Java        : 336 (3.36%)
   [32] ThreadPoolExecutor.runWorker
   [33] ThreadPoolExecutor$Worker.run
   [34] Thread.run
-  [35] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [35] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 240009803 ns (0.24%), 24 samples
   [ 0] HashMap.resize
@@ -2644,7 +2644,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 240006467 ns (0.24%), 24 samples
   [ 0] HashMap$Node.<init>
@@ -2683,7 +2683,7 @@ unknown_Java        : 336 (3.36%)
   [33] ThreadPoolExecutor.runWorker
   [34] ThreadPoolExecutor$Worker.run
   [35] Thread.run
-  [36] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [36] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 240003000 ns (0.24%), 24 samples
   [ 0] ReferencePipeline.map
@@ -2705,7 +2705,7 @@ unknown_Java        : 336 (3.36%)
   [16] ThreadPoolExecutor.runWorker
   [17] ThreadPoolExecutor$Worker.run
   [18] Thread.run
-  [19] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [19] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 239999869 ns (0.24%), 24 samples
   [ 0] ConcurrentHashMap.get
@@ -2734,7 +2734,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 239998967 ns (0.24%), 24 samples
   [ 0] String.hashCode
@@ -2775,7 +2775,7 @@ unknown_Java        : 336 (3.36%)
   [35] ThreadPoolExecutor.runWorker
   [36] ThreadPoolExecutor$Worker.run
   [37] Thread.run
-  [38] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [38] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 230002368 ns (0.23%), 23 samples
   [ 0] BaseLeftTuple.toFactHandles
@@ -2811,7 +2811,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 229997547 ns (0.23%), 23 samples
   [ 0] HashMap$HashIterator.<init>
@@ -2839,7 +2839,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 229995700 ns (0.23%), 23 samples
   [ 0] ArrayList$Itr.hasNext
@@ -2874,7 +2874,7 @@ unknown_Java        : 336 (3.36%)
   [29] ThreadPoolExecutor.runWorker
   [30] ThreadPoolExecutor$Worker.run
   [31] Thread.run
-  [32] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [32] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 220010174 ns (0.22%), 22 samples
   [ 0] HashMap$HashIterator.<init>
@@ -2902,7 +2902,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 220008409 ns (0.22%), 22 samples
   [ 0] StringConcatHelper.mixLen
@@ -2931,7 +2931,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 220006444 ns (0.22%), 22 samples
   [ 0] PrototypeFactory.getPrototype
@@ -2958,7 +2958,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 219997767 ns (0.22%), 22 samples
   [ 0] HashMap.resize
@@ -2981,7 +2981,7 @@ unknown_Java        : 336 (3.36%)
   [17] ThreadPoolExecutor.runWorker
   [18] ThreadPoolExecutor$Worker.run
   [19] Thread.run
-  [20] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [20] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 219995872 ns (0.22%), 22 samples
   [ 0] StreamOpFlag.getMask
@@ -3009,7 +3009,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 219994790 ns (0.22%), 22 samples
   [ 0] ObjectTypeConfigurationRegistry.getOrCreateObjectTypeConf
@@ -3037,7 +3037,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 219994260 ns (0.22%), 22 samples
   [ 0] HashMap.resize
@@ -3074,7 +3074,7 @@ unknown_Java        : 336 (3.36%)
   [31] ThreadPoolExecutor.runWorker
   [32] ThreadPoolExecutor$Worker.run
   [33] Thread.run
-  [34] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [34] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 210025843 ns (0.21%), 21 samples
   [ 0] PrototypeImpl.hashCode
@@ -3102,7 +3102,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 210008548 ns (0.21%), 21 samples
   [ 0] PhreakPropagationContextFactory.createPropagationContext
@@ -3130,7 +3130,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 210005805 ns (0.21%), 21 samples
   [ 0] HashMap$HashIterator.nextNode
@@ -3153,7 +3153,7 @@ unknown_Java        : 336 (3.36%)
   [17] ThreadPoolExecutor.runWorker
   [18] ThreadPoolExecutor$Worker.run
   [19] Thread.run
-  [20] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [20] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 210002584 ns (0.21%), 21 samples
   [ 0] StringLatin1.charAt
@@ -3179,7 +3179,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 210002297 ns (0.21%), 21 samples
   [ 0] ReentrantLock.lock
@@ -3218,7 +3218,7 @@ unknown_Java        : 336 (3.36%)
   [33] ThreadPoolExecutor.runWorker
   [34] ThreadPoolExecutor$Worker.run
   [35] Thread.run
-  [36] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [36] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 210001767 ns (0.21%), 21 samples
   [ 0] String.equals
@@ -3248,7 +3248,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 210001108 ns (0.21%), 21 samples
   [ 0] RuleExecutor.fire
@@ -3279,7 +3279,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 209997346 ns (0.21%), 21 samples
   [ 0] HashMap.getNode
@@ -3303,7 +3303,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 209996891 ns (0.21%), 21 samples
   [ 0] ConcurrentHashMap.get
@@ -3343,7 +3343,7 @@ unknown_Java        : 336 (3.36%)
   [34] ThreadPoolExecutor.runWorker
   [35] ThreadPoolExecutor$Worker.run
   [36] Thread.run
-  [37] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [37] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 209996706 ns (0.21%), 21 samples
   [ 0] RuleExecutor.fire
@@ -3374,7 +3374,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 209994593 ns (0.21%), 21 samples
   [ 0] RuleTerminalNodeLeftTuple.hashCode
@@ -3411,7 +3411,7 @@ unknown_Java        : 336 (3.36%)
   [31] ThreadPoolExecutor.runWorker
   [32] ThreadPoolExecutor$Worker.run
   [33] Thread.run
-  [34] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [34] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 200009242 ns (0.20%), 20 samples
   [ 0] DefaultFactHandle.hashCode
@@ -3450,7 +3450,7 @@ unknown_Java        : 336 (3.36%)
   [33] ThreadPoolExecutor.runWorker
   [34] ThreadPoolExecutor$Worker.run
   [35] Thread.run
-  [36] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [36] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 199999477 ns (0.20%), 20 samples
   [ 0] String.isLatin1
@@ -3481,7 +3481,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 199999291 ns (0.20%), 20 samples
   [ 0] LinkedHashMap.keySet
@@ -3507,7 +3507,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 199997415 ns (0.20%), 20 samples
   [ 0] JSONTokener.nextClean
@@ -3529,7 +3529,7 @@ unknown_Java        : 336 (3.36%)
   [16] ThreadPoolExecutor.runWorker
   [17] ThreadPoolExecutor$Worker.run
   [18] Thread.run
-  [19] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [19] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 190005042 ns (0.19%), 19 samples
   [ 0] StringReader.read
@@ -3554,7 +3554,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 190000063 ns (0.19%), 19 samples
   [ 0] ReentrantLock$NonfairSync.tryAcquire
@@ -3585,7 +3585,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 189995326 ns (0.19%), 19 samples
   [ 0] HashMap.resize
@@ -3612,7 +3612,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 189994491 ns (0.19%), 19 samples
   [ 0] HashMap$HashIterator.<init>
@@ -3640,7 +3640,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 180012669 ns (0.18%), 18 samples
   [ 0] JVM_IHashCode
@@ -3673,7 +3673,7 @@ unknown_Java        : 336 (3.36%)
   [27] ThreadPoolExecutor.runWorker
   [28] ThreadPoolExecutor$Worker.run
   [29] Thread.run
-  [30] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [30] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 180006847 ns (0.18%), 18 samples
   [ 0] jbyte_disjoint_arraycopy
@@ -3703,7 +3703,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 179997875 ns (0.18%), 18 samples
   [ 0] JSONObject.toMap
@@ -3723,7 +3723,7 @@ unknown_Java        : 336 (3.36%)
   [14] ThreadPoolExecutor.runWorker
   [15] ThreadPoolExecutor$Worker.run
   [16] Thread.run
-  [17] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [17] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 179997219 ns (0.18%), 18 samples
   [ 0] String.isLatin1
@@ -3758,7 +3758,7 @@ unknown_Java        : 336 (3.36%)
   [29] ThreadPoolExecutor.runWorker
   [30] ThreadPoolExecutor$Worker.run
   [31] Thread.run
-  [32] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [32] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 179995231 ns (0.18%), 18 samples
   [ 0] LambdaForm$MH/778192839.invoke
@@ -3786,7 +3786,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 179994727 ns (0.18%), 18 samples
   [ 0] HashMap$EntryIterator.next
@@ -3808,7 +3808,7 @@ unknown_Java        : 336 (3.36%)
   [16] ThreadPoolExecutor.runWorker
   [17] ThreadPoolExecutor$Worker.run
   [18] Thread.run
-  [19] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [19] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 170008540 ns (0.17%), 17 samples
   [ 0] HashMap$HashIterator.nextNode
@@ -3836,7 +3836,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 170004246 ns (0.17%), 17 samples
   [ 0] LinkedHashMap.newNode
@@ -3873,7 +3873,7 @@ unknown_Java        : 336 (3.36%)
   [31] ThreadPoolExecutor.runWorker
   [32] ThreadPoolExecutor$Worker.run
   [33] Thread.run
-  [34] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [34] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 170002230 ns (0.17%), 17 samples
   [ 0] JSONTokener.nextClean
@@ -3895,7 +3895,7 @@ unknown_Java        : 336 (3.36%)
   [16] ThreadPoolExecutor.runWorker
   [17] ThreadPoolExecutor$Worker.run
   [18] Thread.run
-  [19] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [19] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 170001737 ns (0.17%), 17 samples
   [ 0] HashMap$HashIterator.nextNode
@@ -3919,7 +3919,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 170001679 ns (0.17%), 17 samples
   [ 0] ClassAwareObjectStore.getOrCreateConcreteClassStore
@@ -3961,7 +3961,7 @@ unknown_Java        : 336 (3.36%)
   [36] ThreadPoolExecutor.runWorker
   [37] ThreadPoolExecutor$Worker.run
   [38] Thread.run
-  [39] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [39] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 160010470 ns (0.16%), 16 samples
   [ 0] String.hashCode
@@ -3986,7 +3986,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 160002370 ns (0.16%), 16 samples
   [ 0] JSONObject.toMap
@@ -4006,7 +4006,7 @@ unknown_Java        : 336 (3.36%)
   [14] ThreadPoolExecutor.runWorker
   [15] ThreadPoolExecutor$Worker.run
   [16] Thread.run
-  [17] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [17] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 160000696 ns (0.16%), 16 samples
   [ 0] AbstractStringBuilder.append
@@ -4031,7 +4031,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 159999512 ns (0.16%), 16 samples
   [ 0] ConcurrentHashMap.get
@@ -4060,7 +4060,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 159999143 ns (0.16%), 16 samples
   [ 0] String.hashCode
@@ -4091,7 +4091,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 159998124 ns (0.16%), 16 samples
   [ 0] String.equals
@@ -4126,7 +4126,7 @@ unknown_Java        : 336 (3.36%)
   [29] ThreadPoolExecutor.runWorker
   [30] ThreadPoolExecutor$Worker.run
   [31] Thread.run
-  [32] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [32] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 159997725 ns (0.16%), 16 samples
   [ 0] PathMemory.queueRuleAgendaItem
@@ -4163,7 +4163,7 @@ unknown_Java        : 336 (3.36%)
   [31] ThreadPoolExecutor.runWorker
   [32] ThreadPoolExecutor$Worker.run
   [33] Thread.run
-  [34] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [34] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 150007101 ns (0.15%), 15 samples
   [ 0] AbstractStringBuilder.<init>
@@ -4190,7 +4190,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 150005124 ns (0.15%), 15 samples
   [ 0] jbyte_disjoint_arraycopy
@@ -4220,7 +4220,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 150004227 ns (0.15%), 15 samples
   [ 0] JVM_MonitorNotifyAll
@@ -4250,7 +4250,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 150001917 ns (0.15%), 15 samples
   [ 0] HashMap$Node.<init>
@@ -4275,7 +4275,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 150001904 ns (0.15%), 15 samples
   [ 0] JSONTokener.nextValue
@@ -4299,7 +4299,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 149997916 ns (0.15%), 15 samples
   [ 0] AlphaTerminalNode.assertObject
@@ -4333,7 +4333,7 @@ unknown_Java        : 336 (3.36%)
   [28] ThreadPoolExecutor.runWorker
   [29] ThreadPoolExecutor$Worker.run
   [30] Thread.run
-  [31] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [31] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 149995611 ns (0.15%), 15 samples
   [ 0] StatefulKnowledgeSessionImpl.addPropagation
@@ -4375,7 +4375,7 @@ unknown_Java        : 336 (3.36%)
   [36] ThreadPoolExecutor.runWorker
   [37] ThreadPoolExecutor$Worker.run
   [38] Thread.run
-  [39] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [39] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 149995366 ns (0.15%), 15 samples
   [ 0] HashMap$HashIterator.nextNode
@@ -4403,7 +4403,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 140017154 ns (0.14%), 14 samples
   [ 0] HashMap$Node.<init>
@@ -4431,7 +4431,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 140006485 ns (0.14%), 14 samples
   [ 0] JSONTokener.next
@@ -4455,7 +4455,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 140004646 ns (0.14%), 14 samples
   [ 0] RulesExecutor.populateFact
@@ -4480,7 +4480,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 140001691 ns (0.14%), 14 samples
   [ 0] String.equals
@@ -4526,7 +4526,7 @@ unknown_Java        : 336 (3.36%)
   [40] ThreadPoolExecutor.runWorker
   [41] ThreadPoolExecutor$Worker.run
   [42] Thread.run
-  [43] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [43] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 140001437 ns (0.14%), 14 samples
   [ 0] HashMap.resize
@@ -4549,7 +4549,7 @@ unknown_Java        : 336 (3.36%)
   [17] ThreadPoolExecutor.runWorker
   [18] ThreadPoolExecutor$Worker.run
   [19] Thread.run
-  [20] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [20] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 140000576 ns (0.14%), 14 samples
   [ 0] BaseLeftTuple.clear
@@ -4583,7 +4583,7 @@ unknown_Java        : 336 (3.36%)
   [28] ThreadPoolExecutor.runWorker
   [29] ThreadPoolExecutor$Worker.run
   [30] Thread.run
-  [31] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [31] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 140000439 ns (0.14%), 14 samples
   [ 0] StringLatin1.charAt
@@ -4612,7 +4612,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 139999052 ns (0.14%), 14 samples
   [ 0] HashMap.resize
@@ -4637,7 +4637,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 139997893 ns (0.14%), 14 samples
   [ 0] ObjectSynchronizer::notifyall(Handle, Thread*)
@@ -4668,7 +4668,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 139996866 ns (0.14%), 14 samples
   [ 0] HashMap.resize
@@ -4695,7 +4695,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 139994059 ns (0.14%), 14 samples
   [ 0] RuleExecutor.fire
@@ -4726,7 +4726,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 130019385 ns (0.13%), 13 samples
   [ 0] HashMap$Node.<init>
@@ -4757,7 +4757,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 130004981 ns (0.13%), 13 samples
   [ 0] JSONTokener.next
@@ -4783,7 +4783,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 130004371 ns (0.13%), 13 samples
   [ 0] ConcurrentHashMap.replaceNode
@@ -4819,7 +4819,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 130002760 ns (0.13%), 13 samples
   [ 0] ConcurrentHashMap.replaceNode
@@ -4855,7 +4855,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 130001159 ns (0.13%), 13 samples
   [ 0] StringConcatHelper.mixCoder
@@ -4884,7 +4884,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 130000272 ns (0.13%), 13 samples
   [ 0] HashMap$HashIterator.<init>
@@ -4912,7 +4912,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 129999803 ns (0.13%), 13 samples
   [ 0] JSONTokener.nextClean
@@ -4936,7 +4936,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 129999287 ns (0.13%), 13 samples
   [ 0] JSONTokener.nextString
@@ -4961,7 +4961,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 129998475 ns (0.13%), 13 samples
   [ 0] String.equals
@@ -5002,7 +5002,7 @@ unknown_Java        : 336 (3.36%)
   [35] ThreadPoolExecutor.runWorker
   [36] ThreadPoolExecutor$Worker.run
   [37] Thread.run
-  [38] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [38] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 129997310 ns (0.13%), 13 samples
   [ 0] AbstractPipeline.<init>
@@ -5028,7 +5028,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 129995233 ns (0.13%), 13 samples
   [ 0] jbyte_disjoint_arraycopy
@@ -5057,7 +5057,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 129994403 ns (0.13%), 13 samples
   [ 0] jlong_disjoint_arraycopy
@@ -5086,7 +5086,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 129984930 ns (0.13%), 13 samples
   [ 0] SynchronizedPropagationList.takeAll
@@ -5114,7 +5114,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 120009486 ns (0.12%), 12 samples
   [ 0] JVM_IHashCode
@@ -5147,7 +5147,7 @@ unknown_Java        : 336 (3.36%)
   [27] ThreadPoolExecutor.runWorker
   [28] ThreadPoolExecutor$Worker.run
   [29] Thread.run
-  [30] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [30] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 120008092 ns (0.12%), 12 samples
   [ 0] String.hashCode
@@ -5172,7 +5172,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 120006283 ns (0.12%), 12 samples
   [ 0] Collections$UnmodifiableMap.hashCode
@@ -5203,7 +5203,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 120005742 ns (0.12%), 12 samples
   [ 0] jlong_disjoint_arraycopy
@@ -5230,7 +5230,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 120005108 ns (0.12%), 12 samples
   [ 0] BaseLeftTuple.hashCode
@@ -5268,7 +5268,7 @@ unknown_Java        : 336 (3.36%)
   [32] ThreadPoolExecutor.runWorker
   [33] ThreadPoolExecutor$Worker.run
   [34] Thread.run
-  [35] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [35] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 120004913 ns (0.12%), 12 samples
   [ 0] BinaryHeapQueue.setElement
@@ -5312,7 +5312,7 @@ unknown_Java        : 336 (3.36%)
   [38] ThreadPoolExecutor.runWorker
   [39] ThreadPoolExecutor$Worker.run
   [40] Thread.run
-  [41] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [41] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 120004428 ns (0.12%), 12 samples
   [ 0] JSONTokener.incrementIndexes
@@ -5339,7 +5339,7 @@ unknown_Java        : 336 (3.36%)
   [21] ThreadPoolExecutor.runWorker
   [22] ThreadPoolExecutor$Worker.run
   [23] Thread.run
-  [24] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [24] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 120003553 ns (0.12%), 12 samples
   [ 0] HashMap$HashIterator.nextNode
@@ -5367,7 +5367,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 119999949 ns (0.12%), 12 samples
   [ 0] PhreakPropagationContext.<init>
@@ -5408,7 +5408,7 @@ unknown_Java        : 336 (3.36%)
   [35] ThreadPoolExecutor.runWorker
   [36] ThreadPoolExecutor$Worker.run
   [37] Thread.run
-  [38] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [38] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 119999420 ns (0.12%), 12 samples
   [ 0] HashMap$HashIterator.nextNode
@@ -5431,7 +5431,7 @@ unknown_Java        : 336 (3.36%)
   [17] ThreadPoolExecutor.runWorker
   [18] ThreadPoolExecutor$Worker.run
   [19] Thread.run
-  [20] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [20] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 119998551 ns (0.12%), 12 samples
   [ 0] ReentrantLock$Sync.nonfairTryAcquire
@@ -5463,7 +5463,7 @@ unknown_Java        : 336 (3.36%)
   [26] ThreadPoolExecutor.runWorker
   [27] ThreadPoolExecutor$Worker.run
   [28] Thread.run
-  [29] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [29] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 119998144 ns (0.12%), 12 samples
   [ 0] String.coder
@@ -5494,7 +5494,7 @@ unknown_Java        : 336 (3.36%)
   [25] ThreadPoolExecutor.runWorker
   [26] ThreadPoolExecutor$Worker.run
   [27] Thread.run
-  [28] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [28] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 119998043 ns (0.12%), 12 samples
   [ 0] Collections$UnmodifiableList.<init>
@@ -5532,7 +5532,7 @@ unknown_Java        : 336 (3.36%)
   [32] ThreadPoolExecutor.runWorker
   [33] ThreadPoolExecutor$Worker.run
   [34] Thread.run
-  [35] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [35] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 119995336 ns (0.12%), 12 samples
   [ 0] JSONTokener.nextString
@@ -5555,7 +5555,7 @@ unknown_Java        : 336 (3.36%)
   [17] ThreadPoolExecutor.runWorker
   [18] ThreadPoolExecutor$Worker.run
   [19] Thread.run
-  [20] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [20] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 119994371 ns (0.12%), 12 samples
   [ 0] HashMap$Node.<init>
@@ -5579,7 +5579,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 119992515 ns (0.12%), 12 samples
   [ 0] ConcurrentHashMap.get
@@ -5619,7 +5619,7 @@ unknown_Java        : 336 (3.36%)
   [34] ThreadPoolExecutor.runWorker
   [35] ThreadPoolExecutor$Worker.run
   [36] Thread.run
-  [37] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [37] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 110007177 ns (0.11%), 11 samples
   [ 0] ConcurrentHashMap.get
@@ -5659,7 +5659,7 @@ unknown_Java        : 336 (3.36%)
   [34] ThreadPoolExecutor.runWorker
   [35] ThreadPoolExecutor$Worker.run
   [36] Thread.run
-  [37] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [37] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 110006698 ns (0.11%), 11 samples
   [ 0] LambdaForm$MH/1776923734.invoke
@@ -5688,7 +5688,7 @@ unknown_Java        : 336 (3.36%)
   [23] ThreadPoolExecutor.runWorker
   [24] ThreadPoolExecutor$Worker.run
   [25] Thread.run
-  [26] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [26] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 110005035 ns (0.11%), 11 samples
   [ 0] HashMap.hash
@@ -5712,7 +5712,7 @@ unknown_Java        : 336 (3.36%)
   [18] ThreadPoolExecutor.runWorker
   [19] ThreadPoolExecutor$Worker.run
   [20] Thread.run
-  [21] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [21] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 110004550 ns (0.11%), 11 samples
   [ 0] BaseLeftTuple.toFactHandles
@@ -5748,7 +5748,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 110003340 ns (0.11%), 11 samples
   [ 0] JSONTokener.next
@@ -5773,7 +5773,7 @@ unknown_Java        : 336 (3.36%)
   [19] ThreadPoolExecutor.runWorker
   [20] ThreadPoolExecutor$Worker.run
   [21] Thread.run
-  [22] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [22] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 110003059 ns (0.11%), 11 samples
   [ 0] JSONObject.<init>
@@ -5799,7 +5799,7 @@ unknown_Java        : 336 (3.36%)
   [20] ThreadPoolExecutor.runWorker
   [21] ThreadPoolExecutor$Worker.run
   [22] Thread.run
-  [23] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [23] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 110001398 ns (0.11%), 11 samples
   [ 0] HashMap.putVal
@@ -5835,7 +5835,7 @@ unknown_Java        : 336 (3.36%)
   [30] ThreadPoolExecutor.runWorker
   [31] ThreadPoolExecutor$Worker.run
   [32] Thread.run
-  [33] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [33] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 110000839 ns (0.11%), 11 samples
   [ 0] RuleTerminalNodeLeftTuple.hashCode
@@ -5872,7 +5872,7 @@ unknown_Java        : 336 (3.36%)
   [31] ThreadPoolExecutor.runWorker
   [32] ThreadPoolExecutor$Worker.run
   [33] Thread.run
-  [34] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [34] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 109999747 ns (0.11%), 11 samples
   [ 0] Arrays.hashCode
@@ -5902,7 +5902,7 @@ unknown_Java        : 336 (3.36%)
   [24] ThreadPoolExecutor.runWorker
   [25] ThreadPoolExecutor$Worker.run
   [26] Thread.run
-  [27] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [27] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 109999346 ns (0.11%), 11 samples
   [ 0] ClassAwareObjectStore.getOrCreateClassStore
@@ -5934,7 +5934,7 @@ unknown_Java        : 336 (3.36%)
   [26] ThreadPoolExecutor.runWorker
   [27] ThreadPoolExecutor$Worker.run
   [28] Thread.run
-  [29] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [29] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 109999321 ns (0.11%), 11 samples
   [ 0] LambdaForm$MH/374011521.invoke
@@ -5962,7 +5962,7 @@ unknown_Java        : 336 (3.36%)
   [22] ThreadPoolExecutor.runWorker
   [23] ThreadPoolExecutor$Worker.run
   [24] Thread.run
-  [25] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [25] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 109997977 ns (0.11%), 11 samples
   [ 0] JSONTokener.nextString
@@ -5985,7 +5985,7 @@ unknown_Java        : 336 (3.36%)
   [17] ThreadPoolExecutor.runWorker
   [18] ThreadPoolExecutor$Worker.run
   [19] Thread.run
-  [20] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [20] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
 --- 109997863 ns (0.11%), 11 samples
   [ 0] ConcurrentHashMap.tabAt
@@ -6022,7 +6022,7 @@ unknown_Java        : 336 (3.36%)
   [31] ThreadPoolExecutor.runWorker
   [32] ThreadPoolExecutor$Worker.run
   [33] Thread.run
-  [34] [org.drools.yaml.benchmark.DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
+  [34] [DroolsDurableBenchmark.benchmark-jmh-worker-1 tid=255664]
 
           ns  percent  samples  top
   ----------  -------  -------  ---
