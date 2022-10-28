@@ -5,23 +5,17 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.drools</groupId>
-    <artifactId>drools-yaml-rules</artifactId>
+    <artifactId>drools-ansible-rulebook-integration</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
   
-  <artifactId>drools-yaml-rules-durable-rest</artifactId>
+  <artifactId>drools-ansible-rulebook-integration-core-rest</artifactId>
 
-  <name>Drools :: YAML Rules :: Durable :: REST Endpoints</name>
-
+  <name>Drools :: Ansible Rulebook Integration :: Core :: Rest Endpoints</name>
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-yaml-rules-durable</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-yaml-rules-runtime</artifactId>
+      <artifactId>drools-ansible-rulebook-integration-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -63,5 +57,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

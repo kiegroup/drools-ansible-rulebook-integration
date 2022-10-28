@@ -5,23 +5,23 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.drools</groupId>
-    <artifactId>drools-yaml-rules</artifactId>
+    <artifactId>drools-ansible-rulebook-integration</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
   
-  <artifactId>drools-yaml-rules-runtime</artifactId>
+  <artifactId>drools-ansible-rulebook-integration-runtime</artifactId>
 
-  <name>Drools :: YAML Rules :: Runtime</name>
+  <name>Drools :: Ansible Rulebook Integration :: Runtime</name>
 
   <dependencies>
       <dependency>
         <groupId>org.drools</groupId>
-        <artifactId>drools-yaml-rules-api</artifactId>
+        <artifactId>drools-ansible-rulebook-integration-api</artifactId>
         <version>${project.version}</version>
       </dependency>
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-yaml-rules-api</artifactId>
+      <artifactId>drools-ansible-rulebook-integration-api</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
       <classifier>tests</classifier>

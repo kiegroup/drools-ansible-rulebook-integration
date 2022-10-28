@@ -5,22 +5,21 @@
   <modelVersion>4.0.0</modelVersion>
   
   <groupId>org.drools</groupId>
-  <artifactId>drools-yaml-rules</artifactId>
+  <artifactId>drools-ansible-rulebook-integration</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>drools-yaml-rules-api</module>
-    <module>drools-yaml-rules-compilation</module>
-    <module>drools-yaml-rules-runtime</module>
-    <module>drools-yaml-rules-core-rest</module>
-    <module>drools-yaml-rules-durable</module>
-    <module>drools-yaml-rules-durable-rest</module>
-    <module>drools-yaml-rules-benchmark</module>
-    <module>drools-yaml-rules-tests</module>
+    <module>drools-ansible-rulebook-integration-api</module>
+    <module>drools-ansible-rulebook-integration-runtime</module>
+    <module>drools-ansible-rulebook-integration-core-rest</module>
+    <module>drools-ansible-rulebook-integration-durable</module>
+    <module>drools-ansible-rulebook-integration-durable-rest</module>
+    <module>drools-ansible-rulebook-integration-benchmark</module>
+    <module>drools-ansible-rulebook-integration-tests</module>
   </modules>
   
-  <name>Drools :: YAML Rules</name>
+  <name>Drools :: Ansible Rulebook Integration</name>
 
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
