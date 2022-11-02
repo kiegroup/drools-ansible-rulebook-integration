@@ -45,22 +45,8 @@ public class RulesExecutorFactory {
     }
 
     public static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
-        PrototypeFactory prototypeFactory = new PrototypeFactory();
         RulesExecutorSession.RulesExecutorHolder rulesExecutorHolder = new RulesExecutorSession.RulesExecutorHolder();
-        AtomicInteger ruleCounter = new AtomicInteger(0);
-
-        ModelImpl model = new ModelImpl();
-        rulesSet.getRules().stream()
-                .map(rule -> toExecModelRule(rulesSet, rule, prototypeFactory, rulesExecutorHolder, ruleCounter))
-                .forEach(model::addRule);
-        KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model, KieBaseMutabilityOption.DISABLED );
-        return new RulesExecutorSession(prototypeFactory, kieBase.newKieSession(), rulesExecutorHolder);
-    }
-
-    private static org.drools.model.Rule toExecModelRule(RulesSet rulesSet, Rule rule, PrototypeFactory prototypeFactory,
-                                                         Supplier<RulesExecutor> rulesExecutorSupplier, AtomicInteger ruleCounter) {
-        return rule( rule.getName() != null ? rule.getName() : "r_" + ruleCounter.getAndIncrement() )
-                .build( rule.getCondition().toPattern( new RuleGenerationContext(prototypeFactory, rulesSet.getOptions()) ),
-                        execute(drools -> rule.getAction().execute(rulesExecutorSupplier.get(), drools)) );
+        KieBase kieBase = rulesSet.toKieBase(rulesExecutorHolder);
+        return new RulesExecutorSession(rulesSet.getPrototypeFactory(), kieBase.newKieSession(), rulesExecutorHolder);
     }
 }

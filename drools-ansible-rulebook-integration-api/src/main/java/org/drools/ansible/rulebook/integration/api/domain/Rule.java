@@ -1,14 +1,20 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
+import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
+import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
 
 public class Rule {
     private String name;
     private Condition condition;
     private Action action;
     private boolean enabled;
+
+    private RuleGenerationContext ruleGenerationContext;
 
     public String getName() {
         return name;
@@ -24,6 +30,20 @@ public class Rule {
 
     public void setCondition(Condition condition) {
         this.condition = condition;
+    }
+
+    public Rule withRuleGenerationContext(PrototypeFactory prototypeFactory, RuleNotation.RuleConfigurationOption[] options) {
+        this.ruleGenerationContext = new RuleGenerationContext(prototypeFactory, options);
+        return this;
+    }
+
+    public RuleGenerationContext getRuleGenerationContext() {
+        return ruleGenerationContext;
+    }
+
+    public AstCondition withCondition() {
+        condition = new AstCondition(ruleGenerationContext);
+        return (AstCondition) condition;
     }
 
     public Action getAction() {

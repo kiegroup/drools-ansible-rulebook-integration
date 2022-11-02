@@ -22,13 +22,27 @@ public class RuleGenerationContext {
 
     private int bindingsCounter = 0;
 
-    RuleGenerationContext(PrototypeFactory prototypeFactory, RuleNotation.RuleConfigurationOption[] options) {
+    private PrototypeDSL.PrototypePatternDef currentPattern;
+
+    public RuleGenerationContext(PrototypeFactory prototypeFactory, RuleNotation.RuleConfigurationOption[] options) {
         this.prototypeFactory = prototypeFactory;
         this.options = options;
     }
 
+    public PrototypeFactory getPrototypeFactory() {
+        return prototypeFactory;
+    }
+
     public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name) {
-        return patterns.computeIfAbsent(binding, b -> protoPattern(variable(prototypeFactory.getPrototype(name), b)));
+        return currentPattern != null ? currentPattern : patterns.computeIfAbsent(binding, b -> protoPattern(variable(prototypeFactory.getPrototype(name), b)));
+    }
+
+    public PrototypeDSL.PrototypePatternDef getCurrentPattern() {
+        return currentPattern;
+    }
+
+    public void setCurrentPattern(PrototypeDSL.PrototypePatternDef currentPattern) {
+        this.currentPattern = currentPattern;
     }
 
     public PrototypeVariable getPatternVariable(String binding) {
