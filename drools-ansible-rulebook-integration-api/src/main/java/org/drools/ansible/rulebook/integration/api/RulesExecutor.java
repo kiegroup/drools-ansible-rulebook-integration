@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +24,8 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFa
 
 public class RulesExecutor {
 
+    public static final String SYNTHETIC_RULE_TAG = "SYNTHETIC_RULE";
+
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final RulesExecutorSession rulesExecutorSession;
@@ -30,6 +33,8 @@ public class RulesExecutor {
     private final long id;
 
     private final Set<Long> ephemeralFactHandleIds = ConcurrentHashMap.newKeySet();
+
+    public boolean executeActions = true;
 
     RulesExecutor(RulesExecutorSession rulesExecutorSession, long id) {
         this.rulesExecutorSession = rulesExecutorSession;
@@ -91,14 +96,21 @@ public class RulesExecutor {
     }
 
     private List<Match> findMatchedRules() {
+        executeActions = false;
         RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter(rulesExecutorSession, ephemeralFactHandleIds);
         rulesExecutorSession.fireAllRules(filter);
-        return filter.getMatchedRules();
+        executeActions = true;
+        return filter.finalizeAndGetResults();
+    }
+
+    public boolean executeActions() {
+        return executeActions;
     }
 
     private Collection<FactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
-        if (factMap.size() == 1 && factMap.containsKey(event ? "events" : "facts")) {
-            return ((List<Map<String, Object>>)factMap.get(event ? "events" : "facts")).stream()
+        String key = event ? "events" : "facts";
+        if (factMap.size() == 1 && factMap.containsKey(key)) {
+            return ((List<Map<String, Object>>)factMap.get(key)).stream()
                     .flatMap(map -> this.insertFacts(map, event).stream())
                     .collect(Collectors.toList());
         } else {
@@ -154,12 +166,18 @@ public class RulesExecutor {
         }
     }
 
+    public void advanceTime( long amount, TimeUnit unit ) {
+        rulesExecutorSession.advanceTime(amount, unit);
+    }
+
     private static class RegisterOnlyAgendaFilter implements AgendaFilter {
 
         private final RulesExecutorSession rulesExecutorSession;
         private final Set<Long> ephemeralFactHandleIds;
 
         private final Set<Match> matchedRules = new LinkedHashSet<>();
+
+        private final List<FactHandle> factsToBeDeleted = new ArrayList<>();
 
         private RegisterOnlyAgendaFilter(RulesExecutorSession rulesExecutorSession, Set<Long> ephemeralFactHandleIds) {
             this.rulesExecutorSession = rulesExecutorSession;
@@ -168,18 +186,22 @@ public class RulesExecutor {
 
         @Override
         public boolean accept(Match match) {
+            if ( match.getRule().getMetaData().get(SYNTHETIC_RULE_TAG) != null ) {
+                return true;
+            }
             matchedRules.add(match);
             if (!ephemeralFactHandleIds.isEmpty()) {
                 for (FactHandle fh : match.getFactHandles()) {
                     if (ephemeralFactHandleIds.remove(((InternalFactHandle) fh).getId())) {
-                        rulesExecutorSession.delete(fh);
+                        factsToBeDeleted.add(fh);
                     }
                 }
             }
-            return false;
+            return true;
         }
 
-        public List<Match> getMatchedRules() {
+        public List<Match> finalizeAndGetResults() {
+            factsToBeDeleted.forEach(rulesExecutorSession::delete);
             return new ArrayList<>( matchedRules );
         }
     }

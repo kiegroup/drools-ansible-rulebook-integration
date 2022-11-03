@@ -2,6 +2,7 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
@@ -10,6 +11,7 @@ import org.drools.model.Prototype;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.time.SessionPseudoClock;
 
 class RulesExecutorSession {
 
@@ -68,6 +70,11 @@ class RulesExecutorSession {
 
     public Prototype getPrototype() {
         return prototypeFactory.getPrototype();
+    }
+
+    public void advanceTime( long amount, TimeUnit unit ) {
+        SessionPseudoClock clock = kieSession.getSessionClock();
+        clock.advanceTime(amount, unit);
     }
 
     static class RulesExecutorHolder implements Supplier<RulesExecutor> {

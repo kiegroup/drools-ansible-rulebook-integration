@@ -8,10 +8,16 @@ import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
+import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.PROTOTYPE_NAME;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
+import static org.drools.model.DSL.not;
+import static org.drools.model.PrototypeDSL.protoPattern;
+import static org.drools.model.PrototypeDSL.variable;
+import static org.drools.model.PrototypeExpression.prototypeField;
 
 public class AstCondition implements Condition {
 
@@ -71,6 +77,8 @@ public class AstCondition implements Condition {
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
             if (conditions.size() == 1) {
                 return conditions.get(0).toPattern(ruleContext);
+            } else if (ruleContext.getOnceWithin() != null) {
+                throw new IllegalArgumentException("once_within is only allowed with a single event");
             }
             return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, conditions.stream()
                     .map(subC -> subC.toPattern(ruleContext)).toArray(ViewItem[]::new));
@@ -142,7 +150,7 @@ public class AstCondition implements Condition {
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
-            PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), PROTOTYPE_NAME);
+            PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), DEFAULT_PROTOTYPE_NAME);
             pattern = pattern.or();
             ((SingleCondition) lhs).parsedCondition.addConditionToPattern(ruleContext, pattern);
             ((SingleCondition) rhs).parsedCondition.addConditionToPattern(ruleContext, pattern);
@@ -172,7 +180,7 @@ public class AstCondition implements Condition {
 
         private PrototypeDSL.PrototypePatternDef getPattern(RuleGenerationContext ruleContext) {
             if (pattern == null) {
-                pattern = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), PROTOTYPE_NAME);
+                pattern = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), DEFAULT_PROTOTYPE_NAME);
             }
             return pattern;
         }
@@ -182,13 +190,18 @@ public class AstCondition implements Condition {
         }
 
         SingleCondition withPatternBinding(RuleGenerationContext ruleContext, String patternBinding) {
-            this.pattern = ruleContext.getOrCreatePattern(patternBinding, PROTOTYPE_NAME);
+            this.pattern = ruleContext.getOrCreatePattern(patternBinding, DEFAULT_PROTOTYPE_NAME);
             return this;
         }
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
-            return parsedCondition.addConditionToPattern(ruleContext, getPattern(ruleContext));
+            ViewItem pattern = parsedCondition.addConditionToPattern(ruleContext, getPattern(ruleContext));
+            OnceWithinDefinition onceWithin = ruleContext.getOnceWithin();
+            if (onceWithin != null) {
+                return onceWithin.appendGuardPattern(ruleContext, pattern);
+            }
+            return pattern;
         }
     }
 }

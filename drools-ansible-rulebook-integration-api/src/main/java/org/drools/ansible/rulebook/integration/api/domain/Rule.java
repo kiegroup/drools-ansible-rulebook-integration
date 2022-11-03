@@ -1,7 +1,7 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
 import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
@@ -32,7 +32,7 @@ public class Rule {
         this.condition = condition;
     }
 
-    public Rule withRuleGenerationContext(PrototypeFactory prototypeFactory, RuleNotation.RuleConfigurationOption[] options) {
+    public Rule createRuleGenerationContext(PrototypeFactory prototypeFactory, RuleConfigurationOptions options) {
         this.ruleGenerationContext = new RuleGenerationContext(prototypeFactory, options);
         return this;
     }

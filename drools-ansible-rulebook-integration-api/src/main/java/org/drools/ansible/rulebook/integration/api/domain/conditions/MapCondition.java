@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL.PrototypePatternDef;
 import org.drools.model.PrototypeExpression;
@@ -46,7 +47,19 @@ public class MapCondition implements Condition {
 
     @Override
     public ViewItem toPattern(RuleGenerationContext ruleContext) {
-        return map2Ast(ruleContext, this).toPattern(ruleContext);
+        return map2Ast(ruleContext, parseConditionAttributes(ruleContext, this)).toPattern(ruleContext);
+    }
+
+    private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
+        Object onceWithin = condition.getMap().remove("once_within");
+        if (onceWithin != null) {
+            Object uniqueAttributes = condition.getMap().remove("unique_attributes");
+            if (uniqueAttributes == null) {
+                throw new IllegalArgumentException("once_within also requires unique_attributes");
+            }
+            ruleContext.setOnceWithin(OnceWithinDefinition.parseOnceWithin((String) onceWithin, (List<String>) uniqueAttributes));
+        }
+        return condition;
     }
 
     private static Condition map2Ast(RuleGenerationContext ruleContext, MapCondition condition) {
@@ -109,7 +122,7 @@ public class MapCondition implements Condition {
 
     private boolean hasImplicitPattern(RuleGenerationContext ruleContext, ConditionExpression left, ConditionExpression right) {
         boolean hasImplicitPattern = left.field && right.field && !left.prototypeName.equals(right.prototypeName) && !ruleContext.isExistingBoundVariable(right.prototypeName);
-        if (hasImplicitPattern && !ruleContext.hasOption(RuleNotation.RuleConfigurationOption.ALLOW_IMPLICIT_JOINS)) {
+        if (hasImplicitPattern && !ruleContext.hasOption(RuleConfigurationOption.ALLOW_IMPLICIT_JOINS)) {
             throw new UnsupportedOperationException("Cannot have an implicit pattern without using ALLOW_IMPLICIT_JOINS option");
         }
         return hasImplicitPattern;

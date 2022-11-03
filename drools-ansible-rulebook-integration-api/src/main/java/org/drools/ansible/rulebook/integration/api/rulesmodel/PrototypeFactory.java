@@ -8,7 +8,8 @@ import org.drools.model.PrototypeDSL;
 
 public class PrototypeFactory {
 
-    public static final String PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
+    public static final String DEFAULT_PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
+    public static final String SYNTHETIC_PROTOTYPE_NAME = "DROOLS_SYNTHETIC_PROTOTYPE";
 
     private final Map<String, Prototype> prototypes = new HashMap<>();
 
@@ -17,6 +18,6 @@ public class PrototypeFactory {
     }
 
     public Prototype getPrototype() {
-        return getPrototype(PROTOTYPE_NAME);
+        return getPrototype(DEFAULT_PROTOTYPE_NAME);
     }
 }

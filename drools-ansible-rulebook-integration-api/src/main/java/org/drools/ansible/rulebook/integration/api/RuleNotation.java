@@ -6,10 +6,6 @@ import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 
 public interface RuleNotation {
 
-    enum RuleConfigurationOption {
-        ALLOW_IMPLICIT_JOINS
-    }
-
     RulesSet jsonToRuleSet(ObjectMapper mapper, String json);
 
     default RulesSet toRulesSet(RuleFormat format, String text) {
@@ -49,7 +45,7 @@ public interface RuleNotation {
 
         @Override
         public RulesSet jsonToRuleSet(ObjectMapper mapper, String json) {
-            return CoreNotation.INSTANCE.jsonToRuleSet(mapper, json).withOptions(options);
+            return CoreNotation.INSTANCE.jsonToRuleSet(mapper, json).withOptions(new RuleConfigurationOptions(options));
         }
 
     }

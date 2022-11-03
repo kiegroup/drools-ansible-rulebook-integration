@@ -13,7 +13,7 @@ import org.drools.model.view.ViewItem;
 import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.PROTOTYPE_NAME;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
 
 public class SimpleCondition implements Condition {
 
@@ -207,7 +207,7 @@ public class SimpleCondition implements Condition {
 
     private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, SimpleCondition condition) {
         ParsedCondition parsedCondition = condition.parse();
-        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
+        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), DEFAULT_PROTOTYPE_NAME);
         if (condition.beta()) {
             pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), ruleContext.getPatternVariable(condition.otherBinding()), parsedCondition.getRight());
         } else {

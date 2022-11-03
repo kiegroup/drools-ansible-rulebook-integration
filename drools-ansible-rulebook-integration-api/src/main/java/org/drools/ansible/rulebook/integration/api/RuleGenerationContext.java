@@ -6,9 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
+import org.drools.model.Drools;
 import org.drools.model.PrototypeDSL;
+import org.drools.model.PrototypeFact;
 import org.drools.model.PrototypeVariable;
+import org.drools.model.Rule;
 
 import static org.drools.model.PrototypeDSL.protoPattern;
 import static org.drools.model.PrototypeDSL.variable;
@@ -16,7 +20,7 @@ import static org.drools.model.PrototypeDSL.variable;
 public class RuleGenerationContext {
     private final PrototypeFactory prototypeFactory;
 
-    private final RuleNotation.RuleConfigurationOption[] options;
+    private final RuleConfigurationOptions options;
 
     private final StackedContext<String, PrototypeDSL.PrototypePatternDef> patterns = new StackedContext<>();
 
@@ -24,7 +28,9 @@ public class RuleGenerationContext {
 
     private PrototypeDSL.PrototypePatternDef currentPattern;
 
-    public RuleGenerationContext(PrototypeFactory prototypeFactory, RuleNotation.RuleConfigurationOption[] options) {
+    private OnceWithinDefinition onceWithin;
+
+    public RuleGenerationContext(PrototypeFactory prototypeFactory, RuleConfigurationOptions options) {
         this.prototypeFactory = prototypeFactory;
         this.options = options;
     }
@@ -72,20 +78,34 @@ public class RuleGenerationContext {
         return binding;
     }
 
-    public boolean hasOption(RuleNotation.RuleConfigurationOption option) {
-        if (options == null) {
-            return false;
-        }
-        for (RuleNotation.RuleConfigurationOption op : options) {
-            if (op == option) {
-                return true;
-            }
-        }
-        return false;
+    public boolean hasOption(RuleConfigurationOption option) {
+        return options != null && options.hasOption(option);
     }
 
     public static boolean isGeneratedBinding(String binding) {
         return binding.equals("m") || binding.startsWith("m_");
+    }
+
+    public OnceWithinDefinition getOnceWithin() {
+        return onceWithin;
+    }
+
+    public void setOnceWithin(OnceWithinDefinition onceWithin) {
+        this.onceWithin = onceWithin;
+    }
+
+    public PrototypeVariable getConsequenceVariable() {
+        return onceWithin != null ? onceWithin.getGuardedVariable() : null;
+    }
+
+    public void executeSyntheticConsequence(Drools drools, PrototypeFact fact) {
+        if (onceWithin != null) {
+            onceWithin.insertGuardConsequence(this).accept(drools, fact);
+        }
+    }
+
+    public Rule getSyntheticRule() {
+        return onceWithin != null ? onceWithin.cleanupRule(this) : null;
     }
 
     private static class StackedContext<K, V> {
