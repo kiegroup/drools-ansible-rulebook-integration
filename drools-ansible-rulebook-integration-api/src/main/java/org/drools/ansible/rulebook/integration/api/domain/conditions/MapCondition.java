@@ -10,7 +10,6 @@ import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.ViewItem;
 import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 
@@ -45,6 +44,10 @@ public class MapCondition implements Condition {
         return patternBinding;
     }
 
+    public void setPatternBinding(String patternBinding) {
+        this.patternBinding = patternBinding;
+    }
+
     @Override
     public ViewItem toPattern(RuleGenerationContext ruleContext) {
         return map2Ast(ruleContext, parseConditionAttributes(ruleContext, this), null).toPattern(ruleContext);
@@ -68,14 +71,18 @@ public class MapCondition implements Condition {
         String expressionName = (String) entry.getKey();
         switch (expressionName) {
             case "OrExpression":
+                String orBinding = condition.getPatternBinding(ruleContext);
                 Map.Entry lhsEntry = ((Map<?,?>) ((Map) entry.getValue()).get("lhs")).entrySet().iterator().next();
                 Map.Entry rhsEntry = ((Map<?,?>) ((Map) entry.getValue()).get("rhs")).entrySet().iterator().next();
                 return new AstCondition.OrCondition()
-                        .withLhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, lhsEntry)))
-                        .withRhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, rhsEntry)));
+                        .withLhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, lhsEntry)).withPatternBinding(ruleContext, orBinding))
+                        .withRhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, rhsEntry)).withPatternBinding(ruleContext, orBinding));
             case "AndExpression":
+                String andBinding = condition.getPatternBinding(ruleContext);
                 MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
+                lhs.setPatternBinding(andBinding);
                 MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
+                rhs.setPatternBinding(andBinding);
                 return new AstCondition.AndCondition()
                         .withLhs(map2Ast(ruleContext, lhs, null))
                         .withRhs(map2Ast(ruleContext, rhs, null));

@@ -12,8 +12,6 @@ import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
-import static org.drools.model.DSL.not;
-import static org.drools.model.PrototypeDSL.variable;
 
 public class AstCondition implements Condition {
 
@@ -131,11 +129,8 @@ public class AstCondition implements Condition {
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
-            PrototypeDSL.PrototypePatternDef oldPattern = ruleContext.getCurrentPattern();
-            ruleContext.setCurrentPattern((PrototypeDSL.PrototypePatternDef) lhs.toPattern(ruleContext));
-            ViewItem result = rhs.toPattern(ruleContext);
-            ruleContext.setCurrentPattern(oldPattern);
-            return result;
+            lhs.toPattern(ruleContext);
+            return rhs.toPattern(ruleContext);
         }
     }
 

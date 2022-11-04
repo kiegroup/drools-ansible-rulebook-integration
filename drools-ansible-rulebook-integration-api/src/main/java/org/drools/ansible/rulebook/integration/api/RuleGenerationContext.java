@@ -26,8 +26,6 @@ public class RuleGenerationContext {
 
     private int bindingsCounter = 0;
 
-    private PrototypeDSL.PrototypePatternDef currentPattern;
-
     private OnceWithinDefinition onceWithin;
 
     public RuleGenerationContext(RuleConfigurationOptions options) {
@@ -35,15 +33,7 @@ public class RuleGenerationContext {
     }
 
     public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name) {
-        return currentPattern != null ? currentPattern : patterns.computeIfAbsent(binding, b -> protoPattern(variable(getPrototype(name), b)));
-    }
-
-    public PrototypeDSL.PrototypePatternDef getCurrentPattern() {
-        return currentPattern;
-    }
-
-    public void setCurrentPattern(PrototypeDSL.PrototypePatternDef currentPattern) {
-        this.currentPattern = currentPattern;
+        return patterns.computeIfAbsent(binding, b -> protoPattern(variable(getPrototype(name), b)));
     }
 
     public PrototypeVariable getPatternVariable(String binding) {
