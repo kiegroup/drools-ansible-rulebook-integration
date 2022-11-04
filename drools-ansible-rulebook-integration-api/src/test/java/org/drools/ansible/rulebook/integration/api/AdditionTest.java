@@ -56,7 +56,10 @@ public class AdditionTest {
     public void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 2, \"j\":1 } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1, \"j\":2 } }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 2, \"j\":1 } }" );
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
 
@@ -71,7 +74,10 @@ public class AdditionTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createRulesExecutor(rulesSet);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 2, \"j\":1 } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1, \"j\":2 } }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 2, \"j\":1 } }" );
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
 

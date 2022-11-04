@@ -47,7 +47,7 @@ public class MapCondition implements Condition {
 
     @Override
     public ViewItem toPattern(RuleGenerationContext ruleContext) {
-        return map2Ast(ruleContext, parseConditionAttributes(ruleContext, this)).toPattern(ruleContext);
+        return map2Ast(ruleContext, parseConditionAttributes(ruleContext, this), null).toPattern(ruleContext);
     }
 
     private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
@@ -62,7 +62,7 @@ public class MapCondition implements Condition {
         return condition;
     }
 
-    private static Condition map2Ast(RuleGenerationContext ruleContext, MapCondition condition) {
+    private static Condition map2Ast(RuleGenerationContext ruleContext, MapCondition condition, AstCondition.MultipleConditions parent) {
         assert(condition.getMap().size() == 1);
         Map.Entry entry = condition.getMap().entrySet().iterator().next();
         String expressionName = (String) entry.getKey();
@@ -71,25 +71,25 @@ public class MapCondition implements Condition {
                 Map.Entry lhsEntry = ((Map<?,?>) ((Map) entry.getValue()).get("lhs")).entrySet().iterator().next();
                 Map.Entry rhsEntry = ((Map<?,?>) ((Map) entry.getValue()).get("rhs")).entrySet().iterator().next();
                 return new AstCondition.OrCondition()
-                        .withLhs(new AstCondition.SingleCondition(condition.parseSingle(ruleContext, lhsEntry)))
-                        .withRhs(new AstCondition.SingleCondition(condition.parseSingle(ruleContext, rhsEntry)));
+                        .withLhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, lhsEntry)))
+                        .withRhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, rhsEntry)));
             case "AndExpression":
                 MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
                 MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
                 return new AstCondition.AndCondition()
-                        .withLhs(map2Ast(ruleContext, lhs))
-                        .withRhs(map2Ast(ruleContext, rhs));
+                        .withLhs(map2Ast(ruleContext, lhs, null))
+                        .withRhs(map2Ast(ruleContext, rhs, null));
             case "AnyCondition":
             case "AllCondition":
                 AstCondition.MultipleConditions conditions = expressionName.equals("AnyCondition") ?
                         new AstCondition.AnyCondition(ruleContext) : new AstCondition.AllCondition(ruleContext);
                 for (Map subC : (List<Map>) entry.getValue()) {
-                    conditions.addCondition(map2Ast(ruleContext, new MapCondition(subC)));
+                    conditions.addCondition(map2Ast(ruleContext, new MapCondition(subC), conditions));
                 }
                 return conditions;
         }
 
-        return new AstCondition.SingleCondition(condition.parseSingle(ruleContext, entry))
+        return new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, entry))
                 .withPatternBinding(ruleContext, condition.getPatternBinding(ruleContext));
     }
 
