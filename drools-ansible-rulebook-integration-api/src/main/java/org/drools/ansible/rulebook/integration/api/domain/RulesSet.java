@@ -4,22 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
 import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
-import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
+import org.drools.ansible.rulebook.integration.api.RulesExecutionController;
 import org.drools.model.Drools;
 import org.drools.model.Model;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.impl.ModelImpl;
-import org.drools.modelcompiler.KieBaseBuilder;
-import org.kie.api.KieBase;
-import org.kie.api.conf.EventProcessingOption;
-import org.kie.api.conf.KieBaseMutabilityOption;
 
 import static org.drools.model.DSL.execute;
 import static org.drools.model.DSL.on;
@@ -32,8 +26,6 @@ public class RulesSet {
     private List<RuleContainer> rules;
 
     private RuleConfigurationOptions options;
-
-    private final PrototypeFactory prototypeFactory = new PrototypeFactory();
 
     public String getName() {
         return name;
@@ -51,28 +43,28 @@ public class RulesSet {
         this.hosts = hosts;
     }
 
-    public Model toExecModel(Supplier<RulesExecutor> rulesExecutorSupplier) {
+    public Model toExecModel(RulesExecutionController rulesExecutionController) {
         AtomicInteger ruleCounter = new AtomicInteger(0);
 
         ModelImpl model = new ModelImpl();
         rules.stream().map(RuleContainer::getRule)
-                .map(r -> r.createRuleGenerationContext(prototypeFactory, options))
-                .flatMap(rule -> toExecModelRules(rule, rulesExecutorSupplier, ruleCounter).stream())
+                .map(r -> r.createRuleGenerationContext(options))
+                .flatMap(rule -> toExecModelRules(rule, rulesExecutionController, ruleCounter).stream())
                 .forEach(model::addRule);
         return model;
     }
 
-    private static List<org.drools.model.Rule> toExecModelRules(Rule rule, Supplier<RulesExecutor> rulesExecutorSupplier, AtomicInteger ruleCounter) {
+    private static List<org.drools.model.Rule> toExecModelRules(Rule rule, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
         RuleGenerationContext ruleContext = rule.getRuleGenerationContext();
         RuleItemBuilder pattern = rule.getCondition().toPattern( ruleContext );
         RuleItemBuilder consequence;
         if ( ruleContext.getConsequenceVariable() != null ) {
             consequence = on(ruleContext.getConsequenceVariable()).execute((drools, fact) -> {
                 ruleContext.executeSyntheticConsequence(drools, fact);
-                defaultConsequence(rule, rulesExecutorSupplier, drools);
+                defaultConsequence(rule, rulesExecutionController, drools);
             });
         } else {
-            consequence = execute(drools -> defaultConsequence(rule, rulesExecutorSupplier, drools));
+            consequence = execute(drools -> defaultConsequence(rule, rulesExecutionController, drools));
         }
 
         String ruleName = rule.getName() != null ? rule.getName() : "r_" + ruleCounter.getAndIncrement();
@@ -81,10 +73,9 @@ public class RulesSet {
         return syntheticRule == null ? Arrays.asList( generatedRule ) : Arrays.asList( generatedRule, syntheticRule );
     }
 
-    private static void defaultConsequence(Rule rule, Supplier<RulesExecutor> rulesExecutorSupplier, Drools drools) {
-        RulesExecutor rulesExecutor = rulesExecutorSupplier.get();
-        if (rulesExecutor.executeActions()) {
-            rule.getAction().execute(rulesExecutor, drools);
+    private static void defaultConsequence(Rule rule, RulesExecutionController rulesExecutionController, Drools drools) {
+        if (rulesExecutionController.executeActions()) {
+            rule.getAction().execute(drools);
         }
     }
 
@@ -99,7 +90,7 @@ public class RulesSet {
     public Rule addRule(String name) {
         Rule rule = new Rule();
         rule.setName(name);
-        rule.createRuleGenerationContext(prototypeFactory, options);
+        rule.createRuleGenerationContext(options);
         RuleContainer ruleContainer = new RuleContainer();
         ruleContainer.setRule(rule);
         if (rules == null) {
@@ -111,10 +102,6 @@ public class RulesSet {
 
     public boolean hasOption(RuleConfigurationOption option) {
         return options != null && options.hasOption(option);
-    }
-
-    public PrototypeFactory getPrototypeFactory() {
-        return prototypeFactory;
     }
 
     public RulesSet withOptions(RuleConfigurationOptions options) {

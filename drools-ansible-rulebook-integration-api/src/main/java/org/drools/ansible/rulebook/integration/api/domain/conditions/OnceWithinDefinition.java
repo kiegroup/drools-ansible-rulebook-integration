@@ -19,6 +19,7 @@ import org.drools.model.view.ViewItem;
 import static java.util.stream.Collectors.toList;
 import static org.drools.ansible.rulebook.integration.api.RulesExecutor.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.model.DSL.not;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
@@ -51,7 +52,7 @@ public class OnceWithinDefinition {
     }
 
     private PrototypeDSL.PrototypePatternDef createControlPattern(RuleGenerationContext ruleContext) {
-        PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(ruleContext.getPrototypeFactory().getPrototype(SYNTHETIC_PROTOTYPE_NAME)));
+        PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(getPrototype(SYNTHETIC_PROTOTYPE_NAME)));
         for (String unique : uniqueAttributes) {
             controlPattern.expr( prototypeField(unique), Index.ConstraintType.EQUAL, getGuardedVariable(), prototypeField(unique) );
         }
@@ -60,7 +61,7 @@ public class OnceWithinDefinition {
 
     public BiConsumer<Drools, PrototypeFact> insertGuardConsequence(RuleGenerationContext ruleContext) {
         return (Drools drools, PrototypeFact fact) -> {
-            Event controlEvent = createMapBasedEvent( ruleContext.getPrototypeFactory().getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
+            Event controlEvent = createMapBasedEvent( getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
                     .withExpiration(amount, timeUnit);
             for (String unique : uniqueAttributes) {
                 controlEvent.set(unique, fact.get(unique));

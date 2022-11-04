@@ -48,14 +48,14 @@ public class RulesExecutorFactory {
         return RulesExecutorContainer.INSTANCE.register(rulesExecutor);
     }
 
-    public static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
-        RulesExecutorSession.RulesExecutorHolder rulesExecutorHolder = new RulesExecutorSession.RulesExecutorHolder();
-        KieSession kieSession = createKieSession(rulesSet, rulesExecutorHolder);
-        return new RulesExecutorSession(rulesSet.getPrototypeFactory(), kieSession, rulesExecutorHolder);
+    private static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
+        RulesExecutionController rulesExecutionController = new RulesExecutionController();
+        KieSession kieSession = createKieSession(rulesSet, rulesExecutionController);
+        return new RulesExecutorSession(kieSession, rulesExecutionController);
     }
 
-    private static KieSession createKieSession(RulesSet rulesSet, RulesExecutorSession.RulesExecutorHolder rulesExecutorHolder) {
-        Model model = rulesSet.toExecModel(rulesExecutorHolder);
+    private static KieSession createKieSession(RulesSet rulesSet, RulesExecutionController rulesExecutionController) {
+        Model model = rulesSet.toExecModel(rulesExecutionController);
         KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model,
                 KieBaseMutabilityOption.DISABLED,
                 rulesSet.hasOption(EVENTS_PROCESSING) ? EventProcessingOption.STREAM : EventProcessingOption.CLOUD );

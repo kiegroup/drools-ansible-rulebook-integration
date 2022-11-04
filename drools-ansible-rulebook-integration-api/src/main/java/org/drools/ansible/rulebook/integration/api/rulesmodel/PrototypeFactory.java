@@ -11,13 +11,11 @@ public class PrototypeFactory {
     public static final String DEFAULT_PROTOTYPE_NAME = "DROOLS_PROTOTYPE";
     public static final String SYNTHETIC_PROTOTYPE_NAME = "DROOLS_SYNTHETIC_PROTOTYPE";
 
-    private final Map<String, Prototype> prototypes = new HashMap<>();
+    private PrototypeFactory() { }
 
-    public Prototype getPrototype(String name) {
+    private static final Map<String, Prototype> prototypes = new HashMap<>();
+
+    public static Prototype getPrototype(String name) {
         return prototypes.computeIfAbsent(name, PrototypeDSL::prototype);
-    }
-
-    public Prototype getPrototype() {
-        return getPrototype(DEFAULT_PROTOTYPE_NAME);
     }
 }

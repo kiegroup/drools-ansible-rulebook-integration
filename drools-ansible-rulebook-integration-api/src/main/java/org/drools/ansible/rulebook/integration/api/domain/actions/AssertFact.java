@@ -3,6 +3,8 @@ package org.drools.ansible.rulebook.integration.api.domain.actions;
 import org.drools.model.Drools;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
+
 public class AssertFact extends FactAction {
 
     static final String ACTION_NAME = "assert_fact";
@@ -16,8 +18,8 @@ public class AssertFact extends FactAction {
     }
 
     @Override
-    public void execute(RulesExecutor rulesExecutor, Drools drools) {
+    public void execute(Drools drools) {
         System.out.println("Asserting " + getFact());
-        rulesExecutor.insertFact(getFact());
+        drools.insert(mapToFact(getFact()));
     }
 }

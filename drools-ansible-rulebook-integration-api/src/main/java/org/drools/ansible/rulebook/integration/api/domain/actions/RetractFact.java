@@ -16,7 +16,7 @@ public class RetractFact extends FactAction {
     }
 
     @Override
-    public void execute(RulesExecutor rulesExecutor, Drools drools) {
+    public void execute(Drools drools) {
         System.out.println("Retracting " + getFact());
     }
 }

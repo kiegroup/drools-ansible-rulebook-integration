@@ -14,11 +14,11 @@ import org.drools.model.PrototypeFact;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.Rule;
 
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.model.PrototypeDSL.protoPattern;
 import static org.drools.model.PrototypeDSL.variable;
 
 public class RuleGenerationContext {
-    private final PrototypeFactory prototypeFactory;
 
     private final RuleConfigurationOptions options;
 
@@ -30,17 +30,12 @@ public class RuleGenerationContext {
 
     private OnceWithinDefinition onceWithin;
 
-    public RuleGenerationContext(PrototypeFactory prototypeFactory, RuleConfigurationOptions options) {
-        this.prototypeFactory = prototypeFactory;
+    public RuleGenerationContext(RuleConfigurationOptions options) {
         this.options = options;
     }
 
-    public PrototypeFactory getPrototypeFactory() {
-        return prototypeFactory;
-    }
-
     public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name) {
-        return currentPattern != null ? currentPattern : patterns.computeIfAbsent(binding, b -> protoPattern(variable(prototypeFactory.getPrototype(name), b)));
+        return currentPattern != null ? currentPattern : patterns.computeIfAbsent(binding, b -> protoPattern(variable(getPrototype(name), b)));
     }
 
     public PrototypeDSL.PrototypePatternDef getCurrentPattern() {

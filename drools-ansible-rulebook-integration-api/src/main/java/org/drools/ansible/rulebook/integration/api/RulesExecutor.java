@@ -20,6 +20,9 @@ import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
 
 public class RulesExecutor {
@@ -34,12 +37,9 @@ public class RulesExecutor {
 
     private final Set<Long> ephemeralFactHandleIds = ConcurrentHashMap.newKeySet();
 
-    public boolean executeActions = true;
-
     RulesExecutor(RulesExecutorSession rulesExecutorSession, long id) {
         this.rulesExecutorSession = rulesExecutorSession;
         this.id = id;
-        rulesExecutorSession.setRulesExecutor(this);
     }
 
     public long getId() {
@@ -96,15 +96,15 @@ public class RulesExecutor {
     }
 
     private List<Match> findMatchedRules() {
-        executeActions = false;
+        rulesExecutorSession.setExecuteActions(false);
         RegisterOnlyAgendaFilter filter = new RegisterOnlyAgendaFilter(rulesExecutorSession, ephemeralFactHandleIds);
         rulesExecutorSession.fireAllRules(filter);
-        executeActions = true;
+        rulesExecutorSession.setExecuteActions(true);
         return filter.finalizeAndGetResults();
     }
 
     public boolean executeActions() {
-        return executeActions;
+        return rulesExecutorSession.isExecuteActions();
     }
 
     private Collection<FactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
@@ -132,22 +132,6 @@ public class RulesExecutor {
 
     public boolean retractFact(Map<String, Object> factMap) {
         return rulesExecutorSession.deleteFact( mapToFact(factMap) );
-    }
-
-    private Fact mapToFact(Map<String, Object> factMap) {
-        Fact fact = createMapBasedFact( rulesExecutorSession.getPrototype() );
-        populateFact(fact, factMap, "");
-        return fact;
-    }
-
-    private void populateFact(Fact fact, Map<?, ?> value, String fieldName) {
-        for (Map.Entry<?, ?> entry : value.entrySet()) {
-            String key = fieldName + entry.getKey();
-            fact.set(key, entry.getValue());
-            if (entry.getValue() instanceof Map) {
-                populateFact(fact, (Map<?, ?>) entry.getValue(), key + ".");
-            }
-        }
     }
 
     public Collection<?> getAllFacts() {

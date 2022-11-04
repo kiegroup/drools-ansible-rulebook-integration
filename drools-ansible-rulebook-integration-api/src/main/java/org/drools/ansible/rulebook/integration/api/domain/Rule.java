@@ -32,8 +32,8 @@ public class Rule {
         this.condition = condition;
     }
 
-    public Rule createRuleGenerationContext(PrototypeFactory prototypeFactory, RuleConfigurationOptions options) {
-        this.ruleGenerationContext = new RuleGenerationContext(prototypeFactory, options);
+    public Rule createRuleGenerationContext(RuleConfigurationOptions options) {
+        this.ruleGenerationContext = new RuleGenerationContext(options);
         return this;
     }
 
