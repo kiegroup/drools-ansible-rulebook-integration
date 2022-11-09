@@ -9,7 +9,7 @@ import org.drools.model.PrototypeDSL.PrototypePatternDef;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.ViewItem;
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 
@@ -60,8 +60,14 @@ public class MapCondition implements Condition {
             if (uniqueAttributes == null) {
                 throw new IllegalArgumentException("once_within also requires unique_attributes");
             }
-            ruleContext.setOnceWithin(OnceWithinDefinition.parseOnceWithin((String) onceWithin, (List<String>) uniqueAttributes));
+            ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin((String) onceWithin, (List<String>) uniqueAttributes));
         }
+
+        Object timeWindow = condition.getMap().remove("time_window");
+        if (timeWindow != null) {
+            ruleContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow((String) timeWindow));
+        }
+
         return condition;
     }
 

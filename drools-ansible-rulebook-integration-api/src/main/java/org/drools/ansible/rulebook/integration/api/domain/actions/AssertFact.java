@@ -20,6 +20,6 @@ public class AssertFact extends FactAction {
     @Override
     public void execute(Drools drools) {
         System.out.println("Asserting " + getFact());
-        drools.insert(mapToFact(getFact()));
+        drools.insert(mapToFact(getFact(), false));
     }
 }

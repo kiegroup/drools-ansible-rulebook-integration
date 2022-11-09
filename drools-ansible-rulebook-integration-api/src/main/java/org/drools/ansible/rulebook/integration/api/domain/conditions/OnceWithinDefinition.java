@@ -2,10 +2,8 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
 import org.drools.core.facttemplates.Event;
 import org.drools.model.Drools;
 import org.drools.model.Index;
@@ -18,6 +16,7 @@ import org.drools.model.view.ViewItem;
 
 import static java.util.stream.Collectors.toList;
 import static org.drools.ansible.rulebook.integration.api.RulesExecutor.SYNTHETIC_RULE_TAG;
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.TimeAmount.parseTimeAmount;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.model.DSL.not;
@@ -28,41 +27,78 @@ import static org.drools.model.PrototypeDSL.variable;
 import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
 
-public class OnceWithinDefinition {
+/**
+ * Coalesce events within a time window: if the same event is sent multiple times only one of them in a given time window
+ * can trigger rules activation. The uniqueness criteria for the event must be specified via an additional attribute.
+ *
+ *    e.g.:
+ *      condition:
+ *         all:
+ *           - singleton << event.sensu.process.type == "alert"
+ *         once_within: 10 minutes
+ *         unique_attributes:
+ *             - event.sensu.host
+ *             - event.sensu.process.type
+ *
+ * It has been implemented by inserting a synthetic event, expiring after the time window, when the rule matches for the first time,
+ * to prevent further matches within that window plus another synthetic rule matching both the expected event and the synthetic event
+ * in order to remove immediately from the working memory the duplicated events arrived in the same time window.
+ *
+ * In other words the former example is translated in the following 2 rules:
+ *
+ * rule R when
+ *   singleton : Event( sensu.process.type == "alert" )
+ *   not( Control( sensu.host == singleton.sensu.host, sensu.process.type == singleton.sensu.process.type ) )
+ * then
+ *   Control control = new Control().withExpiration(10, TimeUnit.MINUTE);
+ *   control.set("sensu.host", singleton.sensu.host);
+ *   control.set("sensu.process.type", singleton.sensu.process.type);
+ *   insert(control);
+ * end
+ *
+ * rule Cleanup when
+ *   singleton : Event( sensu.process.type == "alert" )
+ *   Control( sensu.host == singleton.sensu.host, sensu.process.type == singleton.sensu.process.type )
+ * then
+ *   delete(singleton);
+ * end
+ */
+public class OnceWithinDefinition implements TimeConstraint {
 
-    private final int amount;
-    private final TimeUnit timeUnit;
+    private final TimeAmount timeAmount;
     private final List<String> uniqueAttributes;
 
     PrototypeDSL.PrototypePatternDef guardedPattern;
 
-    public OnceWithinDefinition(int amount, TimeUnit timeUnit, List<String> uniqueAttributes) {
-        this.amount = amount;
-        this.timeUnit = timeUnit;
+    public OnceWithinDefinition(TimeAmount timeAmount, List<String> uniqueAttributes) {
+        this.timeAmount = timeAmount;
         this.uniqueAttributes = uniqueAttributes;
     }
 
-    public PrototypeVariable getGuardedVariable() {
+    @Override
+    public PrototypeVariable getTimeConstraintConsequenceVariable() {
         return (PrototypeVariable) guardedPattern.getFirstVariable();
     }
 
-    public ViewItem appendGuardPattern(RuleGenerationContext ruleContext, ViewItem pattern) {
+    @Override
+    public ViewItem appendTimeConstraint(ViewItem pattern) {
         guardedPattern = (PrototypeDSL.PrototypePatternDef) pattern;
-        return new CombinedExprViewItem( org.drools.model.Condition.Type.AND, new ViewItem[] { guardedPattern, not( createControlPattern(ruleContext) ) } );
+        return new CombinedExprViewItem( org.drools.model.Condition.Type.AND, new ViewItem[] { guardedPattern, not( createControlPattern() ) } );
     }
 
-    private PrototypeDSL.PrototypePatternDef createControlPattern(RuleGenerationContext ruleContext) {
+    private PrototypeDSL.PrototypePatternDef createControlPattern() {
         PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(getPrototype(SYNTHETIC_PROTOTYPE_NAME)));
         for (String unique : uniqueAttributes) {
-            controlPattern.expr( prototypeField(unique), Index.ConstraintType.EQUAL, getGuardedVariable(), prototypeField(unique) );
+            controlPattern.expr( prototypeField(unique), Index.ConstraintType.EQUAL, getTimeConstraintConsequenceVariable(), prototypeField(unique) );
         }
         return controlPattern;
     }
 
-    public BiConsumer<Drools, PrototypeFact> insertGuardConsequence(RuleGenerationContext ruleContext) {
+    @Override
+    public BiConsumer<Drools, PrototypeFact> getTimeConstraintConsequence() {
         return (Drools drools, PrototypeFact fact) -> {
             Event controlEvent = createMapBasedEvent( getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
-                    .withExpiration(amount, timeUnit);
+                    .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
             for (String unique : uniqueAttributes) {
                 controlEvent.set(unique, fact.get(unique));
             }
@@ -70,31 +106,22 @@ public class OnceWithinDefinition {
         };
     }
 
-    public Rule cleanupRule(RuleGenerationContext ruleContext) {
+    @Override
+    public Rule getControlRule() {
         return rule( "cleanup_" + UUID.randomUUID() ).metadata(SYNTHETIC_RULE_TAG, true)
                 .build( guardedPattern,
-                        createControlPattern(ruleContext),
-                        on(getGuardedVariable()).execute((drools, fact) -> drools.delete(fact)) );
+                        createControlPattern(),
+                        on(getTimeConstraintConsequenceVariable()).execute((drools, fact) -> drools.delete(fact)) );
     }
 
     @Override
     public String toString() {
-        return "OnceWithinDefinition{" +
-                "value=" + amount +
-                ", timeUnit=" + timeUnit +
-                ", uniqueAttributes=" + uniqueAttributes +
-                '}';
+        return "OnceWithinDefinition{" + " " + timeAmount + ", uniqueAttributes=" + uniqueAttributes + " }";
     }
 
     static OnceWithinDefinition parseOnceWithin(String onceWithin, List<String> uniqueAttributes) {
-        int sepPos = onceWithin.indexOf(' ');
-        if (sepPos <= 0) {
-            throw new IllegalArgumentException("Invalid once_within definition: " + onceWithin);
-        }
-        int value = Integer.parseInt(onceWithin.substring(0, sepPos).trim());
-        TimeUnit timeUnit = parseTimeUnit(onceWithin.substring(sepPos+1).trim());
         List<String> sanitizedAttributes = uniqueAttributes.stream().map(OnceWithinDefinition::sanitizeAttributeName).collect(toList());
-        return new OnceWithinDefinition(value, timeUnit, sanitizedAttributes);
+        return new OnceWithinDefinition(parseTimeAmount(onceWithin), sanitizedAttributes);
     }
 
     private static String sanitizeAttributeName(String name) {
@@ -113,22 +140,5 @@ public class OnceWithinDefinition {
         return name;
     }
 
-    private static TimeUnit parseTimeUnit(String unit) {
-        if (unit.equalsIgnoreCase("millisecond") || unit.equalsIgnoreCase("milliseconds")) {
-            return TimeUnit.MILLISECONDS;
-        }
-        if (unit.equalsIgnoreCase("second") || unit.equalsIgnoreCase("seconds")) {
-            return TimeUnit.SECONDS;
-        }
-        if (unit.equalsIgnoreCase("minute") || unit.equalsIgnoreCase("minutes")) {
-            return TimeUnit.MINUTES;
-        }
-        if (unit.equalsIgnoreCase("hour") || unit.equalsIgnoreCase("hours")) {
-            return TimeUnit.HOURS;
-        }
-        if (unit.equalsIgnoreCase("day") || unit.equalsIgnoreCase("days")) {
-            return TimeUnit.DAYS;
-        }
-        throw new IllegalArgumentException("Unknown time unit: " + unit);
-    }
+
 }

@@ -3,7 +3,7 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;
@@ -55,7 +55,7 @@ public class AstCondition implements Condition {
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
             if (conditions.size() == 1) {
                 return conditions.get(0).toPattern(ruleContext);
-            } else if (ruleContext.getOnceWithin() != null) {
+            } else if (ruleContext.getTimeConstraint().map(tc -> tc instanceof OnceWithinDefinition).orElse(false)) {
                 throw new IllegalArgumentException("once_within is only allowed with a single event");
             }
             return new CombinedExprViewItem(getConditionType(), conditions.stream()
@@ -207,11 +207,7 @@ public class AstCondition implements Condition {
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
             ViewItem pattern = parsedCondition.addConditionToPattern(ruleContext, getPattern(ruleContext));
-            OnceWithinDefinition onceWithin = ruleContext.getOnceWithin();
-            if (onceWithin != null) {
-                return onceWithin.appendGuardPattern(ruleContext, pattern);
-            }
-            return pattern;
+            return ruleContext.getTimeConstraint().map(tc -> tc.appendTimeConstraint(pattern)).orElse(pattern);
         }
 
         public SingleCondition<P> addSingleCondition(PrototypeExpression left, Index.ConstraintType operator, PrototypeExpression right) {

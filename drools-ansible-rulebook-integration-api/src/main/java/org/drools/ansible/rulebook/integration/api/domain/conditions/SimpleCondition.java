@@ -10,7 +10,7 @@ import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;

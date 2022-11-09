@@ -1,12 +1,10 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
-import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
 
 public class Rule {
     private String name;
@@ -39,6 +37,10 @@ public class Rule {
 
     public RuleGenerationContext getRuleGenerationContext() {
         return ruleGenerationContext;
+    }
+
+    public boolean hasTimeConstraint() {
+        return ruleGenerationContext.hasTimeConstraint();
     }
 
     public AstCondition withCondition() {

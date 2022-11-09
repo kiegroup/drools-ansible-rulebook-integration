@@ -1,13 +1,15 @@
-package org.drools.ansible.rulebook.integration.api;
+package org.drools.ansible.rulebook.integration.api.domain;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
-import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceWithinDefinition;
-import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeConstraint;
 import org.drools.model.Drools;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeFact;
@@ -26,7 +28,7 @@ public class RuleGenerationContext {
 
     private int bindingsCounter = 0;
 
-    private OnceWithinDefinition onceWithin;
+    private TimeConstraint timeConstraint;
 
     public RuleGenerationContext(RuleConfigurationOptions options) {
         this.options = options;
@@ -71,26 +73,33 @@ public class RuleGenerationContext {
         return binding.equals("m") || binding.startsWith("m_");
     }
 
-    public OnceWithinDefinition getOnceWithin() {
-        return onceWithin;
+    public Optional<TimeConstraint> getTimeConstraint() {
+        return Optional.ofNullable(timeConstraint);
     }
 
-    public void setOnceWithin(OnceWithinDefinition onceWithin) {
-        this.onceWithin = onceWithin;
+    public void setTimeConstraint(TimeConstraint timeConstraint) {
+        if (this.timeConstraint != null) {
+            throw new IllegalArgumentException("Cannot add more than one time constraint to the same rule");
+        }
+        this.timeConstraint = timeConstraint;
     }
 
     public PrototypeVariable getConsequenceVariable() {
-        return onceWithin != null ? onceWithin.getGuardedVariable() : null;
+        return timeConstraint != null ? timeConstraint.getTimeConstraintConsequenceVariable() : null;
     }
 
     public void executeSyntheticConsequence(Drools drools, PrototypeFact fact) {
-        if (onceWithin != null) {
-            onceWithin.insertGuardConsequence(this).accept(drools, fact);
+        if (timeConstraint != null) {
+            timeConstraint.getTimeConstraintConsequence().accept(drools, fact);
         }
     }
 
     public Rule getSyntheticRule() {
-        return onceWithin != null ? onceWithin.cleanupRule(this) : null;
+        return timeConstraint != null ? timeConstraint.getControlRule() : null;
+    }
+
+    public boolean hasTimeConstraint() {
+        return timeConstraint != null;
     }
 
     private static class StackedContext<K, V> {

@@ -56,8 +56,7 @@ public class OnceWithinTest {
 
     @Test
     public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE
-                .withOptions(RuleConfigurationOption.EVENTS_PROCESSING, RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON1);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON1);
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" );
         assertEquals( 1, matchedRules.size() );
 

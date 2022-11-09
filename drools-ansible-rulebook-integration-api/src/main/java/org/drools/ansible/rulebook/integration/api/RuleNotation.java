@@ -45,7 +45,7 @@ public interface RuleNotation {
 
         @Override
         public RulesSet jsonToRuleSet(ObjectMapper mapper, String json) {
-            return CoreNotation.INSTANCE.jsonToRuleSet(mapper, json).withOptions(new RuleConfigurationOptions(options));
+            return CoreNotation.INSTANCE.jsonToRuleSet(mapper, json).withOptions(options);
         }
 
     }

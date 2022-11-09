@@ -60,7 +60,7 @@ public class RulesExecutor {
     }
 
     public int executeFacts(Map<String, Object> factMap) {
-        insertFact( factMap );
+        insertFact( factMap, false );
         return rulesExecutorSession.fireAllRules();
     }
 
@@ -114,12 +114,12 @@ public class RulesExecutor {
                     .flatMap(map -> this.insertFacts(map, event).stream())
                     .collect(Collectors.toList());
         } else {
-            return Collections.singletonList( insertFact(factMap) );
+            return Collections.singletonList( insertFact(factMap, event) );
         }
     }
 
-    public FactHandle insertFact(Map<String, Object> factMap) {
-        return rulesExecutorSession.insert( mapToFact(factMap) );
+    public FactHandle insertFact(Map<String, Object> factMap, boolean event) {
+        return rulesExecutorSession.insert( mapToFact(factMap, event) );
     }
 
     public int executeRetract(String json) {
@@ -131,7 +131,7 @@ public class RulesExecutor {
     }
 
     public boolean retractFact(Map<String, Object> factMap) {
-        return rulesExecutorSession.deleteFact( mapToFact(factMap) );
+        return rulesExecutorSession.deleteFact( mapToFact(factMap, false) );
     }
 
     public Collection<?> getAllFacts() {

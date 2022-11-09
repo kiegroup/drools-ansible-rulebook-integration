@@ -2,13 +2,13 @@ package org.drools.ansible.rulebook.integration.api.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.RulesExecutionController;
 import org.drools.model.Drools;
 import org.drools.model.Model;
@@ -54,7 +54,7 @@ public class RulesSet {
         return model;
     }
 
-    private static List<org.drools.model.Rule> toExecModelRules(Rule rule, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
+    private List<org.drools.model.Rule> toExecModelRules(Rule rule, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
         RuleGenerationContext ruleContext = rule.getRuleGenerationContext();
         RuleItemBuilder pattern = rule.getCondition().toPattern( ruleContext );
         RuleItemBuilder consequence;
@@ -67,10 +67,14 @@ public class RulesSet {
             consequence = execute(drools -> defaultConsequence(rule, rulesExecutionController, drools));
         }
 
+        if (ruleContext.hasTimeConstraint()) {
+            withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
+        }
+
         String ruleName = rule.getName() != null ? rule.getName() : "r_" + ruleCounter.getAndIncrement();
         org.drools.model.Rule generatedRule = rule( ruleName ).build( pattern, consequence );
         org.drools.model.Rule syntheticRule = ruleContext.getSyntheticRule();
-        return syntheticRule == null ? Arrays.asList( generatedRule ) : Arrays.asList( generatedRule, syntheticRule );
+        return syntheticRule == null ? Collections.singletonList(generatedRule) : Arrays.asList( generatedRule, syntheticRule );
     }
 
     private static void defaultConsequence(Rule rule, RulesExecutionController rulesExecutionController, Drools drools) {
@@ -104,8 +108,14 @@ public class RulesSet {
         return options != null && options.hasOption(option);
     }
 
-    public RulesSet withOptions(RuleConfigurationOptions options) {
-        this.options = options;
+    public RulesSet withOptions(RuleConfigurationOption... options) {
+        if (this.options == null) {
+            this.options = new RuleConfigurationOptions(options);
+        } else {
+            for (RuleConfigurationOption option : options) {
+                this.options.addOption(option);
+            }
+        }
         return this;
     }
 

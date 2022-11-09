@@ -3,7 +3,6 @@ package org.drools.ansible.rulebook.integration.api.domain;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
 import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.rule.Match;
 
