@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.core.jpy;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,18 @@ public class AstRulesEngine {
 
     public String getFacts(long session_id) {
         return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsJson();
+    }
+
+    /**
+     * Advances the clock time in the specified unit amount.
+     *
+     * @param amount the amount of units to advance in the clock
+     * @param unit the used time unit
+     * @return the events that fired
+     */
+    public String advanceTime(long sessionId, long amount, String unit) {
+        return toJson(AstRuleMatch.asList(RulesExecutorContainer.INSTANCE.get(sessionId)
+                .advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase()))));
     }
 
     private List<Map<String, Map>> processMessage(String serializedFact, Function<String, Collection<Match>> command) {

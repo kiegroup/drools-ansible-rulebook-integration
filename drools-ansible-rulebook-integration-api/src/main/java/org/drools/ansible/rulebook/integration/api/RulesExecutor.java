@@ -20,8 +20,6 @@ import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
 
@@ -150,8 +148,9 @@ public class RulesExecutor {
         }
     }
 
-    public void advanceTime( long amount, TimeUnit unit ) {
+    public List<Match> advanceTime(long amount, TimeUnit unit ) {
         rulesExecutorSession.advanceTime(amount, unit);
+        return findMatchedRules();
     }
 
     private static class RegisterOnlyAgendaFilter implements AgendaFilter {
