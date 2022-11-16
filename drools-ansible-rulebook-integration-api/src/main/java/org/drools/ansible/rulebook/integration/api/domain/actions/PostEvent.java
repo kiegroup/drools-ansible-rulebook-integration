@@ -16,7 +16,7 @@ public class PostEvent extends FactAction {
     }
 
     @Override
-    public void execute(RulesExecutor rulesExecutor, Drools drools) {
+    public void execute(Drools drools) {
         System.out.println("Post Event " + getFact());
     }
 }

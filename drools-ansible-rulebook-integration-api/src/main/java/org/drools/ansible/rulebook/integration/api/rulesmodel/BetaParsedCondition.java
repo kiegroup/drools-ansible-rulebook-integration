@@ -5,7 +5,7 @@ import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.ViewItem;
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 
 public class BetaParsedCondition extends ParsedCondition {
 

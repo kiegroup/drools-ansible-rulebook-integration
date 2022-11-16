@@ -6,7 +6,7 @@ import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 
 import static org.drools.model.DSL.not;
 import static org.drools.model.PrototypeExpression.fixedValue;
@@ -56,7 +56,7 @@ public class ParsedCondition {
 
     public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
         if (implicitPattern) {
-            PrototypeDSL.PrototypePatternDef first = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), PrototypeFactory.PROTOTYPE_NAME);
+            PrototypeDSL.PrototypePatternDef first = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), PrototypeFactory.DEFAULT_PROTOTYPE_NAME);
             pattern.expr(getLeft(), getOperator(), (PrototypeVariable) first.getFirstVariable(), getRight());
             return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, new ViewItem[] { first, pattern });
         }

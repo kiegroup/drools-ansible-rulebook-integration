@@ -3,21 +3,19 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL.PrototypePatternDef;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
-import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
-import org.drools.ansible.rulebook.integration.api.RuleGenerationContext;
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 
 import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
 import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.PROTOTYPE_NAME;
 
 public class MapCondition implements Condition {
 
@@ -46,60 +44,66 @@ public class MapCondition implements Condition {
         return patternBinding;
     }
 
-    @Override
-    public ViewItem toPattern(RuleGenerationContext ruleContext) {
-        return condition2Pattern(ruleContext, this, null);
+    public void setPatternBinding(String patternBinding) {
+        this.patternBinding = patternBinding;
     }
 
-    private static ViewItem condition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, PrototypePatternDef existingPattern) {
+    @Override
+    public ViewItem toPattern(RuleGenerationContext ruleContext) {
+        return map2Ast(ruleContext, parseConditionAttributes(ruleContext, this), null).toPattern(ruleContext);
+    }
+
+    private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
+        Object onceWithin = condition.getMap().remove("once_within");
+        if (onceWithin != null) {
+            Object uniqueAttributes = condition.getMap().remove("unique_attributes");
+            if (uniqueAttributes == null) {
+                throw new IllegalArgumentException("once_within also requires unique_attributes");
+            }
+            ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin((String) onceWithin, (List<String>) uniqueAttributes));
+        }
+
+        Object timeWindow = condition.getMap().remove("time_window");
+        if (timeWindow != null) {
+            ruleContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow((String) timeWindow));
+        }
+
+        return condition;
+    }
+
+    private static Condition map2Ast(RuleGenerationContext ruleContext, MapCondition condition, AstCondition.MultipleConditions parent) {
         assert(condition.getMap().size() == 1);
         Map.Entry entry = condition.getMap().entrySet().iterator().next();
         String expressionName = (String) entry.getKey();
         switch (expressionName) {
-            case "OrExpression": {
+            case "OrExpression":
+                String orBinding = condition.getPatternBinding(ruleContext);
                 Map.Entry lhsEntry = ((Map<?,?>) ((Map) entry.getValue()).get("lhs")).entrySet().iterator().next();
                 Map.Entry rhsEntry = ((Map<?,?>) ((Map) entry.getValue()).get("rhs")).entrySet().iterator().next();
-                ParsedCondition parsedCondition = condition.parseSingle(ruleContext, lhsEntry);
-                PrototypePatternDef pattern = existingPattern != null ? existingPattern : ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
-                pattern = pattern.or();
-                parsedCondition.addConditionToPattern(ruleContext, pattern);
-                condition.parseSingle(ruleContext, rhsEntry).addConditionToPattern(ruleContext, pattern);
-                return pattern.endOr();
-            }
-            case "AndExpression": {
+                return new AstCondition.OrCondition()
+                        .withLhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, lhsEntry)).withPatternBinding(ruleContext, orBinding))
+                        .withRhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, rhsEntry)).withPatternBinding(ruleContext, orBinding));
+            case "AndExpression":
+                String andBinding = condition.getPatternBinding(ruleContext);
                 MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
+                lhs.setPatternBinding(andBinding);
                 MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
-                PrototypePatternDef pattern = (PrototypePatternDef) condition2Pattern(ruleContext, lhs, existingPattern);
-                return condition2Pattern(ruleContext, rhs, pattern);
-            }
-            case "AnyCondition": {
-                List<Map> conditions = (List<Map>) entry.getValue();
-                if (conditions.size() == 1) {
-                    return condition2Pattern(ruleContext, new MapCondition(conditions.get(0)), existingPattern);
+                rhs.setPatternBinding(andBinding);
+                return new AstCondition.AndCondition()
+                        .withLhs(map2Ast(ruleContext, lhs, null))
+                        .withRhs(map2Ast(ruleContext, rhs, null));
+            case "AnyCondition":
+            case "AllCondition":
+                AstCondition.MultipleConditions conditions = expressionName.equals("AnyCondition") ?
+                        new AstCondition.AnyCondition(ruleContext) : new AstCondition.AllCondition(ruleContext);
+                for (Map subC : (List<Map>) entry.getValue()) {
+                    conditions.addCondition(map2Ast(ruleContext, new MapCondition(subC), conditions));
                 }
-                return new CombinedExprViewItem(org.drools.model.Condition.Type.OR, conditions.stream()
-                        .map(subC -> scopingCondition2Pattern(ruleContext, new MapCondition(subC), null)).toArray(ViewItem[]::new));
-            }
-            case "AllCondition": {
-                List<Map> conditions = (List<Map>)entry.getValue();
-                if (conditions.size() == 1) {
-                    return condition2Pattern(ruleContext, new MapCondition(conditions.get(0)), null);
-                }
-                return new CombinedExprViewItem(org.drools.model.Condition.Type.AND, conditions.stream()
-                        .map(subC -> condition2Pattern(ruleContext, new MapCondition(subC), null)).toArray(ViewItem[]::new));
-            }
+                return conditions;
         }
 
-        ParsedCondition parsedCondition = condition.parseSingle(ruleContext, entry);
-        PrototypePatternDef pattern = existingPattern != null ? existingPattern : ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), PROTOTYPE_NAME);
-        return parsedCondition.addConditionToPattern(ruleContext, pattern);
-    }
-
-    private static ViewItem scopingCondition2Pattern(RuleGenerationContext ruleContext, MapCondition condition, PrototypePatternDef existingPattern) {
-        ruleContext.pushContext();
-        ViewItem pattern = condition2Pattern(ruleContext, condition, existingPattern);
-        ruleContext.popContext();
-        return pattern;
+        return new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, entry))
+                .withPatternBinding(ruleContext, condition.getPatternBinding(ruleContext));
     }
 
     private ParsedCondition parseSingle(RuleGenerationContext ruleContext, Map.Entry entry) {
@@ -131,7 +135,7 @@ public class MapCondition implements Condition {
 
     private boolean hasImplicitPattern(RuleGenerationContext ruleContext, ConditionExpression left, ConditionExpression right) {
         boolean hasImplicitPattern = left.field && right.field && !left.prototypeName.equals(right.prototypeName) && !ruleContext.isExistingBoundVariable(right.prototypeName);
-        if (hasImplicitPattern && !ruleContext.hasOption(RuleNotation.RuleConfigurationOption.ALLOW_IMPLICIT_JOINS)) {
+        if (hasImplicitPattern && !ruleContext.hasOption(RuleConfigurationOption.ALLOW_IMPLICIT_JOINS)) {
             throw new UnsupportedOperationException("Cannot have an implicit pattern without using ALLOW_IMPLICIT_JOINS option");
         }
         return hasImplicitPattern;

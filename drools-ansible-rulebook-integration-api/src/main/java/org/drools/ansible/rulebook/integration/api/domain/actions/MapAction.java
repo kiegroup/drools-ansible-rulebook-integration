@@ -50,7 +50,7 @@ public class MapAction extends HashMap implements Action {
     }
 
     @Override
-    public void execute(RulesExecutor rulesExecutor, Drools drools) {
-        knownActions.forEach( a -> a.execute(rulesExecutor, drools));
+    public void execute(Drools drools) {
+        knownActions.forEach( a -> a.execute(drools));
     }
 }

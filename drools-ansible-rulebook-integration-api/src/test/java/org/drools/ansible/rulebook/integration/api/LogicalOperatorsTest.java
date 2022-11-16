@@ -8,10 +8,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.model.Index;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
+import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.junit.Assert.assertEquals;
 
 public class LogicalOperatorsTest {
@@ -269,5 +272,95 @@ public class LogicalOperatorsTest {
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" );
         assertEquals( 1, matchedRules.size() );
+    }
+
+    @Test
+    public void testAny() {
+        RulesSet rulesSet = new RulesSet();
+        rulesSet.addRule().withCondition().any()
+                .addSingleCondition(prototypeField("i"), Index.ConstraintType.EQUAL, fixedValue(0)).withPatternBinding("event")
+                .addSingleCondition(prototypeField("i"), Index.ConstraintType.EQUAL, fixedValue(1)).withPatternBinding("event");
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createRulesExecutor(rulesSet);
+        checkAnyExecution(rulesExecutor);
+    }
+
+    private static final String JSON4 =
+            "{\n" +
+            "   \"rules\":[\n" +
+            "      {\n" +
+            "         \"Rule\":{\n" +
+            "            \"action\":{\n" +
+            "               \"Action\":{\n" +
+            "                  \"action\":\"debug\",\n" +
+            "                  \"action_args\":{\n" +
+            "                     \n" +
+            "                  }\n" +
+            "               }\n" +
+            "            },\n" +
+            "            \"condition\":{\n" +
+            "               \"AnyCondition\":[\n" +
+            "                  {\n" +
+            "                     \"AssignmentExpression\":{\n" +
+            "                        \"lhs\":{\n" +
+            "                           \"Events\":\"event\"\n" +
+            "                        },\n" +
+            "                        \"rhs\":{\n" +
+            "                           \"EqualsExpression\":{\n" +
+            "                              \"lhs\":{\n" +
+            "                                 \"Event\":\"i\"\n" +
+            "                              },\n" +
+            "                              \"rhs\":{\n" +
+            "                                 \"Integer\":0\n" +
+            "                              }\n" +
+            "                           }\n" +
+            "                        }\n" +
+            "                     }\n" +
+            "                  },\n" +
+            "                  {\n" +
+            "                     \"AssignmentExpression\":{\n" +
+            "                        \"lhs\":{\n" +
+            "                           \"Events\":\"event\"\n" +
+            "                        },\n" +
+            "                        \"rhs\":{\n" +
+            "                           \"EqualsExpression\":{\n" +
+            "                              \"lhs\":{\n" +
+            "                                 \"Event\":\"i\"\n" +
+            "                              },\n" +
+            "                              \"rhs\":{\n" +
+            "                                 \"Integer\":1\n" +
+            "                              }\n" +
+            "                           }\n" +
+            "                        }\n" +
+            "                     }\n" +
+            "                  }\n" +
+            "               ]\n" +
+            "            }\n" +
+            "         }\n" +
+            "      }\n" +
+            "   ]\n" +
+            "}";
+
+    @Test
+    public void testAnyWithJson() {
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON4);
+        checkAnyExecution(rulesExecutor);
+    }
+
+    private void checkAnyExecution(RulesExecutor rulesExecutor) {
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 2 }" );
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\": 1 }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
+        assertEquals( "event", matchedRules.get(0).getDeclarationIds().get(0) );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\": 0 }" );
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
+        assertEquals( "event", matchedRules.get(0).getDeclarationIds().get(0) );
+
+        rulesExecutor.dispose();
     }
 }

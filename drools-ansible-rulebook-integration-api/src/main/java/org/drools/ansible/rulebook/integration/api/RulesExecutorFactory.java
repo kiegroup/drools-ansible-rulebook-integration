@@ -1,17 +1,21 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
 
-import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
-import org.drools.model.impl.ModelImpl;
+import org.drools.core.ClockType;
+import org.drools.model.Model;
 import org.drools.modelcompiler.KieBaseBuilder;
-import org.drools.ansible.rulebook.integration.api.domain.Rule;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.conf.KieBaseMutabilityOption;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.conf.ClockTypeOption;
 
+import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.EVENTS_PROCESSING;
+import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.USE_PSEUDO_CLOCK;
 import static org.drools.model.DSL.execute;
 import static org.drools.model.PatternDSL.rule;
 
@@ -44,23 +48,23 @@ public class RulesExecutorFactory {
         return RulesExecutorContainer.INSTANCE.register(rulesExecutor);
     }
 
-    public static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
-        PrototypeFactory prototypeFactory = new PrototypeFactory();
-        RulesExecutorSession.RulesExecutorHolder rulesExecutorHolder = new RulesExecutorSession.RulesExecutorHolder();
-        AtomicInteger ruleCounter = new AtomicInteger(0);
-
-        ModelImpl model = new ModelImpl();
-        rulesSet.getRules().stream()
-                .map(rule -> toExecModelRule(rulesSet, rule, prototypeFactory, rulesExecutorHolder, ruleCounter))
-                .forEach(model::addRule);
-        KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model, KieBaseMutabilityOption.DISABLED );
-        return new RulesExecutorSession(prototypeFactory, kieBase.newKieSession(), rulesExecutorHolder);
+    private static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
+        RulesExecutionController rulesExecutionController = new RulesExecutionController();
+        KieSession kieSession = createKieSession(rulesSet, rulesExecutionController);
+        return new RulesExecutorSession(kieSession, rulesExecutionController);
     }
 
-    private static org.drools.model.Rule toExecModelRule(RulesSet rulesSet, Rule rule, PrototypeFactory prototypeFactory,
-                                                         Supplier<RulesExecutor> rulesExecutorSupplier, AtomicInteger ruleCounter) {
-        return rule( rule.getName() != null ? rule.getName() : "r_" + ruleCounter.getAndIncrement() )
-                .build( rule.getCondition().toPattern( new RuleGenerationContext(prototypeFactory, rulesSet.getOptions()) ),
-                        execute(drools -> rule.getAction().execute(rulesExecutorSupplier.get(), drools)) );
+    private static KieSession createKieSession(RulesSet rulesSet, RulesExecutionController rulesExecutionController) {
+        Model model = rulesSet.toExecModel(rulesExecutionController);
+        KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model,
+                KieBaseMutabilityOption.DISABLED,
+                rulesSet.hasOption(EVENTS_PROCESSING) ? EventProcessingOption.STREAM : EventProcessingOption.CLOUD );
+
+        if (rulesSet.hasOption(USE_PSEUDO_CLOCK)) {
+            KieSessionConfiguration conf = KieServices.get().newKieSessionConfiguration();
+            conf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+            return kieBase.newKieSession(conf, null);
+        }
+        return kieBase.newKieSession();
     }
 }

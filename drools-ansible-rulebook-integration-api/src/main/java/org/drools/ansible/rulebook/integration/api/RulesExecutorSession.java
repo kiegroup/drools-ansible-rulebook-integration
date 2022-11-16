@@ -2,31 +2,24 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.concurrent.TimeUnit;
 
-import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
 import org.drools.core.facttemplates.Fact;
-import org.drools.model.Prototype;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.time.SessionPseudoClock;
+
 
 class RulesExecutorSession {
 
-    private final PrototypeFactory prototypeFactory;
-
     private final KieSession kieSession;
 
-    private final RulesExecutorHolder rulesExecutorHolder;
+    private final RulesExecutionController rulesExecutionController;
 
-    public RulesExecutorSession(PrototypeFactory prototypeFactory, KieSession kieSession, RulesExecutorHolder rulesExecutorHolder) {
-        this.prototypeFactory = prototypeFactory;
+    public RulesExecutorSession(KieSession kieSession, RulesExecutionController rulesExecutionController) {
         this.kieSession = kieSession;
-        this.rulesExecutorHolder = rulesExecutorHolder;
-    }
-
-    public void setRulesExecutor(RulesExecutor rulesExecutor) {
-        rulesExecutorHolder.set(rulesExecutor);
+        this.rulesExecutionController = rulesExecutionController;
     }
 
     public Collection<? extends Object> getObjects() {
@@ -66,20 +59,16 @@ class RulesExecutorSession {
         return kieSession.getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
     }
 
-    public Prototype getPrototype() {
-        return prototypeFactory.getPrototype();
+    public void advanceTime( long amount, TimeUnit unit ) {
+        SessionPseudoClock clock = kieSession.getSessionClock();
+        clock.advanceTime(amount, unit);
     }
 
-    static class RulesExecutorHolder implements Supplier<RulesExecutor> {
-        private RulesExecutor rulesExecutor;
+    public boolean isExecuteActions() {
+        return rulesExecutionController.executeActions();
+    }
 
-        @Override
-        public RulesExecutor get() {
-            return rulesExecutor;
-        }
-
-        public void set(RulesExecutor rulesExecutor) {
-            this.rulesExecutor = rulesExecutor;
-        }
+    public void setExecuteActions(boolean executeActions) {
+        rulesExecutionController.setExecuteActions(executeActions);
     }
 }
