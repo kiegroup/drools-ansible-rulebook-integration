@@ -44,7 +44,7 @@ public class TimeWindowDefinition implements TimeConstraint {
         this.timeAmount = timeAmount;
     }
 
-    static TimeWindowDefinition parseTimeWindow(String timeWindow) {
+    public static TimeWindowDefinition parseTimeWindow(String timeWindow) {
         return new TimeWindowDefinition(parseTimeAmount(timeWindow));
     }
 

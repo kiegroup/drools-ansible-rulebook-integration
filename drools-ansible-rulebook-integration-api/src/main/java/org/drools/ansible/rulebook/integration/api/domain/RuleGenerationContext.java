@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.api.domain;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -22,7 +23,7 @@ import static org.drools.model.PrototypeDSL.variable;
 
 public class RuleGenerationContext {
 
-    private final RuleConfigurationOptions options;
+    private final RuleConfigurationOptions options = new RuleConfigurationOptions();
 
     private final StackedContext<String, PrototypeDSL.PrototypePatternDef> patterns = new StackedContext<>();
 
@@ -30,8 +31,8 @@ public class RuleGenerationContext {
 
     private TimeConstraint timeConstraint;
 
-    public RuleGenerationContext(RuleConfigurationOptions options) {
-        this.options = options;
+    public void addOptions(Iterable<RuleConfigurationOption> options) {
+        this.options.addOptions(options);
     }
 
     public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name) {

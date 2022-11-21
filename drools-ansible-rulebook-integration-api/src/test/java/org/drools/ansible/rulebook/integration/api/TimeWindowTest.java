@@ -10,54 +10,108 @@ import static org.junit.Assert.assertEquals;
 
 public class TimeWindowTest {
 
-    public static final String JSON1 =
-            "{\n" +
-            "   \"rules\":[\n" +
-            "      {\n" +
-            "         \"Rule\":{\n" +
-            "            \"condition\":{\n" +
-            "               \"AllCondition\":[\n" +
-            "                  {\n" +
-            "                     \"EqualsExpression\":{\n" +
-            "                        \"lhs\":{\n" +
-            "                           \"Event\":\"ping.timeout\"\n" +
-            "                        },\n" +
-            "                        \"rhs\":{\n" +
-            "                           \"Boolean\":true\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"EqualsExpression\":{\n" +
-            "                        \"lhs\":{\n" +
-            "                           \"Event\":\"sensu.process.status\"\n" +
-            "                        },\n" +
-            "                        \"rhs\":{\n" +
-            "                           \"String\":\"stopped\"\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"GreaterThanExpression\":{\n" +
-            "                        \"lhs\":{\n" +
-            "                           \"Event\":\"sensu.storage.percent\"\n" +
-            "                        },\n" +
-            "                        \"rhs\":{\n" +
-            "                           \"Integer\":95\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  }\n" +
-            "               ],\n" +
-            "               \"time_window\":\"10 seconds\"\n" +
-            "            }\n" +
-            "         }\n" +
-            "      }\n" +
-            "   ]\n" +
-            "}";
+    @Test
+    public void testTimeWindowInCondition() {
+        String json =
+                "{\n" +
+                "   \"rules\":[\n" +
+                "      {\n" +
+                "         \"Rule\":{\n" +
+                "            \"condition\":{\n" +
+                "               \"AllCondition\":[\n" +
+                "                  {\n" +
+                "                     \"EqualsExpression\":{\n" +
+                "                        \"lhs\":{\n" +
+                "                           \"Event\":\"ping.timeout\"\n" +
+                "                        },\n" +
+                "                        \"rhs\":{\n" +
+                "                           \"Boolean\":true\n" +
+                "                        }\n" +
+                "                     }\n" +
+                "                  },\n" +
+                "                  {\n" +
+                "                     \"EqualsExpression\":{\n" +
+                "                        \"lhs\":{\n" +
+                "                           \"Event\":\"sensu.process.status\"\n" +
+                "                        },\n" +
+                "                        \"rhs\":{\n" +
+                "                           \"String\":\"stopped\"\n" +
+                "                        }\n" +
+                "                     }\n" +
+                "                  },\n" +
+                "                  {\n" +
+                "                     \"GreaterThanExpression\":{\n" +
+                "                        \"lhs\":{\n" +
+                "                           \"Event\":\"sensu.storage.percent\"\n" +
+                "                        },\n" +
+                "                        \"rhs\":{\n" +
+                "                           \"Integer\":95\n" +
+                "                        }\n" +
+                "                     }\n" +
+                "                  }\n" +
+                "               ],\n" +
+                "               \"time_window\":\"10 seconds\"\n" +
+                "            }\n" +
+                "         }\n" +
+                "      }\n" +
+                "   ]\n" +
+                "}";
+
+        timeWindowTest(json);
+    }
 
     @Test
-    public void testExecuteRules() {
-        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON1);
+    public void testTimeWindowInRule() {
+        String json =
+                "{\n" +
+                "   \"rules\":[\n" +
+                "      {\n" +
+                "         \"Rule\":{\n" +
+                "            \"condition\":{\n" +
+                "               \"AllCondition\":[\n" +
+                "                  {\n" +
+                "                     \"EqualsExpression\":{\n" +
+                "                        \"lhs\":{\n" +
+                "                           \"Event\":\"ping.timeout\"\n" +
+                "                        },\n" +
+                "                        \"rhs\":{\n" +
+                "                           \"Boolean\":true\n" +
+                "                        }\n" +
+                "                     }\n" +
+                "                  },\n" +
+                "                  {\n" +
+                "                     \"EqualsExpression\":{\n" +
+                "                        \"lhs\":{\n" +
+                "                           \"Event\":\"sensu.process.status\"\n" +
+                "                        },\n" +
+                "                        \"rhs\":{\n" +
+                "                           \"String\":\"stopped\"\n" +
+                "                        }\n" +
+                "                     }\n" +
+                "                  },\n" +
+                "                  {\n" +
+                "                     \"GreaterThanExpression\":{\n" +
+                "                        \"lhs\":{\n" +
+                "                           \"Event\":\"sensu.storage.percent\"\n" +
+                "                        },\n" +
+                "                        \"rhs\":{\n" +
+                "                           \"Integer\":95\n" +
+                "                        }\n" +
+                "                     }\n" +
+                "                  }\n" +
+                "               ]\n" +
+                "            },\n" +
+                "            \"time_window\":\"10 seconds\"\n" +
+                "         }\n" +
+                "      }\n" +
+                "   ]\n" +
+                "}";
+
+        timeWindowTest(json);
+    }
+
+    private void timeWindowTest(String json) {
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" );
         assertEquals( 0, matchedRules.size() );
 

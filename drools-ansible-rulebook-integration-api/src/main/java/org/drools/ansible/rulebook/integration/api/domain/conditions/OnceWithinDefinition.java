@@ -119,7 +119,7 @@ public class OnceWithinDefinition implements TimeConstraint {
         return "OnceWithinDefinition{" + " " + timeAmount + ", uniqueAttributes=" + uniqueAttributes + " }";
     }
 
-    static OnceWithinDefinition parseOnceWithin(String onceWithin, List<String> uniqueAttributes) {
+    public static OnceWithinDefinition parseOnceWithin(String onceWithin, List<String> uniqueAttributes) {
         List<String> sanitizedAttributes = uniqueAttributes.stream().map(OnceWithinDefinition::sanitizeAttributeName).collect(toList());
         return new OnceWithinDefinition(parseTimeAmount(onceWithin), sanitizedAttributes);
     }

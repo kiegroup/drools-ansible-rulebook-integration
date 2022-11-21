@@ -1,10 +1,14 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
+import java.util.List;
+
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceWithinDefinition;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeWindowDefinition;
 
 public class Rule {
     private String name;
@@ -12,7 +16,10 @@ public class Rule {
     private Action action;
     private boolean enabled;
 
-    private RuleGenerationContext ruleGenerationContext;
+    private String onceWithin;
+    private List<String> uniqueAttributes;
+
+    private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
     public String getName() {
         return name;
@@ -30,8 +37,8 @@ public class Rule {
         this.condition = condition;
     }
 
-    public Rule createRuleGenerationContext(RuleConfigurationOptions options) {
-        this.ruleGenerationContext = new RuleGenerationContext(options);
+    public Rule withOptions(RuleConfigurationOptions options) {
+        this.ruleGenerationContext.addOptions(options.getOptions());
         return this;
     }
 
@@ -66,6 +73,24 @@ public class Rule {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public void setOnce_within(String onceWithin) {
+        this.onceWithin = onceWithin;
+        if (uniqueAttributes != null) {
+            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, uniqueAttributes));
+        }
+    }
+
+    public void setUnique_attributes(List<String> uniqueAttributes) {
+        this.uniqueAttributes = uniqueAttributes;
+        if (onceWithin != null) {
+            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, uniqueAttributes));
+        }
+    }
+
+    public void setTime_window(String timeWindow) {
+        ruleGenerationContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow((String) timeWindow));
     }
 
     @Override

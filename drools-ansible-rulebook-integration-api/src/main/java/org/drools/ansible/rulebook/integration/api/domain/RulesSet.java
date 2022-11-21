@@ -25,7 +25,7 @@ public class RulesSet {
     private List<String> hosts;
     private List<RuleContainer> rules;
 
-    private RuleConfigurationOptions options;
+    private final RuleConfigurationOptions options = new RuleConfigurationOptions();
 
     public String getName() {
         return name;
@@ -48,7 +48,7 @@ public class RulesSet {
 
         ModelImpl model = new ModelImpl();
         rules.stream().map(RuleContainer::getRule)
-                .map(r -> r.createRuleGenerationContext(options))
+                .map(r -> r.withOptions(options))
                 .flatMap(rule -> toExecModelRules(rule, rulesExecutionController, ruleCounter).stream())
                 .forEach(model::addRule);
         return model;
@@ -92,9 +92,8 @@ public class RulesSet {
     }
 
     public Rule addRule(String name) {
-        Rule rule = new Rule();
+        Rule rule = new Rule().withOptions(options);
         rule.setName(name);
-        rule.createRuleGenerationContext(options);
         RuleContainer ruleContainer = new RuleContainer();
         ruleContainer.setRule(rule);
         if (rules == null) {
@@ -109,13 +108,7 @@ public class RulesSet {
     }
 
     public RulesSet withOptions(RuleConfigurationOption... options) {
-        if (this.options == null) {
-            this.options = new RuleConfigurationOptions(options);
-        } else {
-            for (RuleConfigurationOption option : options) {
-                this.options.addOption(option);
-            }
-        }
+        this.options.addOptions(options);
         return this;
     }
 
