@@ -8,6 +8,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
@@ -18,6 +20,15 @@ public class AstRulesEngine {
 
     public long createRuleset(String rulesetString) {
         RulesExecutor executor = RulesExecutorFactory.createFromJson(rulesetString);
+        return executor.getId();
+    }
+
+    public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
+        RuleNotation notation = RuleNotation.CoreNotation.INSTANCE;
+        if (pseudoClock) {
+            notation = notation.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+        }
+        RulesExecutor executor = RulesExecutorFactory.createFromJson(notation, rulesetString);
         return executor.getId();
     }
 
