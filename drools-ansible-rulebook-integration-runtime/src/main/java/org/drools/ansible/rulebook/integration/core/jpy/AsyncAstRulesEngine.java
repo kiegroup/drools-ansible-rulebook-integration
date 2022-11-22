@@ -102,6 +102,10 @@ public class AsyncAstRulesEngine {
         write(new Response(session_id, facts));
     }
 
+    public void shutdown() {
+        executor.shutdown();
+    }
+
     private void write(Response response) {
         executor.submit(new Runnable() {
             @Override
