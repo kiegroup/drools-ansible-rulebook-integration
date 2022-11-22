@@ -3,10 +3,13 @@ package org.drools.ansible.rulebook.integration.core.jpy;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
@@ -17,6 +20,15 @@ public class AstRulesEngine {
 
     public long createRuleset(String rulesetString) {
         RulesExecutor executor = RulesExecutorFactory.createFromJson(rulesetString);
+        return executor.getId();
+    }
+
+    public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
+        RuleNotation notation = RuleNotation.CoreNotation.INSTANCE;
+        if (pseudoClock) {
+            notation = notation.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+        }
+        RulesExecutor executor = RulesExecutorFactory.createFromJson(notation, rulesetString);
         return executor.getId();
     }
 
@@ -54,6 +66,18 @@ public class AstRulesEngine {
 
     public String getFacts(long session_id) {
         return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsJson();
+    }
+
+    /**
+     * Advances the clock time in the specified unit amount.
+     *
+     * @param amount the amount of units to advance in the clock
+     * @param unit the used time unit
+     * @return the events that fired
+     */
+    public String advanceTime(long sessionId, long amount, String unit) {
+        return toJson(AstRuleMatch.asList(RulesExecutorContainer.INSTANCE.get(sessionId)
+                .advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase()))));
     }
 
     private List<Map<String, Map>> processMessage(String serializedFact, Function<String, Collection<Match>> command) {
