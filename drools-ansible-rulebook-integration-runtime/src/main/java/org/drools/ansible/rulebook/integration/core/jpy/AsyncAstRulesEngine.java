@@ -1,6 +1,5 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
@@ -9,11 +8,15 @@ import org.json.JSONObject;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.drools.ansible.rulebook.integration.api.RulesExecutor.OBJECT_MAPPER;
 
@@ -37,9 +40,9 @@ public class AsyncAstRulesEngine {
     }
 
     private final ServerSocket socketChannel;
-
     private final AstRulesEngineInternal astRulesEngine;
-    private DataOutputStream ssc;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private volatile DataOutputStream ssc;
 
     public AsyncAstRulesEngine() {
         try {
@@ -59,17 +62,12 @@ public class AsyncAstRulesEngine {
     private void accept() {
         CompletableFuture.supplyAsync(() -> {
             try {
-                return socketChannel.accept();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).handleAsync((skt, thrw) -> {
-            try {
+                Socket skt = socketChannel.accept();
                 this.ssc = new DataOutputStream(skt.getOutputStream());
+                return skt;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return null;
         });
 
     }
@@ -107,14 +105,23 @@ public class AsyncAstRulesEngine {
     }
 
     private void write(Response response) {
-        try {
-            String payload = OBJECT_MAPPER.writeValueAsString(response);
-            byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
-            ssc.writeInt(bytes.length);
-            ssc.write(bytes);
-            ssc.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (ssc == null) {
+                        executor.submit(this);
+                        return;
+                    }
+                    String payload = OBJECT_MAPPER.writeValueAsString(response);
+                    byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
+                    ssc.writeInt(bytes.length);
+                    ssc.write(bytes);
+                    ssc.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 }
