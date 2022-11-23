@@ -3,8 +3,6 @@ package org.drools.ansible.rulebook.integration.core.jpy;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.json.JSONObject;
 
@@ -130,8 +128,8 @@ public class AsyncAstRulesEngine {
 
     public void shutdown() {
         shutdown = true;
-        ArrayList<Long> dest = new ArrayList<>();
-        Collections.copy(dest, activeSessionIds);
+        ArrayList<Long> dest = new ArrayList<>(activeSessionIds.size());
+        dest.addAll(activeSessionIds);
         dest.forEach(this::dispose);
         executor.shutdown();
     }
