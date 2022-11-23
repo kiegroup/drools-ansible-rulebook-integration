@@ -7,6 +7,7 @@ import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -21,12 +22,9 @@ public class AstRulesEngine {
     }
 
     public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
-        RuleNotation notation = RuleNotation.CoreNotation.INSTANCE;
-        if (pseudoClock) {
-            notation = notation.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
-        }
-        RulesExecutor executor = RulesExecutorFactory.createFromJson(notation, rulesetString);
-        return executor.getId();
+        RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
+        if (pseudoClock) rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+        return internal.createRuleset(rulesSet);
     }
 
     public void dispose(long sessionId) {
@@ -63,8 +61,7 @@ public class AstRulesEngine {
      * @return the events that fired
      */
     public String advanceTime(long sessionId, long amount, String unit) {
-        return toJson(AstRuleMatch.asList(RulesExecutorContainer.INSTANCE.get(sessionId)
-                .advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase()))));
+        return toJson(AstRuleMatch.asList(internal.advanceTime(sessionId, amount, unit)));
     }
 
     private String toJson(Object elem) {

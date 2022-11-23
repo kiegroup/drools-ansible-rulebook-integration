@@ -1,7 +1,10 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
+import org.drools.ansible.rulebook.integration.api.RulesExecutor;
+import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.json.JSONObject;
 
@@ -83,6 +86,15 @@ public class AsyncAstRulesEngine {
         return sessionId;
     }
 
+    public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
+        if (shutdown) throw new IllegalStateException("This AsyncAstRulesEngine is shutting down");
+        RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
+        if (pseudoClock) rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+        long sessionId = astRulesEngine.createRuleset(rulesSet);
+        activeSessionIds.add(sessionId);
+        return sessionId;
+    }
+
     public void dispose(long sessionId) {
         astRulesEngine.dispose(sessionId);
         activeSessionIds.remove(sessionId);
@@ -109,6 +121,11 @@ public class AsyncAstRulesEngine {
     public void getFacts(long sessionId) {
         List<Map<String, Object>> facts = astRulesEngine.getFacts(sessionId);
         write(new Response(sessionId, facts));
+    }
+
+    public void advanceTime(long sessionId, long amount, String unit) {
+        List<Map<String, Map>> matches = AstRuleMatch.asList(astRulesEngine.advanceTime(sessionId, amount, unit));
+        write(new Response(sessionId, matches));
     }
 
     public void shutdown() {

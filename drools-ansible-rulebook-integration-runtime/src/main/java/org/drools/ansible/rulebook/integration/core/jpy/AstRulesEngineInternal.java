@@ -10,6 +10,7 @@ import org.kie.api.runtime.rule.Match;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,19 @@ class AstRulesEngineInternal {
     public List<Map<String, Object>> getFacts(long session_id) {
         return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsMap();
     }
+
+    /**
+     * Advances the clock time in the specified unit amount.
+     *
+     * @param amount the amount of units to advance in the clock
+     * @param unit   the used time unit
+     * @return the events that fired
+     */
+    public List<Match> advanceTime(long sessionId, long amount, String unit) {
+        return RulesExecutorContainer.INSTANCE.get(sessionId)
+                .advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase()));
+    }
+
 
     private List<Map<String, Map>> processMessage(Map<String, Object> fact, Function<Map<String, Object>, Collection<Match>> command) {
         return AstRuleMatch.asList(command.apply(fact));
