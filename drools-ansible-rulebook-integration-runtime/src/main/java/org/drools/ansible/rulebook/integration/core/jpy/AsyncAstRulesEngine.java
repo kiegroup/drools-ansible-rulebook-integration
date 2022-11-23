@@ -43,8 +43,8 @@ public class AsyncAstRulesEngine {
     private final AstRulesEngineInternal astRulesEngine;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile DataOutputStream ssc;
-
     private final List<Long> activeSessionIds;
+    private boolean shutdown = false;
 
     public AsyncAstRulesEngine() {
         try {
@@ -76,6 +76,7 @@ public class AsyncAstRulesEngine {
     }
 
     public long createRuleset(String rulesetString) {
+        if (shutdown) throw new IllegalStateException("This AsyncAstRulesEngine is shutting down");
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
         long sessionId = astRulesEngine.createRuleset(rulesSet);
         activeSessionIds.add(sessionId);
@@ -84,6 +85,7 @@ public class AsyncAstRulesEngine {
 
     public void dispose(long sessionId) {
         astRulesEngine.dispose(sessionId);
+        activeSessionIds.remove(sessionId);
     }
 
     public void retractFact(long sessionId, String serializedFact) {
@@ -110,7 +112,10 @@ public class AsyncAstRulesEngine {
     }
 
     public void shutdown() {
-        activeSessionIds.forEach(this::dispose);
+        shutdown = true;
+        ArrayList<Long> dest = new ArrayList<>();
+        Collections.copy(dest, activeSessionIds);
+        dest.forEach(this::dispose);
         executor.shutdown();
     }
 
