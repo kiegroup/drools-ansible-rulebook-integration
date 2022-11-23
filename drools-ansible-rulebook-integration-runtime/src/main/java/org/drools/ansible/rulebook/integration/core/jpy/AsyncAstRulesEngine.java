@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.core.jpy;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
+import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.json.JSONObject;
 
@@ -119,9 +120,8 @@ public class AsyncAstRulesEngine {
         write(new Response(sessionId, assertResult));
     }
 
-    public void getFacts(long sessionId) {
-        List<Map<String, Object>> facts = astRulesEngine.getFacts(sessionId);
-        write(new Response(sessionId, facts));
+    public String getFacts(long sessionId) {
+        return RulesExecutorContainer.INSTANCE.get(sessionId).getAllFactsAsJson();
     }
 
     public void advanceTime(long sessionId, long amount, String unit) {
