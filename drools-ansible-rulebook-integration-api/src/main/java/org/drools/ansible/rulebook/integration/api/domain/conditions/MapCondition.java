@@ -68,6 +68,11 @@ public class MapCondition implements Condition {
             ruleContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow((String) timeWindow));
         }
 
+        Object timedOut = condition.getMap().remove("timed_out");
+        if (timedOut != null) {
+            ruleContext.setTimeConstraint(TimedOutDefinition.parseTimedOut((String) timedOut));
+        }
+
         return condition;
     }
 

@@ -1,23 +1,32 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
+import org.drools.ansible.rulebook.integration.api.RulesExecutionController;
+import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeConstraint;
 import org.drools.model.Drools;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeFact;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.Rule;
+import org.drools.model.RuleItemBuilder;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
+import static org.drools.model.DSL.execute;
+import static org.drools.model.DSL.on;
+import static org.drools.model.PatternDSL.rule;
 import static org.drools.model.PrototypeDSL.protoPattern;
 import static org.drools.model.PrototypeDSL.variable;
 
@@ -26,6 +35,8 @@ public class RuleGenerationContext {
     private final RuleConfigurationOptions options = new RuleConfigurationOptions();
 
     private final StackedContext<String, PrototypeDSL.PrototypePatternDef> patterns = new StackedContext<>();
+
+    private String ruleName;
 
     private int bindingsCounter = 0;
 
@@ -67,7 +78,7 @@ public class RuleGenerationContext {
     }
 
     public boolean hasOption(RuleConfigurationOption option) {
-        return options != null && options.hasOption(option);
+        return options.hasOption(option);
     }
 
     public static boolean isGeneratedBinding(String binding) {
@@ -95,12 +106,56 @@ public class RuleGenerationContext {
         }
     }
 
-    public Rule getSyntheticRule() {
-        return timeConstraint != null ? timeConstraint.getControlRule() : null;
+    public List<Rule> generateRules(RulesExecutionController rulesExecutionController, Condition condition, Action action) {
+        Rule generatedRule = generateRule(rulesExecutionController, condition, action);
+        List<org.drools.model.Rule> syntheticRules = getSyntheticRules();
+
+        if (syntheticRules.isEmpty()) {
+            return Collections.singletonList(generatedRule);
+        }
+
+        List<org.drools.model.Rule> rules = new ArrayList<>();
+        rules.add(generatedRule);
+        rules.addAll(syntheticRules);
+        return rules;
+    }
+
+    private Rule generateRule(RulesExecutionController rulesExecutionController, Condition condition, Action action) {
+        RuleItemBuilder pattern = condition.toPattern( this );
+        RuleItemBuilder consequence;
+        if ( getConsequenceVariable() != null ) {
+            consequence = on(getConsequenceVariable()).execute((drools, fact) -> {
+                executeSyntheticConsequence(drools, fact);
+                defaultConsequence(rulesExecutionController, action, drools);
+            });
+        } else {
+            consequence = execute(drools -> defaultConsequence(rulesExecutionController, action, drools));
+        }
+
+        return getTimeConstraint().map( tc -> tc.buildTimedRule(ruleName, pattern, consequence) )
+                .orElse(rule( ruleName ).build( pattern, consequence ));
+    }
+
+    private void defaultConsequence(RulesExecutionController rulesExecutionController, Action action, Drools drools) {
+        if (rulesExecutionController.executeActions()) {
+            action.execute(drools);
+        }
+    }
+
+    private List<Rule> getSyntheticRules() {
+        return timeConstraint != null ? timeConstraint.getControlRules(this) : Collections.emptyList();
     }
 
     public boolean hasTimeConstraint() {
         return timeConstraint != null;
+    }
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 
     private static class StackedContext<K, V> {

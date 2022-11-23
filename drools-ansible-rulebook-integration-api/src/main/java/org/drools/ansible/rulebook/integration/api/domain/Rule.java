@@ -1,14 +1,26 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
+import org.drools.ansible.rulebook.integration.api.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeWindowDefinition;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.TimedOutDefinition;
+import org.drools.model.Drools;
+import org.drools.model.RuleItemBuilder;
+
+import static org.drools.model.DSL.execute;
+import static org.drools.model.DSL.on;
+import static org.drools.model.PatternDSL.rule;
 
 public class Rule {
     private String name;
@@ -90,7 +102,11 @@ public class Rule {
     }
 
     public void setTime_window(String timeWindow) {
-        ruleGenerationContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow((String) timeWindow));
+        ruleGenerationContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow(timeWindow));
+    }
+
+    public void setTimed_out(String timedOut) {
+        ruleGenerationContext.setTimeConstraint(TimedOutDefinition.parseTimedOut(timedOut));
     }
 
     @Override
@@ -100,5 +116,18 @@ public class Rule {
                 ", condition='" + condition + '\'' +
                 ", action='" + action + '\'' +
                 '}';
+    }
+
+    List<org.drools.model.Rule> toExecModelRules(RulesSet rulesSet, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
+        if (name == null) {
+            name = "r_" + ruleCounter.getAndIncrement();
+        }
+        ruleGenerationContext.setRuleName(name);
+
+        List<org.drools.model.Rule> rules = ruleGenerationContext.generateRules(rulesExecutionController, condition, action);
+        if (ruleGenerationContext.hasTimeConstraint()) {
+            rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
+        }
+        return rules;
     }
 }

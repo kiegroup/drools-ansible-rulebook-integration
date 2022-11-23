@@ -1,9 +1,11 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.core.facttemplates.Event;
 import org.drools.model.Drools;
 import org.drools.model.Index;
@@ -81,7 +83,19 @@ public class OnceWithinDefinition implements TimeConstraint {
     }
 
     @Override
-    public ViewItem appendTimeConstraint(ViewItem pattern) {
+    public BiConsumer<Drools, PrototypeFact> getTimeConstraintConsequence() {
+        return (Drools drools, PrototypeFact fact) -> {
+            Event controlEvent = createMapBasedEvent( getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
+                    .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
+            for (String unique : uniqueAttributes) {
+                controlEvent.set(unique, fact.get(unique));
+            }
+            drools.insert(controlEvent);
+        };
+    }
+
+    @Override
+    public ViewItem processTimeConstraint(ViewItem pattern) {
         guardedPattern = (PrototypeDSL.PrototypePatternDef) pattern;
         return new CombinedExprViewItem( org.drools.model.Condition.Type.AND, new ViewItem[] { guardedPattern, not( createControlPattern() ) } );
     }
@@ -95,23 +109,13 @@ public class OnceWithinDefinition implements TimeConstraint {
     }
 
     @Override
-    public BiConsumer<Drools, PrototypeFact> getTimeConstraintConsequence() {
-        return (Drools drools, PrototypeFact fact) -> {
-            Event controlEvent = createMapBasedEvent( getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
-                    .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-            for (String unique : uniqueAttributes) {
-                controlEvent.set(unique, fact.get(unique));
-            }
-            drools.insert(controlEvent);
-        };
-    }
-
-    @Override
-    public Rule getControlRule() {
-        return rule( "cleanup_" + UUID.randomUUID() ).metadata(SYNTHETIC_RULE_TAG, true)
-                .build( guardedPattern,
-                        createControlPattern(),
-                        on(getTimeConstraintConsequenceVariable()).execute((drools, fact) -> drools.delete(fact)) );
+    public List<Rule> getControlRules(RuleGenerationContext ruleContext) {
+        return Collections.singletonList(
+                rule( "cleanup_" + UUID.randomUUID() ).metadata(SYNTHETIC_RULE_TAG, true)
+                        .build( guardedPattern,
+                                createControlPattern(),
+                                on(getTimeConstraintConsequenceVariable()).execute((drools, fact) -> drools.delete(fact)) )
+        );
     }
 
     @Override

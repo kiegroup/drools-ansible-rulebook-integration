@@ -78,6 +78,10 @@ public class RulesExecutor {
         return process(factMap, true);
     }
 
+    public List<Match> fire() {
+        return getMatches(false);
+    }
+
     private List<Match> process(Map<String, Object> factMap, boolean event) {
         Collection<FactHandle> fhs = insertFacts(factMap, event);
         if (event) {
@@ -86,11 +90,15 @@ public class RulesExecutor {
                     .map(InternalFactHandle::getId)
                     .forEach(ephemeralFactHandleIds::add);
         }
+        return getMatches(event);
+    }
+
+    private List<Match> getMatches(boolean event) {
         List<Match> matches = findMatchedRules();
         return !event || matches.size() < 2 ?
                 matches :
                 // when processing an event return only the matches for the first matched rule
-                matches.stream().takeWhile( match -> match.getRule().getName().equals(matches.get(0).getRule().getName())).collect(Collectors.toList());
+                matches.stream().takeWhile(match -> match.getRule().getName().equals(matches.get(0).getRule().getName())).collect(Collectors.toList());
     }
 
     private List<Match> findMatchedRules() {

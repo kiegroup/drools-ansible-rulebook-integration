@@ -207,7 +207,7 @@ public class AstCondition implements Condition {
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
             ViewItem pattern = parsedCondition.addConditionToPattern(ruleContext, getPattern(ruleContext));
-            return ruleContext.getTimeConstraint().map(tc -> tc.appendTimeConstraint(pattern)).orElse(pattern);
+            return ruleContext.getTimeConstraint().map(tc -> tc.processTimeConstraint(pattern)).orElse(pattern);
         }
 
         public SingleCondition<P> addSingleCondition(PrototypeExpression left, Index.ConstraintType operator, PrototypeExpression right) {
