@@ -22,7 +22,9 @@ class AstRulesEngineInternal {
     }
 
     public void dispose(long sessionId) {
-        RulesExecutorContainer.INSTANCE.get(sessionId).dispose();
+        RulesExecutor rulesExecutor = RulesExecutorContainer.INSTANCE.get(sessionId);
+        if (rulesExecutor == null) return; // ignore, already disposed
+        rulesExecutor.dispose();
     }
 
     /**
