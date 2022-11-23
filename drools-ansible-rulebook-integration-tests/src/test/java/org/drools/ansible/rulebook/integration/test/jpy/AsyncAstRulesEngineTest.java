@@ -77,14 +77,13 @@ public class AsyncAstRulesEngineTest {
                 engine.assertFact(id, "{\"j\": 42}");
                 int l = bufferedInputStream.readInt();
                 byte[] bytes = bufferedInputStream.readNBytes(l);
-                String result = new String(bytes, StandardCharsets.UTF_8);
             }
 
             {
                 engine.assertFact(id, "{\"i\": 67}");
-                int l = bufferedInputStream.readInt();
-                byte[] bytes = bufferedInputStream.readNBytes(l);
-                String result = new String(bytes, StandardCharsets.UTF_8);
+                // this produces no rule firing, so no response is produced
+                // int l = bufferedInputStream.readInt();
+                // byte[] bytes = bufferedInputStream.readNBytes(l);
             }
 
             String retractedFact = "{\"i\": 67}";

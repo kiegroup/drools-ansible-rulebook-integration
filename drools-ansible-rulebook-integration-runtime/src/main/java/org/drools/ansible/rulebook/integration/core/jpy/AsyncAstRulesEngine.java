@@ -101,18 +101,21 @@ public class AsyncAstRulesEngine {
     public void retractFact(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
         List<Map<String, ?>> retractResult = astRulesEngine.retractFact(sessionId, fact);
+        if (retractResult.isEmpty()) return; // skip empty result
         write(new Response(sessionId, retractResult));
     }
 
     public void assertFact(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
         List<Map<String, Map>> assertResult = astRulesEngine.assertFact(sessionId, fact);
+        if (assertResult.isEmpty()) return; // skip empty result
         write(new Response(sessionId, assertResult));
     }
 
     public void assertEvent(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
         List<Map<String, Map>> assertResult = astRulesEngine.assertEvent(sessionId, fact);
+        if (assertResult.isEmpty()) return; // skip empty result
         write(new Response(sessionId, assertResult));
     }
 
@@ -123,6 +126,7 @@ public class AsyncAstRulesEngine {
 
     public void advanceTime(long sessionId, long amount, String unit) {
         List<Map<String, Map>> matches = AstRuleMatch.asList(astRulesEngine.advanceTime(sessionId, amount, unit));
+        if (matches.isEmpty()) return; // skip empty result
         write(new Response(sessionId, matches));
     }
 
