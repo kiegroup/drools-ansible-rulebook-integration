@@ -51,7 +51,6 @@ public class AsyncAstRulesEngineTest {
     }
 
     @Test
-    @Ignore("Not yet implemented")
     public void testBrokenApi() throws IOException {
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("broken.json")) {
             String rules = new String(s.readAllBytes());
