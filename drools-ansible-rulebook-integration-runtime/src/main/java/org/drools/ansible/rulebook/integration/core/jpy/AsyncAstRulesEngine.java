@@ -11,6 +11,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -42,11 +44,14 @@ public class AsyncAstRulesEngine {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile DataOutputStream ssc;
 
+    private final List<Long> activeSessionIds;
+
     public AsyncAstRulesEngine() {
         try {
             astRulesEngine = new AstRulesEngineInternal();
             socketChannel = new ServerSocket(0);
             socketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+            activeSessionIds = Collections.synchronizedList(new ArrayList<>());
             accept();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -72,7 +77,9 @@ public class AsyncAstRulesEngine {
 
     public long createRuleset(String rulesetString) {
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        return astRulesEngine.createRuleset(rulesSet);
+        long sessionId = astRulesEngine.createRuleset(rulesSet);
+        activeSessionIds.add(sessionId);
+        return sessionId;
     }
 
     public void dispose(long sessionId) {
@@ -97,12 +104,13 @@ public class AsyncAstRulesEngine {
         write(new Response(sessionId, assertResult));
     }
 
-    public void getFacts(long session_id) {
-        List<Map<String, Object>> facts = astRulesEngine.getFacts(session_id);
-        write(new Response(session_id, facts));
+    public void getFacts(long sessionId) {
+        List<Map<String, Object>> facts = astRulesEngine.getFacts(sessionId);
+        write(new Response(sessionId, facts));
     }
 
     public void shutdown() {
+        activeSessionIds.forEach(this::dispose);
         executor.shutdown();
     }
 
