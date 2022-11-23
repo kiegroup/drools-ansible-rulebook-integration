@@ -101,4 +101,16 @@ public class AsyncAstRulesEngineTest {
         }
     }
 
+    @Test
+    public void testShutdown() throws Exception{
+        AsyncAstRulesEngine engine = new AsyncAstRulesEngine();
+
+        try (InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
+            String rules = new String(s.readAllBytes());
+            engine.createRuleset(rules);
+        }
+        
+        engine.shutdown();
+    }
+
 }
