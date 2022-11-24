@@ -10,6 +10,7 @@ import org.kie.api.runtime.rule.Match;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,8 +55,13 @@ class AstRulesEngineInternal {
                 RulesExecutorContainer.INSTANCE.get(sessionId)::processEvents);
     }
 
-    public List<Map<String, Object>> getFacts(long session_id) {
-        return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsMap();
+    public List<Map<String, Object>> getFacts(long sessionId) {
+        RulesExecutor executor = RulesExecutorContainer.INSTANCE.get(sessionId);
+        if (executor == null) {
+            throw new NoSuchElementException("No such session id: " + sessionId + ". " +
+                    "Was it disposed?");
+        }
+        return executor.getAllFactsAsMap();
     }
 
     /**

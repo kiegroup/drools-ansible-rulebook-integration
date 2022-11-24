@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
@@ -121,7 +123,7 @@ public class AsyncAstRulesEngine {
     }
 
     public String getFacts(long sessionId) {
-        return RulesExecutorContainer.INSTANCE.get(sessionId).getAllFactsAsJson();
+        return toJson(astRulesEngine.getFacts(sessionId));
     }
 
     public void advanceTime(long sessionId, long amount, String unit) {
@@ -147,15 +149,23 @@ public class AsyncAstRulesEngine {
                         executor.submit(this);
                         return;
                     }
-                    String payload = OBJECT_MAPPER.writeValueAsString(response);
+                    String payload = toJson(response);
                     byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
                     ssc.writeInt(bytes.length);
                     ssc.write(bytes);
                     ssc.flush();
-                } catch (IOException e) {
+                } catch (IOException | UncheckedIOException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
+    }
+
+    private static String toJson(Object object) {
+        try {
+            return OBJECT_MAPPER.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

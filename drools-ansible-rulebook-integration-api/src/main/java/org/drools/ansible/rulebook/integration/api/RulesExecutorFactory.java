@@ -1,11 +1,9 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.concurrent.atomic.AtomicLong;
-
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.core.ClockType;
 import org.drools.model.Model;
 import org.drools.modelcompiler.KieBaseBuilder;
-import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.conf.EventProcessingOption;
@@ -14,10 +12,10 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.EVENTS_PROCESSING;
 import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.USE_PSEUDO_CLOCK;
-import static org.drools.model.DSL.execute;
-import static org.drools.model.PatternDSL.rule;
 
 public class RulesExecutorFactory {
 

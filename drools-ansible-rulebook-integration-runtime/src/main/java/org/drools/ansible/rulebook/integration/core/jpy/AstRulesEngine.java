@@ -5,13 +5,10 @@ import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.json.JSONObject;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class AstRulesEngine {
 
@@ -49,8 +46,8 @@ public class AstRulesEngine {
         return toJson(internal.assertEvent(sessionId, fact));
     }
 
-    public String getFacts(long session_id) {
-        return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsJson();
+    public String getFacts(long sessionId) {
+        return toJson(internal.getFacts(sessionId));
     }
 
     /**
