@@ -15,8 +15,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -46,8 +44,7 @@ public class AsyncAstRulesEngine {
     private final ServerSocket socketChannel;
     private final AstRulesEngineInternal astRulesEngine;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private volatile DataOutputStream ssc;
-    private final List<Long> activeSessionIds;
+    private volatile DataOutputStream dataOutputStream;
     private boolean shutdown = false;
 
     public AsyncAstRulesEngine() {
@@ -55,7 +52,6 @@ public class AsyncAstRulesEngine {
             astRulesEngine = new AstRulesEngineInternal();
             socketChannel = new ServerSocket(0);
             socketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-            activeSessionIds = Collections.synchronizedList(new ArrayList<>());
             accept();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -70,7 +66,7 @@ public class AsyncAstRulesEngine {
         executor.submit(() -> {
             try {
                 Socket skt = socketChannel.accept();
-                this.ssc = new DataOutputStream(skt.getOutputStream());
+                this.dataOutputStream = new DataOutputStream(skt.getOutputStream());
                 return skt;
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -83,7 +79,6 @@ public class AsyncAstRulesEngine {
         if (shutdown) throw new IllegalStateException("This AsyncAstRulesEngine is shutting down");
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
         long sessionId = astRulesEngine.createRuleset(rulesSet);
-        activeSessionIds.add(sessionId);
         return sessionId;
     }
 
@@ -92,13 +87,11 @@ public class AsyncAstRulesEngine {
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
         if (pseudoClock) rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
         long sessionId = astRulesEngine.createRuleset(rulesSet);
-        activeSessionIds.add(sessionId);
         return sessionId;
     }
 
     public void dispose(long sessionId) {
         astRulesEngine.dispose(sessionId);
-        activeSessionIds.remove(sessionId);
     }
 
     public void retractFact(long sessionId, String serializedFact) {
@@ -134,29 +127,20 @@ public class AsyncAstRulesEngine {
 
     public void shutdown() {
         shutdown = true;
-        ArrayList<Long> dest = new ArrayList<>(activeSessionIds.size());
-        dest.addAll(activeSessionIds);
-        dest.forEach(this::dispose);
+        RulesExecutorContainer.INSTANCE.disposeAll();
         executor.shutdown();
     }
 
     private void write(Response response) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (ssc == null) {
-                        executor.submit(this);
-                        return;
-                    }
-                    String payload = toJson(response);
-                    byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
-                    ssc.writeInt(bytes.length);
-                    ssc.write(bytes);
-                    ssc.flush();
-                } catch (IOException | UncheckedIOException e) {
-                    throw new RuntimeException(e);
-                }
+        executor.submit(() -> {
+            try {
+                String payload = toJson(response);
+                byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
+                dataOutputStream.writeInt(bytes.length);
+                dataOutputStream.write(bytes);
+                dataOutputStream.flush();
+            } catch (IOException | UncheckedIOException e) {
+                throw new RuntimeException(e);
             }
         });
     }

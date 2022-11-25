@@ -1,6 +1,5 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
@@ -81,12 +80,4 @@ class AstRulesEngineInternal {
         return AstRuleMatch.asList(command.apply(fact));
     }
 
-    private String toJson(Object elem) {
-        try {
-            return RulesExecutor.OBJECT_MAPPER.writeValueAsString(elem);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
 }
