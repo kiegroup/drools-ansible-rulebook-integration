@@ -1,39 +1,31 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.json.JSONObject;
-import org.kie.api.runtime.rule.Match;
+
+import java.util.Map;
 
 public class AstRulesEngine {
 
+    AstRulesEngineInternal internal = new AstRulesEngineInternal();
+
     public long createRuleset(String rulesetString) {
-        RulesExecutor executor = RulesExecutorFactory.createFromJson(rulesetString);
-        return executor.getId();
+        return internal.createRuleset(RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString));
     }
 
     public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
-        RuleNotation notation = RuleNotation.CoreNotation.INSTANCE;
-        if (pseudoClock) {
-            notation = notation.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
-        }
-        RulesExecutor executor = RulesExecutorFactory.createFromJson(notation, rulesetString);
-        return executor.getId();
+        RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
+        if (pseudoClock) rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+        return internal.createRuleset(rulesSet);
     }
 
     public void dispose(long sessionId) {
-        RulesExecutorContainer.INSTANCE.get(sessionId).dispose();
+        internal.dispose(sessionId);
     }
 
     /**
@@ -41,31 +33,21 @@ public class AstRulesEngine {
      */
     public String retractFact(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        Map<String, Object> boundFact = Map.of("m", fact);
-        List<Map<String, Map>> objs = processMessage(
-                serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processRetract);
-        List<Map<String, ?>> results = objs.stream()
-                .map(m -> m.entrySet().stream().findFirst()
-                        .map(e -> Map.of(e.getKey(), boundFact)).get())
-                .collect(Collectors.toList());
-        return toJson(results);
+        return toJson(internal.retractFact(sessionId, fact));
     }
 
     public String assertFact(long sessionId, String serializedFact) {
-        return toJson(processMessage(
-                serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processFacts));
+        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
+        return toJson(internal.assertFact(sessionId, fact));
     }
 
     public String assertEvent(long sessionId, String serializedFact) {
-        return toJson(processMessage(
-                serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processEvents));
+        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
+        return toJson(internal.assertEvent(sessionId, fact));
     }
 
-    public String getFacts(long session_id) {
-        return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsJson();
+    public String getFacts(long sessionId) {
+        return toJson(internal.getFacts(sessionId));
     }
 
     /**
@@ -76,12 +58,7 @@ public class AstRulesEngine {
      * @return the events that fired
      */
     public String advanceTime(long sessionId, long amount, String unit) {
-        return toJson(AstRuleMatch.asList(RulesExecutorContainer.INSTANCE.get(sessionId)
-                .advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase()))));
-    }
-
-    private List<Map<String, Map>> processMessage(String serializedFact, Function<String, Collection<Match>> command) {
-        return AstRuleMatch.asList(command.apply(serializedFact));
+        return toJson(AstRuleMatch.asList(internal.advanceTime(sessionId, amount, unit)));
     }
 
     private String toJson(Object elem) {

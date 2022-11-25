@@ -133,7 +133,11 @@ public class RulesExecutor {
     }
 
     public List<Match> processRetract(String json) {
-        return retractFact( new JSONObject(json).toMap() ) ? findMatchedRules() : Collections.emptyList();
+        return processRetract(new JSONObject(json).toMap());
+    }
+
+    public List<Match> processRetract(Map<String, Object> json) {
+        return retractFact(json) ? findMatchedRules() : Collections.emptyList();
     }
 
     public boolean retractFact(Map<String, Object> factMap) {

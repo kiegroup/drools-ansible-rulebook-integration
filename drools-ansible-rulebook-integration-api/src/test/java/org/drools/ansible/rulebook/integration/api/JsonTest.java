@@ -1,13 +1,13 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.List;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
+
+import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
 import static org.junit.Assert.assertEquals;
