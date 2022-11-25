@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
@@ -15,7 +14,7 @@ import org.drools.ansible.rulebook.integration.durable.DurableNotation;
 import org.drools.ansible.rulebook.integration.durable.domain.DurableRuleMatch;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.ansible.rulebook.integration.api.RulesExecutor.OBJECT_MAPPER;
+import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class JpyDurableRulesEngine {
 
@@ -39,14 +38,9 @@ public class JpyDurableRulesEngine {
     public String advanceState() {
         if (lastResponse.hasNext()) {
             Map<String, Map> elem = lastResponse.next();
-            try {
-                return OBJECT_MAPPER.writeValueAsString(elem);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return null;
+            return toJson(elem);
         }
+        return null;
     }
 
     public int assertFact(long sessionId, String serializedFact) {

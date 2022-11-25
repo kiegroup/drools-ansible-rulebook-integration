@@ -11,8 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.facttemplates.Fact;
 import org.json.JSONObject;
@@ -20,14 +18,12 @@ import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
+import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
 
 public class RulesExecutor {
 
     public static final String SYNTHETIC_RULE_TAG = "SYNTHETIC_RULE";
-
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final RulesExecutorSession rulesExecutorSession;
 
@@ -153,11 +149,7 @@ public class RulesExecutor {
     }
 
     public String getAllFactsAsJson() {
-        try {
-            return OBJECT_MAPPER.writeValueAsString(getAllFactsAsMap());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return toJson(getAllFactsAsMap());
     }
 
     public List<Match> advanceTime(long amount, TimeUnit unit ) {

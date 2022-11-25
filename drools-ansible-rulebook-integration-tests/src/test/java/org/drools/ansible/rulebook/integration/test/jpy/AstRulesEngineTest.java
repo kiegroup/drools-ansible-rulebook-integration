@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
@@ -53,7 +54,7 @@ public class AstRulesEngineTest {
             String retractedFact = "{\"i\": 67}";
             String r = engine.retractFact(id, retractedFact);
 
-            List<Map<String, Map>> v = RulesExecutor.OBJECT_MAPPER.readValue(r, new TypeReference<>(){});
+            List<Map<String, Map>> v = readValue(r);
 
             assertEquals(v.get(0).get("r_0").get("m"), new JSONObject(retractedFact).toMap());
         }

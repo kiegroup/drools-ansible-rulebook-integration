@@ -1,14 +1,14 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Map;
+
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.json.JSONObject;
 
-import java.util.Map;
+import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class AstRulesEngine {
 
@@ -59,14 +59,5 @@ public class AstRulesEngine {
      */
     public String advanceTime(long sessionId, long amount, String unit) {
         return toJson(AstRuleMatch.asList(internal.advanceTime(sessionId, amount, unit)));
-    }
-
-    private String toJson(Object elem) {
-        try {
-            return RulesExecutor.OBJECT_MAPPER.writeValueAsString(elem);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 }

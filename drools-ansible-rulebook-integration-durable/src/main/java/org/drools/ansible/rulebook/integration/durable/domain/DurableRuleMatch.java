@@ -21,14 +21,6 @@ public class DurableRuleMatch {
                 .collect(Collectors.toList());
     }
 
-    public static String asJson(Collection<Match> matches) {
-        try {
-            return RulesExecutor.OBJECT_MAPPER.writeValueAsString(asList(matches));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static Map<String, Map> from(Match match) {
         Map<String, Object> facts = new HashMap<>();
         for (String decl : match.getDeclarationIds()) {
