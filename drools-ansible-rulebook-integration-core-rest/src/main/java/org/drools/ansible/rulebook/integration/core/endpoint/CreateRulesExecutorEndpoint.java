@@ -21,6 +21,6 @@ public class CreateRulesExecutorEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     public long executeQuery(String s) throws JsonProcessingException {
         RulesSet rulesSet = createMapper(new JsonFactory()).readValue(s, RulesSet.class);
-        return RulesExecutorFactory.createRulesExecutor(rulesSet).getId();
+        return RulesExecutorContainerService.INSTANCE.register( RulesExecutorFactory.createRulesExecutor(rulesSet) ).getId();
     }
 }

@@ -15,6 +15,7 @@ import org.kie.api.runtime.conf.ClockTypeOption;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.EVENTS_PROCESSING;
+import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.USE_ASYNC_CHANNEL;
 import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.USE_PSEUDO_CLOCK;
 
 public class RulesExecutorFactory {
@@ -42,8 +43,7 @@ public class RulesExecutorFactory {
     }
 
     public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
-        RulesExecutor rulesExecutor = new RulesExecutor(createRulesExecutorSession(rulesSet), ID_GENERATOR.getAndIncrement());
-        return RulesExecutorContainer.INSTANCE.register(rulesExecutor);
+        return new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(USE_ASYNC_CHANNEL), ID_GENERATOR.getAndIncrement());
     }
 
     private static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {

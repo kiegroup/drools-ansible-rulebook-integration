@@ -1,84 +1,83 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
-import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
+import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
+import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.drools.ansible.rulebook.integration.api.io.Response;
-import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.json.JSONObject;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class AsyncAstRulesEngine {
 
-    private final RuleExecutorChannel channel = new RuleExecutorChannel();
-    private final AstRulesEngineInternal astRulesEngine = new AstRulesEngineInternal();
+    private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer(true);
+
     private boolean shutdown = false;
 
     public int port() {
-        // used by client to know on which port the socket has been opened
-        return channel.port();
+        return rulesExecutorContainer.port();
     }
 
     public long createRuleset(String rulesetString) {
-        checkAlive();
-        RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        long sessionId = astRulesEngine.createRuleset(rulesSet);
-        return sessionId;
+        return createRulesetWithOptions(rulesetString, false);
     }
 
     public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
         checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        if (pseudoClock) rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
-        long sessionId = astRulesEngine.createRuleset(rulesSet);
-        return sessionId;
+        rulesSet.withOptions(RuleConfigurationOption.USE_ASYNC_CHANNEL);
+        if (pseudoClock) {
+            rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+        }
+        RulesExecutor executor = rulesExecutorContainer.register( RulesExecutorFactory.createRulesExecutor(rulesSet) );
+        return executor.getId();
     }
 
     public void dispose(long sessionId) {
-        astRulesEngine.dispose(sessionId);
+        RulesExecutor rulesExecutor = rulesExecutorContainer.get(sessionId);
+        if (rulesExecutor != null) { // ignore if already disposed
+            rulesExecutor.dispose();
+        }
     }
 
     public void retractFact(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Map<String, ?>> retractResult = astRulesEngine.retractFact(sessionId, fact);
-        if (retractResult.isEmpty()) return; // skip empty result
-        channel.write(new Response(sessionId, retractResult));
+        Map<String, Object> boundFact = Map.of("m", fact);
+        rulesExecutorContainer.get(sessionId).processRetract(fact);
     }
 
     public void assertFact(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Map<String, Map>> assertResult = astRulesEngine.assertFact(sessionId, fact);
-        if (assertResult.isEmpty()) return; // skip empty result
-        channel.write(new Response(sessionId, assertResult));
+        rulesExecutorContainer.get(sessionId).processFacts(fact);
     }
 
     public void assertEvent(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Map<String, Map>> assertResult = astRulesEngine.assertEvent(sessionId, fact);
-        if (assertResult.isEmpty()) return; // skip empty result
-        channel.write(new Response(sessionId, assertResult));
+        rulesExecutorContainer.get(sessionId).processEvents(fact);
     }
 
     public String getFacts(long sessionId) {
-        return toJson(astRulesEngine.getFacts(sessionId));
+        RulesExecutor executor = rulesExecutorContainer.get(sessionId);
+        if (executor == null) {
+            throw new NoSuchElementException("No such session id: " + sessionId + ". " + "Was it disposed?");
+        }
+        return toJson( executor.getAllFactsAsMap() );
     }
 
     public void advanceTime(long sessionId, long amount, String unit) {
-        List<Map<String, Map>> matches = AstRuleMatch.asList(astRulesEngine.advanceTime(sessionId, amount, unit));
-        if (matches.isEmpty()) return; // skip empty result
-        channel.write(new Response(sessionId, matches));
+        rulesExecutorContainer.get(sessionId).advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase()));
     }
 
     public void shutdown() {
         shutdown = true;
-        RulesExecutorContainer.INSTANCE.disposeAll();
-        channel.shutdown();
+        rulesExecutorContainer.disposeAll();
     }
 
     private void checkAlive() {

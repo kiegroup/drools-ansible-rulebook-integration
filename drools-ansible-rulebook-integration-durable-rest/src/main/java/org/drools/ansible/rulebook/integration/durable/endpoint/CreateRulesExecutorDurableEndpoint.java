@@ -16,6 +16,6 @@ public class CreateRulesExecutorDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public long createRuleBase(DurableRules durableRules) {
-        return RulesExecutorFactory.createRulesExecutor(durableRules.toRulesSet()).getId();
+        return RulesExecutorContainerService.INSTANCE.register(RulesExecutorFactory.createRulesExecutor(durableRules.toRulesSet())).getId();
     }
 }

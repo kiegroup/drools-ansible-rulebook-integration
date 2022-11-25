@@ -1,8 +1,6 @@
-package org.drools.ansible.rulebook.integration.core.jpy;
+package org.drools.ansible.rulebook.integration.api.io;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.drools.core.facttemplates.Fact;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.kie.api.runtime.rule.Match;
 

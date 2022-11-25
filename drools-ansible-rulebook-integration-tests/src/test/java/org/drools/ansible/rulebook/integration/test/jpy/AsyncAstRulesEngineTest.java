@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
-
 public class AsyncAstRulesEngineTest {
     @Test
     public void testJpyApi() throws Exception {

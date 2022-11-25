@@ -19,6 +19,6 @@ public class GetAllFactsDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Map<String, Object>> getAllFacts(@PathParam("id") long id) {
-        return RulesExecutorContainer.INSTANCE.get(id).getAllFactsAsMap();
+        return RulesExecutorContainerService.INSTANCE.get(id).getAllFactsAsMap();
     }
 }

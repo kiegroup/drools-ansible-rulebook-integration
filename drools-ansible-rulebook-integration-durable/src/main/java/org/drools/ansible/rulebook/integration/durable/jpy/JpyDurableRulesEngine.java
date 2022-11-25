@@ -18,12 +18,15 @@ import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class JpyDurableRulesEngine {
 
+    private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer(false);
+
     private Iterator<Map<String, Map>> lastResponse = Collections.emptyIterator();
 
     public long createRuleset(String ruleSetName, String rulesetString) {
         RulesExecutor executor = RulesExecutorFactory.createFromJson(
                 DurableNotation.INSTANCE,
                 String.format("{\"%s\":%s}", ruleSetName, rulesetString));
+        rulesExecutorContainer.register(executor);
         return executor.getId();
     }
 
@@ -31,7 +34,7 @@ public class JpyDurableRulesEngine {
      * @return error code (currently always 0)
      */
     public int retractFact(long sessionId, String serializedFact) {
-        RulesExecutorContainer.INSTANCE.get(sessionId).processRetract(serializedFact);
+        rulesExecutorContainer.get(sessionId).processRetract(serializedFact);
         return 0;
     }
 
@@ -46,17 +49,17 @@ public class JpyDurableRulesEngine {
     public int assertFact(long sessionId, String serializedFact) {
         return processMessage(
                 serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processFacts);
+                rulesExecutorContainer.get(sessionId)::processFacts);
     }
 
     public int assertEvent(long sessionId, String serializedFact) {
         return processMessage(
                 serializedFact,
-                RulesExecutorContainer.INSTANCE.get(sessionId)::processEvents);
+                rulesExecutorContainer.get(sessionId)::processEvents);
     }
 
     public String getFacts(long session_id) {
-        return RulesExecutorContainer.INSTANCE.get(session_id).getAllFactsAsJson();
+        return rulesExecutorContainer.get(session_id).getAllFactsAsJson();
     }
 
     private int processMessage(String serializedFact, Function<String, Collection<Match>> command) {

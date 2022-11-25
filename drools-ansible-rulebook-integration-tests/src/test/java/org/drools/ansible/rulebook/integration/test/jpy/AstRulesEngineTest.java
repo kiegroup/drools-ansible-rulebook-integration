@@ -1,8 +1,6 @@
 package org.drools.ansible.rulebook.integration.test.jpy;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.drools.ansible.rulebook.integration.api.JsonTest;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.json.JSONObject;
 import org.junit.Test;

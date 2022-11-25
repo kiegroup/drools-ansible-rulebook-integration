@@ -39,7 +39,7 @@ public class RuleExecutorChannel {
                 this.dataOutputStream = new DataOutputStream(skt.getOutputStream());
                 return skt;
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
         });
     }
@@ -53,12 +53,26 @@ public class RuleExecutorChannel {
                 dataOutputStream.write(bytes);
                 dataOutputStream.flush();
             } catch (IOException | UncheckedIOException e) {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         });
     }
 
     public void shutdown() {
+        try {
+            if (dataOutputStream != null) {
+                dataOutputStream.close();
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } finally {
+            try {
+                socketChannel.close();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
         executor.shutdown();
     }
 }

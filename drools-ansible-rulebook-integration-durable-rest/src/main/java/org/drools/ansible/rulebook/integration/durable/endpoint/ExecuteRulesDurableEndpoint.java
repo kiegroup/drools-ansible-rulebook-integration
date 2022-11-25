@@ -18,6 +18,6 @@ public class ExecuteRulesDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public int execute(@PathParam("id") long id, Map<String, Object> factMap) {
-        return RulesExecutorContainer.INSTANCE.get(id).executeFacts(factMap);
+        return RulesExecutorContainerService.INSTANCE.get(id).executeFacts(factMap);
     }
 }
