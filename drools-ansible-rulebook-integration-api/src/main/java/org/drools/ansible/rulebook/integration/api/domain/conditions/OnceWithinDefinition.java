@@ -8,6 +8,7 @@ import java.util.function.BiConsumer;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.core.facttemplates.Event;
 import org.drools.model.Drools;
+import org.drools.model.DroolsEntryPoint;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeFact;
@@ -114,7 +115,7 @@ public class OnceWithinDefinition implements TimeConstraint {
                 rule( "cleanup_" + UUID.randomUUID() ).metadata(SYNTHETIC_RULE_TAG, true)
                         .build( guardedPattern,
                                 createControlPattern(),
-                                on(getTimeConstraintConsequenceVariable()).execute((drools, fact) -> drools.delete(fact)) )
+                                on(getTimeConstraintConsequenceVariable()).execute(DroolsEntryPoint::delete) )
         );
     }
 

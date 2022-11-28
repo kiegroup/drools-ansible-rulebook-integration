@@ -17,9 +17,16 @@ public class RulesExecutorSession {
 
     private final RulesExecutionController rulesExecutionController;
 
-    public RulesExecutorSession(KieSession kieSession, RulesExecutionController rulesExecutionController) {
+    private final long id;
+
+    public RulesExecutorSession(KieSession kieSession, RulesExecutionController rulesExecutionController, long id) {
         this.kieSession = kieSession;
         this.rulesExecutionController = rulesExecutionController;
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public Collection<? extends Object> getObjects() {

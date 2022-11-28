@@ -45,13 +45,13 @@ public class RulesExecutorFactory {
     }
 
     public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
-        return new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(USE_ASYNC_CHANNEL), ID_GENERATOR.getAndIncrement());
+        return new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(USE_ASYNC_CHANNEL));
     }
 
     private static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
         RulesExecutionController rulesExecutionController = new RulesExecutionController();
         KieSession kieSession = createKieSession(rulesSet, rulesExecutionController);
-        return new RulesExecutorSession(kieSession, rulesExecutionController);
+        return new RulesExecutorSession(kieSession, rulesExecutionController, ID_GENERATOR.getAndIncrement());
     }
 
     private static KieSession createKieSession(RulesSet rulesSet, RulesExecutionController rulesExecutionController) {

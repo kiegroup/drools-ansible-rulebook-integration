@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.core.common.InternalFactHandle;
 import org.kie.api.runtime.rule.AgendaFilter;
@@ -15,15 +16,19 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
     public static final String SYNTHETIC_RULE_TAG = "SYNTHETIC_RULE";
 
     private final RulesExecutorSession rulesExecutorSession;
-    private final Set<Long> ephemeralFactHandleIds;
+
+    private final Set<Long> ephemeralFactHandleIds = ConcurrentHashMap.newKeySet();
 
     private final Set<Match> matchedRules = new LinkedHashSet<>();
 
     private final List<FactHandle> factsToBeDeleted = new ArrayList<>();
 
-    public RegisterOnlyAgendaFilter(RulesExecutorSession rulesExecutorSession, Set<Long> ephemeralFactHandleIds) {
+    public RegisterOnlyAgendaFilter(RulesExecutorSession rulesExecutorSession) {
         this.rulesExecutorSession = rulesExecutorSession;
-        this.ephemeralFactHandleIds = ephemeralFactHandleIds;
+    }
+
+    public void registerephemeralFact(Long factId) {
+        ephemeralFactHandleIds.add(factId);
     }
 
     @Override
@@ -44,6 +49,8 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     public List<Match> finalizeAndGetResults() {
         factsToBeDeleted.forEach(rulesExecutorSession::delete);
-        return new ArrayList<>( matchedRules );
+        List<Match> matches = new ArrayList<>( matchedRules );
+        matchedRules.clear();
+        return matches;
     }
 }

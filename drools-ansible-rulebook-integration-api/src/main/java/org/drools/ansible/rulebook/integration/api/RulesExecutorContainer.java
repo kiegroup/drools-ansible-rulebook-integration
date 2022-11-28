@@ -24,8 +24,8 @@ public class RulesExecutorContainer {
         return rulesExecutor;
     }
 
-    public void dispose(RulesExecutor rulesExecutor) {
-        rulesExecutors.remove(rulesExecutor.getId());
+    public void dispose(long rulesExecutorId) {
+        rulesExecutors.remove(rulesExecutorId);
     }
 
     public void disposeAll() {
@@ -40,8 +40,8 @@ public class RulesExecutorContainer {
         return rulesExecutors.get(id);
     }
 
-    public void write(Response response) {
-        channel.write(response);
+    public RuleExecutorChannel getChannel() {
+        return channel;
     }
 
     public int port() {

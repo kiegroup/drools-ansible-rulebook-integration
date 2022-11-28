@@ -1,18 +1,14 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.core.facttemplates.Event;
 import org.drools.model.Drools;
-import org.drools.model.DroolsEntryPoint;
 import org.drools.model.Index;
 import org.drools.model.Prototype;
-import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeFact;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.Rule;
@@ -33,7 +29,6 @@ import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.pattern;
 import static org.drools.model.PatternDSL.rule;
 import static org.drools.model.PrototypeDSL.protoPattern;
-import static org.drools.model.PrototypeDSL.prototype;
 import static org.drools.model.PrototypeDSL.variable;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
 
