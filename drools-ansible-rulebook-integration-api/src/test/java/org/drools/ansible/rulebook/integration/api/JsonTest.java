@@ -119,7 +119,7 @@ public class JsonTest {
     @Test
     public void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
-        int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 2, executedRules );
         rulesExecutor.dispose();
     }
@@ -128,13 +128,13 @@ public class JsonTest {
     public void testProcessRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
         assertEquals( 1, matchedRules.get(0).getDeclarationIds().size() );
         assertEquals( "first", matchedRules.get(0).getDeclarationIds().get(0) );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"j\":1 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"j\":1 }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_3", matchedRules.get(0).getRule().getName() );
         assertEquals( 1, matchedRules.get(0).getDeclarationIds().size() );
@@ -147,7 +147,7 @@ public class JsonTest {
     public void testProcessRuleWithBoolean() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Boolean\":true } } } }} ] }");
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":true } } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":true } } }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
@@ -158,7 +158,7 @@ public class JsonTest {
     public void testProcessRuleWithoutAction() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } } }} ] }");
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
@@ -169,7 +169,7 @@ public class JsonTest {
     public void testProcessRuleWithUnknownAction() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } }, \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
@@ -180,7 +180,7 @@ public class JsonTest {
     public void testIsDefinedExpression() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"IsDefinedExpression\":{ \"sensu\":\"data.i\" } } }} ] }");
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
@@ -191,7 +191,7 @@ public class JsonTest {
     public void testIsDefinedExpressionOnMap() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"IsDefinedExpression\":{ \"event\":\"payload\" } } }} ] }");
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{\"payload\": {\"key1\": \"value1\", \"key2\": \"value2\"}}" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{\"payload\": {\"key1\": \"value1\", \"key2\": \"value2\"}}" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
@@ -202,13 +202,13 @@ public class JsonTest {
     public void testProcessNoteEqualsWithNull() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"NotEqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } } }} ] }");
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"j\":1 } } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"j\":1 } } }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":2 } } }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":2 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
 
         rulesExecutor.dispose();

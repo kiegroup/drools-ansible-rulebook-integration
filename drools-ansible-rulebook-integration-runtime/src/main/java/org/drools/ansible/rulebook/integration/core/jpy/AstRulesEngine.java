@@ -48,19 +48,19 @@ public class AstRulesEngine {
      */
     public String retractFact(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetract(fact);
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetract(fact).join();
         return toJson( AstRuleMatch.asList(matches) );
     }
 
     public String assertFact(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processFacts(fact);
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processFacts(fact).join();
         return toJson(AstRuleMatch.asList(matches));
     }
 
     public String assertEvent(long sessionId, String serializedFact) {
         Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processEvents(fact);
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processEvents(fact).join();
         return toJson(AstRuleMatch.asList(matches));
     }
 
@@ -80,7 +80,7 @@ public class AstRulesEngine {
      * @return the events that fired
      */
     public String advanceTime(long sessionId, long amount, String unit) {
-        List<Match> matches = rulesExecutorContainer.get(sessionId).advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase()));
+        List<Match> matches = rulesExecutorContainer.get(sessionId).advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase())).join();
         return toJson(AstRuleMatch.asList(matches));
     }
 }

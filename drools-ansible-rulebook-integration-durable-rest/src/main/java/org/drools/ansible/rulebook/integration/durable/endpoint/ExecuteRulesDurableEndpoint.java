@@ -9,8 +9,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-
 @Path("/rules-durable-executors/{id}/execute")
 public class ExecuteRulesDurableEndpoint {
 
@@ -18,6 +16,6 @@ public class ExecuteRulesDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public int execute(@PathParam("id") long id, Map<String, Object> factMap) {
-        return RulesExecutorContainerService.INSTANCE.get(id).executeFacts(factMap);
+        return RulesExecutorContainerService.INSTANCE.get(id).executeFacts(factMap).join();
     }
 }

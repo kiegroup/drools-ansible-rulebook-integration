@@ -3,6 +3,8 @@ package org.drools.ansible.rulebook.integration.api.rulesengine;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
@@ -16,17 +18,17 @@ public interface RulesEvaluator {
 
     Collection<?> getAllFacts();
 
-    List<Match> advanceTime(long amount, TimeUnit unit );
+    CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit );
 
-    int executeFacts(Map<String, Object> factMap);
+    CompletableFuture<Integer> executeFacts(Map<String, Object> factMap);
 
-    List<Match> processFacts(Map<String, Object> factMap);
+    CompletableFuture<List<Match>> processFacts(Map<String, Object> factMap);
 
-    List<Match> processEvents(Map<String, Object> factMap);
+    CompletableFuture<List<Match>> processEvents(Map<String, Object> factMap);
 
-    List<Match> fire();
+    CompletableFuture<List<Match>> fire();
 
-    List<Match> processRetract(Map<String, Object> json);
+    CompletableFuture<List<Match>> processRetract(Map<String, Object> json);
 
     boolean retractFact(Map<String, Object> factMap);
 

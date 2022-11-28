@@ -51,7 +51,7 @@ public class YamlTest {
     @Test
     public void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromYaml(YAML1);
-        int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 2, executedRules );
     }
 

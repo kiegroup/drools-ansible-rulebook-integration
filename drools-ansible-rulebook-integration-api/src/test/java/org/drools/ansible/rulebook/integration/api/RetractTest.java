@@ -100,11 +100,11 @@ public class RetractTest {
     public void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"msg\" : \"hello world\" }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"msg\" : \"hello world\" }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_1", matchedRules.get(0).getRule().getName() );
 
-        matchedRules = rulesExecutor.processRetract( "{ \"msg\" : \"hello world\" }" );
+        matchedRules = rulesExecutor.processRetract( "{ \"msg\" : \"hello world\" }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_2", matchedRules.get(0).getRule().getName() );
 

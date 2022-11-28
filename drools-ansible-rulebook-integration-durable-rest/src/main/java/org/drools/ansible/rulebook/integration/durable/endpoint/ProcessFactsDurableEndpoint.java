@@ -21,7 +21,7 @@ public class ProcessFactsDurableEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Map<String, Map>> process(@PathParam("id") long id, Map<String, Object> factMap) {
-        List<Match> result = RulesExecutorContainerService.INSTANCE.get(id).processFacts(factMap);
+        List<Match> result = RulesExecutorContainerService.INSTANCE.get(id).processFacts(factMap).join();
         return DurableRuleMatch.asList(result);
     }
 }

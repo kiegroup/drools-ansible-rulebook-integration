@@ -40,13 +40,13 @@ public class BetaEqualsTest {
     public void testExecuteRulesWithImplicitJoin() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.ALLOW_IMPLICIT_JOINS), JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts("{ \"custom\": { \"expected_index\": 2 } }");
+        List<Match> matchedRules = rulesExecutor.processFacts("{ \"custom\": { \"expected_index\": 2 } }").join();
         assertEquals(0, matchedRules.size());
 
-        matchedRules = rulesExecutor.processEvents("{ \"i\": 3 }");
+        matchedRules = rulesExecutor.processEvents("{ \"i\": 3 }").join();
         assertEquals(0, matchedRules.size());
 
-        matchedRules = rulesExecutor.processEvents("{ \"i\": 2 }");
+        matchedRules = rulesExecutor.processEvents("{ \"i\": 2 }").join();
         assertEquals(1, matchedRules.size());
         assertEquals("r_0", matchedRules.get(0).getRule().getName());
 
@@ -105,13 +105,13 @@ public class BetaEqualsTest {
     public void testExecuteRulesWithExplicitJoin() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
-        List<Match> matchedRules = rulesExecutor.processFacts("{ \"custom\": { \"expected_index\": 2 } }");
+        List<Match> matchedRules = rulesExecutor.processFacts("{ \"custom\": { \"expected_index\": 2 } }").join();
         assertEquals(0, matchedRules.size());
 
-        matchedRules = rulesExecutor.processEvents("{ \"i\": 3 }");
+        matchedRules = rulesExecutor.processEvents("{ \"i\": 3 }").join();
         assertEquals(0, matchedRules.size());
 
-        matchedRules = rulesExecutor.processEvents("{ \"i\": 2 }");
+        matchedRules = rulesExecutor.processEvents("{ \"i\": 2 }").join();
         assertEquals(1, matchedRules.size());
         assertEquals("r_0", matchedRules.get(0).getRule().getName());
 

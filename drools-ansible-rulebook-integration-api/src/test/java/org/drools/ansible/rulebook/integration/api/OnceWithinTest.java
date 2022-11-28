@@ -110,25 +110,25 @@ public class OnceWithinTest {
 
     private void onceWithinTest(String json) {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
-        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" );
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" ).join();
         assertEquals( 1, matchedRules.size() );
 
         rulesExecutor.advanceTime( 3, TimeUnit.SECONDS );
 
-        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h2\" } }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h2\" } }" ).join();
         assertEquals( 1, matchedRules.size() );
 
         rulesExecutor.advanceTime( 4, TimeUnit.SECONDS );
 
-        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" ).join();
         assertEquals( 0, matchedRules.size() );
 
         rulesExecutor.advanceTime( 5, TimeUnit.SECONDS );
 
-        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }" ).join();
         assertEquals( 1, matchedRules.size() );
 
         rulesExecutor.dispose();

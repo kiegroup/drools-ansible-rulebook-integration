@@ -32,7 +32,7 @@ public class AsyncAstRulesEngine {
     public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
         checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        rulesSet.withOptions(RuleConfigurationOption.USE_ASYNC_CHANNEL);
+        rulesSet.withOptions(RuleConfigurationOption.ASYNC_EVALUATION);
         if (pseudoClock) {
             rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
         }

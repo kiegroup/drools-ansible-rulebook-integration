@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
@@ -47,23 +48,19 @@ public class JpyDurableRulesEngine {
     }
 
     public int assertFact(long sessionId, String serializedFact) {
-        return processMessage(
-                serializedFact,
-                rulesExecutorContainer.get(sessionId)::processFacts);
+        return processMessage( serializedFact, rulesExecutorContainer.get(sessionId)::processFacts );
     }
 
     public int assertEvent(long sessionId, String serializedFact) {
-        return processMessage(
-                serializedFact,
-                rulesExecutorContainer.get(sessionId)::processEvents);
+        return processMessage( serializedFact, rulesExecutorContainer.get(sessionId)::processEvents );
     }
 
     public String getFacts(long session_id) {
         return rulesExecutorContainer.get(session_id).getAllFactsAsJson();
     }
 
-    private int processMessage(String serializedFact, Function<String, Collection<Match>> command) {
-        List<Map<String, Map>> lastResponse = DurableRuleMatch.asList(command.apply(serializedFact));
+    private int processMessage(String serializedFact, Function<String, CompletableFuture<List<Match>>> command) {
+        List<Map<String, Map>> lastResponse = DurableRuleMatch.asList(command.apply(serializedFact).join());
         this.lastResponse = lastResponse.iterator();
         return 0;
     }

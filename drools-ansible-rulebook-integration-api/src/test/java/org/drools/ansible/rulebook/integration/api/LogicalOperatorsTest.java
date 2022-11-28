@@ -134,14 +134,14 @@ public class LogicalOperatorsTest {
     public void testProcessRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
-        matchedRules = rulesExecutor.processFacts( "{ facts: [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" );
+        matchedRules = rulesExecutor.processFacts( "{ facts: [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":4 } } }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":4 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
 
         RuleMatch ruleMatch = RuleMatch.from( matchedRules.get(0) );
@@ -209,16 +209,16 @@ public class LogicalOperatorsTest {
     public void testMultipleConditionOnSameFact() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":1 }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":1 }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"i\":2 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":2 }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"i\":3 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":3 }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" ).join();
         assertEquals( 1, matchedRules.size() );
     }
 
@@ -264,13 +264,13 @@ public class LogicalOperatorsTest {
     public void testOr() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON3);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":0 }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":0 }" ).join();
         assertEquals( 1, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"i\":2 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":2 }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" ).join();
         assertEquals( 1, matchedRules.size() );
     }
 
@@ -348,15 +348,15 @@ public class LogicalOperatorsTest {
     }
 
     private void checkAnyExecution(RulesExecutor rulesExecutor) {
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 2 }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 2 }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"i\": 1 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"i\": 1 }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
         assertEquals( "event", matchedRules.get(0).getDeclarationIds().get(0) );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"i\": 0 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"i\": 0 }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
         assertEquals( "event", matchedRules.get(0).getDeclarationIds().get(0) );

@@ -3,18 +3,20 @@ package org.drools.ansible.rulebook.integration.api;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
+import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
 
 public class RulesExecutorContainer {
 
     private Map<Long, RulesExecutor> rulesExecutors = new ConcurrentHashMap<>();
 
+    private AsyncExecutor asyncExecutor;
     private RuleExecutorChannel channel;
 
     public RulesExecutorContainer(boolean async) {
         if (async) {
-            channel = new RuleExecutorChannel();
+            asyncExecutor = new AsyncExecutor();
+            channel = new RuleExecutorChannel().accept(asyncExecutor);
         }
     }
 
@@ -32,12 +34,17 @@ public class RulesExecutorContainer {
         rulesExecutors.values().forEach(RulesExecutor::dispose);
         rulesExecutors.clear();
         if (channel != null) {
+            asyncExecutor.shutdown();
             channel.shutdown();
         }
     }
 
     public RulesExecutor get(Long id) {
         return rulesExecutors.get(id);
+    }
+
+    public AsyncExecutor getAsyncExecutor() {
+        return asyncExecutor;
     }
 
     public RuleExecutorChannel getChannel() {

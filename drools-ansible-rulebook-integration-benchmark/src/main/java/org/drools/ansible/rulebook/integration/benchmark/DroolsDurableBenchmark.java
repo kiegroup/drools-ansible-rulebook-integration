@@ -40,7 +40,7 @@ public class DroolsDurableBenchmark {
     public int benchmark() {
         int count = 0;
         for (int i = 0; i < eventsNr; i++) {
-            count += rulesExecutor.processEvents("{ \"event\": { \"i\": \"Done\" } }").size();
+            count += rulesExecutor.processEvents("{ \"event\": { \"i\": \"Done\" } }").join().size();
         }
         if (count != eventsNr) {
             throw new IllegalStateException("Matched " + count + " rules, expected " + eventsNr);

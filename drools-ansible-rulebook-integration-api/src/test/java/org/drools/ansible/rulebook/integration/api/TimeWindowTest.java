@@ -112,22 +112,22 @@ public class TimeWindowTest {
 
     private void timeWindowTest(String json) {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
-        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" );
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" ).join();
         assertEquals( 0, matchedRules.size() );
 
         rulesExecutor.advanceTime( 8, TimeUnit.SECONDS );
 
-        matchedRules = rulesExecutor.processEvents( "{ \"ping\": { \"timeout\": true } }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"ping\": { \"timeout\": true } }" ).join();
         assertEquals( 0, matchedRules.size() );
 
         rulesExecutor.advanceTime( 3, TimeUnit.SECONDS );
 
-        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"storage\": { \"percent\":97 } } }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"storage\": { \"percent\":97 } } }" ).join();
         assertEquals( 0, matchedRules.size() );
 
         rulesExecutor.advanceTime( 4, TimeUnit.SECONDS );
 
-        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" ).join();
         assertEquals( 1, matchedRules.size() );
 
         rulesExecutor.dispose();

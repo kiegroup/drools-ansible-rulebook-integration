@@ -3,6 +3,8 @@ package org.drools.ansible.rulebook.integration.api;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -38,39 +40,39 @@ public class RulesExecutor {
         return rulesEvaluator.rulesCount();
     }
 
-    public int executeFacts(String json) {
+    public CompletableFuture<Integer> executeFacts(String json) {
         return executeFacts( new JSONObject(json).toMap() );
     }
 
-    public int executeFacts(Map<String, Object> factMap) {
+    public CompletableFuture<Integer> executeFacts(Map<String, Object> factMap) {
         return rulesEvaluator.executeFacts(factMap);
     }
 
-    public List<Match> processFacts(String json) {
+    public CompletableFuture<List<Match>> processFacts(String json) {
         return processFacts( new JSONObject(json).toMap() );
     }
 
-    public List<Match> processFacts(Map<String, Object> factMap) {
+    public CompletableFuture<List<Match>> processFacts(Map<String, Object> factMap) {
         return rulesEvaluator.processFacts(factMap);
     }
 
-    public List<Match> processEvents(String json) {
+    public CompletableFuture<List<Match>> processEvents(String json) {
         return processEvents( new JSONObject(json).toMap() );
     }
 
-    public List<Match> processEvents(Map<String, Object> factMap) {
+    public CompletableFuture<List<Match>> processEvents(Map<String, Object> factMap) {
         return rulesEvaluator.processEvents(factMap);
     }
 
-    public List<Match> fire() {
+    public CompletableFuture<List<Match>> fire() {
         return rulesEvaluator.fire();
     }
 
-    public List<Match> processRetract(String json) {
+    public CompletableFuture<List<Match>> processRetract(String json) {
         return processRetract(new JSONObject(json).toMap());
     }
 
-    public List<Match> processRetract(Map<String, Object> json) {
+    public CompletableFuture<List<Match>> processRetract(Map<String, Object> json) {
         return rulesEvaluator.processRetract(json);
     }
 
@@ -90,7 +92,7 @@ public class RulesExecutor {
         return toJson(getAllFactsAsMap());
     }
 
-    public List<Match> advanceTime(long amount, TimeUnit unit ) {
+    public CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit ) {
         return rulesEvaluator.advanceTime(amount, unit );
     }
 }

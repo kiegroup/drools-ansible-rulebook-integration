@@ -68,10 +68,10 @@ public class ImplicitBindingTest {
     public void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":3 }" );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":3 }" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"i\":67 }" );
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":67 }" ).join();
         assertEquals( "r1", matchedRules.get(0).getRule().getName() );
         assertEquals( "m", matchedRules.get(0).getDeclarationIds().get(0) );
         rulesExecutor.dispose();

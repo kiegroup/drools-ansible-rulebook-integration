@@ -10,18 +10,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
+
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class RuleExecutorChannel {
     private final ServerSocket socketChannel;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile DataOutputStream dataOutputStream;
 
     public RuleExecutorChannel() {
         try {
             socketChannel = new ServerSocket(0); // 0 means kernel will choose a free port
             socketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-            accept();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -32,31 +32,29 @@ public class RuleExecutorChannel {
         return socketChannel.getLocalPort();
     }
 
-    private void accept() {
-        executor.submit(() -> {
+    public RuleExecutorChannel accept(AsyncExecutor asyncExecutor) {
+        asyncExecutor.submit(() -> {
             try {
                 Socket skt = socketChannel.accept();
                 this.dataOutputStream = new DataOutputStream(skt.getOutputStream());
-                return skt;
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         });
+        return this;
     }
 
     public void write(Response response) {
-        executor.submit(() -> {
-            try {
-                String payload = toJson(response);
-                byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
-                dataOutputStream.writeInt(bytes.length);
-                dataOutputStream.write(bytes);
-                dataOutputStream.flush();
-            } catch (IOException | UncheckedIOException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        });
+        try {
+            String payload = toJson(response);
+            byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
+            dataOutputStream.writeInt(bytes.length);
+            dataOutputStream.write(bytes);
+            dataOutputStream.flush();
+        } catch (IOException | UncheckedIOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     public void shutdown() {
@@ -73,6 +71,5 @@ public class RuleExecutorChannel {
                 throw new UncheckedIOException(e);
             }
         }
-        executor.shutdown();
     }
 }

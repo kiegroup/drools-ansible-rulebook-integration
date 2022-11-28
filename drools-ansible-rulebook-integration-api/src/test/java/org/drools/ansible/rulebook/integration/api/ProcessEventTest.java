@@ -58,7 +58,7 @@ public class ProcessEventTest {
     public void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 1 }" );
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 1 }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
 
@@ -109,7 +109,7 @@ public class ProcessEventTest {
         rulesExecutor.processFacts( "{ \"host\": \"B\", \"os\": \"windows\" }" );
         rulesExecutor.processFacts( "{ \"host\": \"C\", \"os\": \"linux\" }" );
 
-        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 1 }" );
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 1 }" ).join();
         assertEquals( 2, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
         assertEquals( "r_0", matchedRules.get(1).getRule().getName() );
