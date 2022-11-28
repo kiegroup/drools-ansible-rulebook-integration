@@ -20,8 +20,8 @@ import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
 import org.drools.model.view.ViewItem;
 
-import static org.drools.ansible.rulebook.integration.api.RulesExecutor.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.TimeAmount.parseTimeAmount;
+import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.model.DSL.accFunction;

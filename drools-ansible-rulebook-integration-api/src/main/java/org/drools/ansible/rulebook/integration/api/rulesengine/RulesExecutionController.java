@@ -1,4 +1,4 @@
-package org.drools.ansible.rulebook.integration.api;
+package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 public class RulesExecutionController {
 

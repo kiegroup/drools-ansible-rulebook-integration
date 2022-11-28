@@ -1,4 +1,4 @@
-package org.drools.ansible.rulebook.integration.api;
+package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -11,7 +11,7 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.time.SessionPseudoClock;
 
 
-class RulesExecutorSession {
+public class RulesExecutorSession {
 
     private final KieSession kieSession;
 

@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 
 import org.drools.ansible.rulebook.integration.api.io.AstRuleMatch;
 import org.drools.ansible.rulebook.integration.api.io.Response;
+import org.drools.ansible.rulebook.integration.api.rulesengine.MatchDecorator;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.facttemplates.Fact;
 import org.json.JSONObject;
@@ -23,11 +26,10 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
+import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
 
 public class RulesExecutor {
-
-    public static final String SYNTHETIC_RULE_TAG = "SYNTHETIC_RULE";
 
     private final RulesExecutorSession rulesExecutorSession;
 
@@ -157,7 +159,7 @@ public class RulesExecutor {
 
     public List<Match> processRetract(Map<String, Object> json) {
         List<Match> matches = retractFact(json) ? findMatchedRules() : Collections.emptyList();
-        matches = matches.stream().map( MatchDecorator::new ).map( m -> m.withBoundObject("m", json) ).collect(Collectors.toList());
+        matches = matches.stream().map( MatchDecorator::new ).map(m -> m.withBoundObject("m", json) ).collect(Collectors.toList());
         return writeResponse( matches );
     }
 
@@ -180,90 +182,5 @@ public class RulesExecutor {
     public List<Match> advanceTime(long amount, TimeUnit unit ) {
         rulesExecutorSession.advanceTime(amount, unit);
         return writeResponse( findMatchedRules() );
-    }
-
-    private static class RegisterOnlyAgendaFilter implements AgendaFilter {
-
-        private final RulesExecutorSession rulesExecutorSession;
-        private final Set<Long> ephemeralFactHandleIds;
-
-        private final Set<Match> matchedRules = new LinkedHashSet<>();
-
-        private final List<FactHandle> factsToBeDeleted = new ArrayList<>();
-
-        private RegisterOnlyAgendaFilter(RulesExecutorSession rulesExecutorSession, Set<Long> ephemeralFactHandleIds) {
-            this.rulesExecutorSession = rulesExecutorSession;
-            this.ephemeralFactHandleIds = ephemeralFactHandleIds;
-        }
-
-        @Override
-        public boolean accept(Match match) {
-            if ( match.getRule().getMetaData().get(SYNTHETIC_RULE_TAG) != null ) {
-                return true;
-            }
-            matchedRules.add(match);
-            if (!ephemeralFactHandleIds.isEmpty()) {
-                for (FactHandle fh : match.getFactHandles()) {
-                    if (ephemeralFactHandleIds.remove(((InternalFactHandle) fh).getId())) {
-                        factsToBeDeleted.add(fh);
-                    }
-                }
-            }
-            return true;
-        }
-
-        public List<Match> finalizeAndGetResults() {
-            factsToBeDeleted.forEach(rulesExecutorSession::delete);
-            return new ArrayList<>( matchedRules );
-        }
-    }
-
-    static class MatchDecorator implements Match {
-        private final Match delegate;
-        private final Map<String, Object> boundObjects = new HashMap<>();
-
-        MatchDecorator(Match delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public Rule getRule() {
-            return delegate.getRule();
-        }
-
-        @Override
-        public List<? extends FactHandle> getFactHandles() {
-            return delegate.getFactHandles();
-        }
-
-        @Override
-        public List<Object> getObjects() {
-            List<Object> objects = new ArrayList<>();
-            objects.addAll( delegate.getObjects() );
-            objects.addAll( boundObjects.values() );
-            return objects;
-        }
-
-        @Override
-        public List<String> getDeclarationIds() {
-            List<String> ids = new ArrayList<>();
-            ids.addAll( delegate.getDeclarationIds() );
-            ids.addAll( boundObjects.keySet() );
-            return ids;
-        }
-
-        @Override
-        public Object getDeclarationValue(String declarationId) {
-            Object object = boundObjects.get(declarationId);
-            if (object == null) {
-                object = delegate.getDeclarationValue(declarationId);
-            }
-            return object;
-        }
-
-        public MatchDecorator withBoundObject(String bindingName, Object fact) {
-            boundObjects.put(bindingName, fact);
-            return this;
-        }
     }
 }

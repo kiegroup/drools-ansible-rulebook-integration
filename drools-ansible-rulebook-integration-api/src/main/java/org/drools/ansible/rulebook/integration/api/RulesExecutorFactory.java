@@ -1,6 +1,8 @@
 package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.core.ClockType;
 import org.drools.model.Model;
 import org.drools.modelcompiler.KieBaseBuilder;

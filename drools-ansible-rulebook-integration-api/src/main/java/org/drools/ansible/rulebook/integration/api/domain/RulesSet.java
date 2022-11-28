@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
-import org.drools.ansible.rulebook.integration.api.RulesExecutionController;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.model.Model;
 import org.drools.model.impl.ModelImpl;
 

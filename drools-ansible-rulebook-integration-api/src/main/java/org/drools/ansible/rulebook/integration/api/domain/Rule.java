@@ -1,13 +1,11 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
-import org.drools.ansible.rulebook.integration.api.RulesExecutionController;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
@@ -15,8 +13,6 @@ import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeWindowDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.TimedOutDefinition;
-import org.drools.model.Drools;
-import org.drools.model.RuleItemBuilder;
 
 import static org.drools.model.DSL.execute;
 import static org.drools.model.DSL.on;

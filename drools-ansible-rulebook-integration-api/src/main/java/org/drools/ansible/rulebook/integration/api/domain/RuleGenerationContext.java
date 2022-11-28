@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
-import org.drools.ansible.rulebook.integration.api.RulesExecutionController;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeConstraint;
