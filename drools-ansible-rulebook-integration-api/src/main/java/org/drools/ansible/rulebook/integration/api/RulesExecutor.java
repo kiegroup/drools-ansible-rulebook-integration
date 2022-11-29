@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -22,6 +21,14 @@ public class RulesExecutor {
 
     RulesExecutor(RulesExecutorSession rulesExecutorSession, boolean async) {
         this.rulesEvaluator = RulesEvaluator.createRulesEvaluator(rulesExecutorSession, async);
+    }
+
+    void startAutomaticPseudoClock(long period, TimeUnit unit) {
+        this.rulesEvaluator.startAutomaticPseudoClock(period, unit);
+    }
+
+    public long getAutomaticPseudoClockPeriod() {
+        return this.rulesEvaluator.getAutomaticPseudoClockPeriod();
     }
 
     public void setRulesExecutorContainer(RulesExecutorContainer rulesExecutorContainer) {

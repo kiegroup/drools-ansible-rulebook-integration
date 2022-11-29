@@ -24,6 +24,8 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     private RulesExecutorContainer rulesExecutorContainer;
 
+    private AutomaticPseudoClock automaticClock;
+
     public AbstractRulesEvaluator(RulesExecutorSession rulesExecutorSession) {
         this.rulesExecutorSession = rulesExecutorSession;
         this.registerOnlyAgendaFilter = new RegisterOnlyAgendaFilter(rulesExecutorSession);
@@ -37,6 +39,16 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     @Override
     public void setRulesExecutorContainer(RulesExecutorContainer rulesExecutorContainer) {
         this.rulesExecutorContainer = rulesExecutorContainer;
+    }
+
+    @Override
+    public void startAutomaticPseudoClock(long period, TimeUnit unit) {
+        this.automaticClock = new AutomaticPseudoClock(this, period, unit);
+    }
+
+    @Override
+    public long getAutomaticPseudoClockPeriod() {
+        return this.automaticClock == null ? -1 : this.automaticClock.getPeriod();
     }
 
     @Override
@@ -67,7 +79,16 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     @Override
     public CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit ) {
-        return engineEvaluate(() -> syncAdvanceTime(amount, unit) );
+        return engineEvaluate(() -> internalAdvanceTime(amount, unit) );
+    }
+
+    @Override
+    public CompletableFuture<List<Match>> advanceTimeToMills(long millis) {
+        long currentTime = rulesExecutorSession.getPseudoClock().getCurrentTime();
+        if (currentTime >= millis) {
+            return completeFutureOf(Collections.emptyList());
+        }
+        return advanceTime(millis - currentTime, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -77,12 +98,12 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     protected abstract CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier);
 
-    private List<Match> syncAdvanceTime(long amount, TimeUnit unit ) {
+    private List<Match> internalAdvanceTime(long amount, TimeUnit unit) {
         rulesExecutorSession.advanceTime(amount, unit);
         return findMatchedRules();
     }
 
-    protected int syncExecuteFacts(Map<String, Object> factMap) {
+    protected int internalExecuteFacts(Map<String, Object> factMap) {
         insertFact( factMap, false );
         return rulesExecutorSession.fireAllRules();
     }
@@ -91,6 +112,9 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     public void dispose() {
         if (rulesExecutorContainer != null) {
             rulesExecutorContainer.dispose(getSessionId());
+        }
+        if (automaticClock != null) {
+            automaticClock.shutdown();
         }
         rulesExecutorSession.dispose();
     }
@@ -145,5 +169,11 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     @Override
     public boolean retractFact(Map<String, Object> factMap) {
         return rulesExecutorSession.deleteFact( mapToFact(factMap, false) );
+    }
+
+    protected <T> CompletableFuture<T> completeFutureOf(T value) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        future.complete( value );
+        return future;
     }
 }

@@ -18,7 +18,8 @@ public interface RulesEvaluator {
 
     Collection<?> getAllFacts();
 
-    CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit );
+    CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit);
+    CompletableFuture<List<Match>> advanceTimeToMills(long millis);
 
     CompletableFuture<Integer> executeFacts(Map<String, Object> factMap);
 
@@ -33,6 +34,9 @@ public interface RulesEvaluator {
     boolean retractFact(Map<String, Object> factMap);
 
     void setRulesExecutorContainer(RulesExecutorContainer rulesExecutorContainer);
+
+    void startAutomaticPseudoClock(long period, TimeUnit unit);
+    long getAutomaticPseudoClockPeriod();
 
     void dispose();
 

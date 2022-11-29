@@ -12,14 +12,16 @@ public class RuleConfigurationOptions {
 
     public void addOptions(RuleConfigurationOption... options) {
         for (RuleConfigurationOption option : options) {
-            this.options.add(option);
+            addSingleOption(option);
         }
     }
 
     public void addOptions(Iterable<RuleConfigurationOption> options) {
-        for (RuleConfigurationOption option : options) {
-            this.options.add(option);
-        }
+        options.forEach(this::addSingleOption);
+    }
+
+    private void addSingleOption(RuleConfigurationOption option) {
+        this.options.add(option);
     }
 
     public Set<RuleConfigurationOption> getOptions() {

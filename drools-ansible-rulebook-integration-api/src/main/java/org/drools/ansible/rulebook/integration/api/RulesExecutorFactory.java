@@ -45,7 +45,11 @@ public class RulesExecutorFactory {
     }
 
     public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
-        return new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(ASYNC_EVALUATION));
+        RulesExecutor rulesExecutor = new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(ASYNC_EVALUATION));
+        if (rulesSet.getClockPeriod() != null) {
+            rulesExecutor.startAutomaticPseudoClock(rulesSet.getClockPeriod().getAmount(), rulesSet.getClockPeriod().getTimeUnit());
+        }
+        return rulesExecutor;
     }
 
     private static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {

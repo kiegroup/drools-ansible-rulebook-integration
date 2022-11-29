@@ -25,23 +25,23 @@ public class RulesExecutorSession {
         this.id = id;
     }
 
-    public long getId() {
+    long getId() {
         return id;
     }
 
-    public Collection<? extends Object> getObjects() {
+    Collection<? extends Object> getObjects() {
         return kieSession.getObjects();
     }
 
-    public FactHandle insert(Object object) {
+    FactHandle insert(Object object) {
         return kieSession.insert(object);
     }
 
-    public void delete(FactHandle fh) {
+    void delete(FactHandle fh) {
         kieSession.delete(fh);
     }
 
-    public boolean deleteFact(Fact toBeRetracted) {
+    boolean deleteFact(Fact toBeRetracted) {
         return kieSession.getFactHandles(o -> o instanceof Fact && Objects.equals(((Fact) o).asMap(), toBeRetracted.asMap()))
                 .stream().findFirst()
                 .map( fh -> {
@@ -50,32 +50,32 @@ public class RulesExecutorSession {
                 }).orElse(false);
     }
 
-    public int fireAllRules() {
+    int fireAllRules() {
         return kieSession.fireAllRules();
     }
 
-    public int fireAllRules(AgendaFilter agendaFilter) {
+    int fireAllRules(AgendaFilter agendaFilter) {
         return kieSession.fireAllRules(agendaFilter);
     }
 
-    public void dispose() {
+    void dispose() {
         kieSession.dispose();
     }
 
-    public long rulesCount() {
+    long rulesCount() {
         return kieSession.getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
     }
 
-    public void advanceTime( long amount, TimeUnit unit ) {
-        SessionPseudoClock clock = kieSession.getSessionClock();
+    void advanceTime( long amount, TimeUnit unit ) {
+        SessionPseudoClock clock = getPseudoClock();
         clock.advanceTime(amount, unit);
     }
 
-    public boolean isExecuteActions() {
-        return rulesExecutionController.executeActions();
+    SessionPseudoClock getPseudoClock() {
+        return kieSession.getSessionClock();
     }
 
-    public void setExecuteActions(boolean executeActions) {
+    void setExecuteActions(boolean executeActions) {
         rulesExecutionController.setExecuteActions(executeActions);
     }
 }

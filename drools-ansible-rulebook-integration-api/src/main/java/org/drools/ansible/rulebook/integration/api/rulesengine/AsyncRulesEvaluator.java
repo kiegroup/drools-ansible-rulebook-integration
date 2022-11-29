@@ -30,7 +30,7 @@ public class AsyncRulesEvaluator extends AbstractRulesEvaluator {
 
     @Override
     public CompletableFuture<Integer> executeFacts(Map<String, Object> factMap) {
-        return asyncExecutor.submit( () -> syncExecuteFacts(factMap) );
+        return asyncExecutor.submit( () -> internalExecuteFacts(factMap) );
     }
 
     @Override

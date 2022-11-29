@@ -2,20 +2,27 @@ package org.drools.ansible.rulebook.integration.api.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeAmount;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.model.Model;
 import org.drools.model.impl.ModelImpl;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RulesSet {
+
     private String name;
+
     private List<String> hosts;
+
     private List<RuleContainer> rules;
+
+    private TimeAmount clockPeriod;
 
     private final RuleConfigurationOptions options = new RuleConfigurationOptions();
 
@@ -73,6 +80,20 @@ public class RulesSet {
     public RulesSet withOptions(RuleConfigurationOption... options) {
         this.options.addOptions(options);
         return this;
+    }
+
+    public void setClock_period(String clockPeriod) {
+        this.clockPeriod = TimeAmount.parseTimeAmount(clockPeriod);
+        options.addOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+    }
+
+    public void setClockPeriod(int amount, TimeUnit timeUnit) {
+        this.clockPeriod = new TimeAmount(amount, timeUnit);
+        options.addOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+    }
+
+    public TimeAmount getClockPeriod() {
+        return clockPeriod;
     }
 
     @Override

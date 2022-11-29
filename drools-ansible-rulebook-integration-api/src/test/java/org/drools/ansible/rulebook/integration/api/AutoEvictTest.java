@@ -11,33 +11,36 @@ public class AutoEvictTest {
 
     public static final String JSON1 =
             "{\n" +
-                    "   \"rules\":[\n" +
-                    "      {\n" +
-                    "         \"Rule\":{\n" +
-                    "            \"condition\":{\n" +
-                    "               \"AllCondition\":[\n" +
-                    "                  {\n" +
-                    "                     \"EqualsExpression\":{\n" +
-                    "                        \"lhs\":{\n" +
-                    "                           \"Fact\":\"i\"\n" +
-                    "                        },\n" +
-                    "                        \"rhs\":{\n" +
-                    "                           \"Integer\":2\n" +
-                    "                        }\n" +
-                    "                     }\n" +
-                    "                  }\n" +
-                    "               ]\n" +
-                    "            },\n" +
-                    "            \"enabled\":true,\n" +
-                    "            \"name\":null\n" +
-                    "         }\n" +
-                    "      }\n" +
-                    "   ]\n" +
-                    "}";
+            "   \"rules\":[\n" +
+            "      {\n" +
+            "         \"Rule\":{\n" +
+            "            \"condition\":{\n" +
+            "               \"AllCondition\":[\n" +
+            "                  {\n" +
+            "                     \"EqualsExpression\":{\n" +
+            "                        \"lhs\":{\n" +
+            "                           \"Fact\":\"i\"\n" +
+            "                        },\n" +
+            "                        \"rhs\":{\n" +
+            "                           \"Integer\":2\n" +
+            "                        }\n" +
+            "                     }\n" +
+            "                  }\n" +
+            "               ]\n" +
+            "            },\n" +
+            "            \"enabled\":true,\n" +
+            "            \"name\":null\n" +
+            "         }\n" +
+            "      }\n" +
+            "   ],\n" +
+            "   \"clock_period\":\"1 second\"\n" +
+            "}";
 
     @Test
     public void test() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
+
+        assertEquals(1000, rulesExecutor.getAutomaticPseudoClockPeriod()); // 1 second
 
         List<Match> matchedRules = rulesExecutor.processFacts("{ \"i\": 3 }").join();
         assertEquals(0, matchedRules.size());

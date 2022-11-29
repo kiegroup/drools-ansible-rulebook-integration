@@ -15,17 +15,11 @@ public class SyncRulesEvaluator extends AbstractRulesEvaluator {
 
     @Override
     public CompletableFuture<Integer> executeFacts(Map<String, Object> factMap) {
-        return completeFutureOf( syncExecuteFacts(factMap) );
+        return completeFutureOf( internalExecuteFacts(factMap) );
     }
 
     @Override
     protected CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier) {
         return completeFutureOf(resultSupplier.get());
-    }
-
-    private <T> CompletableFuture<T> completeFutureOf(T value) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-        future.complete( value );
-        return future;
     }
 }

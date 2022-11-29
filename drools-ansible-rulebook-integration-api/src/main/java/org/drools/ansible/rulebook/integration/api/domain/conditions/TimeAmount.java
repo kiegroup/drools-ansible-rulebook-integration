@@ -6,7 +6,7 @@ public class TimeAmount {
     private final int amount;
     private final TimeUnit timeUnit;
 
-    private TimeAmount(int amount, TimeUnit timeUnit) {
+    public TimeAmount(int amount, TimeUnit timeUnit) {
         this.amount = amount;
         this.timeUnit = timeUnit;
     }
@@ -24,7 +24,7 @@ public class TimeAmount {
         return "TimeAmount{ " + amount + " " + timeUnit + " }";
     }
 
-    static TimeAmount parseTimeAmount(String timeAmount) {
+    public static TimeAmount parseTimeAmount(String timeAmount) {
         int sepPos = timeAmount.indexOf(' ');
         if (sepPos <= 0) {
             throw new IllegalArgumentException("Invalid time amount definition: " + timeAmount);
