@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
@@ -48,7 +49,35 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return rulesExecutorSession.getObjects();
     }
 
-    protected List<Match> syncAdvanceTime(long amount, TimeUnit unit ) {
+
+    @Override
+    public CompletableFuture<List<Match>> fire() {
+        return engineEvaluate(() -> getMatches(false));
+    }
+
+    @Override
+    public CompletableFuture<List<Match>> processFacts(Map<String, Object> factMap) {
+        return engineEvaluate(() -> process(factMap, false));
+    }
+
+    @Override
+    public CompletableFuture<List<Match>> processEvents(Map<String, Object> factMap) {
+        return engineEvaluate(() -> process(factMap, true));
+    }
+
+    @Override
+    public CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit ) {
+        return engineEvaluate(() -> syncAdvanceTime(amount, unit) );
+    }
+
+    @Override
+    public CompletableFuture<List<Match>> processRetract(Map<String, Object> json) {
+        return engineEvaluate(() -> syncProcessRetract(json));
+    }
+
+    protected abstract CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier);
+
+    private List<Match> syncAdvanceTime(long amount, TimeUnit unit ) {
         rulesExecutorSession.advanceTime(amount, unit);
         return findMatchedRules();
     }

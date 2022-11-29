@@ -3,7 +3,7 @@ package org.drools.ansible.rulebook.integration.api.rulesengine;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.io.AstRuleMatch;
@@ -21,10 +21,6 @@ public class AsyncRulesEvaluator extends AbstractRulesEvaluator {
         super(rulesExecutorSession);
     }
 
-    public long getSessionId() {
-        return rulesExecutorSession.getId();
-    }
-
     @Override
     public void setRulesExecutorContainer(RulesExecutorContainer rulesExecutorContainer) {
         super.setRulesExecutorContainer(rulesExecutorContainer);
@@ -33,36 +29,16 @@ public class AsyncRulesEvaluator extends AbstractRulesEvaluator {
     }
 
     @Override
-    public CompletableFuture<List<Match>> fire() {
-        return asyncExecutor.submit( () -> writeResponseOnChannel( getMatches(false) ) );
-    }
-
-    @Override
     public CompletableFuture<Integer> executeFacts(Map<String, Object> factMap) {
         return asyncExecutor.submit( () -> syncExecuteFacts(factMap) );
     }
 
     @Override
-    public CompletableFuture<List<Match>> processFacts(Map<String, Object> factMap) {
-        return asyncExecutor.submit( () -> writeResponseOnChannel( process(factMap, false) ) );
+    protected CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier) {
+        return asyncExecutor.submit(() -> writeResponseOnChannel(resultSupplier.get()));
     }
 
-    @Override
-    public CompletableFuture<List<Match>> processEvents(Map<String, Object> factMap) {
-        return asyncExecutor.submit( () -> writeResponseOnChannel( process(factMap, true) ) );
-    }
-
-    @Override
-    public CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit ) {
-        return asyncExecutor.submit( () -> writeResponseOnChannel( syncAdvanceTime(amount, unit) ) );
-    }
-
-    @Override
-    public CompletableFuture<List<Match>> processRetract(Map<String, Object> json) {
-        return asyncExecutor.submit( () -> writeResponseOnChannel( syncProcessRetract(json) ) );
-    }
-
-    protected List<Match> writeResponseOnChannel(List<Match> matches) {
+    private List<Match> writeResponseOnChannel(List<Match> matches) {
         if (!matches.isEmpty()) { // skip empty result
             channel.write(new Response(getSessionId(), AstRuleMatch.asList(matches)));
         }
