@@ -19,7 +19,7 @@ import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class JpyDurableRulesEngine {
 
-    private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer(false);
+    private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer();
 
     private Iterator<Map<String, Map>> lastResponse = Collections.emptyIterator();
 

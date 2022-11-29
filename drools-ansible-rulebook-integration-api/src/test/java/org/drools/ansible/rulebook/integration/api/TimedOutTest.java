@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
+import static org.drools.ansible.rulebook.integration.api.RulesExecutorFactory.DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS;
 import static org.junit.Assert.assertEquals;
 
 public class TimedOutTest {
@@ -112,6 +113,10 @@ public class TimedOutTest {
 
     private void timeWindowTest(String json) {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
+
+        // using a rule with a timed_out option automatically starts the scheduled pseudo clock
+        assertEquals(DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS, rulesExecutor.getAutomaticPseudoClockPeriod());
+
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" ).join();
         assertEquals( 0, matchedRules.size() );
 

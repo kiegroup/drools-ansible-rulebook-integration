@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.TimedOutDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
@@ -94,6 +95,10 @@ public class RuleGenerationContext {
             throw new IllegalArgumentException("Cannot add more than one time constraint to the same rule");
         }
         this.timeConstraint = timeConstraint;
+    }
+
+    public boolean requiresAsyncExecution() {
+        return this.timeConstraint instanceof TimedOutDefinition;
     }
 
     public PrototypeVariable getConsequenceVariable() {

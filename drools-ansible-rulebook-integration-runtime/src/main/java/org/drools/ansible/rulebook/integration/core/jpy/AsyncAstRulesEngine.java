@@ -17,7 +17,7 @@ import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class AsyncAstRulesEngine {
 
-    private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer(true);
+    private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer().allowAsync();
 
     private boolean shutdown = false;
 
@@ -33,7 +33,7 @@ public class AsyncAstRulesEngine {
         checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
         rulesSet.withOptions(RuleConfigurationOption.ASYNC_EVALUATION);
-        if (pseudoClock) {
+        if (pseudoClock || rulesSet.hasAsyncExecution()) {
             rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
         }
         RulesExecutor executor = rulesExecutorContainer.register( RulesExecutorFactory.createRulesExecutor(rulesSet) );

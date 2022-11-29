@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
@@ -21,7 +20,7 @@ import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class AstRulesEngine {
 
-    private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer(false);
+    private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer();
 
     public long createRuleset(String rulesetString) {
         return createRulesetWithOptions(rulesetString, false);
@@ -29,7 +28,7 @@ public class AstRulesEngine {
 
     public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        if (pseudoClock) {
+        if (pseudoClock || rulesSet.hasAsyncExecution()) {
             rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
         }
         RulesExecutor executor = rulesExecutorContainer.register( RulesExecutorFactory.createRulesExecutor(rulesSet) );

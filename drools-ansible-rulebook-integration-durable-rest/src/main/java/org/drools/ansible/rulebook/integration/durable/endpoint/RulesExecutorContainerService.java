@@ -6,7 +6,7 @@ import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 public enum RulesExecutorContainerService {
     INSTANCE;
 
-    private RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer(false);
+    private RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer();
 
     public RulesExecutor get(Long id) {
         return rulesExecutorContainer.get(id);

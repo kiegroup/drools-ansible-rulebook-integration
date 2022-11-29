@@ -10,8 +10,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-
 @Path("/rules-durable-executors/{id}/get-all-facts")
 public class GetAllFactsDurableEndpoint {
 

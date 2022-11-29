@@ -11,17 +11,17 @@ public class AutomaticPseudoClock {
         return t;
     });
 
-    private final RulesEvaluator rulesEvaluator;
+    private final AbstractRulesEvaluator rulesEvaluator;
 
     private final long period;
 
     private volatile long nextTick;
 
-    AutomaticPseudoClock(RulesEvaluator rulesEvaluator, long amount, TimeUnit unit) {
+    AutomaticPseudoClock(AbstractRulesEvaluator rulesEvaluator, long amount, TimeUnit unit) {
         this(rulesEvaluator, unit.toMillis(amount));
     }
 
-    AutomaticPseudoClock(RulesEvaluator rulesEvaluator, long period) {
+    AutomaticPseudoClock(AbstractRulesEvaluator rulesEvaluator, long period) {
         this.period = period;
         this.rulesEvaluator = rulesEvaluator;
         timer.scheduleAtFixedRate(this::advancePseudoClock, period, period, TimeUnit.MILLISECONDS);
@@ -37,6 +37,6 @@ public class AutomaticPseudoClock {
 
     private void advancePseudoClock() {
         nextTick += period;
-        rulesEvaluator.advanceTimeToMills(nextTick);
+        rulesEvaluator.scheduledAdvanceTimeToMills(nextTick);
     }
 }

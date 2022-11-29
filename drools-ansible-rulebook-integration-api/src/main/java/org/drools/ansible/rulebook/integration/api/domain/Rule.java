@@ -105,6 +105,10 @@ public class Rule {
         ruleGenerationContext.setTimeConstraint(TimedOutDefinition.parseTimedOut(timedOut));
     }
 
+    public boolean requiresAsyncExecution() {
+        return ruleGenerationContext.requiresAsyncExecution();
+    }
+
     @Override
     public String toString() {
         return "Rule{" +

@@ -96,6 +96,14 @@ public class RulesSet {
         return clockPeriod;
     }
 
+    public boolean requiresAsyncExecution() {
+        return rules.stream().map(RuleContainer::getRule).anyMatch(Rule::requiresAsyncExecution);
+    }
+
+    public boolean hasAsyncExecution() {
+        return clockPeriod != null || requiresAsyncExecution();
+    }
+
     @Override
     public String toString() {
         return "RulesSet{" +

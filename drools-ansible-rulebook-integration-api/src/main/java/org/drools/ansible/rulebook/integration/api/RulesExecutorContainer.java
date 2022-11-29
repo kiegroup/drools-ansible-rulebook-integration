@@ -13,11 +13,12 @@ public class RulesExecutorContainer {
     private AsyncExecutor asyncExecutor;
     private RuleExecutorChannel channel;
 
-    public RulesExecutorContainer(boolean async) {
-        if (async) {
+    public RulesExecutorContainer allowAsync() {
+        if (asyncExecutor == null) {
             asyncExecutor = new AsyncExecutor();
             channel = new RuleExecutorChannel().accept(asyncExecutor);
         }
+        return this;
     }
 
     public RulesExecutor register(RulesExecutor rulesExecutor) {
