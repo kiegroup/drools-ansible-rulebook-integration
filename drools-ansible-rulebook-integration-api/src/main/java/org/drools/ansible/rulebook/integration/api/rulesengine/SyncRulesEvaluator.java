@@ -20,6 +20,9 @@ public class SyncRulesEvaluator extends AbstractRulesEvaluator {
 
     @Override
     protected CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier) {
-        return completeFutureOf(resultSupplier.get());
+        // if there is a running automatic clock all engine evaluations have to be enqueued on the single threaded async executor to avoid race condition
+        return asyncExecutor != null ?
+                completeFutureOf( asyncExecutor.submit(() -> resultSupplier.get()).join() ) :
+                completeFutureOf( resultSupplier.get() );
     }
 }
