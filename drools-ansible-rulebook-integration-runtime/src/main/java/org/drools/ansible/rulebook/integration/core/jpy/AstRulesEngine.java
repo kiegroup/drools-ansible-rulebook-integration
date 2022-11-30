@@ -22,14 +22,21 @@ public class AstRulesEngine {
 
     private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer();
 
+    private boolean shutdown = false;
+
     public long createRuleset(String rulesetString) {
         return createRulesetWithOptions(rulesetString, false);
     }
 
     public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
+        checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        if (pseudoClock || rulesSet.hasAsyncExecution()) {
+        boolean async = rulesSet.hasAsyncExecution();
+        if (pseudoClock || async) {
             rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+        }
+        if (async) {
+            rulesExecutorContainer.allowAsync();
         }
         RulesExecutor executor = rulesExecutorContainer.register( RulesExecutorFactory.createRulesExecutor(rulesSet) );
         return executor.getId();
@@ -81,5 +88,20 @@ public class AstRulesEngine {
     public String advanceTime(long sessionId, long amount, String unit) {
         List<Match> matches = rulesExecutorContainer.get(sessionId).advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase())).join();
         return toJson(AstRuleMatch.asList(matches));
+    }
+
+    public void shutdown() {
+        shutdown = true;
+        rulesExecutorContainer.disposeAll();
+    }
+
+    public int port() {
+        return rulesExecutorContainer.port();
+    }
+
+    private void checkAlive() {
+        if (shutdown) {
+            throw new IllegalStateException("This AstRulesEngine is shutting down");
+        }
     }
 }

@@ -54,6 +54,9 @@ public class RulesExecutorContainer {
 
     public int port() {
         // used by client to know on which port the socket has been opened
+        if (channel == null) {
+            throw new IllegalStateException("Channel not available. Is there any async communication required?");
+        }
         return channel.port();
     }
 }
