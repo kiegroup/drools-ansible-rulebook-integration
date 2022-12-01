@@ -65,12 +65,12 @@ public class AstRulesEngineTest {
 
     @Test
     public void testTimedOut() throws IOException {
+        AstRulesEngine engine = new AstRulesEngine();
+        int port = engine.port();
+
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
-            AstRulesEngine engine = new AstRulesEngine();
             String rules = new String(s.readAllBytes());
             long id = engine.createRuleset(rules);
-
-            int port = engine.port();
 
             try (Socket socket = new Socket("localhost", port)) {
                 DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
@@ -100,12 +100,13 @@ public class AstRulesEngineTest {
 
     @Test
     public void testTimedOutWithAdvance() throws IOException {
+        AstRulesEngine engine = new AstRulesEngine();
+        int port = engine.port();
+
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
-            AstRulesEngine engine = new AstRulesEngine();
             String rules = new String(s.readAllBytes());
             long id = engine.createRuleset(rules);
 
-            int port = engine.port();
 
             try (Socket socket = new Socket("localhost", port)) {
                 DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
