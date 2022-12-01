@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 public class AutomaticPseudoClock {
 
     private final ScheduledThreadPoolExecutor timer = new ScheduledThreadPoolExecutor(1, r -> {
-        Thread t = new Thread();
+        Thread t = new Thread(r);
         t.setDaemon(true);
         return t;
     });

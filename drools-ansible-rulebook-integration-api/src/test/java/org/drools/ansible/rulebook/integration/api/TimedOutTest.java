@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class TimedOutTest {
 
     @Test
-    public void testTimeWindowInCondition() {
+    public void testTimedOutInCondition() {
         String json =
                 "{\n" +
                 "   \"rules\":[\n" +
@@ -58,11 +58,11 @@ public class TimedOutTest {
                 "   ]\n" +
                 "}";
 
-        timeWindowTest(json);
+        timedOutTest(json);
     }
 
     @Test
-    public void testTimeWindowInRule() {
+    public void testTimedOutInRule() {
         String json =
                 "{\n" +
                 "   \"rules\":[\n" +
@@ -108,10 +108,10 @@ public class TimedOutTest {
                 "   ]\n" +
                 "}";
 
-        timeWindowTest(json);
+        timedOutTest(json);
     }
 
-    private void timeWindowTest(String json) {
+    private void timedOutTest(String json) {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
         // using a rule with a timed_out option automatically starts the scheduled pseudo clock
@@ -151,5 +151,56 @@ public class TimedOutTest {
         assertEquals( 1, matchedRules.size() );
 
         rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testSimpleTimedOut() {
+        String json =
+                "{\n" +
+                "   \"rules\":[\n" +
+                "      {\n" +
+                "         \"Rule\":{\n" +
+                "            \"action\":{\n" +
+                "               \"Action\":{\n" +
+                "                  \"action\":\"debug\",\n" +
+                "                  \"action_args\":{\n" +
+                "                     \n" +
+                "                  }\n" +
+                "               }\n" +
+                "            },\n" +
+                "            \"condition\":{\n" +
+                "               \"AllCondition\":[\n" +
+                "                  {\n" +
+                "                     \"IsDefinedExpression\":{\n" +
+                "                        \"Event\":\"i\"\n" +
+                "                     }\n" +
+                "                  },\n" +
+                "                  {\n" +
+                "                     \"IsDefinedExpression\":{\n" +
+                "                        \"Event\":\"j\"\n" +
+                "                     }\n" +
+                "                  }\n" +
+                "               ]\n" +
+                "            },\n" +
+                "            \"enabled\":true,\n" +
+                "            \"name\":\"r1\",\n" +
+                "            \"timed_out\":\"10 seconds\"\n" +
+                "         }\n" +
+                "      }\n" +
+                "   ]\n" +
+                "}";
+
+        // pseudo clock should be automatically activated by the presence of the timed_out
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        List<Match> matchedRules = matchedRules = rulesExecutor.processEvents( "{ \"j\": 1 }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.advanceTime( 8, TimeUnit.SECONDS ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.advanceTime( 3, TimeUnit.SECONDS ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals("r1", matchedRules.get(0).getRule().getName());
     }
 }

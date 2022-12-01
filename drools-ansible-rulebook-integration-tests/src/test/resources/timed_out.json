@@ -1,0 +1,33 @@
+{
+  "rules":[
+    {
+      "Rule":{
+        "action":{
+          "Action":{
+            "action":"debug",
+            "action_args":{
+
+            }
+          }
+        },
+        "condition":{
+          "AllCondition":[
+            {
+              "IsDefinedExpression":{
+                "Event":"i"
+              }
+            },
+            {
+              "IsDefinedExpression":{
+                "Event":"j"
+              }
+            }
+          ]
+        },
+        "enabled":true,
+        "name":"r1",
+        "timed_out":"2 seconds"
+      }
+    }
+  ]
+}

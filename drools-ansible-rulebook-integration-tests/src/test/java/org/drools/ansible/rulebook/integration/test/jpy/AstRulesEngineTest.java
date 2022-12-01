@@ -5,8 +5,11 @@ import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +17,7 @@ import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValu
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 
 public class AstRulesEngineTest {
@@ -58,4 +62,39 @@ public class AstRulesEngineTest {
         }
     }
 
+
+    @Test
+    public void testTimedOut() throws IOException {
+        try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
+            AstRulesEngine engine = new AstRulesEngine();
+            String rules = new String(s.readAllBytes());
+            long id = engine.createRuleset(rules);
+
+            int port = engine.port();
+
+            try (Socket socket = new Socket("localhost", port)) {
+                DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
+
+                long assertTime = System.currentTimeMillis();
+                engine.assertFact(id, "{\"j\": 42}");
+
+                int l = bufferedInputStream.readInt();
+                long firingTime = System.currentTimeMillis();
+
+                // fires after at least 2 seconds
+                assertTrue((firingTime - assertTime) >= 2000);
+
+                byte[] bytes = bufferedInputStream.readNBytes(l);
+                String r = new String(bytes, StandardCharsets.UTF_8);
+                JSONObject v = new JSONObject(r);
+
+                List<Object> matches = v.getJSONArray("result").toList();
+                Map<String, Map> match = (Map<String, Map>) matches.get(0);
+
+                assertNotNull(match.get("r1"));
+
+                engine.shutdown();
+            }
+        }
+    }
 }
