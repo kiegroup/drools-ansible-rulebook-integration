@@ -137,6 +137,7 @@ public class TimedOutDefinition implements TimeConstraint {
     private final Prototype controlPrototype = getPrototype(SYNTHETIC_PROTOTYPE_NAME);
     private final PrototypeVariable controlVar1 = variable( controlPrototype );
     private final PrototypeVariable controlVar2 = variable( controlPrototype );
+    private final PrototypeVariable controlVar3 = variable( controlPrototype );
 
     private TimedOutDefinition(TimeAmount timeAmount) {
         this.timeAmount = timeAmount;
@@ -243,6 +244,22 @@ public class TimedOutDefinition implements TimeConstraint {
                         on(controlVar1, controlVar2).execute((drools, c1, c2) -> {
                             drools.delete(c2.get("event"));
                             drools.delete(c2);
+                        })
+                )
+        );
+
+        rules.add(
+            rule( rulePrefix + "cleanupEvents2" ).metadata(SYNTHETIC_RULE_TAG, true)
+                .build(
+                        protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ),
+                        not( protoPattern(controlVar2)
+                                .expr( "name", Index.ConstraintType.EQUAL, endTag )
+                                .expr( after(0, timeAmount.getTimeUnit(), timeAmount.getAmount(), timeAmount.getTimeUnit()), controlVar1 ) ),
+                        protoPattern(controlVar3).expr(p -> ((String)p.get("name")).startsWith(rulePrefix)),
+                        on(controlVar1, controlVar3).execute((drools, c1, c3) -> {
+                            drools.delete(c3.get("event"));
+                            drools.delete(c3);
+                            drools.delete(c1);
                         })
                 )
         );

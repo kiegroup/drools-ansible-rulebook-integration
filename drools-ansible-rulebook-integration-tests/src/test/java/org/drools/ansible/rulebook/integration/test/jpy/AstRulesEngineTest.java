@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValue;
 import static org.junit.Assert.assertEquals;
@@ -62,7 +63,6 @@ public class AstRulesEngineTest {
         }
     }
 
-
     @Test
     public void testTimedOut() throws IOException {
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
@@ -91,6 +91,37 @@ public class AstRulesEngineTest {
                 List<Object> matches = v.getJSONArray("result").toList();
                 Map<String, Map> match = (Map<String, Map>) matches.get(0);
 
+                assertNotNull(match.get("r1"));
+
+                engine.shutdown();
+            }
+        }
+    }
+
+    @Test
+    public void testTimedOutWithAdvance() throws IOException {
+        try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
+            AstRulesEngine engine = new AstRulesEngine();
+            String rules = new String(s.readAllBytes());
+            long id = engine.createRuleset(rules);
+
+            int port = engine.port();
+
+            try (Socket socket = new Socket("localhost", port)) {
+                DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
+
+                engine.assertFact(id, "{\"j\": 42}");
+                String r = engine.advanceTime(id, 3, "SECONDS");
+
+                List<Map<String, Map>> v = readValue(r);
+                assertNotNull(v.get(0).get("r1"));
+
+                int l = bufferedInputStream.readInt();
+                byte[] bytes = bufferedInputStream.readNBytes(l);
+                String r2 = new String(bytes, StandardCharsets.UTF_8);
+
+                List<Object> matches2 = new JSONObject(r2).getJSONArray("result").toList();
+                Map<String, Map> match = (Map<String, Map>) matches2.get(0);
                 assertNotNull(match.get("r1"));
 
                 engine.shutdown();

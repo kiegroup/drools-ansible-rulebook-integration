@@ -88,7 +88,9 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     @Override
     public CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit ) {
-        return engineEvaluate(() -> internalAdvanceTime(amount, unit) );
+        return channel != null ?
+                engineEvaluate(() -> writeResponseOnChannel(internalAdvanceTime(amount, unit))) :
+                engineEvaluate(() -> internalAdvanceTime(amount, unit));
     }
 
     CompletableFuture<List<Match>> scheduledAdvanceTimeToMills(long millis) {
