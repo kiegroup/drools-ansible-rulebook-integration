@@ -7,8 +7,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
 
@@ -17,6 +15,8 @@ import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 public class RuleExecutorChannel {
     private final ServerSocket socketChannel;
     private volatile DataOutputStream dataOutputStream;
+
+    private volatile boolean connected = false;
 
     public RuleExecutorChannel() {
         try {
@@ -37,11 +37,16 @@ public class RuleExecutorChannel {
             try {
                 Socket skt = socketChannel.accept();
                 this.dataOutputStream = new DataOutputStream(skt.getOutputStream());
+                this.connected = true;
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         });
         return this;
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 
     public void write(Response response) {

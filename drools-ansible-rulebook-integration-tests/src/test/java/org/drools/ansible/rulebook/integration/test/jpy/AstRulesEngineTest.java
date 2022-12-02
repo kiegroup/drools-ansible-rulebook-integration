@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class AstRulesEngineTest {
@@ -107,7 +108,6 @@ public class AstRulesEngineTest {
             String rules = new String(s.readAllBytes());
             long id = engine.createRuleset(rules);
 
-
             try (Socket socket = new Socket("localhost", port)) {
                 DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
 
@@ -127,6 +127,28 @@ public class AstRulesEngineTest {
 
                 engine.shutdown();
             }
+        } finally {
+            engine.shutdown();
+        }
+    }
+
+    @Test(timeout = 5000L)
+    public void testThrowExceptionOnUnboundSocket() throws IOException {
+        AstRulesEngine engine = new AstRulesEngine();
+        int port = engine.port();
+
+        try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
+            String rules = new String(s.readAllBytes());
+            long id = engine.createRuleset(rules);
+
+            try {
+                engine.assertFact(id, "{\"j\": 42}");
+                fail("trying to use the engine before having opened a connection should fail");
+            } catch (IllegalStateException e) {
+                // expected
+            }
+        } finally {
+            engine.shutdown();
         }
     }
 }

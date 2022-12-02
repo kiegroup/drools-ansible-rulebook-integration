@@ -21,8 +21,16 @@ public class SyncRulesEvaluator extends AbstractRulesEvaluator {
     @Override
     protected CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier) {
         // if there is a running automatic clock all engine evaluations have to be enqueued on the single threaded async executor to avoid race condition
-        return asyncExecutor != null ?
+        return hasAsyncChannel() ?
                 completeFutureOf( asyncExecutor.submit(() -> resultSupplier.get()).join() ) :
                 completeFutureOf( resultSupplier.get() );
+    }
+
+    private boolean hasAsyncChannel() {
+        boolean hasAsyncChannel = asyncExecutor != null;
+        if (hasAsyncChannel && !channel.isConnected()) {
+            throw new IllegalStateException("No connected client on server socket");
+        }
+        return hasAsyncChannel;
     }
 }
