@@ -91,10 +91,11 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *
  *  rule acc_start when
  *    not( Control( name == "start_R" ) )
- *    accumulate( Control( name startsWith "R" ); $count : count(); $count > 0  ) // at least one pattern
+ *    $match : Control( name startsWith "R" ) // at least one pattern
  *  then
  *    Control control = new Control().withExpiration(5, TimeUnit.MINUTE);
  *    control.set("name", "start_R");
+ *    control.set( "event", $match.get("event") ); // carry matched event in the start control fact
  *    insert(control);
  *  end
  *
