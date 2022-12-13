@@ -204,6 +204,8 @@ public class TimedOutTest {
         assertEquals( 1, matchedRules.size() );
         Match match = matchedRules.get(0);
         assertEquals("r1", match.getRule().getName());
+        assertEquals( 1, match.getDeclarationIds().size() );
+        assertEquals( "m", match.getDeclarationIds().get(0) );
         assertEquals( 1, ((Fact) match.getDeclarationValue("m")).get("j") );
     }
 }

@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
 
+import javax.swing.plaf.TableHeaderUI;
+
 import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
@@ -46,6 +48,13 @@ public class RuleExecutorChannel {
     }
 
     public boolean isConnected() {
+        for (int i = 0; !connected && i < 100; i++) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return connected;
     }
 

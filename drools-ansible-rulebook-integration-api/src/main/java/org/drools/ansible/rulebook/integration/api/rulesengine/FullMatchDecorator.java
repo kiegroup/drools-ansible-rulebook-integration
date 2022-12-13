@@ -5,22 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.kie.api.definition.rule.Rule;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
-public class MatchDecorator implements Match {
-    private final Match delegate;
-    private final Map<String, Object> boundObjects = new HashMap<>();
+public class FullMatchDecorator extends EmptyMatchDecorator {
 
-    public MatchDecorator(Match delegate) {
-        this.delegate = delegate;
-    }
-
-    @Override
-    public Rule getRule() {
-        return delegate.getRule();
+    public FullMatchDecorator(Match delegate) {
+        super(delegate);
     }
 
     @Override
@@ -30,31 +22,24 @@ public class MatchDecorator implements Match {
 
     @Override
     public List<Object> getObjects() {
-        List<Object> objects = new ArrayList<>();
+        List<Object> objects = super.getObjects();
         objects.addAll( delegate.getObjects() );
-        objects.addAll( boundObjects.values() );
         return objects;
     }
 
     @Override
     public List<String> getDeclarationIds() {
-        List<String> ids = new ArrayList<>();
+        List<String> ids = super.getDeclarationIds();
         ids.addAll( delegate.getDeclarationIds() );
-        ids.addAll( boundObjects.keySet() );
         return ids;
     }
 
     @Override
     public Object getDeclarationValue(String declarationId) {
-        Object object = boundObjects.get(declarationId);
+        Object object = super.getDeclarationValue(declarationId);
         if (object == null) {
             object = delegate.getDeclarationValue(declarationId);
         }
         return object;
-    }
-
-    public MatchDecorator withBoundObject(String bindingName, Object fact) {
-        boundObjects.put(bindingName, fact);
-        return this;
     }
 }

@@ -173,7 +173,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     protected List<Match> syncProcessRetract(Map<String, Object> json) {
         List<Match> matches = retractFact(json) ? findMatchedRules() : Collections.emptyList();
-        matches = matches.stream().map( MatchDecorator::new ).map(m -> m.withBoundObject("m", json) ).collect(Collectors.toList());
+        matches = matches.stream().map( FullMatchDecorator::new ).map(m -> m.withBoundObject("m", json) ).collect(Collectors.toList());
         return matches;
     }
 
