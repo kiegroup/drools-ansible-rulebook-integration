@@ -17,7 +17,9 @@ import org.drools.model.Variable;
 import org.drools.model.view.ViewItem;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.TimeAmount.parseTimeAmount;
+import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
+import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.TIMED_OUT_RULE;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.model.DSL.accFunction;
@@ -167,12 +169,13 @@ public class TimedOutDefinition implements TimeConstraint {
         String startTag = "start_" + ruleName;
         String endTag = "end_" + ruleName;
 
-        return rule( ruleName ).build(
-                protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ),
-                not( protoPattern(controlVar2)
-                        .expr( "name", Index.ConstraintType.EQUAL, endTag )
-                        .expr( after(0, timeAmount.getTimeUnit(), timeAmount.getAmount(), timeAmount.getTimeUnit()), controlVar1 ) ),
-                consequence
+        return rule( ruleName ).metadata(RULE_TYPE_TAG, TIMED_OUT_RULE)
+                .build(
+                    protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ),
+                    not( protoPattern(controlVar2)
+                            .expr( "name", Index.ConstraintType.EQUAL, endTag )
+                            .expr( after(0, timeAmount.getTimeUnit(), timeAmount.getAmount(), timeAmount.getTimeUnit()), controlVar1 ) ),
+                    consequence
         );
     }
 
@@ -208,13 +211,12 @@ public class TimedOutDefinition implements TimeConstraint {
             rule(startTag).metadata(SYNTHETIC_RULE_TAG, true)
                 .build(
                         not( protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ) ),
-                        accumulate( protoPattern(controlVar2).expr(p -> ((String)p.get("name")).startsWith(rulePrefix)),
-                                accFunction(org.drools.core.base.accumulators.CountAccumulateFunction::new).as(resultCount)),
-                        pattern(resultCount).expr(count -> count > 0),
-                        on(resultCount).execute((drools, count) -> {
+                        protoPattern(controlVar2).expr( p -> ((String)p.get("name")).startsWith(rulePrefix) ),
+                        on(controlVar2).execute((drools, firstEvent) -> {
                             Event controlEvent = createMapBasedEvent( controlPrototype )
                                     .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
                             controlEvent.set( "name", startTag );
+                            controlEvent.set( "event", firstEvent.get("event") );
                             drools.insert(controlEvent);
                         })
                 )

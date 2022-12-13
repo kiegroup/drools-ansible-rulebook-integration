@@ -37,17 +37,19 @@ public class AsyncAstRulesEngineTest {
 
             assertNotNull(result);
 
+        } finally {
+            engine.shutdown();
         }
-
     }
 
     @Test
     public void testBrokenApi() throws IOException {
+        AsyncAstRulesEngine engine = new AsyncAstRulesEngine();
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("broken.json")) {
             String rules = new String(s.readAllBytes());
-
-            AsyncAstRulesEngine engine = new AsyncAstRulesEngine();
             assertThrows(UnsupportedOperationException.class, () -> engine.createRuleset(rules));
+        } finally {
+            engine.shutdown();
         }
     }
 
@@ -86,7 +88,8 @@ public class AsyncAstRulesEngineTest {
                 assertEquals(v.getJSONArray("result").getJSONObject(0).getJSONObject("r_0").get("m").toString(),
                         new JSONObject().put("i", 67).toString());
             }
-
+        } finally {
+            engine.shutdown();
         }
     }
 
@@ -118,7 +121,8 @@ public class AsyncAstRulesEngineTest {
 
             String result = engine.getFacts(id);
             assertNotNull(result);
-
+        } finally {
+            engine.shutdown();
         }
     }
 

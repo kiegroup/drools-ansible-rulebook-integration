@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.api;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.drools.core.facttemplates.Fact;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
@@ -201,6 +202,8 @@ public class TimedOutTest {
 
         matchedRules = rulesExecutor.advanceTime( 3, TimeUnit.SECONDS ).join();
         assertEquals( 1, matchedRules.size() );
-        assertEquals("r1", matchedRules.get(0).getRule().getName());
+        Match match = matchedRules.get(0);
+        assertEquals("r1", match.getRule().getName());
+        assertEquals( 1, ((Fact) match.getDeclarationValue("m")).get("j") );
     }
 }
