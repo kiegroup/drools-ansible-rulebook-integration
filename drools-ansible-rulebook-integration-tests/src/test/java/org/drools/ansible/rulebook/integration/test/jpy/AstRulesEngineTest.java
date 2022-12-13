@@ -34,24 +34,27 @@ public class AstRulesEngineTest {
         String result = engine.assertFact(id, "{ \"sensu\": { \"data\": { \"i\":1 } } }");
 
         assertNotNull(result);
+
+        engine.shutdown();
     }
 
     @Test
     public void testBrokenApi() throws IOException {
+        AstRulesEngine engine = new AstRulesEngine();
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("broken.json")) {
             String rules = new String(s.readAllBytes());
-
-            AstRulesEngine engine = new AstRulesEngine();
             assertThrows(UnsupportedOperationException.class, () -> engine.createRuleset(rules));
+        } finally {
+            engine.shutdown();
         }
     }
 
     @Test
     public void testRetractFact() throws IOException {
+        AstRulesEngine engine = new AstRulesEngine();
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
             String rules = new String(s.readAllBytes());
 
-            AstRulesEngine engine = new AstRulesEngine();
             long id = engine.createRuleset(rules);
             engine.assertFact(id, "{\"j\": 42}");
             engine.assertFact(id, "{\"i\": 67}");
@@ -61,6 +64,8 @@ public class AstRulesEngineTest {
             List<Map<String, Map>> v = readValue(r);
 
             assertEquals(v.get(0).get("r_0").get("m"), new JSONObject(retractedFact).toMap());
+        } finally {
+            engine.shutdown();
         }
     }
 
@@ -93,9 +98,9 @@ public class AstRulesEngineTest {
                 Map<String, Map> match = (Map<String, Map>) matches.get(0);
 
                 assertNotNull(match.get("r1"));
-
-                engine.shutdown();
             }
+        } finally {
+            engine.shutdown();
         }
     }
 
@@ -124,8 +129,6 @@ public class AstRulesEngineTest {
                 List<Object> matches2 = new JSONObject(r2).getJSONArray("result").toList();
                 Map<String, Map> match = (Map<String, Map>) matches2.get(0);
                 assertNotNull(match.get("r1"));
-
-                engine.shutdown();
             }
         } finally {
             engine.shutdown();
