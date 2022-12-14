@@ -1,6 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
-import org.drools.model.Index.ConstraintType;
+import org.drools.model.ConstraintOperator;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
@@ -15,18 +15,18 @@ import static org.drools.model.PrototypeExpression.prototypeField;
 public class ParsedCondition {
 
     private final PrototypeExpression left;
-    private final ConstraintType operator;
+    private final ConstraintOperator operator;
     private final PrototypeExpression right;
 
     private boolean notPattern = false;
 
     private boolean implicitPattern = false;
 
-    public ParsedCondition(String left, ConstraintType operator, Object right) {
+    public ParsedCondition(String left, ConstraintOperator operator, Object right) {
         this(prototypeField(left), operator, fixedValue(right));
     }
 
-    public ParsedCondition(PrototypeExpression left, ConstraintType operator, PrototypeExpression right) {
+    public ParsedCondition(PrototypeExpression left, ConstraintOperator operator, PrototypeExpression right) {
         this.left = left;
         this.operator = operator;
         this.right = right;
@@ -36,7 +36,7 @@ public class ParsedCondition {
         return left;
     }
 
-    public ConstraintType getOperator() {
+    public ConstraintOperator getOperator() {
         return operator;
     }
 

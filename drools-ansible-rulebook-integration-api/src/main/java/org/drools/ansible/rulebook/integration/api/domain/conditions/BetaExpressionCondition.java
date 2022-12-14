@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
+import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
 import org.drools.model.PrototypeExpression;
 
@@ -7,7 +8,7 @@ public class BetaExpressionCondition extends ExpressionCondition {
 
     private final String otherBinding;
 
-    public BetaExpressionCondition(String patternBinding, PrototypeExpression left, Index.ConstraintType operator, String otherBinding, PrototypeExpression right) {
+    public BetaExpressionCondition(String patternBinding, PrototypeExpression left, ConstraintOperator operator, String otherBinding, PrototypeExpression right) {
         super(patternBinding, left, operator, right);
         this.otherBinding = otherBinding;
     }

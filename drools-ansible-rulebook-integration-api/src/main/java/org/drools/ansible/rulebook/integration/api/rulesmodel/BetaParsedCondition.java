@@ -1,6 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
-import org.drools.model.Index.ConstraintType;
+import org.drools.model.ConstraintOperator;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
@@ -11,7 +11,7 @@ public class BetaParsedCondition extends ParsedCondition {
 
     private final PrototypeVariable betaVariable;
 
-    public BetaParsedCondition(PrototypeExpression left, ConstraintType operator, PrototypeVariable betaVariable, PrototypeExpression right) {
+    public BetaParsedCondition(PrototypeExpression left, ConstraintOperator operator, PrototypeVariable betaVariable, PrototypeExpression right) {
         super(left, operator, right);
         this.betaVariable = betaVariable;
     }

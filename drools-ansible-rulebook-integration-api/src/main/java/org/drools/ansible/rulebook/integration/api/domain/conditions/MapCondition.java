@@ -1,9 +1,16 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemInListConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInListConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.ListNotContainsConstraint;
+import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL.PrototypePatternDef;
 import org.drools.model.PrototypeExpression;
@@ -125,7 +132,7 @@ public class MapCondition implements Condition {
             return parseSingle(ruleContext, assigned.entrySet().iterator().next());
         }
 
-        Index.ConstraintType operator = decodeOperation(expressionName);
+        ConstraintOperator operator = decodeOperation(expressionName);
 
         if (operator == EXISTS_PROTOTYPE_FIELD) {
             return new ParsedCondition(map2Expr(ruleContext, expression).prototypeExpression, operator, fixedValue(true)).withNotPattern(expressionName.equals("IsNotDefinedExpression"));
@@ -149,6 +156,23 @@ public class MapCondition implements Condition {
     private static ConditionExpression map2Expr(RuleGenerationContext ruleContext, Object expr) {
         if (expr instanceof String) {
             return createFieldExpression(ruleContext, (String)expr);
+        }
+
+        if (expr instanceof Collection) {
+            List list = new ArrayList();
+            for (Object item : (Collection)expr) {
+                Map.Entry itemEntry = ((Map<?,?>) item).entrySet().iterator().next();
+                switch ((String) itemEntry.getKey()) {
+                    case "Integer":
+                    case "String":
+                    case "Boolean":
+                        list.add(itemEntry.getValue());
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unknown list item: " + itemEntry);
+                }
+            }
+            return new ConditionExpression(fixedValue(list));
         }
 
         Map<?,?> exprMap = (Map) expr;
@@ -238,7 +262,7 @@ public class MapCondition implements Condition {
         }
     }
 
-    private static Index.ConstraintType decodeOperation(String expressionName) {
+    private static ConstraintOperator decodeOperation(String expressionName) {
         switch (expressionName) {
             case "EqualsExpression":
                 return Index.ConstraintType.EQUAL;
@@ -255,6 +279,14 @@ public class MapCondition implements Condition {
             case "IsDefinedExpression":
             case "IsNotDefinedExpression":
                 return EXISTS_PROTOTYPE_FIELD;
+            case "ListContainsItemExpression":
+                return ListContainsConstraint.INSTANCE;
+            case "ListNotContainsItemExpression":
+                return ListNotContainsConstraint.INSTANCE;
+            case "ItemInListExpression":
+                return ItemInListConstraint.INSTANCE;
+            case "ItemNotInListExpression":
+                return ItemNotInListConstraint.INSTANCE;
         }
         throw new UnsupportedOperationException("Unrecognized operation type: " + expressionName);
     }

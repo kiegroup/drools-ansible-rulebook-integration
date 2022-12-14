@@ -1,21 +1,22 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
+import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
 import org.drools.model.PrototypeExpression;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 
 public class ExpressionCondition extends SimpleCondition {
     protected final PrototypeExpression left;
-    protected final Index.ConstraintType operator;
+    protected final ConstraintOperator operator;
     protected final PrototypeExpression right;
 
-    public ExpressionCondition(PrototypeExpression left, Index.ConstraintType operator, PrototypeExpression right) {
+    public ExpressionCondition(PrototypeExpression left, ConstraintOperator operator, PrototypeExpression right) {
         this.left = left;
         this.operator = operator;
         this.right = right;
     }
 
-    public ExpressionCondition(String patternBinding, PrototypeExpression left, Index.ConstraintType operator, PrototypeExpression right) {
+    public ExpressionCondition(String patternBinding, PrototypeExpression left, ConstraintOperator operator, PrototypeExpression right) {
         this(left, operator, right);
         setPatternBinding(patternBinding);
     }
