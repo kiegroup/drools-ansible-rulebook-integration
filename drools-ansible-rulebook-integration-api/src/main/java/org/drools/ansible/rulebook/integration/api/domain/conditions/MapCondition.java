@@ -63,11 +63,11 @@ public class MapCondition implements Condition {
     private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
         Object onceWithin = condition.getMap().remove("once_within");
         if (onceWithin != null) {
-            Object uniqueAttributes = condition.getMap().remove("unique_attributes");
-            if (uniqueAttributes == null) {
-                throw new IllegalArgumentException("once_within also requires unique_attributes");
+            Object groupByList = condition.getMap().remove("group_by");
+            if (groupByList == null) {
+                throw new IllegalArgumentException("once_within also requires group_by");
             }
-            ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin((String) onceWithin, (List<String>) uniqueAttributes));
+            ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin((String) onceWithin, (List<String>) groupByList));
         }
 
         Object timeWindow = condition.getMap().remove("time_window");
