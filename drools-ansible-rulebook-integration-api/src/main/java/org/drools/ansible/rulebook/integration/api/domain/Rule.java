@@ -25,7 +25,7 @@ public class Rule {
     private boolean enabled;
 
     private String onceWithin;
-    private List<String> groupByList;
+    private List<String> groupByAttributes;
 
     private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
@@ -85,15 +85,15 @@ public class Rule {
 
     public void setOnce_within(String onceWithin) {
         this.onceWithin = onceWithin;
-        if (groupByList != null) {
-            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, groupByList));
+        if (groupByAttributes != null) {
+            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, groupByAttributes));
         }
     }
 
-    public void setgroup_by(List<String> groupByList) {
-        this.groupByList = groupByList;
+    public void setgroup_by_attributes(List<String> groupByAttributes) {
+        this.groupByAttributes = groupByAttributes;
         if (onceWithin != null) {
-            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, groupByList));
+            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, groupByAttributes));
         }
     }
 

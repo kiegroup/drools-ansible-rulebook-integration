@@ -39,7 +39,7 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *         all:
  *           - singleton << event.sensu.process.type == "alert"
  *         once_within: 10 minutes
- *         group_by:
+ *         group_by_attributes:
  *             - event.sensu.host
  *             - event.sensu.process.type
  *
@@ -69,13 +69,13 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
 public class OnceWithinDefinition implements TimeConstraint {
 
     private final TimeAmount timeAmount;
-    private final List<String> groupByList;
+    private final List<String> groupByAttributes;
 
     PrototypeDSL.PrototypePatternDef guardedPattern;
 
-    public OnceWithinDefinition(TimeAmount timeAmount, List<String> groupByList) {
+    public OnceWithinDefinition(TimeAmount timeAmount, List<String> groupByAttributes) {
         this.timeAmount = timeAmount;
-        this.groupByList = groupByList;
+        this.groupByAttributes = groupByAttributes;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class OnceWithinDefinition implements TimeConstraint {
         return (Drools drools, PrototypeFact fact) -> {
             Event controlEvent = createMapBasedEvent( getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
                     .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-            for (String unique : groupByList) {
+            for (String unique : groupByAttributes) {
                 controlEvent.set(unique, fact.get(unique));
             }
             drools.insert(controlEvent);
@@ -103,7 +103,7 @@ public class OnceWithinDefinition implements TimeConstraint {
 
     private PrototypeDSL.PrototypePatternDef createControlPattern() {
         PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(getPrototype(SYNTHETIC_PROTOTYPE_NAME)));
-        for (String unique : groupByList) {
+        for (String unique : groupByAttributes) {
             controlPattern.expr( prototypeField(unique), Index.ConstraintType.EQUAL, getTimeConstraintConsequenceVariable(), prototypeField(unique) );
         }
         return controlPattern;
@@ -121,11 +121,11 @@ public class OnceWithinDefinition implements TimeConstraint {
 
     @Override
     public String toString() {
-        return "OnceWithinDefinition{" + " " + timeAmount + ", groupByList=" + groupByList + " }";
+        return "OnceWithinDefinition{" + " " + timeAmount + ", groupByAttributes=" + groupByAttributes + " }";
     }
 
-    public static OnceWithinDefinition parseOnceWithin(String onceWithin, List<String> groupByList) {
-        List<String> sanitizedAttributes = groupByList.stream().map(OnceWithinDefinition::sanitizeAttributeName).collect(toList());
+    public static OnceWithinDefinition parseOnceWithin(String onceWithin, List<String> groupByAttributes) {
+        List<String> sanitizedAttributes = groupByAttributes.stream().map(OnceWithinDefinition::sanitizeAttributeName).collect(toList());
         return new OnceWithinDefinition(parseTimeAmount(onceWithin), sanitizedAttributes);
     }
 

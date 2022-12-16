@@ -38,7 +38,7 @@ public class OnceWithinTest {
                 "                  }\n" +
                 "               ],\n" +
                 "               \"once_within\":\"10 seconds\",\n" +
-                "               \"group_by\":[\n" +
+                "               \"group_by_attributes\":[\n" +
                 "                  \"event.sensu.host\",\n" +
                 "                  \"event.sensu.process.type\"\n" +
                 "               ]\n" +
@@ -96,7 +96,7 @@ public class OnceWithinTest {
                 "               }\n" +
                 "            },\n" +
                 "            \"once_within\":\"10 seconds\",\n" +
-                "            \"group_by\":[\n" +
+                "            \"group_by_attributes\":[\n" +
                 "               \"event.sensu.host\",\n" +
                 "               \"event.sensu.process.type\"\n" +
                 "            ]\n" +
