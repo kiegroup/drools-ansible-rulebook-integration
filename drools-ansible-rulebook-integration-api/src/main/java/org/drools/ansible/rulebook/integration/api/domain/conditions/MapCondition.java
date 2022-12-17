@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.ExistsField;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint;
@@ -20,9 +21,9 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 
-import static org.drools.model.Index.ConstraintType.EXISTS_PROTOTYPE_FIELD;
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
 import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.PrototypeExpression.thisPrototype;
 
 public class MapCondition implements Condition {
 
@@ -134,8 +135,8 @@ public class MapCondition implements Condition {
 
         ConstraintOperator operator = decodeOperation(expressionName);
 
-        if (operator == EXISTS_PROTOTYPE_FIELD) {
-            return new ParsedCondition(map2Expr(ruleContext, expression).prototypeExpression, operator, fixedValue(true)).withNotPattern(expressionName.equals("IsNotDefinedExpression"));
+        if (operator == ExistsField.INSTANCE) {
+            return new ParsedCondition(thisPrototype(), operator, fixedValue(map2Expr(ruleContext, expression).getFieldName())).withNotPattern(expressionName.equals("IsNotDefinedExpression"));
         }
 
         ConditionExpression left = map2Expr(ruleContext, expression.get("lhs"));
@@ -252,6 +253,10 @@ public class MapCondition implements Condition {
             return betaVariable != null;
         }
 
+        public String getFieldName() {
+            return ((PrototypeExpression.PrototypeFieldValue) prototypeExpression).getFieldName();
+        }
+
         @Override
         public String toString() {
             return "ConditionExpression{" +
@@ -278,7 +283,7 @@ public class MapCondition implements Condition {
                 return Index.ConstraintType.LESS_OR_EQUAL;
             case "IsDefinedExpression":
             case "IsNotDefinedExpression":
-                return EXISTS_PROTOTYPE_FIELD;
+                return ExistsField.INSTANCE;
             case "ListContainsItemExpression":
                 return ListContainsConstraint.INSTANCE;
             case "ListNotContainsItemExpression":

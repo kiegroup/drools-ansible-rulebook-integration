@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.drools.ansible.rulebook.integration.api.domain.constraints.ExistsField;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.NotExistsField;
 import org.drools.model.Index;
 import org.drools.model.PrototypeExpression;
 import org.drools.ansible.rulebook.integration.api.domain.Rule;
@@ -16,6 +18,7 @@ import org.drools.ansible.rulebook.integration.api.domain.conditions.ExpressionC
 
 import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;
+import static org.drools.model.PrototypeExpression.thisPrototype;
 
 public class DurableRule {
     private Set<String> existingBindings = new HashSet<>();
@@ -170,9 +173,9 @@ public class DurableRule {
                         new SimpleCondition(leftValue + " != null", binding),
                         new SimpleCondition(leftValue + " != " + toOperand(rightValue), binding));
             case "$ex":
-                return new ExpressionCondition(binding, prototypeField(leftValue), Index.ConstraintType.EXISTS_PROTOTYPE_FIELD, fixedValue(true));
+                return new ExpressionCondition(binding, thisPrototype(), ExistsField.INSTANCE, fixedValue(leftValue));
             case "$nex":
-                return new ExpressionCondition(binding, prototypeField(leftValue), Index.ConstraintType.EXISTS_PROTOTYPE_FIELD, fixedValue(false));
+                return new ExpressionCondition(binding, thisPrototype(), NotExistsField.INSTANCE, fixedValue(leftValue));
             case "$eq":
                 decodedOp = "==";
                 break;
