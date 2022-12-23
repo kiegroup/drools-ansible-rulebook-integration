@@ -151,7 +151,8 @@ public class AstCondition implements Condition {
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
-            PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), DEFAULT_PROTOTYPE_NAME);
+            String binding = ((SingleCondition) lhs).getPattern(ruleContext).getFirstVariable().getName();
+            PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(binding, DEFAULT_PROTOTYPE_NAME);
             pattern = pattern.or();
             ((SingleCondition) lhs).parsedCondition.addConditionToPattern(ruleContext, pattern);
             ((SingleCondition) rhs).parsedCondition.addConditionToPattern(ruleContext, pattern);
