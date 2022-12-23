@@ -52,7 +52,7 @@ public class MapCondition implements Condition {
         return patternBinding;
     }
 
-    public void setPatternBinding(String patternBinding) {
+    private void setPatternBinding(String patternBinding) {
         this.patternBinding = patternBinding;
     }
 
@@ -109,9 +109,12 @@ public class MapCondition implements Condition {
             case "AllCondition":
                 AstCondition.MultipleConditions conditions = expressionName.equals("AnyCondition") ?
                         new AstCondition.AnyCondition(ruleContext) : new AstCondition.AllCondition(ruleContext);
-                for (Map subC : (List<Map>) entry.getValue()) {
+                List<Map> innerMaps = (List<Map>) entry.getValue();
+                ruleContext.setMultiplePatterns(innerMaps.size() > 1);
+                for (Map subC : innerMaps) {
                     conditions.addCondition(map2Ast(ruleContext, new MapCondition(subC), conditions));
                 }
+                ruleContext.setMultiplePatterns(false);
                 return conditions;
         }
 
@@ -126,7 +129,7 @@ public class MapCondition implements Condition {
         if (expressionName.equals("AssignmentExpression")) {
             Map<?,?> assignment = (Map<?,?>) expression.get("lhs");
             assert(assignment.size() == 1);
-            this.patternBinding = (String) assignment.values().iterator().next();
+            setPatternBinding( (String) assignment.values().iterator().next() );
 
             Map<?,?> assigned = (Map<?,?>) expression.get("rhs");
             assert(assigned.size() == 1);

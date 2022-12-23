@@ -41,6 +41,8 @@ public class RuleGenerationContext {
 
     private int bindingsCounter = 0;
 
+    private boolean multiplePatterns = false;
+
     private TimeConstraint timeConstraint;
 
     public void addOptions(Iterable<RuleConfigurationOption> options) {
@@ -72,8 +74,12 @@ public class RuleGenerationContext {
         patterns.popContext();
     }
 
+    public void setMultiplePatterns(boolean multiplePatterns) {
+        this.multiplePatterns = multiplePatterns;
+    }
+
     public String generateBinding() {
-        String binding = bindingsCounter == 0 ? "m" : "m_" + bindingsCounter;
+        String binding = ( !multiplePatterns && bindingsCounter == 0 ) ? "m" : "m_" + bindingsCounter;
         bindingsCounter++;
         return binding;
     }
