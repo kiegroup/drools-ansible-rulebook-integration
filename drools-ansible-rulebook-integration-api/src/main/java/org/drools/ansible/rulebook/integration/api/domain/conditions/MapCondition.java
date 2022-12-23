@@ -48,6 +48,8 @@ public class MapCondition implements Condition {
     private String getPatternBinding(RuleGenerationContext ruleContext) {
         if (patternBinding == null) {
             patternBinding = ruleContext.generateBinding();
+        } else {
+            ruleContext.incrementBindingsCounter();
         }
         return patternBinding;
     }

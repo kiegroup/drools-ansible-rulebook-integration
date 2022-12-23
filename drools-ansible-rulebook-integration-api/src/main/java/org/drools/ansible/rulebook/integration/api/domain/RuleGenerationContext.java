@@ -80,8 +80,12 @@ public class RuleGenerationContext {
 
     public String generateBinding() {
         String binding = ( !multiplePatterns && bindingsCounter == 0 ) ? "m" : "m_" + bindingsCounter;
-        bindingsCounter++;
+        incrementBindingsCounter();
         return binding;
+    }
+
+    public void incrementBindingsCounter() {
+        bindingsCounter++;
     }
 
     public boolean hasOption(RuleConfigurationOption option) {
