@@ -180,7 +180,7 @@ public class MapCondition implements Condition {
             for (Object item : (Collection)expr) {
                 Map.Entry itemEntry = ((Map<?,?>) item).entrySet().iterator().next();
                 if (isKnownType( (String) itemEntry.getKey() )) {
-                    list.add( toJsonValue(itemEntry.getValue()) );
+                    list.add( toJsonValue( (String) itemEntry.getKey(), itemEntry.getValue() ) );
                 } else {
                     throw new UnsupportedOperationException("Unknown list item: " + itemEntry);
                 }
@@ -203,7 +203,7 @@ public class MapCondition implements Condition {
         Object value = entry.getValue();
 
         if (isKnownType(key)) {
-            return new ConditionExpression(fixedValue(toJsonValue(value)));
+            return new ConditionExpression(fixedValue(toJsonValue(key, value)));
         }
 
         if (value instanceof String) {
@@ -223,7 +223,10 @@ public class MapCondition implements Condition {
         return type.equals("Integer") || type.equals("Float") || type.equals("String") || type.equals("Boolean");
     }
 
-    private static Object toJsonValue(Object value) {
+    private static Object toJsonValue(String type, Object value) {
+        if (type.equals("String")) {
+            return value.toString();
+        }
         return JSONObject.stringToValue(value.toString());
     }
 

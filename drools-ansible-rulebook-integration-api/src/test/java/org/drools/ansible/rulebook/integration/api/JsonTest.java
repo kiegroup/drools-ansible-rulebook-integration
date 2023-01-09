@@ -155,6 +155,17 @@ public class JsonTest {
     }
 
     @Test
+    public void testProcessNumericString() {
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"String\":\"1\" } } } }} ] }");
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":\"1\" } } }" ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
     public void testProcessRuleWithUnknownAction() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } }, \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
 
