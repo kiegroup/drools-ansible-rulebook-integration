@@ -128,6 +128,15 @@ public class MapCondition implements Condition {
 
     private ParsedCondition parseSingle(RuleGenerationContext ruleContext, Map.Entry entry) {
         String expressionName = (String) entry.getKey();
+        if (expressionName.equals("Boolean")) {
+            // "Boolean":true is the always true constraint
+            return new ParsedCondition(fixedValue(true), Index.ConstraintType.EQUAL, fixedValue(entry.getValue()));
+        }
+        if (entry.getValue() instanceof String) {
+            // the field name alone is the shortcut for fieldName == true
+            return new ParsedCondition(mapEntry2Expr(ruleContext, entry).prototypeExpression, Index.ConstraintType.EQUAL, fixedValue(true));
+        }
+
         Map<?,?> expression = (Map<?,?>) entry.getValue();
 
         if (expressionName.equals("AssignmentExpression")) {
@@ -182,11 +191,19 @@ public class MapCondition implements Condition {
         Map<?,?> exprMap = (Map) expr;
         assert(exprMap.size() == 1);
         Map.Entry entry = exprMap.entrySet().iterator().next();
+        return mapEntry2Expr(ruleContext, expr, entry);
+    }
+
+    private static ConditionExpression mapEntry2Expr(RuleGenerationContext ruleContext, Map.Entry entry) {
+        return mapEntry2Expr(ruleContext, null, entry);
+    }
+
+    private static ConditionExpression mapEntry2Expr(RuleGenerationContext ruleContext, Object expr, Map.Entry entry) {
         String key = (String) entry.getKey();
         Object value = entry.getValue();
 
         if (isKnownType(key)) {
-            return new ConditionExpression( fixedValue( toJsonValue(value) ) );
+            return new ConditionExpression(fixedValue(toJsonValue(value)));
         }
 
         if (value instanceof String) {
@@ -196,10 +213,10 @@ public class MapCondition implements Condition {
 
         if (value instanceof Map) {
             Map<?,?> expression = (Map<?,?>) value;
-            return map2Expr(ruleContext, expression.get("lhs")).composeWith( decodeBinaryOperator(key), map2Expr(ruleContext, expression.get("rhs")));
+            return map2Expr(ruleContext, expression.get("lhs")).composeWith(decodeBinaryOperator(key), map2Expr(ruleContext, expression.get("rhs")));
         }
 
-        throw new UnsupportedOperationException("Invalid expression: " + expr);
+        throw new UnsupportedOperationException("Invalid expression: " + (expr != null ? expr : entry));
     }
 
     private static boolean isKnownType(String type) {
