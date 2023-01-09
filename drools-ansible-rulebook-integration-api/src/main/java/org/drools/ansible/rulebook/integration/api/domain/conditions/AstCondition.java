@@ -112,7 +112,11 @@ public class AstCondition implements Condition {
         }
     }
 
-    public static class AndCondition implements Condition {
+    interface PatternCondition extends Condition {
+        ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern);
+    }
+
+    public static class AndCondition implements PatternCondition {
 
         private Condition lhs;
         private Condition rhs;
@@ -132,12 +136,24 @@ public class AstCondition implements Condition {
             lhs.toPattern(ruleContext);
             return rhs.toPattern(ruleContext);
         }
+
+        @Override
+        public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
+            ((PatternCondition) lhs).addConditionToPattern(ruleContext, pattern);
+            return ((PatternCondition) rhs).addConditionToPattern(ruleContext, pattern);
+        }
     }
 
-    public static class OrCondition implements Condition {
+    public static class OrCondition implements PatternCondition {
+
+        private final String binding;
 
         private Condition lhs;
         private Condition rhs;
+
+        public OrCondition(String binding) {
+            this.binding = binding;
+        }
 
         public OrCondition withLhs(Condition condition) {
             this.lhs = condition;
@@ -151,16 +167,25 @@ public class AstCondition implements Condition {
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
-            String binding = ((SingleCondition) lhs).getPattern(ruleContext).getFirstVariable().getName();
             PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(binding, DEFAULT_PROTOTYPE_NAME);
             pattern = pattern.or();
-            ((SingleCondition) lhs).parsedCondition.addConditionToPattern(ruleContext, pattern);
-            ((SingleCondition) rhs).parsedCondition.addConditionToPattern(ruleContext, pattern);
+            addConditionToPattern(ruleContext, pattern);
             return pattern.endOr();
+        }
+
+        @Override
+        public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
+            PrototypeDSL.PrototypePatternDef p1 = pattern.and();
+            ((PatternCondition) lhs).addConditionToPattern(ruleContext, p1);
+            p1.endAnd();
+            PrototypeDSL.PrototypePatternDef p2 = pattern.and();
+            ((PatternCondition) rhs).addConditionToPattern(ruleContext, p2);
+            p2.endAnd();
+            return pattern;
         }
     }
 
-    public static class SingleCondition<P extends MultipleConditions> implements Condition {
+    public static class SingleCondition<P extends MultipleConditions> implements PatternCondition {
 
         private final P parent;
 
@@ -207,8 +232,13 @@ public class AstCondition implements Condition {
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
-            ViewItem pattern = parsedCondition.addConditionToPattern(ruleContext, getPattern(ruleContext));
+            ViewItem pattern = addConditionToPattern(ruleContext, getPattern(ruleContext));
             return ruleContext.getTimeConstraint().map(tc -> tc.processTimeConstraint(pattern)).orElse(pattern);
+        }
+
+        @Override
+        public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
+            return parsedCondition.addConditionToPattern(ruleContext, pattern);
         }
 
         public SingleCondition<P> addSingleCondition(PrototypeExpression left, Index.ConstraintType operator, PrototypeExpression right) {

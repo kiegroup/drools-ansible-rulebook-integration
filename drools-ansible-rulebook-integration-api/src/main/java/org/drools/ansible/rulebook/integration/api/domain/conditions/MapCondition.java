@@ -91,22 +91,23 @@ public class MapCondition implements Condition {
         Map.Entry entry = condition.getMap().entrySet().iterator().next();
         String expressionName = (String) entry.getKey();
         switch (expressionName) {
-            case "OrExpression":
-                String orBinding = condition.getPatternBinding(ruleContext);
-                Map.Entry lhsEntry = ((Map<?,?>) ((Map) entry.getValue()).get("lhs")).entrySet().iterator().next();
-                Map.Entry rhsEntry = ((Map<?,?>) ((Map) entry.getValue()).get("rhs")).entrySet().iterator().next();
-                return new AstCondition.OrCondition()
-                        .withLhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, lhsEntry)).withPatternBinding(ruleContext, orBinding))
-                        .withRhs(new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, rhsEntry)).withPatternBinding(ruleContext, orBinding));
             case "AndExpression":
-                String andBinding = condition.getPatternBinding(ruleContext);
+            case "OrExpression":
+                String binding = condition.getPatternBinding(ruleContext);
                 MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
-                lhs.setPatternBinding(andBinding);
+                lhs.setPatternBinding(binding);
                 MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
-                rhs.setPatternBinding(andBinding);
+                rhs.setPatternBinding(binding);
+
+                if (expressionName.equals("OrExpression")) {
+                    return new AstCondition.OrCondition(binding)
+                            .withLhs(map2Ast(ruleContext, lhs, parent))
+                            .withRhs(map2Ast(ruleContext, rhs, parent));
+                }
                 return new AstCondition.AndCondition()
                         .withLhs(map2Ast(ruleContext, lhs, null))
                         .withRhs(map2Ast(ruleContext, rhs, null));
+
             case "AnyCondition":
             case "AllCondition":
                 AstCondition.MultipleConditions conditions = expressionName.equals("AnyCondition") ?
