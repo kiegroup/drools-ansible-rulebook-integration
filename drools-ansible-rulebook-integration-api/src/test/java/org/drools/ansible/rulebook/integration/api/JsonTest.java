@@ -213,4 +213,18 @@ public class JsonTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testProcessRuleWithFloat() {
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"LessThanExpression\":{ \"lhs\":{ \"Event\": \"i\" }, \"rhs\":{ \"Float\": 200.89 } } } }} ] }");
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 200.9 }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\": 200.8 }" ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
 }

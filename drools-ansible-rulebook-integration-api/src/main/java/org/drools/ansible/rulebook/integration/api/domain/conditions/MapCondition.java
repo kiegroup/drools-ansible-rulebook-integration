@@ -20,6 +20,7 @@ import org.drools.model.view.ViewItem;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
+import org.json.JSONObject;
 
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
 import static org.drools.model.PrototypeExpression.fixedValue;
@@ -169,14 +170,10 @@ public class MapCondition implements Condition {
             List list = new ArrayList();
             for (Object item : (Collection)expr) {
                 Map.Entry itemEntry = ((Map<?,?>) item).entrySet().iterator().next();
-                switch ((String) itemEntry.getKey()) {
-                    case "Integer":
-                    case "String":
-                    case "Boolean":
-                        list.add(itemEntry.getValue());
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unknown list item: " + itemEntry);
+                if (isKnownType( (String) itemEntry.getKey() )) {
+                    list.add( toJsonValue(itemEntry.getValue()) );
+                } else {
+                    throw new UnsupportedOperationException("Unknown list item: " + itemEntry);
                 }
             }
             return new ConditionExpression(fixedValue(list));
@@ -188,11 +185,8 @@ public class MapCondition implements Condition {
         String key = (String) entry.getKey();
         Object value = entry.getValue();
 
-        switch (key) {
-            case "Integer":
-            case "String":
-            case "Boolean":
-                return new ConditionExpression(fixedValue(value));
+        if (isKnownType(key)) {
+            return new ConditionExpression( fixedValue( toJsonValue(value) ) );
         }
 
         if (value instanceof String) {
@@ -206,6 +200,14 @@ public class MapCondition implements Condition {
         }
 
         throw new UnsupportedOperationException("Invalid expression: " + expr);
+    }
+
+    private static boolean isKnownType(String type) {
+        return type.equals("Integer") || type.equals("Float") || type.equals("String") || type.equals("Boolean");
+    }
+
+    private static Object toJsonValue(Object value) {
+        return JSONObject.stringToValue(value.toString());
     }
 
     private static ConditionExpression createFieldExpression(RuleGenerationContext ruleContext, String fieldName) {
