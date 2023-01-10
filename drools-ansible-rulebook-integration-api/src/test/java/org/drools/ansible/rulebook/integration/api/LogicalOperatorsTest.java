@@ -224,7 +224,7 @@ public class LogicalOperatorsTest {
 
     @Test
     public void testOr() {
-        String JSON3 =
+        String json =
                 "{\n" +
                 "   \"rules\":[\n" +
                 "      {\n" +
@@ -262,7 +262,7 @@ public class LogicalOperatorsTest {
                 "   ]\n" +
                 "}";
 
-        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON3);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":0 }" ).join();
         assertEquals( 1, matchedRules.size() );
@@ -271,6 +271,68 @@ public class LogicalOperatorsTest {
         assertEquals( 0, matchedRules.size() );
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" ).join();
+        assertEquals( 1, matchedRules.size() );
+    }
+
+    @Test
+    public void testNegate() {
+        String json =
+                "{\n" +
+                "   \"rules\": [\n" +
+                "                {\n" +
+                "                    \"Rule\": {\n" +
+                "                        \"name\": \"r1\",\n" +
+                "                        \"condition\": {\n" +
+                "                            \"AllCondition\": [\n" +
+                "                                {\n" +
+                "                                    \"NegateExpression\": {\n" +
+                "                                        \"AndExpression\": {\n" +
+                "                                            \"lhs\": {\n" +
+                "                                                \"GreaterThanExpression\": {\n" +
+                "                                                    \"lhs\": {\n" +
+                "                                                        \"Event\": \"i\"\n" +
+                "                                                    },\n" +
+                "                                                    \"rhs\": {\n" +
+                "                                                        \"Integer\": 4\n" +
+                "                                                    }\n" +
+                "                                                }\n" +
+                "                                            },\n" +
+                "                                            \"rhs\": {\n" +
+                "                                                \"LessThanExpression\": {\n" +
+                "                                                    \"lhs\": {\n" +
+                "                                                        \"Event\": \"i\"\n" +
+                "                                                    },\n" +
+                "                                                    \"rhs\": {\n" +
+                "                                                        \"Integer\": 10\n" +
+                "                                                    }\n" +
+                "                                                }\n" +
+                "                                            }\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        },\n" +
+                "                        \"action\": {\n" +
+                "                            \"Action\": {\n" +
+                "                                \"action\": \"print_event\",\n" +
+                "                                \"action_args\": {}\n" +
+                "                            }\n" +
+                "                        },\n" +
+                "                        \"enabled\": true\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\":7 }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":2 }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"i\":14 }" ).join();
         assertEquals( 1, matchedRules.size() );
     }
 

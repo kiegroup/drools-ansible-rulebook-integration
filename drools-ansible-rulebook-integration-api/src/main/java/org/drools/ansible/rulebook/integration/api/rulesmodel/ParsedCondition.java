@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
+import org.drools.ansible.rulebook.integration.api.domain.constraints.NegationOperator;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
@@ -22,6 +23,8 @@ public class ParsedCondition {
 
     private boolean implicitPattern = false;
 
+    private boolean negated = false;
+
     public ParsedCondition(String left, ConstraintOperator operator, Object right) {
         this(prototypeField(left), operator, fixedValue(right));
     }
@@ -37,7 +40,7 @@ public class ParsedCondition {
     }
 
     public ConstraintOperator getOperator() {
-        return operator;
+        return negated ? new NegationOperator(operator) : operator;
     }
 
     public PrototypeExpression getRight() {
@@ -54,6 +57,11 @@ public class ParsedCondition {
         return this;
     }
 
+    public ParsedCondition negate() {
+        this.negated = true;
+        return this;
+    }
+
     public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
         if (implicitPattern) {
             PrototypeDSL.PrototypePatternDef first = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), PrototypeFactory.DEFAULT_PROTOTYPE_NAME);
@@ -62,14 +70,11 @@ public class ParsedCondition {
         }
 
         pattern.expr(getLeft(), getOperator(), getRight());
-        if (notPattern) {
-            return not(pattern);
-        }
-        return pattern;
+        return notPattern ? not(pattern) : pattern;
     }
 
     @Override
     public String toString() {
-        return left + " " + operator + " " + right;
+        return getLeft() + " " + getOperator() + " " + getRight();
     }
 }

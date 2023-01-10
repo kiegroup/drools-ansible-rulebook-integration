@@ -65,7 +65,7 @@ public class MapCondition implements Condition {
     }
 
     private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
-        Object onceWithin = condition.getMap().remove("once_within");
+        Object onceWithin = condition.getMap().remove(OnceWithinDefinition.KEYWORD);
         if (onceWithin != null) {
             Object groupByAttributes = condition.getMap().remove("group_by_attributes");
             if (groupByAttributes == null) {
@@ -74,12 +74,12 @@ public class MapCondition implements Condition {
             ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin((String) onceWithin, (List<String>) groupByAttributes));
         }
 
-        Object timeWindow = condition.getMap().remove("time_window");
+        Object timeWindow = condition.getMap().remove(TimeWindowDefinition.KEYWORD);
         if (timeWindow != null) {
             ruleContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow((String) timeWindow));
         }
 
-        Object timedOut = condition.getMap().remove("timed_out");
+        Object timedOut = condition.getMap().remove(TimedOutDefinition.KEYWORD);
         if (timedOut != null) {
             ruleContext.setTimeConstraint(TimedOutDefinition.parseTimedOut((String) timedOut));
         }
@@ -91,24 +91,8 @@ public class MapCondition implements Condition {
         assert(condition.getMap().size() == 1);
         Map.Entry entry = condition.getMap().entrySet().iterator().next();
         String expressionName = (String) entry.getKey();
+
         switch (expressionName) {
-            case "AndExpression":
-            case "OrExpression":
-                String binding = condition.getPatternBinding(ruleContext);
-                MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
-                lhs.setPatternBinding(binding);
-                MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
-                rhs.setPatternBinding(binding);
-
-                if (expressionName.equals("OrExpression")) {
-                    return new AstCondition.OrCondition(binding)
-                            .withLhs(map2Ast(ruleContext, lhs, parent))
-                            .withRhs(map2Ast(ruleContext, rhs, parent));
-                }
-                return new AstCondition.AndCondition()
-                        .withLhs(map2Ast(ruleContext, lhs, null))
-                        .withRhs(map2Ast(ruleContext, rhs, null));
-
             case "AnyCondition":
             case "AllCondition":
                 AstCondition.MultipleConditions conditions = expressionName.equals("AnyCondition") ?
@@ -120,6 +104,35 @@ public class MapCondition implements Condition {
                 }
                 ruleContext.setMultiplePatterns(false);
                 return conditions;
+        }
+
+        return pattern2Ast(ruleContext, condition, parent);
+    }
+
+    private static AstCondition.PatternCondition pattern2Ast(RuleGenerationContext ruleContext, MapCondition condition, AstCondition.MultipleConditions parent) {
+        assert(condition.getMap().size() == 1);
+        Map.Entry entry = condition.getMap().entrySet().iterator().next();
+        String expressionName = (String) entry.getKey();
+
+        if (expressionName.equals("NegateExpression")) {
+            return pattern2Ast(ruleContext, new MapCondition( (Map) entry.getValue() ), parent).negate(ruleContext);
+        }
+
+        switch (expressionName) {
+            case "AndExpression":
+            case "OrExpression":
+                String binding = condition.getPatternBinding(ruleContext);
+                MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
+                lhs.setPatternBinding(binding);
+                MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
+                rhs.setPatternBinding(binding);
+
+                AstCondition.CombinedPatternCondition combinedPatternCondition = expressionName.equals("OrExpression") ?
+                        new AstCondition.OrCondition(binding) :
+                        new AstCondition.AndCondition();
+                return combinedPatternCondition
+                        .withLhs(pattern2Ast(ruleContext, lhs, null))
+                        .withRhs(pattern2Ast(ruleContext, rhs, null));
         }
 
         return new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, entry))

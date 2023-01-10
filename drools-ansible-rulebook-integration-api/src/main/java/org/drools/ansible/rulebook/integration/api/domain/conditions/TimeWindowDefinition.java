@@ -36,6 +36,8 @@ import static org.drools.model.DSL.after;
  */
 public class TimeWindowDefinition implements TimeConstraint {
 
+    public static final String KEYWORD = "time_window";
+
     private final TimeAmount timeAmount;
 
     private final List<PrototypeVariable> formerVariables = new ArrayList<>();

@@ -68,6 +68,8 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  */
 public class OnceWithinDefinition implements TimeConstraint {
 
+    public static final String KEYWORD = "once_within";
+
     private final TimeAmount timeAmount;
     private final List<String> groupByAttributes;
 

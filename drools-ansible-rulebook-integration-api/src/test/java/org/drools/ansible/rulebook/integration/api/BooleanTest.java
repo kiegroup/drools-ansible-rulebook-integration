@@ -78,6 +78,38 @@ public class BooleanTest {
     }
 
     @Test
+    public void testProcessRuleWithImplicitNegateBoolean() {
+        String json =
+                "{\n" +
+                "   \"rules\":[\n" +
+                "      {\n" +
+                "         \"Rule\":{\n" +
+                "            \"name\":\"R1\",\n" +
+                "            \"condition\":{\n" +
+                "               \"AllCondition\":[\n" +
+                "                  {\n" +
+                "                     \"NegateExpression\": { \"sensu\":\"data.i\" }\n" +
+                "                  }\n" +
+                "               ]\n" +
+                "            }\n" +
+                "         }\n" +
+                "      }\n" +
+                "   ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":true } } }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":false } } }" ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
     public void testProcessRuleWithLiteralBoolean() {
         String json =
                 "{\n" +

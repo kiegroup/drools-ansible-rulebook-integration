@@ -133,6 +133,8 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  */
 public class TimedOutDefinition implements TimeConstraint {
 
+    public static final String KEYWORD = "timed_out";
+
     private final TimeAmount timeAmount;
 
     private final List<ViewItem> patterns = new ArrayList<>();

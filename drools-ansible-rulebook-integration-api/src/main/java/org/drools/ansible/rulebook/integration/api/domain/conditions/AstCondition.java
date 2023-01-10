@@ -112,24 +112,30 @@ public class AstCondition implements Condition {
         }
     }
 
-    interface PatternCondition extends Condition {
+    public interface PatternCondition extends Condition {
         ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern);
+
+        PatternCondition negate(RuleGenerationContext ruleContext);
     }
 
-    public static class AndCondition implements PatternCondition {
+    public abstract static class CombinedPatternCondition implements PatternCondition {
+        protected PatternCondition lhs;
+        protected PatternCondition rhs;
 
-        private Condition lhs;
-        private Condition rhs;
-
-        public AndCondition withLhs(Condition condition) {
+        public CombinedPatternCondition withLhs(PatternCondition condition) {
             this.lhs = condition;
             return this;
         }
 
-        public AndCondition withRhs(Condition condition) {
+        public CombinedPatternCondition withRhs(PatternCondition condition) {
             this.rhs = condition;
             return this;
         }
+    }
+
+
+
+    public static class AndCondition extends CombinedPatternCondition {
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
@@ -139,30 +145,24 @@ public class AstCondition implements Condition {
 
         @Override
         public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
-            ((PatternCondition) lhs).addConditionToPattern(ruleContext, pattern);
-            return ((PatternCondition) rhs).addConditionToPattern(ruleContext, pattern);
+            lhs.addConditionToPattern(ruleContext, pattern);
+            return rhs.addConditionToPattern(ruleContext, pattern);
+        }
+
+        @Override
+        public PatternCondition negate(RuleGenerationContext ruleContext) {
+            return new OrCondition(ruleContext.generateBinding())
+                    .withLhs(lhs.negate(ruleContext))
+                    .withRhs(rhs.negate(ruleContext));
         }
     }
 
-    public static class OrCondition implements PatternCondition {
+    public static class OrCondition extends CombinedPatternCondition {
 
         private final String binding;
 
-        private Condition lhs;
-        private Condition rhs;
-
         public OrCondition(String binding) {
             this.binding = binding;
-        }
-
-        public OrCondition withLhs(Condition condition) {
-            this.lhs = condition;
-            return this;
-        }
-
-        public OrCondition withRhs(Condition condition) {
-            this.rhs = condition;
-            return this;
         }
 
         @Override
@@ -176,12 +176,19 @@ public class AstCondition implements Condition {
         @Override
         public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
             PrototypeDSL.PrototypePatternDef p1 = pattern.and();
-            ((PatternCondition) lhs).addConditionToPattern(ruleContext, p1);
+            lhs.addConditionToPattern(ruleContext, p1);
             p1.endAnd();
             PrototypeDSL.PrototypePatternDef p2 = pattern.and();
-            ((PatternCondition) rhs).addConditionToPattern(ruleContext, p2);
+            rhs.addConditionToPattern(ruleContext, p2);
             p2.endAnd();
             return pattern;
+        }
+
+        @Override
+        public PatternCondition negate(RuleGenerationContext ruleContext) {
+            return new AndCondition()
+                    .withLhs(lhs.negate(ruleContext))
+                    .withRhs(rhs.negate(ruleContext));
         }
     }
 
@@ -239,6 +246,12 @@ public class AstCondition implements Condition {
         @Override
         public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
             return parsedCondition.addConditionToPattern(ruleContext, pattern);
+        }
+
+        @Override
+        public PatternCondition negate(RuleGenerationContext ruleContext) {
+            parsedCondition.negate();
+            return this;
         }
 
         public SingleCondition<P> addSingleCondition(PrototypeExpression left, Index.ConstraintType operator, PrototypeExpression right) {
