@@ -112,15 +112,39 @@ public class AstCondition implements Condition {
         }
     }
 
-    public interface PatternCondition extends Condition {
-        ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern);
+    public abstract static class PatternCondition implements Condition {
+        protected PrototypeDSL.PrototypePatternDef pattern;
 
-        PatternCondition negate(RuleGenerationContext ruleContext);
+        abstract ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern);
+
+        abstract PatternCondition negate(RuleGenerationContext ruleContext);
+
+        protected ViewItem processTimeConstraint(RuleGenerationContext ruleContext, ViewItem pattern) {
+            return ruleContext.getTimeConstraint().map(tc -> tc.processTimeConstraint(pattern)).orElse(pattern);
+        }
+
+        protected PrototypeDSL.PrototypePatternDef getPattern(RuleGenerationContext ruleContext) {
+            return pattern != null ? pattern : getPattern(ruleContext, ruleContext.generateBinding());
+        }
+
+        protected PrototypeDSL.PrototypePatternDef getPattern(RuleGenerationContext ruleContext, String binding) {
+            if (pattern == null) {
+                pattern = ruleContext.getOrCreatePattern(binding, DEFAULT_PROTOTYPE_NAME);
+            }
+            return pattern;
+        }
     }
 
-    public abstract static class CombinedPatternCondition implements PatternCondition {
+    public abstract static class CombinedPatternCondition extends PatternCondition {
+
+        protected final String binding;
+
         protected PatternCondition lhs;
         protected PatternCondition rhs;
+
+        protected CombinedPatternCondition(String binding) {
+            this.binding = binding;
+        }
 
         public CombinedPatternCondition withLhs(PatternCondition condition) {
             this.lhs = condition;
@@ -133,14 +157,17 @@ public class AstCondition implements Condition {
         }
     }
 
-
-
     public static class AndCondition extends CombinedPatternCondition {
+
+        public AndCondition(String binding) {
+            super(binding);
+        }
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
-            lhs.toPattern(ruleContext);
-            return rhs.toPattern(ruleContext);
+            PrototypeDSL.PrototypePatternDef pattern = getPattern(ruleContext, binding);
+            addConditionToPattern(ruleContext, pattern);
+            return processTimeConstraint(ruleContext, pattern);
         }
 
         @Override
@@ -151,7 +178,7 @@ public class AstCondition implements Condition {
 
         @Override
         public PatternCondition negate(RuleGenerationContext ruleContext) {
-            return new OrCondition(ruleContext.generateBinding())
+            return new OrCondition(binding)
                     .withLhs(lhs.negate(ruleContext))
                     .withRhs(rhs.negate(ruleContext));
         }
@@ -159,18 +186,17 @@ public class AstCondition implements Condition {
 
     public static class OrCondition extends CombinedPatternCondition {
 
-        private final String binding;
-
         public OrCondition(String binding) {
-            this.binding = binding;
+            super(binding);
         }
 
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
-            PrototypeDSL.PrototypePatternDef pattern = ruleContext.getOrCreatePattern(binding, DEFAULT_PROTOTYPE_NAME);
+            PrototypeDSL.PrototypePatternDef pattern = getPattern(ruleContext, binding);
             pattern = pattern.or();
             addConditionToPattern(ruleContext, pattern);
-            return pattern.endOr();
+            pattern = (PrototypeDSL.PrototypePatternDef) pattern.endOr();
+            return processTimeConstraint(ruleContext, pattern);
         }
 
         @Override
@@ -186,19 +212,17 @@ public class AstCondition implements Condition {
 
         @Override
         public PatternCondition negate(RuleGenerationContext ruleContext) {
-            return new AndCondition()
+            return new AndCondition(binding)
                     .withLhs(lhs.negate(ruleContext))
                     .withRhs(rhs.negate(ruleContext));
         }
     }
 
-    public static class SingleCondition<P extends MultipleConditions> implements PatternCondition {
+    public static class SingleCondition<P extends MultipleConditions> extends PatternCondition {
 
         private final P parent;
 
         private final ParsedCondition parsedCondition;
-
-        private PrototypeDSL.PrototypePatternDef pattern;
 
         private RuleGenerationContext ruleContext;
 
@@ -213,13 +237,6 @@ public class AstCondition implements Condition {
 
         void setRuleContext(RuleGenerationContext ruleContext) {
             this.ruleContext = ruleContext;
-        }
-
-        private PrototypeDSL.PrototypePatternDef getPattern(RuleGenerationContext ruleContext) {
-            if (pattern == null) {
-                pattern = ruleContext.getOrCreatePattern(ruleContext.generateBinding(), DEFAULT_PROTOTYPE_NAME);
-            }
-            return pattern;
         }
 
         public SingleCondition withPatternBinding(String patternBinding) {
@@ -240,7 +257,7 @@ public class AstCondition implements Condition {
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
             ViewItem pattern = addConditionToPattern(ruleContext, getPattern(ruleContext));
-            return ruleContext.getTimeConstraint().map(tc -> tc.processTimeConstraint(pattern)).orElse(pattern);
+            return processTimeConstraint(ruleContext, pattern);
         }
 
         @Override

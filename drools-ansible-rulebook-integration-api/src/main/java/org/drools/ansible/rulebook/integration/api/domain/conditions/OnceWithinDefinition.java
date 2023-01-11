@@ -47,7 +47,7 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  * to prevent further matches within that window plus another synthetic rule matching both the expected event and the synthetic event
  * in order to remove immediately from the working memory the duplicated events arrived in the same time window.
  *
- * In other words the former example is translated in the following 2 rules:
+ * In other words the former example is translated into the following 2 rules:
  *
  * rule R when
  *   singleton : Event( sensu.process.type == "alert" )
@@ -73,7 +73,7 @@ public class OnceWithinDefinition implements TimeConstraint {
     private final TimeAmount timeAmount;
     private final List<String> groupByAttributes;
 
-    PrototypeDSL.PrototypePatternDef guardedPattern;
+    private PrototypeDSL.PrototypePatternDef guardedPattern;
 
     public OnceWithinDefinition(TimeAmount timeAmount, List<String> groupByAttributes) {
         this.timeAmount = timeAmount;
@@ -99,6 +99,9 @@ public class OnceWithinDefinition implements TimeConstraint {
 
     @Override
     public ViewItem processTimeConstraint(ViewItem pattern) {
+        if (guardedPattern != null) {
+            throw new IllegalStateException("Cannot process this TimeConstraint twice");
+        }
         guardedPattern = (PrototypeDSL.PrototypePatternDef) pattern;
         return new CombinedExprViewItem( org.drools.model.Condition.Type.AND, new ViewItem[] { guardedPattern, not( createControlPattern() ) } );
     }

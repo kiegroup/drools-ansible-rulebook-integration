@@ -49,8 +49,6 @@ public class MapCondition implements Condition {
     private String getPatternBinding(RuleGenerationContext ruleContext) {
         if (patternBinding == null) {
             patternBinding = ruleContext.generateBinding();
-        } else {
-            ruleContext.incrementBindingsCounter();
         }
         return patternBinding;
     }
@@ -106,6 +104,7 @@ public class MapCondition implements Condition {
                 return conditions;
         }
 
+        condition.setPatternBinding( condition.getPatternBinding(ruleContext) );
         return pattern2Ast(ruleContext, condition, parent);
     }
 
@@ -114,22 +113,33 @@ public class MapCondition implements Condition {
         Map.Entry entry = condition.getMap().entrySet().iterator().next();
         String expressionName = (String) entry.getKey();
 
-        if (expressionName.equals("NegateExpression")) {
-            return pattern2Ast(ruleContext, new MapCondition( (Map) entry.getValue() ), parent).negate(ruleContext);
-        }
-
         switch (expressionName) {
+            case "AssignmentExpression":
+                Map<?,?> expression = (Map<?,?>) entry.getValue();
+
+                Map<?,?> assignment = (Map<?,?>) expression.get("lhs");
+                assert(assignment.size() == 1);
+
+                Map<?,?> assigned = (Map<?,?>) expression.get("rhs");
+                assert(assigned.size() == 1);
+                MapCondition assignedCondition = new MapCondition( assigned );
+                assignedCondition.setPatternBinding( (String) assignment.values().iterator().next() );
+                return pattern2Ast(ruleContext, assignedCondition, parent);
+
+            case "NegateExpression":
+                return pattern2Ast(ruleContext, new MapCondition( (Map) entry.getValue() ), parent).negate(ruleContext);
+
             case "AndExpression":
             case "OrExpression":
                 String binding = condition.getPatternBinding(ruleContext);
                 MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
-                lhs.setPatternBinding(binding);
+                lhs.setPatternBinding( binding );
                 MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
-                rhs.setPatternBinding(binding);
+                rhs.setPatternBinding( binding );
 
                 AstCondition.CombinedPatternCondition combinedPatternCondition = expressionName.equals("OrExpression") ?
-                        new AstCondition.OrCondition(binding) :
-                        new AstCondition.AndCondition();
+                        new AstCondition.OrCondition( binding ) :
+                        new AstCondition.AndCondition( binding );
                 return combinedPatternCondition
                         .withLhs(pattern2Ast(ruleContext, lhs, null))
                         .withRhs(pattern2Ast(ruleContext, rhs, null));
@@ -151,16 +161,6 @@ public class MapCondition implements Condition {
         }
 
         Map<?,?> expression = (Map<?,?>) entry.getValue();
-
-        if (expressionName.equals("AssignmentExpression")) {
-            Map<?,?> assignment = (Map<?,?>) expression.get("lhs");
-            assert(assignment.size() == 1);
-            setPatternBinding( (String) assignment.values().iterator().next() );
-
-            Map<?,?> assigned = (Map<?,?>) expression.get("rhs");
-            assert(assigned.size() == 1);
-            return parseSingle(ruleContext, assigned.entrySet().iterator().next());
-        }
 
         ConstraintOperator operator = decodeOperation(expressionName);
 
