@@ -65,11 +65,11 @@ public class MapCondition implements Condition {
     private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
         Object onceWithin = condition.getMap().remove(OnceWithinDefinition.KEYWORD);
         if (onceWithin != null) {
-            Object groupByAttributes = condition.getMap().remove("group_by_attributes");
+            Object groupByAttributes = condition.getMap().remove(TimeConstraint.GROUP_BY_ATTRIBUTES);
             if (groupByAttributes == null) {
-                throw new IllegalArgumentException("once_within also requires group_by_attributes");
+                throw new IllegalArgumentException(OnceWithinDefinition.KEYWORD + "also requires " + TimeConstraint.GROUP_BY_ATTRIBUTES);
             }
-            ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin((String) onceWithin, (List<String>) groupByAttributes));
+            ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(ruleContext.getRuleName(), (String) onceWithin, (List<String>) groupByAttributes));
         }
 
         Object timeWindow = condition.getMap().remove(TimeWindowDefinition.KEYWORD);

@@ -86,14 +86,14 @@ public class Rule {
     public void setOnce_within(String onceWithin) {
         this.onceWithin = onceWithin;
         if (groupByAttributes != null) {
-            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, groupByAttributes));
+            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(name, onceWithin, groupByAttributes));
         }
     }
 
     public void setgroup_by_attributes(List<String> groupByAttributes) {
         this.groupByAttributes = groupByAttributes;
         if (onceWithin != null) {
-            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, groupByAttributes));
+            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(name, onceWithin, groupByAttributes));
         }
     }
 

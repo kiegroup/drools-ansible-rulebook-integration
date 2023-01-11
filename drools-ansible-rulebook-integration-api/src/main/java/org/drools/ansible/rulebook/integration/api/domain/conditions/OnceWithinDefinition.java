@@ -27,6 +27,7 @@ import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
 import static org.drools.model.PrototypeDSL.protoPattern;
 import static org.drools.model.PrototypeDSL.variable;
+import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
 
@@ -56,12 +57,13 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *   Control control = new Control().withExpiration(10, TimeUnit.MINUTE);
  *   control.set("sensu.host", singleton.sensu.host);
  *   control.set("sensu.process.type", singleton.sensu.process.type);
+ *   control.set("drools_rule_name", "R");
  *   insert(control);
  * end
  *
  * rule Cleanup when
  *   singleton : Event( sensu.process.type == "alert" )
- *   Control( sensu.host == singleton.sensu.host, sensu.process.type == singleton.sensu.process.type )
+ *   Control( sensu.host == singleton.sensu.host, sensu.process.type == singleton.sensu.process.type, drools_rule_name == "R" )
  * then
  *   delete(singleton);
  * end
@@ -70,12 +72,15 @@ public class OnceWithinDefinition implements TimeConstraint {
 
     public static final String KEYWORD = "once_within";
 
+    private final String ruleName;
+
     private final TimeAmount timeAmount;
     private final List<String> groupByAttributes;
 
     private PrototypeDSL.PrototypePatternDef guardedPattern;
 
-    public OnceWithinDefinition(TimeAmount timeAmount, List<String> groupByAttributes) {
+    public OnceWithinDefinition(String ruleName, TimeAmount timeAmount, List<String> groupByAttributes) {
+        this.ruleName = ruleName;
         this.timeAmount = timeAmount;
         this.groupByAttributes = groupByAttributes;
     }
@@ -93,6 +98,7 @@ public class OnceWithinDefinition implements TimeConstraint {
             for (String unique : groupByAttributes) {
                 controlEvent.set(unique, fact.get(unique));
             }
+            controlEvent.set("drools_rule_name", ruleName);
             drools.insert(controlEvent);
         };
     }
@@ -111,6 +117,7 @@ public class OnceWithinDefinition implements TimeConstraint {
         for (String unique : groupByAttributes) {
             controlPattern.expr( prototypeField(unique), Index.ConstraintType.EQUAL, getTimeConstraintConsequenceVariable(), prototypeField(unique) );
         }
+        controlPattern.expr( prototypeField("drools_rule_name"), Index.ConstraintType.EQUAL, fixedValue(ruleName) );
         return controlPattern;
     }
 
@@ -129,9 +136,9 @@ public class OnceWithinDefinition implements TimeConstraint {
         return "OnceWithinDefinition{" + " " + timeAmount + ", groupByAttributes=" + groupByAttributes + " }";
     }
 
-    public static OnceWithinDefinition parseOnceWithin(String onceWithin, List<String> groupByAttributes) {
+    public static OnceWithinDefinition parseOnceWithin(String ruleName, String onceWithin, List<String> groupByAttributes) {
         List<String> sanitizedAttributes = groupByAttributes.stream().map(OnceWithinDefinition::sanitizeAttributeName).collect(toList());
-        return new OnceWithinDefinition(parseTimeAmount(onceWithin), sanitizedAttributes);
+        return new OnceWithinDefinition(ruleName, parseTimeAmount(onceWithin), sanitizedAttributes);
     }
 
     private static String sanitizeAttributeName(String name) {

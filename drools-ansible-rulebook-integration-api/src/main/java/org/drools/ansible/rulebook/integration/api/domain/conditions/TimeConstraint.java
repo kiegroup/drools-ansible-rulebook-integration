@@ -16,6 +16,8 @@ import static org.drools.model.PatternDSL.rule;
 
 public interface TimeConstraint {
 
+    String GROUP_BY_ATTRIBUTES = "group_by_attributes";
+
     ViewItem processTimeConstraint(ViewItem pattern);
 
     default PrototypeVariable getTimeConstraintConsequenceVariable() {
