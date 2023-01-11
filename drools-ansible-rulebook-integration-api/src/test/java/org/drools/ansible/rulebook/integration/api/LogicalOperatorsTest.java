@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.model.Index;
+import org.drools.model.PrototypeFact;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
@@ -331,6 +332,10 @@ public class LogicalOperatorsTest {
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":2 }" ).join();
         assertEquals( 1, matchedRules.size() );
+
+        Match match = matchedRules.get(0);
+        assertEquals( "r1", match.getRule().getName() );
+        assertEquals( 2, ((PrototypeFact)match.getDeclarationValue("m")).get("i") );
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":14 }" ).join();
         assertEquals( 1, matchedRules.size() );

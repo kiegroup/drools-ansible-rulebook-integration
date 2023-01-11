@@ -53,8 +53,9 @@ public class MapCondition implements Condition {
         return patternBinding;
     }
 
-    private void setPatternBinding(String patternBinding) {
+    private MapCondition withPatternBinding(String patternBinding) {
         this.patternBinding = patternBinding;
+        return this;
     }
 
     @Override
@@ -104,8 +105,7 @@ public class MapCondition implements Condition {
                 return conditions;
         }
 
-        condition.setPatternBinding( condition.getPatternBinding(ruleContext) );
-        return pattern2Ast(ruleContext, condition, parent);
+        return pattern2Ast(ruleContext, condition.withPatternBinding( condition.getPatternBinding(ruleContext) ), parent);
     }
 
     private static AstCondition.PatternCondition pattern2Ast(RuleGenerationContext ruleContext, MapCondition condition, AstCondition.MultipleConditions parent) {
@@ -114,35 +114,36 @@ public class MapCondition implements Condition {
         String expressionName = (String) entry.getKey();
 
         switch (expressionName) {
-            case "AssignmentExpression":
-                Map<?,?> expression = (Map<?,?>) entry.getValue();
+            case "AssignmentExpression": {
+                Map<?, ?> expression = (Map<?, ?>) entry.getValue();
 
-                Map<?,?> assignment = (Map<?,?>) expression.get("lhs");
-                assert(assignment.size() == 1);
+                Map<?, ?> assignment = (Map<?, ?>) expression.get("lhs");
+                assert (assignment.size() == 1);
+                String binding = (String) assignment.values().iterator().next();
 
-                Map<?,?> assigned = (Map<?,?>) expression.get("rhs");
-                assert(assigned.size() == 1);
-                MapCondition assignedCondition = new MapCondition( assigned );
-                assignedCondition.setPatternBinding( (String) assignment.values().iterator().next() );
-                return pattern2Ast(ruleContext, assignedCondition, parent);
+                Map<?, ?> assigned = (Map<?, ?>) expression.get("rhs");
+                assert (assigned.size() == 1);
+                return pattern2Ast(ruleContext, new MapCondition(assigned).withPatternBinding(binding), parent);
+            }
 
-            case "NegateExpression":
-                return pattern2Ast(ruleContext, new MapCondition( (Map) entry.getValue() ), parent).negate(ruleContext);
+            case "NegateExpression": {
+                String binding = condition.getPatternBinding(ruleContext);
+                return pattern2Ast(ruleContext, new MapCondition((Map) entry.getValue()).withPatternBinding(binding), parent).negate(ruleContext);
+            }
 
             case "AndExpression":
-            case "OrExpression":
+            case "OrExpression": {
                 String binding = condition.getPatternBinding(ruleContext);
-                MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs"));
-                lhs.setPatternBinding( binding );
-                MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs"));
-                rhs.setPatternBinding( binding );
+                MapCondition lhs = new MapCondition((Map) ((Map) entry.getValue()).get("lhs")).withPatternBinding(binding);
+                MapCondition rhs = new MapCondition((Map) ((Map) entry.getValue()).get("rhs")).withPatternBinding(binding);
 
                 AstCondition.CombinedPatternCondition combinedPatternCondition = expressionName.equals("OrExpression") ?
-                        new AstCondition.OrCondition( binding ) :
-                        new AstCondition.AndCondition( binding );
+                        new AstCondition.OrCondition(binding) :
+                        new AstCondition.AndCondition(binding);
                 return combinedPatternCondition
                         .withLhs(pattern2Ast(ruleContext, lhs, null))
                         .withRhs(pattern2Ast(ruleContext, rhs, null));
+            }
         }
 
         return new AstCondition.SingleCondition(parent, condition.parseSingle(ruleContext, entry))

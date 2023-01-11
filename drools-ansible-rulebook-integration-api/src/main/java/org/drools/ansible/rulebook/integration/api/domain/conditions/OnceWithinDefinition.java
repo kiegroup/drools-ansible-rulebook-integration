@@ -124,7 +124,7 @@ public class OnceWithinDefinition implements TimeConstraint {
     @Override
     public List<Rule> getControlRules(RuleGenerationContext ruleContext) {
         return Collections.singletonList(
-                rule( "cleanup_" + UUID.randomUUID() ).metadata(SYNTHETIC_RULE_TAG, true)
+                rule( "cleanup_" + ruleName ).metadata(SYNTHETIC_RULE_TAG, true)
                         .build( guardedPattern,
                                 createControlPattern(),
                                 on(getTimeConstraintConsequenceVariable()).execute(DroolsEntryPoint::delete) )
