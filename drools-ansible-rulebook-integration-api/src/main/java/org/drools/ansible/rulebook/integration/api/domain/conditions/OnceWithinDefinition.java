@@ -2,18 +2,15 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
-import java.util.function.BiConsumer;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.core.facttemplates.Event;
+import org.drools.core.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.DroolsEntryPoint;
-import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeFact;
-import org.drools.model.PrototypeVariable;
 import org.drools.model.Rule;
+import org.drools.model.Variable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 
@@ -25,10 +22,6 @@ import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFa
 import static org.drools.model.DSL.not;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
-import static org.drools.model.PrototypeDSL.protoPattern;
-import static org.drools.model.PrototypeDSL.variable;
-import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
@@ -52,13 +45,14 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *
  * rule R when
  *   singleton : Event( sensu.process.type == "alert" )
- *   not( Control( sensu.host == singleton.sensu.host, sensu.process.type == singleton.sensu.process.type ) )
+ *   not( Control( sensu.host == singleton.sensu.host, sensu.process.type == singleton.sensu.process.type, drools_rule_name == "R" ) )
  * then
  *   Control control = new Control().withExpiration(10, TimeUnit.MINUTE);
  *   control.set("sensu.host", singleton.sensu.host);
  *   control.set("sensu.process.type", singleton.sensu.process.type);
  *   control.set("drools_rule_name", "R");
  *   insert(control);
+ *   delete(singleton);
  * end
  *
  * rule Cleanup when
@@ -68,39 +62,35 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *   delete(singleton);
  * end
  */
-public class OnceWithinDefinition implements TimeConstraint {
+public class OnceWithinDefinition extends OnceAbstractTimeConstraint {
 
     public static final String KEYWORD = "once_within";
 
-    private final String ruleName;
-
-    private final TimeAmount timeAmount;
-    private final List<String> groupByAttributes;
-
-    private PrototypeDSL.PrototypePatternDef guardedPattern;
-
     public OnceWithinDefinition(String ruleName, TimeAmount timeAmount, List<String> groupByAttributes) {
-        this.ruleName = ruleName;
-        this.timeAmount = timeAmount;
-        this.groupByAttributes = groupByAttributes;
+        super(ruleName, timeAmount, groupByAttributes);
     }
 
     @Override
-    public PrototypeVariable getTimeConstraintConsequenceVariable() {
-        return (PrototypeVariable) guardedPattern.getFirstVariable();
+    public boolean requiresAsyncExecution() {
+        return false;
     }
 
     @Override
-    public BiConsumer<Drools, PrototypeFact> getTimeConstraintConsequence() {
-        return (Drools drools, PrototypeFact fact) -> {
-            Event controlEvent = createMapBasedEvent( getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
-                    .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-            for (String unique : groupByAttributes) {
-                controlEvent.set(unique, fact.get(unique));
-            }
-            controlEvent.set("drools_rule_name", ruleName);
-            drools.insert(controlEvent);
-        };
+    public Variable<?>[] getTimeConstraintConsequenceVariables() {
+        return new Variable[] { getPatternVariable() };
+    }
+
+    @Override
+    public void executeTimeConstraintConsequence(Drools drools, Object... facts) {
+        Event controlEvent = createMapBasedEvent( getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
+                .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
+        Fact fact = (Fact) facts[0];
+        for (String unique : groupByAttributes) {
+            controlEvent.set(unique, fact.get(unique));
+        }
+        controlEvent.set("drools_rule_name", ruleName);
+        drools.insert(controlEvent);
+        drools.delete(fact);
     }
 
     @Override
@@ -112,22 +102,13 @@ public class OnceWithinDefinition implements TimeConstraint {
         return new CombinedExprViewItem( org.drools.model.Condition.Type.AND, new ViewItem[] { guardedPattern, not( createControlPattern() ) } );
     }
 
-    private PrototypeDSL.PrototypePatternDef createControlPattern() {
-        PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(getPrototype(SYNTHETIC_PROTOTYPE_NAME)));
-        for (String unique : groupByAttributes) {
-            controlPattern.expr( prototypeField(unique), Index.ConstraintType.EQUAL, getTimeConstraintConsequenceVariable(), prototypeField(unique) );
-        }
-        controlPattern.expr( prototypeField("drools_rule_name"), Index.ConstraintType.EQUAL, fixedValue(ruleName) );
-        return controlPattern;
-    }
-
     @Override
     public List<Rule> getControlRules(RuleGenerationContext ruleContext) {
         return Collections.singletonList(
                 rule( "cleanup_" + ruleName ).metadata(SYNTHETIC_RULE_TAG, true)
                         .build( guardedPattern,
                                 createControlPattern(),
-                                on(getTimeConstraintConsequenceVariable()).execute(DroolsEntryPoint::delete) )
+                                on(getPatternVariable()).execute(DroolsEntryPoint::delete) )
         );
     }
 
@@ -137,25 +118,7 @@ public class OnceWithinDefinition implements TimeConstraint {
     }
 
     public static OnceWithinDefinition parseOnceWithin(String ruleName, String onceWithin, List<String> groupByAttributes) {
-        List<String> sanitizedAttributes = groupByAttributes.stream().map(OnceWithinDefinition::sanitizeAttributeName).collect(toList());
+        List<String> sanitizedAttributes = groupByAttributes.stream().map(OnceAbstractTimeConstraint::sanitizeAttributeName).collect(toList());
         return new OnceWithinDefinition(ruleName, parseTimeAmount(onceWithin), sanitizedAttributes);
     }
-
-    private static String sanitizeAttributeName(String name) {
-        if (name.startsWith("event.")) {
-            return name.substring("event.".length());
-        }
-        if (name.startsWith("events.")) {
-            return name.substring("events.".length());
-        }
-        if (name.startsWith("fact.")) {
-            return name.substring("fact.".length());
-        }
-        if (name.startsWith("facts.")) {
-            return name.substring("facts.".length());
-        }
-        return name;
-    }
-
-
 }

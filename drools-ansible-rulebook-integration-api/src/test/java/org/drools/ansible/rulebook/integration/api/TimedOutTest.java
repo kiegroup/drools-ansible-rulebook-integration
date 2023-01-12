@@ -194,7 +194,7 @@ public class TimedOutTest {
         // pseudo clock should be automatically activated by the presence of the timed_out
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
-        List<Match> matchedRules = matchedRules = rulesExecutor.processEvents( "{ \"j\": 1 }" ).join();
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"j\": 1 }" ).join();
         assertEquals( 0, matchedRules.size() );
 
         matchedRules = rulesExecutor.advanceTime( 8, TimeUnit.SECONDS ).join();

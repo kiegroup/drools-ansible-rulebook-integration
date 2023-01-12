@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.drools.core.common.InternalFactHandle;
-import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
@@ -19,13 +18,7 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     public static final String SYNTHETIC_RULE_TAG = "SYNTHETIC_RULE";
     public static final String RULE_TYPE_TAG = "RULE_TYPE";
-    public static final String TIMED_OUT_RULE = "TIMED_OUT_RULE";
-
     public static final Map<String, Function<Match, Match>> matchTransformers = new HashMap<>();
-
-    static {
-        matchTransformers.put(TIMED_OUT_RULE, RegisterOnlyAgendaFilter::transformTimedOutMatch);
-    }
 
     private final RulesExecutorSession rulesExecutorSession;
 
@@ -39,7 +32,7 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
         this.rulesExecutorSession = rulesExecutorSession;
     }
 
-    public void registerephemeralFact(Long factId) {
+    public void registerEphemeralFact(Long factId) {
         ephemeralFactHandleIds.add(factId);
     }
 
@@ -62,17 +55,14 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
         return true;
     }
 
-    private static Match transformTimedOutMatch(Match match) {
-        Fact fact = (Fact)match.getObjects().get(0);
-        Object startEvent = fact.get("event");
-        fact.set("event", null);
-        return new EmptyMatchDecorator(match).withBoundObject("m", startEvent);
-    }
-
     public List<Match> finalizeAndGetResults() {
         factsToBeDeleted.forEach(rulesExecutorSession::delete);
         List<Match> matches = new ArrayList<>( matchedRules );
         matchedRules.clear();
         return matches;
+    }
+
+    public static void registerMatchTransformer(String ruleType, Function<Match, Match> transformer) {
+        matchTransformers.put(ruleType, transformer);
     }
 }

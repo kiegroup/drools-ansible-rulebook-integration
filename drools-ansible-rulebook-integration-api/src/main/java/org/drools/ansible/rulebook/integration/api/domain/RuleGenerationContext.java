@@ -12,17 +12,16 @@ import java.util.function.Function;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
-import org.drools.ansible.rulebook.integration.api.domain.conditions.TimedOutDefinition;
-import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeConstraint;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.model.Drools;
 import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeFact;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
+import org.drools.model.Variable;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.model.DSL.execute;
@@ -104,17 +103,7 @@ public class RuleGenerationContext {
     }
 
     public boolean requiresAsyncExecution() {
-        return this.timeConstraint instanceof TimedOutDefinition;
-    }
-
-    public PrototypeVariable getConsequenceVariable() {
-        return timeConstraint != null ? timeConstraint.getTimeConstraintConsequenceVariable() : null;
-    }
-
-    public void executeSyntheticConsequence(Drools drools, PrototypeFact fact) {
-        if (timeConstraint != null) {
-            timeConstraint.getTimeConstraintConsequence().accept(drools, fact);
-        }
+        return timeConstraint != null && timeConstraint.requiresAsyncExecution();
     }
 
     public List<Rule> generateRules(RulesExecutionController rulesExecutionController, Condition condition, Action action) {
@@ -134,11 +123,21 @@ public class RuleGenerationContext {
     private Rule generateRule(RulesExecutionController rulesExecutionController, Condition condition, Action action) {
         RuleItemBuilder pattern = condition.toPattern( this );
         RuleItemBuilder consequence;
-        if ( getConsequenceVariable() != null ) {
-            consequence = on(getConsequenceVariable()).execute((drools, fact) -> {
-                executeSyntheticConsequence(drools, fact);
-                defaultConsequence(rulesExecutionController, action, drools);
-            });
+        Variable<?>[] consequenceVariables = timeConstraint != null ? timeConstraint.getTimeConstraintConsequenceVariables() : null;
+        if ( consequenceVariables != null ) {
+            if (consequenceVariables.length == 1) {
+                consequence = on(consequenceVariables[0]).execute((drools, fact) -> {
+                    timeConstraint.executeTimeConstraintConsequence(drools, fact);
+                    defaultConsequence(rulesExecutionController, action, drools);
+                });
+            } else if (consequenceVariables.length == 2) {
+                consequence = on(consequenceVariables[0], consequenceVariables[1]).execute((drools, fact1, fact2) -> {
+                    timeConstraint.executeTimeConstraintConsequence(drools, fact1, fact2);
+                    defaultConsequence(rulesExecutionController, action, drools);
+                });
+            } else {
+                throw new UnsupportedOperationException();
+            }
         } else {
             consequence = execute(drools -> defaultConsequence(rulesExecutionController, action, drools));
         }

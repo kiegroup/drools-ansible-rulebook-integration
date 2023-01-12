@@ -2,24 +2,25 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
 import org.drools.core.facttemplates.Event;
+import org.drools.core.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.Index;
 import org.drools.model.Prototype;
-import org.drools.model.PrototypeFact;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
 import org.drools.model.view.ViewItem;
+import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.TimeAmount.parseTimeAmount;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
-import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.TIMED_OUT_RULE;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.model.DSL.accFunction;
@@ -140,9 +141,19 @@ public class TimedOutDefinition implements TimeConstraint {
     private final List<ViewItem> patterns = new ArrayList<>();
 
     private final Prototype controlPrototype = getPrototype(SYNTHETIC_PROTOTYPE_NAME);
-    private final PrototypeVariable controlVar1 = variable( controlPrototype );
-    private final PrototypeVariable controlVar2 = variable( controlPrototype );
-    private final PrototypeVariable controlVar3 = variable( controlPrototype );
+    private final PrototypeVariable controlVar1 = variable( controlPrototype, "c1" );
+    private final PrototypeVariable controlVar2 = variable( controlPrototype, "c2" );
+
+    static {
+        RegisterOnlyAgendaFilter.registerMatchTransformer(KEYWORD, TimedOutDefinition::transformTimedOutMatch);
+    }
+
+    private static Match transformTimedOutMatch(Match match) {
+        Fact fact = (Fact)match.getObjects().get(0);
+        Object startEvent = fact.get("event");
+        fact.set("event", null);
+        return new EmptyMatchDecorator(match).withBoundObject("m", startEvent);
+    }
 
     private TimedOutDefinition(TimeAmount timeAmount) {
         this.timeAmount = timeAmount;
@@ -152,19 +163,25 @@ public class TimedOutDefinition implements TimeConstraint {
         return new TimedOutDefinition(parseTimeAmount(timeWindow));
     }
 
+    @Override
+    public boolean requiresAsyncExecution() {
+        return true;
+    }
+
+    @Override
     public ViewItem processTimeConstraint(ViewItem pattern) {
         patterns.add(pattern);
         return pattern;
     }
 
     @Override
-    public PrototypeVariable getTimeConstraintConsequenceVariable() {
-        return controlVar1;
+    public Variable<?>[] getTimeConstraintConsequenceVariables() {
+        return new Variable[] { controlVar1 };
     }
 
     @Override
-    public BiConsumer<Drools, PrototypeFact> getTimeConstraintConsequence() {
-        return Drools::delete;
+    public void executeTimeConstraintConsequence(Drools drools, Object... facts) {
+        drools.delete(facts[0]);
     }
 
     @Override
@@ -172,7 +189,7 @@ public class TimedOutDefinition implements TimeConstraint {
         String startTag = "start_" + ruleName;
         String endTag = "end_" + ruleName;
 
-        return rule( ruleName ).metadata(RULE_TYPE_TAG, TIMED_OUT_RULE)
+        return rule( ruleName ).metadata(RULE_TYPE_TAG, KEYWORD)
                 .build(
                     protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ),
                     not( protoPattern(controlVar2)
@@ -189,7 +206,8 @@ public class TimedOutDefinition implements TimeConstraint {
         String endTag = "end_" + ruleContext.getRuleName();
         List<Rule> rules = new ArrayList<>();
 
-        Variable<Long> resultCount = declarationOf( Long.class );
+        PrototypeVariable controlVar3 = variable( controlPrototype, "c3" );
+        Variable<Long> resultCount = declarationOf( Long.class, "count" );
 
         for (int i = 0; i < patterns.size(); i++) {
             String name = rulePrefix + i;

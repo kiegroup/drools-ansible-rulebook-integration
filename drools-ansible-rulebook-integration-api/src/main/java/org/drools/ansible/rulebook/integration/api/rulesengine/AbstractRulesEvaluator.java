@@ -136,7 +136,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
             fhs.stream()
                     .map(InternalFactHandle.class::cast)
                     .map(InternalFactHandle::getId)
-                    .forEach(registerOnlyAgendaFilter::registerephemeralFact);
+                    .forEach(registerOnlyAgendaFilter::registerEphemeralFact);
         }
         return getMatches(event);
     }

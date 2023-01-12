@@ -46,6 +46,11 @@ public class TimeWindowDefinition implements TimeConstraint {
         this.timeAmount = timeAmount;
     }
 
+    @Override
+    public boolean requiresAsyncExecution() {
+        return false;
+    }
+
     public static TimeWindowDefinition parseTimeWindow(String timeWindow) {
         return new TimeWindowDefinition(parseTimeAmount(timeWindow));
     }

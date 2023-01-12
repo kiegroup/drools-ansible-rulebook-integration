@@ -5,18 +5,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
-import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceAfterDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeWindowDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.TimedOutDefinition;
-
-import static org.drools.model.DSL.execute;
-import static org.drools.model.DSL.on;
-import static org.drools.model.PatternDSL.rule;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 
 public class Rule {
     private String name;
@@ -25,6 +22,7 @@ public class Rule {
     private boolean enabled;
 
     private String onceWithin;
+    private String onceAfter;
     private List<String> groupByAttributes;
 
     private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
@@ -48,14 +46,6 @@ public class Rule {
     public Rule withOptions(RuleConfigurationOptions options) {
         this.ruleGenerationContext.addOptions(options.getOptions());
         return this;
-    }
-
-    public RuleGenerationContext getRuleGenerationContext() {
-        return ruleGenerationContext;
-    }
-
-    public boolean hasTimeConstraint() {
-        return ruleGenerationContext.hasTimeConstraint();
     }
 
     public AstCondition withCondition() {
@@ -90,10 +80,20 @@ public class Rule {
         }
     }
 
+    public void setOnce_after(String onceAfter) {
+        this.onceAfter = onceAfter;
+        if (groupByAttributes != null) {
+            ruleGenerationContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(name, onceAfter, groupByAttributes));
+        }
+    }
+
     public void setgroup_by_attributes(List<String> groupByAttributes) {
         this.groupByAttributes = groupByAttributes;
         if (onceWithin != null) {
             ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(name, onceWithin, groupByAttributes));
+        }
+        if (onceAfter != null) {
+            ruleGenerationContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(name, onceAfter, groupByAttributes));
         }
     }
 

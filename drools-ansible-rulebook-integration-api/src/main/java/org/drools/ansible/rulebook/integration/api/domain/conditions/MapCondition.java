@@ -64,6 +64,14 @@ public class MapCondition implements Condition {
     }
 
     private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
+        parseOnceWithin(ruleContext, condition);
+        parseOnceAfter(ruleContext, condition);
+        parseTimeWindow(ruleContext, condition);
+        parseTimedOut(ruleContext, condition);
+        return condition;
+    }
+
+    private static void parseOnceWithin(RuleGenerationContext ruleContext, MapCondition condition) {
         Object onceWithin = condition.getMap().remove(OnceWithinDefinition.KEYWORD);
         if (onceWithin != null) {
             Object groupByAttributes = condition.getMap().remove(TimeConstraint.GROUP_BY_ATTRIBUTES);
@@ -72,18 +80,31 @@ public class MapCondition implements Condition {
             }
             ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(ruleContext.getRuleName(), (String) onceWithin, (List<String>) groupByAttributes));
         }
+    }
 
+    private static void parseOnceAfter(RuleGenerationContext ruleContext, MapCondition condition) {
+        Object onceAfter = condition.getMap().remove(OnceAfterDefinition.KEYWORD);
+        if (onceAfter != null) {
+            Object groupByAttributes = condition.getMap().remove(TimeConstraint.GROUP_BY_ATTRIBUTES);
+            if (groupByAttributes == null) {
+                throw new IllegalArgumentException(OnceAfterDefinition.KEYWORD + "also requires " + TimeConstraint.GROUP_BY_ATTRIBUTES);
+            }
+            ruleContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(ruleContext.getRuleName(), (String) onceAfter, (List<String>) groupByAttributes));
+        }
+    }
+
+    private static void parseTimeWindow(RuleGenerationContext ruleContext, MapCondition condition) {
         Object timeWindow = condition.getMap().remove(TimeWindowDefinition.KEYWORD);
         if (timeWindow != null) {
             ruleContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow((String) timeWindow));
         }
+    }
 
+    private static void parseTimedOut(RuleGenerationContext ruleContext, MapCondition condition) {
         Object timedOut = condition.getMap().remove(TimedOutDefinition.KEYWORD);
         if (timedOut != null) {
             ruleContext.setTimeConstraint(TimedOutDefinition.parseTimedOut((String) timedOut));
         }
-
-        return condition;
     }
 
     private static Condition map2Ast(RuleGenerationContext ruleContext, MapCondition condition, AstCondition.MultipleConditions parent) {
