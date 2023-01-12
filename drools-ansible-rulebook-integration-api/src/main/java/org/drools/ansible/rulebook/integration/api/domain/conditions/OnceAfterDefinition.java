@@ -3,7 +3,6 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
@@ -113,9 +112,17 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
     }
 
     private static Match transformOnceAfterMatch(Match match) {
-        Object results = ((Collection<?>) match.getDeclarationValue("results")).stream()
-                .map(r -> ((Fact) r).get("event")).collect(Collectors.toList());
-        return new EmptyMatchDecorator(match).withBoundObject("m", results);
+        EmptyMatchDecorator rewrittenMatch = new EmptyMatchDecorator(match);
+        Collection<Fact> results = ((Collection<Fact>) match.getDeclarationValue("results"));
+        if (results.size() == 1) {
+            rewrittenMatch.withBoundObject("m", results.iterator().next().get("event"));
+        } else {
+            int i = 0;
+            for (Fact fact : results) {
+                rewrittenMatch.withBoundObject("m_" + i++, fact.get("event"));
+            }
+        }
+        return rewrittenMatch;
     }
 
     public OnceAfterDefinition(String ruleName, TimeAmount timeAmount, List<String> groupByAttributes) {

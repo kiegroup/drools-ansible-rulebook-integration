@@ -89,13 +89,11 @@ public class OnceAfterTest {
         assertEquals(1, matchedRules.size());
         assertEquals("r1", matchedRules.get(0).getRule().getName());
 
-        List events = (List) matchedRules.get(0).getDeclarationValue("m");
-        assertEquals(3, events.size());
-
         for (int i = 0; i < 3; i++) {
-            String host = ((Fact)events.get(i)).get("meta.hosts").toString();
+            Fact fact = (Fact) matchedRules.get(0).getDeclarationValue("m_" + i);
+            String host = fact.get("meta.hosts").toString();
             assertTrue( host.equals( "h1" ) || host.equals( "h2" ) );
-            String level = ((Fact)events.get(i)).get("alert.level").toString();
+            String level = fact.get("alert.level").toString();
             assertTrue( level.equals( "error" ) || level.equals( "warning" ) );
         }
 
