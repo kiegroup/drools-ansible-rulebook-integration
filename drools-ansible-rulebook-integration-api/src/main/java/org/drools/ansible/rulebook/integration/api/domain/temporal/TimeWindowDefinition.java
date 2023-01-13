@@ -1,4 +1,4 @@
-package org.drools.ansible.rulebook.integration.api.domain.conditions;
+package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.ViewItem;
 
-import static org.drools.ansible.rulebook.integration.api.domain.conditions.TimeAmount.parseTimeAmount;
+import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount.parseTimeAmount;
 import static org.drools.model.DSL.after;
 
 /**

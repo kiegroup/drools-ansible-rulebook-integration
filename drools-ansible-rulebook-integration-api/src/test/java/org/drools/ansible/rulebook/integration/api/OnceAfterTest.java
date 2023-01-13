@@ -55,11 +55,13 @@ public class OnceAfterTest {
                 "                    }\n" +
                 "                },\n" +
                 "                \"enabled\": true,\n" +
-                "                \"once_after\": \"10 seconds\",\n" +
-                "                \"group_by_attributes\": [\n" +
-                "                    \"event.meta.hosts\",\n" +
-                "                    \"event.alert.level\"\n" +
-                "                ]\n" +
+                "                \"throttle\": {\n" +
+                "                    \"group_by_attributes\": [\n" +
+                "                        \"event.meta.hosts\",\n" +
+                "                        \"event.alert.level\"\n" +
+                "                    ],\n" +
+                "                    \"once_after\": \"10 seconds\"\n" +
+                "                }\n" +
                 "            }\n" +
                 "        }\n" +
                 "    ]\n" +

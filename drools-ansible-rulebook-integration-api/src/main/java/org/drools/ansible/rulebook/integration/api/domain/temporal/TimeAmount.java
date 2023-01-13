@@ -1,4 +1,4 @@
-package org.drools.ansible.rulebook.integration.api.domain.conditions;
+package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
 import java.util.concurrent.TimeUnit;
 

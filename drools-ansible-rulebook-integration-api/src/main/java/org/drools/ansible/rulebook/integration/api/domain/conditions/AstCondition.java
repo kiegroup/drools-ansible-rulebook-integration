@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;

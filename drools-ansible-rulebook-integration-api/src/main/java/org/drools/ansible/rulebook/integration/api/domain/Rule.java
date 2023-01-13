@@ -9,10 +9,9 @@ import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
-import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceAfterDefinition;
-import org.drools.ansible.rulebook.integration.api.domain.conditions.OnceWithinDefinition;
-import org.drools.ansible.rulebook.integration.api.domain.conditions.TimeWindowDefinition;
-import org.drools.ansible.rulebook.integration.api.domain.conditions.TimedOutDefinition;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.Throttle;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDefinition;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.TimedOutDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 
 public class Rule {
@@ -20,10 +19,6 @@ public class Rule {
     private Condition condition;
     private Action action;
     private boolean enabled;
-
-    private String onceWithin;
-    private String onceAfter;
-    private List<String> groupByAttributes;
 
     private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
@@ -73,28 +68,8 @@ public class Rule {
         return enabled;
     }
 
-    public void setOnce_within(String onceWithin) {
-        this.onceWithin = onceWithin;
-        if (groupByAttributes != null) {
-            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(name, onceWithin, groupByAttributes));
-        }
-    }
-
-    public void setOnce_after(String onceAfter) {
-        this.onceAfter = onceAfter;
-        if (groupByAttributes != null) {
-            ruleGenerationContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(name, onceAfter, groupByAttributes));
-        }
-    }
-
-    public void setgroup_by_attributes(List<String> groupByAttributes) {
-        this.groupByAttributes = groupByAttributes;
-        if (onceWithin != null) {
-            ruleGenerationContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(name, onceWithin, groupByAttributes));
-        }
-        if (onceAfter != null) {
-            ruleGenerationContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(name, onceAfter, groupByAttributes));
-        }
+    public void setThrottle(Throttle throttle) {
+        ruleGenerationContext.setTimeConstraint(throttle.asTimeConstraint(name));
     }
 
     public void setTime_window(String timeWindow) {

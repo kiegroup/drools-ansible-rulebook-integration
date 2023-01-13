@@ -37,11 +37,13 @@ public class OnceWithinTest {
                 "                     }\n" +
                 "                  }\n" +
                 "               ],\n" +
-                "               \"once_within\":\"10 seconds\",\n" +
-                "               \"group_by_attributes\":[\n" +
-                "                  \"event.sensu.host\",\n" +
-                "                  \"event.sensu.process.type\"\n" +
-                "               ]\n" +
+                "               \"throttle\": {\n" +
+                "                   \"group_by_attributes\": [\n" +
+                "                       \"event.sensu.host\",\n" +
+                "                       \"event.sensu.process.type\"\n" +
+                "                   ],\n" +
+                "                   \"once_within\": \"10 seconds\"\n" +
+                "               }\n" +
                 "            },\n" +
                 "            \"action\":{\n" +
                 "               \"assert_fact\":{\n" +
@@ -95,11 +97,13 @@ public class OnceWithinTest {
                 "                  }\n" +
                 "               }\n" +
                 "            },\n" +
-                "            \"once_within\":\"10 seconds\",\n" +
-                "            \"group_by_attributes\":[\n" +
-                "               \"event.sensu.host\",\n" +
-                "               \"event.sensu.process.type\"\n" +
-                "            ]\n" +
+                "            \"throttle\":{\n" +
+                "               \"group_by_attributes\":[\n" +
+                "                  \"event.sensu.host\",\n" +
+                "                  \"event.sensu.process.type\"\n" +
+                "               ],\n" +
+                "               \"once_within\":\"10 seconds\"\n" +
+                "            }\n" +
                 "         }\n" +
                 "      }\n" +
                 "   ]\n" +
@@ -177,11 +181,13 @@ public class OnceWithinTest {
                 "                    }\n" +
                 "                },\n" +
                 "                \"enabled\": true,\n" +
-                "                \"once_within\": \"10 seconds\",\n" +
-                "                \"group_by_attributes\": [\n" +
-                "                    \"event.meta.hosts\",\n" +
-                "                    \"event.alert.level\"\n" +
-                "                ]\n" +
+                "                \"throttle\": {\n" +
+                "                    \"group_by_attributes\": [\n" +
+                "                        \"event.meta.hosts\",\n" +
+                "                        \"event.alert.level\"\n" +
+                "                    ],\n" +
+                "                    \"once_within\": \"10 seconds\"\n" +
+                "                }\n" +
                 "            }\n" +
                 "        }\n" +
                 "    ]\n" +
@@ -256,11 +262,13 @@ public class OnceWithinTest {
                 "                    }\n" +
                 "                },\n" +
                 "                \"enabled\": true,\n" +
-                "                \"once_within\": \"10 seconds\",\n" +
-                "                \"group_by_attributes\": [\n" +
-                "                    \"event.meta.hosts\",\n" +
-                "                    \"event.alert.level\"\n" +
-                "                ]\n" +
+                "                \"throttle\": {\n" +
+                "                    \"group_by_attributes\": [\n" +
+                "                        \"event.meta.hosts\",\n" +
+                "                        \"event.alert.level\"\n" +
+                "                    ],\n" +
+                "                    \"once_within\": \"10 seconds\"\n" +
+                "                }\n" +
                 "            }\n" +
                 "        }\n" +
                 "    ]\n" +

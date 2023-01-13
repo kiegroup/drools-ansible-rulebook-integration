@@ -11,6 +11,11 @@ import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemInList
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListNotContainsConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceAfterDefinition;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceWithinDefinition;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDefinition;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.TimedOutDefinition;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL.PrototypePatternDef;
@@ -64,32 +69,27 @@ public class MapCondition implements Condition {
     }
 
     private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
-        parseOnceWithin(ruleContext, condition);
-        parseOnceAfter(ruleContext, condition);
+        parseThrottle(ruleContext, condition);
         parseTimeWindow(ruleContext, condition);
         parseTimedOut(ruleContext, condition);
         return condition;
     }
 
-    private static void parseOnceWithin(RuleGenerationContext ruleContext, MapCondition condition) {
-        Object onceWithin = condition.getMap().remove(OnceWithinDefinition.KEYWORD);
-        if (onceWithin != null) {
-            Object groupByAttributes = condition.getMap().remove(TimeConstraint.GROUP_BY_ATTRIBUTES);
-            if (groupByAttributes == null) {
-                throw new IllegalArgumentException(OnceWithinDefinition.KEYWORD + "also requires " + TimeConstraint.GROUP_BY_ATTRIBUTES);
+    private static void parseThrottle(RuleGenerationContext ruleContext, MapCondition condition) {
+        Map throttle = (Map) condition.getMap().remove("throttle");
+        if (throttle != null) {
+            List<String> groupByAttributes = (List<String>) throttle.get(TimeConstraint.GROUP_BY_ATTRIBUTES);
+            String onceWithin = (String) throttle.get(OnceWithinDefinition.KEYWORD);
+            if (onceWithin != null) {
+                ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(ruleContext.getRuleName(), onceWithin, groupByAttributes));
+                return;
             }
-            ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(ruleContext.getRuleName(), (String) onceWithin, (List<String>) groupByAttributes));
-        }
-    }
-
-    private static void parseOnceAfter(RuleGenerationContext ruleContext, MapCondition condition) {
-        Object onceAfter = condition.getMap().remove(OnceAfterDefinition.KEYWORD);
-        if (onceAfter != null) {
-            Object groupByAttributes = condition.getMap().remove(TimeConstraint.GROUP_BY_ATTRIBUTES);
-            if (groupByAttributes == null) {
-                throw new IllegalArgumentException(OnceAfterDefinition.KEYWORD + "also requires " + TimeConstraint.GROUP_BY_ATTRIBUTES);
+            String onceAfter = (String) throttle.get(OnceAfterDefinition.KEYWORD);
+            if (onceWithin != null) {
+                ruleContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(ruleContext.getRuleName(), onceWithin, groupByAttributes));
+                return;
             }
-            ruleContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(ruleContext.getRuleName(), (String) onceAfter, (List<String>) groupByAttributes));
+            throw new IllegalArgumentException("Invalid throttle definition");
         }
     }
 
