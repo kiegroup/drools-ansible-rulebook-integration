@@ -36,15 +36,15 @@ import static org.drools.model.PrototypeDSL.variable;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
- * Only a subset of the events is matched and a time out expires before all the conditions are satisfied
+ * Only a subset of the events is matched and a timeout expires before all the conditions are satisfied
  *
  *    e.g.:
  *      condition:
- *         all:
+ *         not_all:
  *           - events.ping << event.ping.timeout == true   # no host info
  *           - events.process << event.sensu.process.status == "stopped"   # web server
  *           - events.database << event.sensu.storage.percent > 95  # database server
- *         timed_out: 5 minutes
+ *         timeout: 5 minutes
  *
  *  In other words this rule has to fire if at least one event is arrived by not oll inside the given time window.
  *

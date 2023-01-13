@@ -11,7 +11,6 @@ import org.drools.ansible.rulebook.integration.api.domain.conditions.AstConditio
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.Throttle;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDefinition;
-import org.drools.ansible.rulebook.integration.api.domain.temporal.TimedOutDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 
 public class Rule {
@@ -74,10 +73,6 @@ public class Rule {
 
     public void setTimeout(String timeWindow) {
         ruleGenerationContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow(timeWindow));
-    }
-
-    public void setTimed_out(String timedOut) {
-        ruleGenerationContext.setTimeConstraint(TimedOutDefinition.parseTimedOut(timedOut));
     }
 
     public boolean requiresAsyncExecution() {

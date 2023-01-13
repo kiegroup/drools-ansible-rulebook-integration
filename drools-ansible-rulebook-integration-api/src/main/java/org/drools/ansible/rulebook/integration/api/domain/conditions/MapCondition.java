@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ExistsField;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInListConstraint;
@@ -16,15 +17,14 @@ import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceWithinDef
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimedOutDefinition;
+import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
+import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL.PrototypePatternDef;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.ViewItem;
-import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
-import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.json.JSONObject;
 
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
@@ -70,8 +70,7 @@ public class MapCondition implements Condition {
 
     private static MapCondition parseConditionAttributes(RuleGenerationContext ruleContext, MapCondition condition) {
         parseThrottle(ruleContext, condition);
-        parseTimeWindow(ruleContext, condition);
-        parseTimedOut(ruleContext, condition);
+        parseTimeOut(ruleContext, condition);
         return condition;
     }
 
@@ -86,24 +85,21 @@ public class MapCondition implements Condition {
             }
             String onceAfter = (String) throttle.get(OnceAfterDefinition.KEYWORD);
             if (onceWithin != null) {
-                ruleContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(ruleContext.getRuleName(), onceWithin, groupByAttributes));
+                ruleContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(ruleContext.getRuleName(), onceAfter, groupByAttributes));
                 return;
             }
             throw new IllegalArgumentException("Invalid throttle definition");
         }
     }
 
-    private static void parseTimeWindow(RuleGenerationContext ruleContext, MapCondition condition) {
-        Object timeWindow = condition.getMap().remove(TimeWindowDefinition.KEYWORD);
-        if (timeWindow != null) {
-            ruleContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow((String) timeWindow));
-        }
-    }
-
-    private static void parseTimedOut(RuleGenerationContext ruleContext, MapCondition condition) {
-        Object timedOut = condition.getMap().remove(TimedOutDefinition.KEYWORD);
-        if (timedOut != null) {
-            ruleContext.setTimeConstraint(TimedOutDefinition.parseTimedOut((String) timedOut));
+    private static void parseTimeOut(RuleGenerationContext ruleContext, MapCondition condition) {
+        String timeOut = (String) condition.getMap().remove("timeout");
+        if (timeOut != null) {
+            if (condition.getMap().containsKey("NotAllCondition")) {
+                ruleContext.setTimeConstraint(TimedOutDefinition.parseTimedOut(timeOut));
+            } else {
+                ruleContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow(timeOut));
+            }
         }
     }
 
@@ -113,6 +109,10 @@ public class MapCondition implements Condition {
         String expressionName = (String) entry.getKey();
 
         switch (expressionName) {
+            case "NotAllCondition":
+                if (ruleContext.getTimeConstraint().filter( tc -> tc instanceof TimedOutDefinition ).isEmpty()) {
+                    throw new IllegalArgumentException("NotAllCondition requires a timeout");
+                }
             case "AnyCondition":
             case "AllCondition":
                 AstCondition.MultipleConditions conditions = expressionName.equals("AnyCondition") ?

@@ -13,14 +13,14 @@ import static org.junit.Assert.assertEquals;
 public class TimedOutTest {
 
     @Test
-    public void testTimedOutInCondition() {
+    public void timedOutTest() {
         String json =
                 "{\n" +
                 "   \"rules\":[\n" +
                 "      {\n" +
                 "         \"Rule\":{\n" +
                 "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
+                "               \"NotAllCondition\":[\n" +
                 "                  {\n" +
                 "                     \"EqualsExpression\":{\n" +
                 "                        \"lhs\":{\n" +
@@ -52,67 +52,13 @@ public class TimedOutTest {
                 "                     }\n" +
                 "                  }\n" +
                 "               ],\n" +
-                "               \"timed_out\":\"10 seconds\"\n" +
+                "               \"timeout\":\"10 seconds\"\n" +
                 "            }\n" +
                 "         }\n" +
                 "      }\n" +
                 "   ]\n" +
                 "}";
 
-        timedOutTest(json);
-    }
-
-    @Test
-    public void testTimedOutInRule() {
-        String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"ping.timeout\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Boolean\":true\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"sensu.process.status\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"String\":\"stopped\"\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"GreaterThanExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"sensu.storage.percent\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":95\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"timed_out\":\"10 seconds\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
-
-        timedOutTest(json);
-    }
-
-    private void timedOutTest(String json) {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
         // using a rule with a timed_out option automatically starts the scheduled pseudo clock
@@ -170,7 +116,7 @@ public class TimedOutTest {
                 "               }\n" +
                 "            },\n" +
                 "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
+                "               \"NotAllCondition\":[\n" +
                 "                  {\n" +
                 "                     \"IsDefinedExpression\":{\n" +
                 "                        \"Event\":\"i\"\n" +
@@ -181,11 +127,11 @@ public class TimedOutTest {
                 "                        \"Event\":\"j\"\n" +
                 "                     }\n" +
                 "                  }\n" +
-                "               ]\n" +
+                "               ],\n" +
+                "               \"timeout\":\"10 seconds\"\n" +
                 "            },\n" +
                 "            \"enabled\":true,\n" +
-                "            \"name\":\"r1\",\n" +
-                "            \"timed_out\":\"10 seconds\"\n" +
+                "            \"name\":\"r1\"\n" +
                 "         }\n" +
                 "      }\n" +
                 "   ]\n" +

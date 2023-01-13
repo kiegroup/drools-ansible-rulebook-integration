@@ -11,7 +11,7 @@
           }
         },
         "condition":{
-          "AllCondition":[
+          "NotAllCondition":[
             {
               "IsDefinedExpression":{
                 "Event":"i"
@@ -22,11 +22,11 @@
                 "Event":"j"
               }
             }
-          ]
+          ],
+          "timeout":"2 seconds"
         },
         "enabled":true,
-        "name":"r1",
-        "timed_out":"2 seconds"
+        "name":"r1"
       }
     }
   ]
