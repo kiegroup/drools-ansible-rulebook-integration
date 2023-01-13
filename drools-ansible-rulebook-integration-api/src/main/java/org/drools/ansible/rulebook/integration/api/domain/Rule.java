@@ -72,7 +72,7 @@ public class Rule {
         ruleGenerationContext.setTimeConstraint(throttle.asTimeConstraint(name));
     }
 
-    public void setTime_window(String timeWindow) {
+    public void setTimeout(String timeWindow) {
         ruleGenerationContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow(timeWindow));
     }
 

@@ -45,8 +45,9 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *      condition:
  *         all:
  *           - singleton << event.sensu.process.type == "alert"
- *         once_after: 10 minutes
- *         group_by_attributes:
+ *         throttle:
+ *           once_after: 10 minutes
+ *           group_by_attributes:
  *             - event.sensu.host
  *             - event.sensu.process.type
  *

@@ -50,7 +50,7 @@ public class TimeWindowTest {
                 "                     }\n" +
                 "                  }\n" +
                 "               ],\n" +
-                "               \"time_window\":\"10 seconds\"\n" +
+                "               \"timeout\":\"10 seconds\"\n" +
                 "            }\n" +
                 "         }\n" +
                 "      }\n" +
@@ -101,7 +101,7 @@ public class TimeWindowTest {
                 "                  }\n" +
                 "               ]\n" +
                 "            },\n" +
-                "            \"time_window\":\"10 seconds\"\n" +
+                "            \"timeout\":\"10 seconds\"\n" +
                 "         }\n" +
                 "      }\n" +
                 "   ]\n" +

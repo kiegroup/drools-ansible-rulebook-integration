@@ -19,7 +19,7 @@ import static org.drools.model.DSL.after;
  *           - events.ping << event.ping.timeout == true   # no host info
  *           - events.process << event.sensu.process.status == "stopped"   # web server
  *           - events.database << event.sensu.storage.percent > 95  # database server
- *         time_window: 5 minutes
+ *         timeout: 5 minutes
  *
  * This feature has been implemented synthetically adding temporal constraints to the events patterns so for example this
  * condition is internally rewritten as it follows:
@@ -36,7 +36,7 @@ import static org.drools.model.DSL.after;
  */
 public class TimeWindowDefinition implements TimeConstraint {
 
-    public static final String KEYWORD = "time_window";
+    public static final String KEYWORD = "timeout";
 
     private final TimeAmount timeAmount;
 
