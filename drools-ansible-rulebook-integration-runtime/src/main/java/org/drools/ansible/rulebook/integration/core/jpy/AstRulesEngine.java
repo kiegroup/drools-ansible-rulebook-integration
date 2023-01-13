@@ -25,17 +25,15 @@ public class AstRulesEngine {
     private boolean shutdown = false;
 
     public long createRuleset(String rulesetString) {
-        return createRulesetWithOptions(rulesetString, false);
+        return createRulesetWithOptions(rulesetString, true);
     }
 
-    public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
+    public long createRulesetWithOptions(String rulesetString, boolean async) {
         checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        boolean async = true; // rulesSet.hasAsyncExecution();
-        if (pseudoClock || async) {
-            rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
-        }
+//        boolean async = rulesSet.hasAsyncExecution();
         if (async) {
+            rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
             rulesExecutorContainer.allowAsync();
         }
         RulesExecutor executor = rulesExecutorContainer.register( RulesExecutorFactory.createRulesExecutor(rulesSet) );
