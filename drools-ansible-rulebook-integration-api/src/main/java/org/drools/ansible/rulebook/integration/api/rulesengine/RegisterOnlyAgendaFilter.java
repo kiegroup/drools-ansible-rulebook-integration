@@ -13,8 +13,12 @@ import org.drools.core.common.InternalFactHandle;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RegisterOnlyAgendaFilter implements AgendaFilter {
+
+    protected static final Logger log = LoggerFactory.getLogger(RegisterOnlyAgendaFilter.class);
 
     public static final String SYNTHETIC_RULE_TAG = "SYNTHETIC_RULE";
     public static final String RULE_TYPE_TAG = "RULE_TYPE";
@@ -38,6 +42,10 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     @Override
     public boolean accept(Match match) {
+        if (log.isInfoEnabled()) {
+            log.info(matchToString(match));
+        }
+
         Map<String, Object> metadata = match.getRule().getMetaData();
         if ( metadata.get(SYNTHETIC_RULE_TAG) != null ) {
             return true;
@@ -64,5 +72,11 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     public static void registerMatchTransformer(String ruleType, Function<Match, Match> transformer) {
         matchTransformers.put(ruleType, transformer);
+    }
+
+    private static String matchToString(Match match) {
+        Map<String, Object> metadata = match.getRule().getMetaData();
+        String ruleType = metadata.get(SYNTHETIC_RULE_TAG) != null ? "synthetic" : "effective";
+        return "Activation of " + ruleType + " rule \"" + match.getRule().getName() + "\" with facts: " + match.getObjects();
     }
 }

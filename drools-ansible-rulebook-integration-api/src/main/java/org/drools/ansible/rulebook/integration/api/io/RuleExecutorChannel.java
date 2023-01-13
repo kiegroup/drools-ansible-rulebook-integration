@@ -43,6 +43,10 @@ public class RuleExecutorChannel {
                 Socket skt = socketChannel.accept();
                 this.dataOutputStream = new DataOutputStream(skt.getOutputStream());
                 this.connected = true;
+
+                if (log.isInfoEnabled()) {
+                    log.info("Async channel connected");
+                }
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
