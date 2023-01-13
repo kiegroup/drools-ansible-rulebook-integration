@@ -1,10 +1,5 @@
 package org.drools.ansible.rulebook.integration.test.jpy;
 
-import org.drools.ansible.rulebook.integration.api.JsonTest;
-import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.json.JSONObject;
-import org.junit.Test;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +7,11 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
+import org.drools.ansible.rulebook.integration.api.JsonTest;
+import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
+import org.json.JSONObject;
+import org.junit.Test;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValue;
 import static org.junit.Assert.assertEquals;
@@ -72,11 +71,11 @@ public class AstRulesEngineTest {
     @Test
     public void testTimedOut() throws IOException {
         AstRulesEngine engine = new AstRulesEngine();
-        int port = engine.port();
 
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
             String rules = new String(s.readAllBytes());
             long id = engine.createRuleset(rules);
+            int port = engine.port();
 
             try (Socket socket = new Socket("localhost", port)) {
                 DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());

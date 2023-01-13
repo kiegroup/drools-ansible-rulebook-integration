@@ -31,7 +31,7 @@ public class AstRulesEngine {
     public long createRulesetWithOptions(String rulesetString, boolean pseudoClock) {
         checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        boolean async = rulesSet.hasAsyncExecution();
+        boolean async = true; // rulesSet.hasAsyncExecution();
         if (pseudoClock || async) {
             rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
         }
