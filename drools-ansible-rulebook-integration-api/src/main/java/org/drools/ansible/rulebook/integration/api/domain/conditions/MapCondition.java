@@ -84,7 +84,7 @@ public class MapCondition implements Condition {
                 return;
             }
             String onceAfter = (String) throttle.get(OnceAfterDefinition.KEYWORD);
-            if (onceWithin != null) {
+            if (onceAfter != null) {
                 ruleContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(ruleContext.getRuleName(), onceAfter, groupByAttributes));
                 return;
             }
