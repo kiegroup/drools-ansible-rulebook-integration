@@ -8,13 +8,16 @@ import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
 
-import javax.swing.plaf.TableHeaderUI;
-
 import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class RuleExecutorChannel {
+
+    protected static final Logger log = LoggerFactory.getLogger(RuleExecutorChannel.class);
+
     private final ServerSocket socketChannel;
     private volatile DataOutputStream dataOutputStream;
 
@@ -61,6 +64,11 @@ public class RuleExecutorChannel {
     public void write(Response response) {
         try {
             String payload = toJson(response);
+
+            if (log.isInfoEnabled()) {
+                log.info("Writing payload on the async channel: " + payload);
+            }
+
             byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
             dataOutputStream.writeInt(bytes.length);
             dataOutputStream.write(bytes);

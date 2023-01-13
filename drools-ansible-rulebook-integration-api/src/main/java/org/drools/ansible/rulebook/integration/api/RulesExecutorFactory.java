@@ -1,5 +1,8 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
@@ -14,18 +17,15 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.EVENTS_PROCESSING;
 import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.ASYNC_EVALUATION;
+import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.EVENTS_PROCESSING;
 import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.USE_PSEUDO_CLOCK;
 
 public class RulesExecutorFactory {
 
     private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
 
-    static final long DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS = 1000; // 1 second
+    static final long DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS = 100; // 100 milliseconds
 
     public static RulesExecutor createFromYaml(String yaml) {
         return createFromYaml(RuleNotation.CoreNotation.INSTANCE, yaml);

@@ -16,10 +16,14 @@ import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.drools.core.common.InternalFactHandle;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
 
 public abstract class AbstractRulesEvaluator implements RulesEvaluator {
+
+    protected static final Logger log = LoggerFactory.getLogger(AbstractRulesEvaluator.class);
 
     protected final RulesExecutorSession rulesExecutorSession;
 
@@ -52,6 +56,9 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     @Override
     public void startAutomaticPseudoClock(long period, TimeUnit unit) {
+        if (log.isInfoEnabled()) {
+            log.info("Start automatic pseudo clock with a tick every " + period + " " + unit);
+        }
         this.automaticClock = new AutomaticPseudoClock(this, period, unit);
     }
 
