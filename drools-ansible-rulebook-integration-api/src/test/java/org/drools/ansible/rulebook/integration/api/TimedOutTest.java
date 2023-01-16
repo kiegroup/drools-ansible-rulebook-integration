@@ -1,14 +1,23 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.core.facttemplates.Fact;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.RulesExecutorFactory.DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TimedOutTest {
 
@@ -153,5 +162,87 @@ public class TimedOutTest {
         assertEquals( 1, match.getDeclarationIds().size() );
         assertEquals( "m", match.getDeclarationIds().get(0) );
         assertEquals( 1, ((Fact) match.getDeclarationValue("m")).get("j") );
+    }
+
+    @Test
+    public void testTimedOutWithAutomaticClockAdvance() throws IOException {
+        String json =
+                "{\n" +
+                "       \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"maint failed\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"NotAllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"EqualsExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"alert.code\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"Integer\": 1001\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        },\n" +
+                "                        {\n" +
+                "                            \"EqualsExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"alert.code\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"Integer\": 1002\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"timeout\": \"2 seconds\"\n" +
+                "                },\n" +
+                "                \"action\": {\n" +
+                "                    \"Action\": {\n" +
+                "                        \"action\": \"print_event\",\n" +
+                "                        \"action_args\": {}\n" +
+                "                    }\n" +
+                "                },\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n\n" +
+                "}";
+
+        RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer();
+        RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, json);
+        assertTrue( rulesSet.hasAsyncExecution() );
+
+        rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
+        rulesExecutorContainer.allowAsync();
+        RulesExecutor rulesExecutor = rulesExecutorContainer.register( RulesExecutorFactory.createRulesExecutor(rulesSet) );
+
+        int port = rulesExecutorContainer.port();
+
+        try (Socket socket = new Socket("localhost", port)) {
+            DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
+
+            long assertTime = System.currentTimeMillis();
+            List<Match> matchedRules = rulesExecutor.processEvents( "{ \"alert\": { \"code\": 1001, \"message\": \"Applying maintenance\" } }" ).join();
+            assertEquals( 0, matchedRules.size() );
+
+            // blocking call
+            int l = bufferedInputStream.readInt();
+            long firingTime = System.currentTimeMillis();
+
+            // fires after at least 2 seconds
+            assertTrue((firingTime - assertTime) >= 2000);
+
+            byte[] bytes = bufferedInputStream.readNBytes(l);
+            String r = new String(bytes, StandardCharsets.UTF_8);
+            JSONObject v = new JSONObject(r);
+
+            List<Object> matches = v.getJSONArray("result").toList();
+            Map<String, Map> match = (Map<String, Map>) matches.get(0);
+
+            assertNotNull(match.get("maint failed"));
+        } finally {
+            rulesExecutorContainer.disposeAll();
+        }
     }
 }

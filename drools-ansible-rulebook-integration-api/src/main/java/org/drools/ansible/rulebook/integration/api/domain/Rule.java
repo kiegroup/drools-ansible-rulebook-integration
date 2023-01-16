@@ -15,8 +15,6 @@ import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionCon
 
 public class Rule {
     private String name;
-    private Condition condition;
-    private Action action;
     private boolean enabled;
 
     private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
@@ -29,12 +27,8 @@ public class Rule {
         this.name = name;
     }
 
-    public Condition getCondition() {
-        return condition;
-    }
-
     public void setCondition(Condition condition) {
-        this.condition = condition;
+        ruleGenerationContext.setCondition(condition);
     }
 
     public Rule withOptions(RuleConfigurationOptions options) {
@@ -43,20 +37,17 @@ public class Rule {
     }
 
     public AstCondition withCondition() {
-        condition = new AstCondition(ruleGenerationContext);
-        return (AstCondition) condition;
-    }
-
-    public Action getAction() {
-        return action;
+        AstCondition condition = new AstCondition(ruleGenerationContext);
+        ruleGenerationContext.setCondition(condition);
+        return condition;
     }
 
     public void setAction(MapAction action) {
-        this.action = action;
+        ruleGenerationContext.setAction(action);
     }
 
     public void setGenericAction(Action action) {
-        this.action = action;
+        ruleGenerationContext.setAction(action);
     }
 
     public void setEnabled(boolean enabled) {
@@ -83,8 +74,8 @@ public class Rule {
     public String toString() {
         return "Rule{" +
                 "name='" + name + '\'' +
-                ", condition='" + condition + '\'' +
-                ", action='" + action + '\'' +
+                ", condition='" + ruleGenerationContext.getCondition() + '\'' +
+                ", action='" + ruleGenerationContext.getAction() + '\'' +
                 '}';
     }
 
@@ -94,7 +85,7 @@ public class Rule {
         }
         ruleGenerationContext.setRuleName(name);
 
-        List<org.drools.model.Rule> rules = ruleGenerationContext.generateRules(rulesExecutionController, condition, action);
+        List<org.drools.model.Rule> rules = ruleGenerationContext.createRules(rulesExecutionController);
         if (ruleGenerationContext.hasTimeConstraint()) {
             rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
         }

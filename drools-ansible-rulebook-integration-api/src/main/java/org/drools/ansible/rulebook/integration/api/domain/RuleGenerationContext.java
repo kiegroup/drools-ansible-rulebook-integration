@@ -22,6 +22,7 @@ import org.drools.model.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
+import org.drools.model.view.ViewItem;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
 import static org.drools.model.DSL.execute;
@@ -42,7 +43,29 @@ public class RuleGenerationContext {
 
     private boolean multiplePatterns = false;
 
+    private Condition condition;
+
+    private Action action;
+
+    private ViewItem lhs;
+
     private TimeConstraint timeConstraint;
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+    public Action getAction() {
+        return action;
+    }
 
     public void addOptions(Iterable<RuleConfigurationOption> options) {
         this.options.addOptions(options);
@@ -103,11 +126,12 @@ public class RuleGenerationContext {
     }
 
     public boolean requiresAsyncExecution() {
+        getOrCreateLHS();
         return timeConstraint != null && timeConstraint.requiresAsyncExecution();
     }
 
-    public List<Rule> generateRules(RulesExecutionController rulesExecutionController, Condition condition, Action action) {
-        Rule generatedRule = generateRule(rulesExecutionController, condition, action);
+    public List<Rule> createRules(RulesExecutionController rulesExecutionController) {
+        Rule generatedRule = createRule(rulesExecutionController);
         List<org.drools.model.Rule> syntheticRules = getSyntheticRules();
 
         if (syntheticRules.isEmpty()) {
@@ -120,8 +144,22 @@ public class RuleGenerationContext {
         return rules;
     }
 
-    private Rule generateRule(RulesExecutionController rulesExecutionController, Condition condition, Action action) {
-        RuleItemBuilder pattern = condition.toPattern( this );
+    private Rule createRule(RulesExecutionController rulesExecutionController) {
+        RuleItemBuilder pattern = getOrCreateLHS();
+        RuleItemBuilder consequence = createConsequence(rulesExecutionController, action);
+
+        return getTimeConstraint().map( tc -> tc.buildTimedRule(ruleName, pattern, consequence) )
+                .orElse(rule( ruleName ).build( pattern, consequence ));
+    }
+
+    private ViewItem getOrCreateLHS() {
+        if (lhs == null) {
+            lhs = condition.toPattern(this);
+        }
+        return lhs;
+    }
+
+    private RuleItemBuilder createConsequence(RulesExecutionController rulesExecutionController, Action action) {
         RuleItemBuilder consequence;
         Variable<?>[] consequenceVariables = timeConstraint != null ? timeConstraint.getTimeConstraintConsequenceVariables() : null;
         if ( consequenceVariables != null ) {
@@ -141,9 +179,7 @@ public class RuleGenerationContext {
         } else {
             consequence = execute(drools -> defaultConsequence(rulesExecutionController, action, drools));
         }
-
-        return getTimeConstraint().map( tc -> tc.buildTimedRule(ruleName, pattern, consequence) )
-                .orElse(rule( ruleName ).build( pattern, consequence ));
+        return consequence;
     }
 
     private void defaultConsequence(RulesExecutionController rulesExecutionController, Action action, Drools drools) {

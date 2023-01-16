@@ -25,13 +25,9 @@ public class AstRulesEngine {
     private boolean shutdown = false;
 
     public long createRuleset(String rulesetString) {
-        return createRulesetWithOptions(rulesetString, true);
-    }
-
-    public long createRulesetWithOptions(String rulesetString, boolean async) {
         checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-//        boolean async = rulesSet.hasAsyncExecution();
+        boolean async = rulesSet.hasAsyncExecution();
         if (async) {
             rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
             rulesExecutorContainer.allowAsync();

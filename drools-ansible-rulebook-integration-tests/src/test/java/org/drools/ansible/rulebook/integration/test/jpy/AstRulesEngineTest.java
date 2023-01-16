@@ -28,7 +28,7 @@ public class AstRulesEngineTest {
         String rules = JsonTest.JSON1;
 
         AstRulesEngine engine = new AstRulesEngine();
-        long id = engine.createRulesetWithOptions(rules, false);
+        long id = engine.createRuleset(rules);
 
         String result = engine.assertFact(id, "{ \"sensu\": { \"data\": { \"i\":1 } } }");
 
@@ -54,7 +54,7 @@ public class AstRulesEngineTest {
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
             String rules = new String(s.readAllBytes());
 
-            long id = engine.createRulesetWithOptions(rules, false);
+            long id = engine.createRuleset(rules);
             engine.assertFact(id, "{\"j\": 42}");
             engine.assertFact(id, "{\"i\": 67}");
             String retractedFact = "{\"i\": 67}";
@@ -81,7 +81,7 @@ public class AstRulesEngineTest {
                 DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
 
                 long assertTime = System.currentTimeMillis();
-                engine.assertFact(id, "{\"j\": 42}");
+                engine.assertEvent(id, "{\"j\": 42}");
 
                 int l = bufferedInputStream.readInt();
                 long firingTime = System.currentTimeMillis();
