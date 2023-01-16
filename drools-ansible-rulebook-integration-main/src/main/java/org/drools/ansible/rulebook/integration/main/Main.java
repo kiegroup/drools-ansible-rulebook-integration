@@ -1,6 +1,8 @@
 package org.drools.ansible.rulebook.integration.main;
 
 import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -20,10 +22,8 @@ public class Main {
     public static void main(String[] args) {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
 
-        try (AstRulesEngine engine = new AstRulesEngine();
-             InputStream s = Main.class.getClassLoader().getResourceAsStream(jsonFile)) {
-
-            String rules = new String(s.readAllBytes());
+        try (AstRulesEngine engine = new AstRulesEngine()) {
+            String rules = readJsonInput(jsonFile);
             JSONObject ruleSet = (JSONObject) new JSONObject(rules).get("RuleSet");
 
             long id = engine.createRuleset(ruleSet.toString());
@@ -53,6 +53,20 @@ public class Main {
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static String readJsonInput(String jsonFile) {
+        try (InputStream is1 = Main.class.getClassLoader().getResourceAsStream(jsonFile)) {
+            return new String(is1.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            try (InputStream is2 = new FileInputStream(jsonFile)) {
+                return new String(is2.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException(ex);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
