@@ -14,17 +14,16 @@ import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDef
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 
 public class Rule {
-    private String name;
     private boolean enabled;
 
     private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
     public String getName() {
-        return name;
+        return ruleGenerationContext.getRuleName();
     }
 
     public void setName(String name) {
-        this.name = name;
+        ruleGenerationContext.setRuleName(name);
     }
 
     public void setCondition(Condition condition) {
@@ -59,7 +58,7 @@ public class Rule {
     }
 
     public void setThrottle(Throttle throttle) {
-        ruleGenerationContext.setTimeConstraint(throttle.asTimeConstraint(name));
+        ruleGenerationContext.setTimeConstraint(throttle.asTimeConstraint());
     }
 
     public void setTimeout(String timeWindow) {
@@ -77,17 +76,16 @@ public class Rule {
     @Override
     public String toString() {
         return "Rule{" +
-                "name='" + name + '\'' +
+                "name='" + ruleGenerationContext.getRuleName() + '\'' +
                 ", condition='" + ruleGenerationContext.getCondition() + '\'' +
                 ", action='" + ruleGenerationContext.getAction() + '\'' +
                 '}';
     }
 
     List<org.drools.model.Rule> toExecModelRules(RulesSet rulesSet, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
-        if (name == null) {
-            name = "r_" + ruleCounter.getAndIncrement();
+        if (ruleGenerationContext.getRuleName() == null) {
+            ruleGenerationContext.setRuleName("r_" + ruleCounter.getAndIncrement());
         }
-        ruleGenerationContext.setRuleName(name);
 
         List<org.drools.model.Rule> rules = ruleGenerationContext.createRules(rulesExecutionController);
         if (ruleGenerationContext.hasTemporalConstraint()) {

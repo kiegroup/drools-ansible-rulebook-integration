@@ -18,7 +18,7 @@ public interface TimeConstraint {
 
     boolean requiresAsyncExecution();
 
-    ViewItem processTimeConstraint(ViewItem pattern);
+    ViewItem processTimeConstraint(String ruleName, ViewItem pattern);
 
     default Variable<?>[] getTimeConstraintConsequenceVariables() {
         return null;

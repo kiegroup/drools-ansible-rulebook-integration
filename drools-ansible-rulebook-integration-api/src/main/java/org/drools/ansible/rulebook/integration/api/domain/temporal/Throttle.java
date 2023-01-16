@@ -20,12 +20,12 @@ public class Throttle {
         this.groupByAttributes = groupByAttributes;
     }
 
-    public TimeConstraint asTimeConstraint(String ruleName) {
+    public TimeConstraint asTimeConstraint() {
         if (onceWithin != null) {
-            return OnceWithinDefinition.parseOnceWithin(ruleName, onceWithin, groupByAttributes);
+            return OnceWithinDefinition.parseOnceWithin(onceWithin, groupByAttributes);
         }
         if (onceAfter != null) {
-            return OnceAfterDefinition.parseOnceAfter(ruleName, onceAfter, groupByAttributes);
+            return OnceAfterDefinition.parseOnceAfter(onceAfter, groupByAttributes);
         }
         throw new IllegalArgumentException("Invalid throttle definition");
     }

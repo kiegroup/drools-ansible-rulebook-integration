@@ -169,7 +169,7 @@ public class TimedOutDefinition implements TimeConstraint {
     }
 
     @Override
-    public ViewItem processTimeConstraint(ViewItem pattern) {
+    public ViewItem processTimeConstraint(String ruleName, ViewItem pattern) {
         patterns.add(pattern);
         return pattern;
     }

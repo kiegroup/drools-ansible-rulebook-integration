@@ -13,11 +13,12 @@ import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Main {
 
-    private static final String DEFAULT_JSON = "timed_out.json";
+    private static final String DEFAULT_JSON = "once_after.json";
 
     public static void main(String[] args) {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
@@ -72,26 +73,37 @@ public class Main {
 
     private static class Payload {
 
-        private final int delay;
-
         private final List<String> list;
 
-        private Payload(int delay, List<String> list) {
-            this.delay = delay;
+        private int loopCount = 1;
+        private int loopDelay = 0;
+        private int delay = 0;
+
+        private Payload(List<String> list) {
             this.list = list;
         }
 
         private static Payload parsePayload(JSONObject ruleSet) {
             JSONObject sources = (JSONObject) ((JSONObject) ((JSONArray) ruleSet.get("sources")).get(0)).get("EventSource");
             JSONObject sourcesArgs = (JSONObject) sources.get("source_args");
-            int delay = Integer.parseInt( sourcesArgs.get("delay").toString() );
-            JSONArray payload = (JSONArray) sourcesArgs.get("payload");
             List<String> payloadList = new ArrayList<>();
-            for (Object p : payload) {
+            for (Object p : (JSONArray) sourcesArgs.get("payload")) {
                 payloadList.add(p.toString());
             }
 
-            return new Payload(delay, payloadList);
+            Payload payload = new Payload(payloadList);
+
+            try {
+                payload.delay = sourcesArgs.getInt("delay");
+            } catch (JSONException e) { /* ignore */ }
+            try {
+                payload.loopCount = sourcesArgs.getInt("loop_count");
+            } catch (JSONException e) { /* ignore */ }
+            try {
+                payload.loopDelay = sourcesArgs.getInt("loop_delay");
+            } catch (JSONException e) { /* ignore */ }
+
+            return payload;
         }
 
         public void execute(AstRulesEngine engine, long sessionId) {
@@ -118,10 +130,17 @@ public class Main {
 
         @Override
         public void run() {
-            for (String p : payload.list) {
-                engine.assertEvent(sessionId, p);
+            for (int i = 0; i < payload.loopCount; i++) {
+                for (String p : payload.list) {
+                    engine.assertEvent(sessionId, p);
+                    try {
+                        Thread.sleep(payload.delay * 1000L);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 try {
-                    Thread.sleep(payload.delay * 1000L);
+                    Thread.sleep(payload.loopDelay * 1000L);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

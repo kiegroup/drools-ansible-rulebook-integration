@@ -67,8 +67,8 @@ public class OnceWithinDefinition extends OnceAbstractTimeConstraint {
 
     public static final String KEYWORD = "once_within";
 
-    public OnceWithinDefinition(String ruleName, TimeAmount timeAmount, List<String> groupByAttributes) {
-        super(ruleName, timeAmount, groupByAttributes);
+    public OnceWithinDefinition(TimeAmount timeAmount, List<String> groupByAttributes) {
+        super(timeAmount, groupByAttributes);
     }
 
     @Override
@@ -95,7 +95,8 @@ public class OnceWithinDefinition extends OnceAbstractTimeConstraint {
     }
 
     @Override
-    public ViewItem processTimeConstraint(ViewItem pattern) {
+    public ViewItem processTimeConstraint(String ruleName, ViewItem pattern) {
+        this.ruleName = ruleName;
         if (guardedPattern != null) {
             throw new IllegalStateException("Cannot process this TimeConstraint twice");
         }
@@ -118,8 +119,8 @@ public class OnceWithinDefinition extends OnceAbstractTimeConstraint {
         return "OnceWithinDefinition{" + " " + timeAmount + ", groupByAttributes=" + groupByAttributes + " }";
     }
 
-    public static OnceWithinDefinition parseOnceWithin(String ruleName, String onceWithin, List<String> groupByAttributes) {
+    public static OnceWithinDefinition parseOnceWithin(String onceWithin, List<String> groupByAttributes) {
         List<String> sanitizedAttributes = groupByAttributes.stream().map(OnceAbstractTimeConstraint::sanitizeAttributeName).collect(toList());
-        return new OnceWithinDefinition(ruleName, parseTimeAmount(onceWithin), sanitizedAttributes);
+        return new OnceWithinDefinition(parseTimeAmount(onceWithin), sanitizedAttributes);
     }
 }

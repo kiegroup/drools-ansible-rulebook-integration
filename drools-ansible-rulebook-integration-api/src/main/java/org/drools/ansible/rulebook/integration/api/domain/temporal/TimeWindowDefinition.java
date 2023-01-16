@@ -53,7 +53,7 @@ public class TimeWindowDefinition implements TimeConstraint {
         return new TimeWindowDefinition(parseTimeAmount(timeWindow));
     }
 
-    public ViewItem processTimeConstraint(ViewItem pattern) {
+    public ViewItem processTimeConstraint(String ruleName, ViewItem pattern) {
         PrototypeDSL.PrototypePatternDef protoPattern = (PrototypeDSL.PrototypePatternDef) pattern;
         formerVariables.forEach(v -> protoPattern.expr(after(-timeAmount.getAmount(), timeAmount.getTimeUnit(), timeAmount.getAmount(), timeAmount.getTimeUnit()), v));
         formerVariables.add((PrototypeVariable) protoPattern.getFirstVariable());

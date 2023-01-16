@@ -80,12 +80,12 @@ public class MapCondition implements Condition {
             List<String> groupByAttributes = (List<String>) throttle.get(TimeConstraint.GROUP_BY_ATTRIBUTES);
             String onceWithin = (String) throttle.get(OnceWithinDefinition.KEYWORD);
             if (onceWithin != null) {
-                ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(ruleContext.getRuleName(), onceWithin, groupByAttributes));
+                ruleContext.setTimeConstraint(OnceWithinDefinition.parseOnceWithin(onceWithin, groupByAttributes));
                 return;
             }
             String onceAfter = (String) throttle.get(OnceAfterDefinition.KEYWORD);
             if (onceAfter != null) {
-                ruleContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(ruleContext.getRuleName(), onceAfter, groupByAttributes));
+                ruleContext.setTimeConstraint(OnceAfterDefinition.parseOnceAfter(onceAfter, groupByAttributes));
                 return;
             }
             throw new IllegalArgumentException("Invalid throttle definition");

@@ -126,8 +126,8 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
         return rewrittenMatch;
     }
 
-    public OnceAfterDefinition(String ruleName, TimeAmount timeAmount, List<String> groupByAttributes) {
-        super(ruleName, timeAmount, groupByAttributes);
+    public OnceAfterDefinition(TimeAmount timeAmount, List<String> groupByAttributes) {
+        super(timeAmount, groupByAttributes);
     }
 
     @Override
@@ -147,7 +147,8 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
     }
 
     @Override
-    public ViewItem processTimeConstraint(ViewItem pattern) {
+    public ViewItem processTimeConstraint(String ruleName, ViewItem pattern) {
+        this.ruleName = ruleName;
         if (guardedPattern != null) {
             throw new IllegalStateException("Cannot process this TimeConstraint twice");
         }
@@ -209,7 +210,7 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
         );
 
         rules.add(
-                rule(ruleName + "cleanup").metadata(SYNTHETIC_RULE_TAG, true)
+                rule(ruleName + "_cleanup").metadata(SYNTHETIC_RULE_TAG, true)
                         .build(
                                 guardedPattern,
                                 createControlPattern(),
@@ -225,8 +226,8 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
         return "OnceWithinDefinition{" + " " + timeAmount + ", groupByAttributes=" + groupByAttributes + " }";
     }
 
-    public static OnceAfterDefinition parseOnceAfter(String ruleName, String onceWithin, List<String> groupByAttributes) {
+    public static OnceAfterDefinition parseOnceAfter(String onceWithin, List<String> groupByAttributes) {
         List<String> sanitizedAttributes = groupByAttributes.stream().map(OnceAbstractTimeConstraint::sanitizeAttributeName).collect(toList());
-        return new OnceAfterDefinition(ruleName, parseTimeAmount(onceWithin), sanitizedAttributes);
+        return new OnceAfterDefinition(parseTimeAmount(onceWithin), sanitizedAttributes);
     }
 }

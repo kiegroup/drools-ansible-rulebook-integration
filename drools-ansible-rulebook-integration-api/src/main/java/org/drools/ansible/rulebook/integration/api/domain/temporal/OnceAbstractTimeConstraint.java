@@ -15,15 +15,14 @@ import static org.drools.model.PrototypeExpression.prototypeField;
 
 public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
 
-    protected final String ruleName;
+    protected String ruleName;
 
     protected final TimeAmount timeAmount;
     protected final List<String> groupByAttributes;
 
     protected PrototypeDSL.PrototypePatternDef guardedPattern;
 
-    public OnceAbstractTimeConstraint(String ruleName, TimeAmount timeAmount, List<String> groupByAttributes) {
-        this.ruleName = ruleName;
+    public OnceAbstractTimeConstraint(TimeAmount timeAmount, List<String> groupByAttributes) {
         this.timeAmount = timeAmount;
         this.groupByAttributes = groupByAttributes;
     }

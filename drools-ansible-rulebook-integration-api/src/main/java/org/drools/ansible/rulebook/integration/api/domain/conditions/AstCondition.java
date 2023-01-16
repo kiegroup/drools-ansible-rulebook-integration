@@ -121,7 +121,7 @@ public class AstCondition implements Condition {
         abstract PatternCondition negate(RuleGenerationContext ruleContext);
 
         protected ViewItem processTimeConstraint(RuleGenerationContext ruleContext, ViewItem pattern) {
-            return ruleContext.getTimeConstraint().map(tc -> tc.processTimeConstraint(pattern)).orElse(pattern);
+            return ruleContext.getTimeConstraint().map(tc -> tc.processTimeConstraint(ruleContext.getRuleName(), pattern)).orElse(pattern);
         }
 
         protected PrototypeDSL.PrototypePatternDef getPattern(RuleGenerationContext ruleContext) {
