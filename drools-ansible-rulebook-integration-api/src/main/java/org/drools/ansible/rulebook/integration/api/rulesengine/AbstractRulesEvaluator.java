@@ -57,7 +57,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     @Override
     public void startAutomaticPseudoClock(long period, TimeUnit unit) {
         if (log.isInfoEnabled()) {
-            log.info("Start automatic pseudo clock with a tick every " + period + " " + unit);
+            log.info("Start automatic pseudo clock with a tick every " + period + " " + unit.toString().toLowerCase());
         }
         this.automaticClock = new AutomaticPseudoClock(this, period, unit);
     }

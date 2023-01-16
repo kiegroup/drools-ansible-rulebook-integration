@@ -1,0 +1,74 @@
+{
+  "RuleSet": {
+    "name": "51 not all",
+    "hosts": [
+      "all"
+    ],
+    "sources": [
+      {
+        "EventSource": {
+          "name": "generic",
+          "source_name": "generic",
+          "source_args": {
+            "create_index": "event_index",
+            "delay": 30,
+            "payload": [
+              {
+                "alert": {
+                  "code": 1001,
+                  "message": "Applying maintenance"
+                }
+              },
+              {
+                "alert": {
+                  "code": 1002,
+                  "message": "Restarted"
+                }
+              }
+            ]
+          },
+          "source_filters": []
+        }
+      }
+    ],
+    "rules": [
+      {
+        "Rule": {
+          "name": "maint failed",
+          "condition": {
+            "NotAllCondition": [
+              {
+                "EqualsExpression": {
+                  "lhs": {
+                    "Event": "alert.code"
+                  },
+                  "rhs": {
+                    "Integer": 1001
+                  }
+                }
+              },
+              {
+                "EqualsExpression": {
+                  "lhs": {
+                    "Event": "alert.code"
+                  },
+                  "rhs": {
+                    "Integer": 1002
+                  }
+                }
+              }
+            ],
+            "timeout": "10 seconds"
+          },
+          "action": {
+            "Action": {
+              "action": "print_event",
+              "action_args": {}
+            }
+          },
+          "enabled": true
+        }
+      }
+    ]
+  }
+}

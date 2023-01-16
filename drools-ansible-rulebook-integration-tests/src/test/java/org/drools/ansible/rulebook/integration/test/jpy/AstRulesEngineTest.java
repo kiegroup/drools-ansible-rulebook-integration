@@ -24,34 +24,27 @@ import static org.junit.Assert.fail;
 public class AstRulesEngineTest {
     @Test
     public void testJpyApi() {
-
         String rules = JsonTest.JSON1;
-
-        AstRulesEngine engine = new AstRulesEngine();
-        long id = engine.createRuleset(rules);
-
-        String result = engine.assertFact(id, "{ \"sensu\": { \"data\": { \"i\":1 } } }");
-
-        assertNotNull(result);
-
-        engine.shutdown();
+        try (AstRulesEngine engine = new AstRulesEngine()) {
+            long id = engine.createRuleset(rules);
+            String result = engine.assertFact(id, "{ \"sensu\": { \"data\": { \"i\":1 } } }");
+            assertNotNull(result);
+        }
     }
 
     @Test
     public void testBrokenApi() throws IOException {
-        AstRulesEngine engine = new AstRulesEngine();
-        try (InputStream s = getClass().getClassLoader().getResourceAsStream("broken.json")) {
+        try (AstRulesEngine engine = new AstRulesEngine();
+             InputStream s = getClass().getClassLoader().getResourceAsStream("broken.json")) {
             String rules = new String(s.readAllBytes());
             assertThrows(UnsupportedOperationException.class, () -> engine.createRuleset(rules));
-        } finally {
-            engine.shutdown();
         }
     }
 
     @Test
     public void testRetractFact() throws IOException {
-        AstRulesEngine engine = new AstRulesEngine();
-        try (InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
+        try (AstRulesEngine engine = new AstRulesEngine();
+             InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
             String rules = new String(s.readAllBytes());
 
             long id = engine.createRuleset(rules);
@@ -63,16 +56,13 @@ public class AstRulesEngineTest {
             List<Map<String, Map>> v = readValue(r);
 
             assertEquals(v.get(0).get("r_0").get("m"), new JSONObject(retractedFact).toMap());
-        } finally {
-            engine.shutdown();
         }
     }
 
     @Test
     public void testTimedOut() throws IOException {
-        AstRulesEngine engine = new AstRulesEngine();
-
-        try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
+        try (AstRulesEngine engine = new AstRulesEngine();
+             InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
             String rules = new String(s.readAllBytes());
             long id = engine.createRuleset(rules);
             int port = engine.port();
@@ -98,17 +88,14 @@ public class AstRulesEngineTest {
 
                 assertNotNull(match.get("r1"));
             }
-        } finally {
-            engine.shutdown();
         }
     }
 
     @Test
     public void testTimedOutWithAdvance() throws IOException {
-        AstRulesEngine engine = new AstRulesEngine();
-        int port = engine.port();
-
-        try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
+        try (AstRulesEngine engine = new AstRulesEngine();
+             InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
+            int port = engine.port();
             String rules = new String(s.readAllBytes());
             long id = engine.createRuleset(rules);
 
@@ -129,17 +116,14 @@ public class AstRulesEngineTest {
                 Map<String, Map> match = (Map<String, Map>) matches2.get(0);
                 assertNotNull(match.get("r1"));
             }
-        } finally {
-            engine.shutdown();
         }
     }
 
     @Test(timeout = 5000L)
     public void testThrowExceptionOnUnboundSocket() throws IOException {
-        AstRulesEngine engine = new AstRulesEngine();
-        int port = engine.port();
-
-        try (InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
+        try (AstRulesEngine engine = new AstRulesEngine();
+             InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
+            int port = engine.port();
             String rules = new String(s.readAllBytes());
             long id = engine.createRuleset(rules);
 
@@ -149,8 +133,6 @@ public class AstRulesEngineTest {
             } catch (IllegalStateException e) {
                 // expected
             }
-        } finally {
-            engine.shutdown();
         }
     }
 }

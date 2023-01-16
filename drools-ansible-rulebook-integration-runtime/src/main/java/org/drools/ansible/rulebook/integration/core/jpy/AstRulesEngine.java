@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
+import java.io.Closeable;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -18,7 +19,7 @@ import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
-public class AstRulesEngine {
+public class AstRulesEngine implements Closeable {
 
     private final RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer();
 
@@ -85,6 +86,11 @@ public class AstRulesEngine {
     }
 
     public void shutdown() {
+        close();
+    }
+
+    @Override
+    public void close() {
         shutdown = true;
         rulesExecutorContainer.disposeAll();
     }

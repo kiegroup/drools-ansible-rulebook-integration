@@ -17,6 +17,7 @@
     <module>drools-ansible-rulebook-integration-durable-rest</module>
     <module>drools-ansible-rulebook-integration-benchmark</module>
     <module>drools-ansible-rulebook-integration-tests</module>
+    <module>drools-ansible-rulebook-integration-main</module>
   </modules>
   
   <name>Drools :: Ansible Rulebook Integration</name>
