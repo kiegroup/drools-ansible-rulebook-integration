@@ -70,7 +70,7 @@ public class RulesExecutorFactory {
                 KieBaseMutabilityOption.DISABLED,
                 rulesSet.hasOption(EVENTS_PROCESSING) ? EventProcessingOption.STREAM : EventProcessingOption.CLOUD );
 
-        if (rulesSet.hasOption(USE_PSEUDO_CLOCK) || rulesSet.requiresAsyncExecution()) {
+        if (rulesSet.hasOption(USE_PSEUDO_CLOCK) || rulesSet.hasTemporalConstraint()) {
             KieSessionConfiguration conf = KieServices.get().newKieSessionConfiguration();
             conf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
             return kieBase.newKieSession(conf, null);

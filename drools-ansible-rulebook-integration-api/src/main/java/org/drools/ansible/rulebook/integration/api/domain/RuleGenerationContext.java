@@ -125,6 +125,11 @@ public class RuleGenerationContext {
         this.timeConstraint = timeConstraint;
     }
 
+    public boolean hasTemporalConstraint() {
+        getOrCreateLHS();
+        return timeConstraint != null;
+    }
+
     public boolean requiresAsyncExecution() {
         getOrCreateLHS();
         return timeConstraint != null && timeConstraint.requiresAsyncExecution();
@@ -190,10 +195,6 @@ public class RuleGenerationContext {
 
     private List<Rule> getSyntheticRules() {
         return timeConstraint != null ? timeConstraint.getControlRules(this) : Collections.emptyList();
-    }
-
-    public boolean hasTimeConstraint() {
-        return timeConstraint != null;
     }
 
     public String getRuleName() {

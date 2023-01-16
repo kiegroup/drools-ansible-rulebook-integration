@@ -66,6 +66,10 @@ public class Rule {
         ruleGenerationContext.setTimeConstraint(TimeWindowDefinition.parseTimeWindow(timeWindow));
     }
 
+    public boolean hasTemporalConstraint() {
+        return ruleGenerationContext.hasTemporalConstraint();
+    }
+
     public boolean requiresAsyncExecution() {
         return ruleGenerationContext.requiresAsyncExecution();
     }
@@ -86,7 +90,7 @@ public class Rule {
         ruleGenerationContext.setRuleName(name);
 
         List<org.drools.model.Rule> rules = ruleGenerationContext.createRules(rulesExecutionController);
-        if (ruleGenerationContext.hasTimeConstraint()) {
+        if (ruleGenerationContext.hasTemporalConstraint()) {
             rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
         }
         return rules;

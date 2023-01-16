@@ -28,10 +28,11 @@ public class AstRulesEngine implements Closeable {
     public long createRuleset(String rulesetString) {
         checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
-        boolean async = rulesSet.hasAsyncExecution();
-        if (async) {
+        if (rulesSet.hasTemporalConstraint()) {
             rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
-            rulesExecutorContainer.allowAsync();
+            if (rulesSet.hasAsyncExecution()) {
+                rulesExecutorContainer.allowAsync();
+            }
         }
         RulesExecutor executor = rulesExecutorContainer.register( RulesExecutorFactory.createRulesExecutor(rulesSet) );
         return executor.getId();
