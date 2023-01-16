@@ -228,10 +228,10 @@ public class TimedOutTest {
 
             // blocking call
             int l = bufferedInputStream.readInt();
-            long firingTime = System.currentTimeMillis();
 
             // fires after at least 2 seconds
-            assertTrue((firingTime - assertTime) >= 2000);
+            long elapsed = System.currentTimeMillis() - assertTime;
+            assertTrue("rule fired after " + elapsed + " milliseconds", elapsed >= 2000);
 
             byte[] bytes = bufferedInputStream.readNBytes(l);
             String r = new String(bytes, StandardCharsets.UTF_8);
