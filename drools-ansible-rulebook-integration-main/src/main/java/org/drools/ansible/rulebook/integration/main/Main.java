@@ -18,12 +18,17 @@ import org.json.JSONObject;
 
 public class Main {
 
+    private static final boolean EXECUTE_PAYLOAD_ASYNC = true;
+
     private static final String DEFAULT_JSON = "once_after.json";
+
+    private static volatile boolean terminated = false;
 
     public static void main(String[] args) {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
 
         try (AstRulesEngine engine = new AstRulesEngine()) {
+
             String rules = readJsonInput(jsonFile);
             JSONObject ruleSet = (JSONObject) new JSONObject(rules).get("RuleSet");
 
@@ -33,25 +38,50 @@ public class Main {
             Payload payload = Payload.parsePayload(ruleSet);
 
             try (Socket socket = new Socket("localhost", port)) {
-                DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
-
-                long startTime = System.currentTimeMillis();
-                payload.execute(engine, id);
-
-                // blocking call
-                int l = bufferedInputStream.readInt();
-                long firingTime = System.currentTimeMillis() - startTime;
-
-                byte[] bytes = bufferedInputStream.readNBytes(l);
-                String r = new String(bytes, StandardCharsets.UTF_8);
-                JSONObject v = new JSONObject(r);
-
-                List<Object> matches = v.getJSONArray("result").toList();
-                Map<String, Map> match = (Map<String, Map>) matches.get(0);
-
-                System.out.println(match + " fired after " + firingTime + " milliseconds");
+                if (EXECUTE_PAYLOAD_ASYNC) {
+                    executeInNewThread(payload.asRunnable(engine, id));
+                    readAsyncChannel(socket);
+                } else {
+                    executeInNewThread(() -> readAsyncChannel(socket));
+                    payload.asRunnable(engine, id).run();
+                }
+                waitForTermination();
             }
 
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void waitForTermination() {
+        while (!terminated) {
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static void readAsyncChannel(Socket socket) {
+        try {
+            DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
+            long startTime = System.currentTimeMillis();
+
+            // blocking call
+            int nBytes = bufferedInputStream.readInt();
+            long firingTime = System.currentTimeMillis() - startTime;
+
+            byte[] bytes = bufferedInputStream.readNBytes(nBytes);
+            String r = new String(bytes, StandardCharsets.UTF_8);
+            JSONObject v = new JSONObject(r);
+
+            List<Object> matches = v.getJSONArray("result").toList();
+            Map<String, Map> match = (Map<String, Map>) matches.get(0);
+
+            System.out.println(match + " fired after " + firingTime + " milliseconds");
+
+            terminated = true;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -106,12 +136,15 @@ public class Main {
             return payload;
         }
 
-        public void execute(AstRulesEngine engine, long sessionId) {
-            PayloadRunner payloadRunner = new PayloadRunner(this, engine, sessionId);
-            Thread thread = new Thread(payloadRunner);
-            thread.setDaemon(true);
-            thread.start();
+        public Runnable asRunnable(AstRulesEngine engine, long sessionId) {
+            return new PayloadRunner(this, engine, sessionId);
         }
+    }
+
+    private static void executeInNewThread(Runnable runnable) {
+        Thread thread = new Thread(runnable);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     private static class PayloadRunner implements Runnable {

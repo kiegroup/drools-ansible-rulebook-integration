@@ -77,6 +77,10 @@ public class RuleExecutorChannel {
             dataOutputStream.writeInt(bytes.length);
             dataOutputStream.write(bytes);
             dataOutputStream.flush();
+
+            if (log.isInfoEnabled()) {
+                log.info(bytes.length  + " bytes have been written on the async channel");
+            }
         } catch (IOException | UncheckedIOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

@@ -5,10 +5,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class AsyncExecutor {
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r);
+        t.setDaemon(true);
+        t.setName("drools-async-evaluator-thread");
+        return t;
+    });
 
     public CompletableFuture<?> submit(Runnable runnable) {
         return CompletableFuture.runAsync(runnable, executor);
