@@ -1,17 +1,17 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.ConditionFactory;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ExistsField;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListNotContainsConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.SearchMatchesConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceAfterDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeConstraint;
@@ -21,15 +21,11 @@ import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedConditio
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
-import org.drools.model.PrototypeDSL.PrototypePatternDef;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeVariable;
 import org.drools.model.view.ViewItem;
-import org.json.JSONObject;
 
-import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.mapEntry2Expr;
 import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.thisPrototype;
 
 public class MapCondition implements Condition {
 
@@ -179,155 +175,32 @@ public class MapCondition implements Condition {
         }
         if (entry.getValue() instanceof String) {
             // the field name alone is the shortcut for fieldName == true
-            return new ParsedCondition(mapEntry2Expr(ruleContext, entry).prototypeExpression, Index.ConstraintType.EQUAL, fixedValue(true));
+            return new ParsedCondition(mapEntry2Expr(ruleContext, entry).getPrototypeExpression(), Index.ConstraintType.EQUAL, fixedValue(true));
         }
 
-        Map<?,?> expression = (Map<?,?>) entry.getValue();
+        return parseExpression(ruleContext, expressionName, (Map<?,?>) entry.getValue());
+    }
 
+    private ParsedCondition parseExpression(RuleGenerationContext ruleContext, String expressionName, Map<?, ?> expression) {
         ConstraintOperator operator = decodeOperation(expressionName);
 
-        if (operator == ExistsField.INSTANCE) {
-            return new ParsedCondition(thisPrototype(), operator, fixedValue(map2Expr(ruleContext, expression).getFieldName())).withNotPattern(expressionName.equals("IsNotDefinedExpression"));
+        if (operator instanceof ConditionFactory) {
+            return ((ConditionFactory) operator).createParsedCondition(ruleContext, expressionName, expression);
         }
 
         ConditionExpression left = map2Expr(ruleContext, expression.get("lhs"));
         ConditionExpression right = map2Expr(ruleContext, expression.get("rhs"));
         return right.isBeta() ?
-                new BetaParsedCondition(left.prototypeExpression, operator, right.betaVariable, right.prototypeExpression) :
-                new ParsedCondition(left.prototypeExpression, operator, right.prototypeExpression).withImplicitPattern(hasImplicitPattern(ruleContext, left, right));
+                new BetaParsedCondition(left.getPrototypeExpression(), operator, right.getBetaVariable(), right.getPrototypeExpression()) :
+                new ParsedCondition(left.getPrototypeExpression(), operator, right.getPrototypeExpression()).withImplicitPattern(hasImplicitPattern(ruleContext, left, right));
     }
 
     private boolean hasImplicitPattern(RuleGenerationContext ruleContext, ConditionExpression left, ConditionExpression right) {
-        boolean hasImplicitPattern = left.field && right.field && !left.prototypeName.equals(right.prototypeName) && !ruleContext.isExistingBoundVariable(right.prototypeName);
+        boolean hasImplicitPattern = left.isField() && right.isField() && !left.getPrototypeName().equals(right.getPrototypeName()) && !ruleContext.isExistingBoundVariable(right.getPrototypeName());
         if (hasImplicitPattern && !ruleContext.hasOption(RuleConfigurationOption.ALLOW_IMPLICIT_JOINS)) {
             throw new UnsupportedOperationException("Cannot have an implicit pattern without using ALLOW_IMPLICIT_JOINS option");
         }
         return hasImplicitPattern;
-    }
-
-    private static ConditionExpression map2Expr(RuleGenerationContext ruleContext, Object expr) {
-        if (expr instanceof String) {
-            return createFieldExpression(ruleContext, (String)expr);
-        }
-
-        if (expr instanceof Collection) {
-            List list = new ArrayList();
-            for (Object item : (Collection)expr) {
-                Map.Entry itemEntry = ((Map<?,?>) item).entrySet().iterator().next();
-                if (isKnownType( (String) itemEntry.getKey() )) {
-                    list.add( toJsonValue( (String) itemEntry.getKey(), itemEntry.getValue() ) );
-                } else {
-                    throw new UnsupportedOperationException("Unknown list item: " + itemEntry);
-                }
-            }
-            return new ConditionExpression(fixedValue(list));
-        }
-
-        Map<?,?> exprMap = (Map) expr;
-        assert(exprMap.size() == 1);
-        Map.Entry entry = exprMap.entrySet().iterator().next();
-        return mapEntry2Expr(ruleContext, expr, entry);
-    }
-
-    private static ConditionExpression mapEntry2Expr(RuleGenerationContext ruleContext, Map.Entry entry) {
-        return mapEntry2Expr(ruleContext, null, entry);
-    }
-
-    private static ConditionExpression mapEntry2Expr(RuleGenerationContext ruleContext, Object expr, Map.Entry entry) {
-        String key = (String) entry.getKey();
-        Object value = entry.getValue();
-
-        if (isKnownType(key)) {
-            return new ConditionExpression(fixedValue(toJsonValue(key, value)));
-        }
-
-        if (value instanceof String) {
-            String fieldName = ignoreKey(key) ? (String) value : key + "." + value;
-            return createFieldExpression(ruleContext, fieldName);
-        }
-
-        if (value instanceof Map) {
-            Map<?,?> expression = (Map<?,?>) value;
-            return map2Expr(ruleContext, expression.get("lhs")).composeWith(decodeBinaryOperator(key), map2Expr(ruleContext, expression.get("rhs")));
-        }
-
-        throw new UnsupportedOperationException("Invalid expression: " + (expr != null ? expr : entry));
-    }
-
-    private static boolean isKnownType(String type) {
-        return type.equals("Integer") || type.equals("Float") || type.equals("String") || type.equals("Boolean");
-    }
-
-    private static Object toJsonValue(String type, Object value) {
-        if (type.equals("String")) {
-            return value.toString();
-        }
-        return JSONObject.stringToValue(value.toString());
-    }
-
-    private static ConditionExpression createFieldExpression(RuleGenerationContext ruleContext, String fieldName) {
-        int dotPos = fieldName.indexOf('.');
-        String prototypeName = fieldName;
-        PrototypeVariable betaVariable = null;
-        if (dotPos > 0) {
-            prototypeName = fieldName.substring(0, dotPos);
-            PrototypePatternDef boundPattern = ruleContext.getBoundPattern(prototypeName);
-            if ( boundPattern != null ) {
-                fieldName = fieldName.substring(dotPos+1);
-                betaVariable = (PrototypeVariable) boundPattern.getFirstVariable();
-            }
-        }
-        return new ConditionExpression(fieldName2PrototypeExpression(fieldName), true, prototypeName, betaVariable);
-    }
-
-    private static boolean ignoreKey(String key) {
-        return key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("facts") || key.equalsIgnoreCase("event") || key.equalsIgnoreCase("events");
-    }
-
-    private static class ConditionExpression {
-        private final PrototypeExpression prototypeExpression;
-        private final boolean field;
-        private final String prototypeName;
-        private final PrototypeVariable betaVariable;
-
-        private ConditionExpression(PrototypeExpression prototypeExpression) {
-            this(prototypeExpression, false, null, null);
-        }
-
-        private ConditionExpression(PrototypeExpression prototypeExpression, boolean field, String prototypeName, PrototypeVariable betaVariable) {
-            this.prototypeExpression = prototypeExpression;
-            this.field = field;
-            this.prototypeName = prototypeName;
-            this.betaVariable = betaVariable;
-        }
-
-        public ConditionExpression composeWith(PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator, ConditionExpression rhs) {
-            PrototypeExpression composed = prototypeExpression.composeWith(decodeBinaryOperator, rhs.prototypeExpression);
-            if (field) {
-                return new ConditionExpression(composed, true, prototypeName, betaVariable);
-            }
-            if (rhs.field) {
-                return new ConditionExpression(composed, true, prototypeName, betaVariable);
-            }
-            return new ConditionExpression(composed);
-        }
-
-        public boolean isBeta() {
-            return betaVariable != null;
-        }
-
-        public String getFieldName() {
-            return ((PrototypeExpression.PrototypeFieldValue) prototypeExpression).getFieldName();
-        }
-
-        @Override
-        public String toString() {
-            return "ConditionExpression{" +
-                    "prototypeExpression=" + prototypeExpression +
-                    ", field=" + field +
-                    ", prototypeName='" + prototypeName + '\'' +
-                    '}';
-        }
     }
 
     private static ConstraintOperator decodeOperation(String expressionName) {
@@ -355,22 +228,10 @@ public class MapCondition implements Condition {
                 return ItemInListConstraint.INSTANCE;
             case "ItemNotInListExpression":
                 return ItemNotInListConstraint.INSTANCE;
+            case "SearchMatchesExpression":
+                return SearchMatchesConstraint.INSTANCE;
         }
         throw new UnsupportedOperationException("Unrecognized operation type: " + expressionName);
-    }
-
-    private static PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator(String operator) {
-        switch (operator) {
-            case "AdditionExpression":
-                return PrototypeExpression.BinaryOperation.Operator.ADD;
-            case "SubtractionExpression":
-                return PrototypeExpression.BinaryOperation.Operator.SUB;
-            case "MultiplicationExpression":
-                return PrototypeExpression.BinaryOperation.Operator.MUL;
-            case "DivisionExpression":
-                return PrototypeExpression.BinaryOperation.Operator.DIV;
-        }
-        throw new UnsupportedOperationException("Unrecognized binary operator " + operator);
     }
 
     @Override
