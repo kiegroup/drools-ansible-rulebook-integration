@@ -1,7 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.domain.actions;
 
 import org.drools.model.Drools;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
 

@@ -217,18 +217,19 @@ public class MapCondition implements Condition {
                 return Index.ConstraintType.LESS_THAN;
             case "LessThanOrEqualToExpression":
                 return Index.ConstraintType.LESS_OR_EQUAL;
-            case "IsDefinedExpression":
-            case "IsNotDefinedExpression":
+            case ExistsField.EXPRESSION_NAME:
+            case ExistsField.NEGATED_EXPRESSION_NAME:
                 return ExistsField.INSTANCE;
-            case "ListContainsItemExpression":
+            case ListContainsConstraint.EXPRESSION_NAME:
                 return ListContainsConstraint.INSTANCE;
-            case "ListNotContainsItemExpression":
+            case ListNotContainsConstraint.EXPRESSION_NAME:
                 return ListNotContainsConstraint.INSTANCE;
-            case "ItemInListExpression":
+            case ItemInListConstraint.EXPRESSION_NAME:
                 return ItemInListConstraint.INSTANCE;
-            case "ItemNotInListExpression":
+            case ItemNotInListConstraint.EXPRESSION_NAME:
                 return ItemNotInListConstraint.INSTANCE;
-            case "SearchMatchesExpression":
+            case SearchMatchesConstraint.EXPRESSION_NAME:
+            case SearchMatchesConstraint.NEGATED_EXPRESSION_NAME:
                 return SearchMatchesConstraint.INSTANCE;
         }
         throw new UnsupportedOperationException("Unrecognized operation type: " + expressionName);

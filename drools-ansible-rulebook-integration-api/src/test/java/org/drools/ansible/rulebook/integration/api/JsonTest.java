@@ -1,13 +1,13 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
-
-import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
 import static org.junit.Assert.assertEquals;
@@ -168,6 +168,17 @@ public class JsonTest {
     @Test
     public void testProcessRuleWithUnknownAction() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } }, \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testProcessRuleIgnoringActionsTag() {
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } }, \"actions\": { \"post_event\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 1, matchedRules.size() );

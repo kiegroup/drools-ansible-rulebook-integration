@@ -17,6 +17,9 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
 
     INSTANCE;
 
+    public static final String EXPRESSION_NAME = "SearchMatchesExpression";
+    public static final String NEGATED_EXPRESSION_NAME = "SearchNotMatchesExpression";
+
     @Override
     public <T, V> BiPredicate<T, V> asPredicate() {
         throw new UnsupportedOperationException();
@@ -31,7 +34,7 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
     public ParsedCondition createParsedCondition(RuleGenerationContext ruleContext, String expressionName, Map<?, ?> expression) {
         ConditionExpression left = map2Expr(ruleContext, expression.get("lhs"));
         ConstraintOperator operator = createMatchOperator((Map<?,?>)expression.get("rhs"));
-        return new ParsedCondition(left.getPrototypeExpression(), operator, fixedValue(true));
+        return new ParsedCondition(left.getPrototypeExpression(), operator, fixedValue(expressionName.equals(EXPRESSION_NAME)));
     }
 
     public static ConstraintOperator createMatchOperator(Map<?,?> rhs) {
@@ -86,7 +89,7 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
 
         @Override
         public <T, V> BiPredicate<T, V> asPredicate() {
-            return (t, v) -> t != null && regexPattern.matcher(t.toString()).matches();
+            return (t, v) -> t != null && regexPattern.matcher(t.toString()).matches() == (boolean) v;
         }
     }
 }

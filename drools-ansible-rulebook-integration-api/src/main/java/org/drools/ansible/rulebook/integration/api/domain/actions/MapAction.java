@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.model.Drools;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 
 public class MapAction extends HashMap implements Action {
 
@@ -22,14 +21,7 @@ public class MapAction extends HashMap implements Action {
                 String ruleset = (String)((Map) value).get("ruleset");
                 Map<String, Object> fact = (Map<String, Object>)((Map) value).get("fact");
                 if (ruleset != null && fact != null) {
-                    FactAction factAction = null;
-                    if (key.toString().equals(RetractFact.ACTION_NAME)) {
-                        factAction = new RetractFact();
-                    } else if (key.toString().equals(PostEvent.ACTION_NAME)) {
-                        factAction = new PostEvent();
-                    } else {
-                        factAction = new AssertFact();
-                    }
+                    FactAction factAction = createFactAction(key);
                     factAction.setRuleset(ruleset);
                     factAction.setFact(fact);
                     knownActions.add(factAction);
@@ -47,6 +39,16 @@ public class MapAction extends HashMap implements Action {
 
         }
         return super.put(key, value);
+    }
+
+    private FactAction createFactAction(Object key) {
+        if (key.toString().equals(RetractFact.ACTION_NAME)) {
+            return new RetractFact();
+        }
+        if (key.toString().equals(PostEvent.ACTION_NAME)) {
+            return new PostEvent();
+        }
+        return new AssertFact();
     }
 
     @Override

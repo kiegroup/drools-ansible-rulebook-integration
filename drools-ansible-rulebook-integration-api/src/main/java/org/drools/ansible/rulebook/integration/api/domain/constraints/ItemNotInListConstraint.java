@@ -10,6 +10,8 @@ public enum ItemNotInListConstraint implements ConstraintOperator {
 
     INSTANCE;
 
+    public static final String EXPRESSION_NAME = "ItemNotInListExpression";
+
     @Override
     public <T, V> BiPredicate<T, V> asPredicate() {
         return (t, v) -> !listContains(v, t);

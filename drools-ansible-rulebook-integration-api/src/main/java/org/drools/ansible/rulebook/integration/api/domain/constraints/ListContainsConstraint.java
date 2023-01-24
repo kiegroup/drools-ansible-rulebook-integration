@@ -9,6 +9,8 @@ public enum ListContainsConstraint implements ConstraintOperator {
 
     INSTANCE;
 
+    public static final String EXPRESSION_NAME = "ListContainsItemExpression";
+
     @Override
     public <T, V> BiPredicate<T, V> asPredicate() {
         return ListContainsConstraint::listContains;

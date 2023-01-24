@@ -10,6 +10,8 @@ public enum ItemInListConstraint implements ConstraintOperator {
 
     INSTANCE;
 
+    public static final String EXPRESSION_NAME = "ItemInListExpression";
+
     @Override
     public <T, V> BiPredicate<T, V> asPredicate() {
         return (t, v) -> listContains(v, t);

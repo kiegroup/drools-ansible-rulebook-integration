@@ -1,6 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
-import java.util.Collection;
 import java.util.function.BiPredicate;
 
 import org.drools.model.ConstraintOperator;
@@ -10,6 +9,8 @@ import static org.drools.ansible.rulebook.integration.api.domain.constraints.Lis
 public enum ListNotContainsConstraint implements ConstraintOperator {
 
     INSTANCE;
+
+    public static final String EXPRESSION_NAME = "ListNotContainsItemExpression";
 
     @Override
     public <T, V> BiPredicate<T, V> asPredicate() {

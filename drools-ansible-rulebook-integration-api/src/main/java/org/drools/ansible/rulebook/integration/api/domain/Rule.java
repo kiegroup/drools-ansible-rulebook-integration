@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.api.domain;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
@@ -13,6 +14,7 @@ import org.drools.ansible.rulebook.integration.api.domain.temporal.Throttle;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Rule {
     private boolean enabled;
 
