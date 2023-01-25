@@ -152,7 +152,7 @@ public class TimedOutDefinition implements TimeConstraint {
         Fact fact = (Fact)match.getObjects().get(0);
         Object startEvent = fact.get("event");
         fact.set("event", null);
-        return new EmptyMatchDecorator(match).withBoundObject("m", startEvent);
+        return new EmptyMatchDecorator(match).withBoundObject("m_0", startEvent);
     }
 
     private TimedOutDefinition(TimeAmount timeAmount) {

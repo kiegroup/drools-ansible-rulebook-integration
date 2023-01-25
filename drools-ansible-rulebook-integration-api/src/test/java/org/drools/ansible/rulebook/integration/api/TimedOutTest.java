@@ -105,6 +105,7 @@ public class TimedOutTest {
 
         matchedRules = rulesExecutor.advanceTime( 2, TimeUnit.SECONDS ).join();
         assertEquals( 1, matchedRules.size() );
+        assertNotNull( matchedRules.get(0).getDeclarationValue("m_0") );
 
         rulesExecutor.dispose();
     }
@@ -160,8 +161,8 @@ public class TimedOutTest {
         Match match = matchedRules.get(0);
         assertEquals("r1", match.getRule().getName());
         assertEquals( 1, match.getDeclarationIds().size() );
-        assertEquals( "m", match.getDeclarationIds().get(0) );
-        assertEquals( 1, ((Fact) match.getDeclarationValue("m")).get("j") );
+        assertEquals( "m_0", match.getDeclarationIds().get(0) );
+        assertEquals( 1, ((Fact) match.getDeclarationValue("m_0")).get("j") );
     }
 
     @Test
