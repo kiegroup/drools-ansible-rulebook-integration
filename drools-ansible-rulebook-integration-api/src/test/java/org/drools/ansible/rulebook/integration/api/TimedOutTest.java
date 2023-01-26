@@ -41,12 +41,19 @@ public class TimedOutTest {
                 "                     }\n" +
                 "                  },\n" +
                 "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
+                "                     \"AssignmentExpression\":{\n" +
                 "                        \"lhs\":{\n" +
-                "                           \"Event\":\"sensu.process.status\"\n" +
+                "                           \"Events\":\"myevent\"\n" +
                 "                        },\n" +
                 "                        \"rhs\":{\n" +
-                "                           \"String\":\"stopped\"\n" +
+                "                           \"EqualsExpression\":{\n" +
+                "                              \"lhs\":{\n" +
+                "                                 \"Event\":\"sensu.process.status\"\n" +
+                "                              },\n" +
+                "                              \"rhs\":{\n" +
+                "                                 \"String\":\"stopped\"\n" +
+                "                              }\n" +
+                "                           }\n" +
                 "                        }\n" +
                 "                     }\n" +
                 "                  },\n" +
@@ -67,6 +74,8 @@ public class TimedOutTest {
                 "      }\n" +
                 "   ]\n" +
                 "}";
+
+        System.out.println(json);
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
@@ -105,7 +114,8 @@ public class TimedOutTest {
 
         matchedRules = rulesExecutor.advanceTime( 2, TimeUnit.SECONDS ).join();
         assertEquals( 1, matchedRules.size() );
-        assertNotNull( matchedRules.get(0).getDeclarationValue("m_0") );
+        assertEquals( "myevent", matchedRules.get(0).getDeclarationIds().get(0) );
+        assertNotNull( matchedRules.get(0).getDeclarationValue("myevent") );
 
         rulesExecutor.dispose();
     }
@@ -161,8 +171,8 @@ public class TimedOutTest {
         Match match = matchedRules.get(0);
         assertEquals("r1", match.getRule().getName());
         assertEquals( 1, match.getDeclarationIds().size() );
-        assertEquals( "m_0", match.getDeclarationIds().get(0) );
-        assertEquals( 1, ((Fact) match.getDeclarationValue("m_0")).get("j") );
+        assertEquals( "m_1", match.getDeclarationIds().get(0) );
+        assertEquals( 1, ((Fact) match.getDeclarationValue("m_1")).get("j") );
     }
 
     @Test

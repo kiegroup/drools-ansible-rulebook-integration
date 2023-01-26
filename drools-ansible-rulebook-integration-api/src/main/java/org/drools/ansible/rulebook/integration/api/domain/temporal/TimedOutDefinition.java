@@ -17,6 +17,7 @@ import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
 import org.drools.model.view.ViewItem;
 import org.kie.api.runtime.rule.Match;
+import org.kie.api.runtime.rule.RuleContext;
 
 import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount.parseTimeAmount;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
@@ -60,33 +61,36 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *
  *  This means that the former example is translated in the following set of rules:
  *
- *  rule R1 when
+ *  rule R_0 when
  *    ping : Event( ping.timeout == true )
  *    not( Control( name == "R1" ) )
  *  then
  *    Control control = new Control().withExpiration(5, TimeUnit.MINUTE);
- *    control.set("name", "R1");
+ *    control.set("rulename", "R1");
  *    control.set("event", ping);
+ *    control.set("binding", "m_0");
  *    insert(control);
  *  end
  *
- *  rule R2 when
+ *  rule R_1 when
  *    process : Event( sensu.process.status == "stopped" )
  *    not( Control( name == "R2" ) )
  *  then
  *    Control control = new Control().withExpiration(5, TimeUnit.MINUTE);
- *    control.set("name", "R2");
+ *    control.set("rulename", "R2");
  *    control.set("event", process);
+ *    control.set("binding", "m_1");
  *    insert(control);
  *  end
  *
- *  rule R3 when
+ *  rule R_2 when
  *    database : Event( sensu.storage.percent > 95 )
  *    not( Control( name == "R3" ) )
  *  then
  *    Control control = new Control().withExpiration(5, TimeUnit.MINUTE);
- *    control.set("name", "R3");
+ *    control.set("rulename", "R3");
  *    control.set("event", database);
+ *    control.set("binding", "m_2");
  *    insert(control);
  *  end
  *
@@ -95,8 +99,9 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *    $match : Control( name startsWith "R" ) // at least one pattern
  *  then
  *    Control control = new Control().withExpiration(5, TimeUnit.MINUTE);
- *    control.set("name", "start_R");
+ *    control.set("rulename", "start_R");
  *    control.set( "event", $match.get("event") ); // carry matched event in the start control fact
+ *    control.set( "binding", $match.get("binding") );
  *    insert(control);
  *  end
  *
@@ -105,7 +110,7 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *    accumulate( Control( name startsWith "R" ); $count : count(); $count == 3 ) // the total number of patterns
  *  then
  *    Control control = new Control().withExpiration(5, TimeUnit.MINUTE);
- *    control.set("name", "end_R");
+ *    control.set("rulename", "end_R");
  *    insert(control);
  *  end
  *
@@ -152,7 +157,7 @@ public class TimedOutDefinition implements TimeConstraint {
         Fact fact = (Fact)match.getObjects().get(0);
         Object startEvent = fact.get("event");
         fact.set("event", null);
-        return new EmptyMatchDecorator(match).withBoundObject("m_0", startEvent);
+        return new EmptyMatchDecorator(match).withBoundObject(fact.get("binding").toString(), startEvent);
     }
 
     private TimedOutDefinition(TimeAmount timeAmount) {
@@ -191,9 +196,9 @@ public class TimedOutDefinition implements TimeConstraint {
 
         return rule( ruleName ).metadata(RULE_TYPE_TAG, KEYWORD)
                 .build(
-                    protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ),
+                    protoPattern(controlVar1).expr( "rulename", Index.ConstraintType.EQUAL, startTag ),
                     not( protoPattern(controlVar2)
-                            .expr( "name", Index.ConstraintType.EQUAL, endTag )
+                            .expr( "rulename", Index.ConstraintType.EQUAL, endTag )
                             .expr( after(0, timeAmount.getTimeUnit(), timeAmount.getAmount(), timeAmount.getTimeUnit()), controlVar1 ) ),
                     consequence
         );
@@ -216,12 +221,13 @@ public class TimedOutDefinition implements TimeConstraint {
                     .build(
                             patterns.get(i),
                             not( protoPattern(controlVar1)
-                                    .expr( "name", Index.ConstraintType.EQUAL, name ) ),
+                                    .expr( "rulename", Index.ConstraintType.EQUAL, name ) ),
                             on(patterns.get(i).getFirstVariable()).execute((drools, t1) -> {
                                 Event controlEvent = createMapBasedEvent( controlPrototype )
                                         .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-                                controlEvent.set( "name", name );
+                                controlEvent.set( "rulename", name );
                                 controlEvent.set( "event", t1 );
+                                controlEvent.set( "binding", ((RuleContext) drools).getMatch().getDeclarationIds().get(0) );
                                 ((Drools) drools).insert(controlEvent);
                             })
                     )
@@ -231,13 +237,14 @@ public class TimedOutDefinition implements TimeConstraint {
         rules.add(
             rule(startTag).metadata(SYNTHETIC_RULE_TAG, true)
                 .build(
-                        not( protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ) ),
-                        protoPattern(controlVar2).expr( p -> ((String)p.get("name")).startsWith(rulePrefix) ),
+                        not( protoPattern(controlVar1).expr( "rulename", Index.ConstraintType.EQUAL, startTag ) ),
+                        protoPattern(controlVar2).expr( p -> ((String)p.get("rulename")).startsWith(rulePrefix) ),
                         on(controlVar2).execute((drools, firstEvent) -> {
                             Event controlEvent = createMapBasedEvent( controlPrototype )
                                     .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-                            controlEvent.set( "name", startTag );
+                            controlEvent.set( "rulename", startTag );
                             controlEvent.set( "event", firstEvent.get("event") );
+                            controlEvent.set( "binding", firstEvent.get("binding") );
                             drools.insert(controlEvent);
                         })
                 )
@@ -246,14 +253,14 @@ public class TimedOutDefinition implements TimeConstraint {
         rules.add(
             rule(endTag).metadata(SYNTHETIC_RULE_TAG, true)
                 .build(
-                        protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ),
-                        accumulate( protoPattern(controlVar2).expr(p -> ((String)p.get("name")).startsWith(rulePrefix)),
+                        protoPattern(controlVar1).expr( "rulename", Index.ConstraintType.EQUAL, startTag ),
+                        accumulate( protoPattern(controlVar2).expr(p -> ((String)p.get("rulename")).startsWith(rulePrefix)),
                                 accFunction(org.drools.core.base.accumulators.CountAccumulateFunction::new).as(resultCount)),
                         pattern(resultCount).expr(count -> count == patterns.size()),
                         on(resultCount).execute((drools, count) -> {
                             Event controlEvent = createMapBasedEvent( controlPrototype )
                                     .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-                            controlEvent.set( "name", endTag );
+                            controlEvent.set( "rulename", endTag );
                             drools.insert(controlEvent);
                         })
                 )
@@ -262,8 +269,8 @@ public class TimedOutDefinition implements TimeConstraint {
         rules.add(
             rule( rulePrefix + "cleanupEvents" ).metadata(SYNTHETIC_RULE_TAG, true)
                 .build(
-                        protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, endTag ),
-                        protoPattern(controlVar2).expr(p -> ((String)p.get("name")).startsWith(rulePrefix)),
+                        protoPattern(controlVar1).expr( "rulename", Index.ConstraintType.EQUAL, endTag ),
+                        protoPattern(controlVar2).expr(p -> ((String)p.get("rulename")).startsWith(rulePrefix)),
                         on(controlVar1, controlVar2).execute((drools, c1, c2) -> {
                             drools.delete(c2.get("event"));
                             drools.delete(c2);
@@ -274,11 +281,11 @@ public class TimedOutDefinition implements TimeConstraint {
         rules.add(
             rule( rulePrefix + "cleanupEvents2" ).metadata(SYNTHETIC_RULE_TAG, true)
                 .build(
-                        protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ),
+                        protoPattern(controlVar1).expr( "rulename", Index.ConstraintType.EQUAL, startTag ),
                         not( protoPattern(controlVar2)
-                                .expr( "name", Index.ConstraintType.EQUAL, endTag )
+                                .expr( "rulename", Index.ConstraintType.EQUAL, endTag )
                                 .expr( after(0, timeAmount.getTimeUnit(), timeAmount.getAmount(), timeAmount.getTimeUnit()), controlVar1 ) ),
-                        protoPattern(controlVar3).expr(p -> ((String)p.get("name")).startsWith(rulePrefix)),
+                        protoPattern(controlVar3).expr(p -> ((String)p.get("rulename")).startsWith(rulePrefix)),
                         on(controlVar1, controlVar3).execute((drools, c1, c3) -> {
                             drools.delete(c3.get("event"));
                             drools.delete(c3);
@@ -290,8 +297,8 @@ public class TimedOutDefinition implements TimeConstraint {
         rules.add(
             rule( rulePrefix + "cleanupTerminal" ).metadata(SYNTHETIC_RULE_TAG, true)
                 .build(
-                        protoPattern(controlVar1).expr( "name", Index.ConstraintType.EQUAL, startTag ),
-                        protoPattern(controlVar2).expr( "name", Index.ConstraintType.EQUAL, endTag ),
+                        protoPattern(controlVar1).expr( "rulename", Index.ConstraintType.EQUAL, startTag ),
+                        protoPattern(controlVar2).expr( "rulename", Index.ConstraintType.EQUAL, endTag ),
                         on(controlVar1, controlVar2).execute((drools, c1, c2) -> {
                             drools.delete(c1);
                             drools.delete(c2);
