@@ -42,25 +42,30 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     @Override
     public boolean accept(Match match) {
-        if (log.isInfoEnabled()) {
-            log.info(matchToString(match));
-        }
+        List<InternalFactHandle> fhs = (List<InternalFactHandle>) match.getFactHandles();
+        boolean validMatch = isValidMatch(fhs);
 
-        Map<String, Object> metadata = match.getRule().getMetaData();
-        if ( metadata.get(SYNTHETIC_RULE_TAG) != null ) {
-            return true;
-        }
+        if (validMatch) {
+            if (log.isInfoEnabled()) {
+                log.info(matchToString(match));
+            }
 
-        matchedRules.add( matchTransformers.getOrDefault(metadata.get(RULE_TYPE_TAG), Function.identity()).apply(match) );
+            Map<String, Object> metadata = match.getRule().getMetaData();
+            if ( metadata.get(SYNTHETIC_RULE_TAG) != null ) {
+                return true;
+            }
+
+            matchedRules.add( matchTransformers.getOrDefault(metadata.get(RULE_TYPE_TAG), Function.identity()).apply(match) );
+        }
 
         if (!ephemeralFactHandleIds.isEmpty()) {
-            for (FactHandle fh : match.getFactHandles()) {
+            for (FactHandle fh : fhs) {
                 if (ephemeralFactHandleIds.remove(((InternalFactHandle) fh).getId())) {
                     factsToBeDeleted.add(fh);
                 }
             }
         }
-        return true;
+        return validMatch;
     }
 
     public List<Match> finalizeAndGetResults() {
@@ -78,5 +83,20 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
         Map<String, Object> metadata = match.getRule().getMetaData();
         String ruleType = metadata.get(SYNTHETIC_RULE_TAG) != null ? "synthetic" : "effective";
         return "Activation of " + ruleType + " rule \"" + match.getRule().getName() + "\" with facts: " + match.getObjects();
+    }
+
+    private boolean isValidMatch(List<InternalFactHandle> fhs) {
+        return !isSelfJoin(fhs);
+    }
+
+    private boolean isSelfJoin(List<InternalFactHandle> fhs) {
+        for (int i = 0; i < fhs.size()-1; i++) {
+            for (int j = i+1; j < fhs.size(); j++) {
+                if (fhs.get(i) == fhs.get(j)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

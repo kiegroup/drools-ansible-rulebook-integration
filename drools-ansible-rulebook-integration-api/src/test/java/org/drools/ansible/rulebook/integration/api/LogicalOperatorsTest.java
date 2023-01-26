@@ -517,5 +517,56 @@ public class LogicalOperatorsTest {
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":7 }" ).join();
         assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testPreventSelfJoin() {
+        String json =
+                "{\n" +
+                "   \"rules\":[\n" +
+                "      {\n" +
+                "         \"Rule\":{\n" +
+                "            \"name\":\"R1\",\n" +
+                "            \"condition\":{\n" +
+                "               \"AllCondition\":[\n" +
+                "                  {\n" +
+                "                     \"EqualsExpression\":{\n" +
+                "                        \"lhs\":{\n" +
+                "                           \"sensu\":\"data.i\"\n" +
+                "                        },\n" +
+                "                        \"rhs\":{\n" +
+                "                           \"Integer\":3\n" +
+                "                        }\n" +
+                "                     }\n" +
+                "                  },\n" +
+                "                  {\n" +
+                "                     \"EqualsExpression\":{\n" +
+                "                        \"lhs\":\"j\",\n" +
+                "                        \"rhs\":{\n" +
+                "                           \"Integer\":2\n" +
+                "                        }\n" +
+                "                     }\n" +
+                "                  }\n" +
+                "               ]\n" +
+                "            }\n" +
+                "         }\n" +
+                "      }\n" +
+                "   ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"data\": { \"i\":3 } }, \"j\":2 }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"data\": { \"i\":3 } } }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processEvents( "{ \"j\":2 }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
     }
 }

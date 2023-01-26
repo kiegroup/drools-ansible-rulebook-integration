@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class DurableRulesJsonTest {
 
@@ -131,7 +130,7 @@ public class DurableRulesJsonTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(DurableNotation.INSTANCE, jsonRule);
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"subject\": { \"x\": \"Kermit\" }, \"predicate\": \"eats\", \"object\": \"flies\" }" ).join();
-        assertEquals( 1, matchedRules.size() );
+        assertEquals( 0, matchedRules.size() );
     }
 
     @Test
@@ -144,7 +143,7 @@ public class DurableRulesJsonTest {
         assertEquals( 0, matchedRules.size() );
 
         matchedRules = rulesExecutor.processFacts( "{ \"nested\": { \"i\": 1, \"j\": 2 } }" ).join();
-        assertEquals( 1, matchedRules.size() );
+        assertEquals( 0, matchedRules.size() );
     }
 
     @Test
