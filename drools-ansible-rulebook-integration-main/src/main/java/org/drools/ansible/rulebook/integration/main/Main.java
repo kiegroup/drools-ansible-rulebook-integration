@@ -29,7 +29,11 @@ public class Main {
 
     public static void main(String[] args) {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
+        long duration = execute(jsonFile);
+        System.out.println("Executed in " + duration + " msecs");
+    }
 
+    public static long execute(String jsonFile) {
         try (AstRulesEngine engine = new AstRulesEngine()) {
             JSONObject jsonRuleSet = getJsonRuleSet(jsonFile);
             Payload payload = Payload.parsePayload(jsonRuleSet);
@@ -40,8 +44,7 @@ public class Main {
 
             Instant start = Instant.now();
             executePayload(engine, rulesSet, id, port, payload);
-            long duration = Duration.between(start, Instant.now()).toMillis();
-            System.out.println("Executed in " + duration + " msecs");
+            return Duration.between(start, Instant.now()).toMillis();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
