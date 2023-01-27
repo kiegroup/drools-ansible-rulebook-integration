@@ -26,8 +26,12 @@ public class AstRulesEngine implements Closeable {
     private boolean shutdown = false;
 
     public long createRuleset(String rulesetString) {
-        checkAlive();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, rulesetString);
+        return createRuleset(rulesSet);
+    }
+
+    public long createRuleset(RulesSet rulesSet) {
+        checkAlive();
         if (rulesSet.hasTemporalConstraint()) {
             rulesSet.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK);
             if (rulesSet.hasAsyncExecution()) {

@@ -7,20 +7,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.ansible.rulebook.integration.api.RuleFormat;
+import org.drools.ansible.rulebook.integration.api.RuleNotation;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Main {
 
     private static final boolean EXECUTE_PAYLOAD_ASYNC = true;
 
-    private static final String DEFAULT_JSON = "once_after.json";
+    private static final String DEFAULT_JSON = "1k_event_rules_ast.json";
 
     private static volatile boolean terminated = false;
 
@@ -28,28 +31,46 @@ public class Main {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
 
         try (AstRulesEngine engine = new AstRulesEngine()) {
+            JSONObject jsonRuleSet = getJsonRuleSet(jsonFile);
+            Payload payload = Payload.parsePayload(jsonRuleSet);
 
-            String rules = readJsonInput(jsonFile);
-            JSONObject ruleSet = (JSONObject) new JSONObject(rules).get("RuleSet");
-
-            long id = engine.createRuleset(ruleSet.toString());
+            RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, jsonRuleSet.toString());
+            long id = engine.createRuleset(rulesSet);
             int port = engine.port();
 
-            Payload payload = Payload.parsePayload(ruleSet);
-
-            try (Socket socket = new Socket("localhost", port)) {
-                if (EXECUTE_PAYLOAD_ASYNC) {
-                    executeInNewThread(payload.asRunnable(engine, id));
-                    readAsyncChannel(socket);
-                } else {
-                    executeInNewThread(() -> readAsyncChannel(socket));
-                    payload.asRunnable(engine, id).run();
-                }
-                waitForTermination();
-            }
-
+            Instant start = Instant.now();
+            executePayload(engine, rulesSet, id, port, payload);
+            long duration = Duration.between(start, Instant.now()).toMillis();
+            System.out.println("Executed in " + duration + " msecs");
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static JSONObject getJsonRuleSet(String jsonFile) {
+        String rules = readJsonInput(jsonFile);
+        JSONObject jsonObject = rules.startsWith("[") ? (JSONObject) new JSONArray(rules).get(0) : new JSONObject(rules);
+        return (JSONObject) jsonObject.get("RuleSet");
+    }
+
+    private static void executePayload(AstRulesEngine engine, RulesSet rulesSet, long id, int port, Payload payload) throws IOException {
+        if (rulesSet.hasAsyncExecution()) {
+            runAsyncExec(engine, id, port, payload);
+        } else {
+            payload.asRunnable(engine, id).run();
+        }
+    }
+
+    private static void runAsyncExec(AstRulesEngine engine, long id, int port, Payload payload) throws IOException {
+        try (Socket socket = new Socket("localhost", port)) {
+            if (EXECUTE_PAYLOAD_ASYNC) {
+                executeInNewThread(payload.asRunnable(engine, id));
+                readAsyncChannel(socket);
+            } else {
+                executeInNewThread(() -> readAsyncChannel(socket));
+                payload.asRunnable(engine, id).run();
+            }
+            waitForTermination();
         }
     }
 
@@ -101,83 +122,9 @@ public class Main {
         }
     }
 
-    private static class Payload {
-
-        private final List<String> list;
-
-        private int loopCount = 1;
-        private int loopDelay = 0;
-        private int delay = 0;
-
-        private Payload(List<String> list) {
-            this.list = list;
-        }
-
-        private static Payload parsePayload(JSONObject ruleSet) {
-            JSONObject sources = (JSONObject) ((JSONObject) ((JSONArray) ruleSet.get("sources")).get(0)).get("EventSource");
-            JSONObject sourcesArgs = (JSONObject) sources.get("source_args");
-            List<String> payloadList = new ArrayList<>();
-            for (Object p : (JSONArray) sourcesArgs.get("payload")) {
-                payloadList.add(p.toString());
-            }
-
-            Payload payload = new Payload(payloadList);
-
-            try {
-                payload.delay = sourcesArgs.getInt("delay");
-            } catch (JSONException e) { /* ignore */ }
-            try {
-                payload.loopCount = sourcesArgs.getInt("loop_count");
-            } catch (JSONException e) { /* ignore */ }
-            try {
-                payload.loopDelay = sourcesArgs.getInt("loop_delay");
-            } catch (JSONException e) { /* ignore */ }
-
-            return payload;
-        }
-
-        public Runnable asRunnable(AstRulesEngine engine, long sessionId) {
-            return new PayloadRunner(this, engine, sessionId);
-        }
-    }
-
     private static void executeInNewThread(Runnable runnable) {
         Thread thread = new Thread(runnable);
         thread.setDaemon(true);
         thread.start();
-    }
-
-    private static class PayloadRunner implements Runnable {
-
-        private final Payload payload;
-
-        private final AstRulesEngine engine;
-
-        private final long sessionId;
-
-        private PayloadRunner(Payload payload, AstRulesEngine engine, long sessionId) {
-            this.payload = payload;
-            this.engine = engine;
-            this.sessionId = sessionId;
-        }
-
-        @Override
-        public void run() {
-            for (int i = 0; i < payload.loopCount; i++) {
-                for (String p : payload.list) {
-                    engine.assertEvent(sessionId, p);
-                    try {
-                        Thread.sleep(payload.delay * 1000L);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                try {
-                    Thread.sleep(payload.loopDelay * 1000L);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
     }
 }

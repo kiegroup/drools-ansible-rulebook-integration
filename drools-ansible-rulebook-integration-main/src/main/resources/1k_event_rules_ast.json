@@ -1,0 +1,51 @@
+[
+    {
+        "RuleSet": {
+            "name": "1k event rules",
+            "hosts": [
+                "all"
+            ],
+            "sources": [
+                {
+                    "EventSource": {
+                        "name": "generic",
+                        "source_name": "generic",
+                        "source_args": {
+                            "create_index": "i",
+                            "repeat_count": 1000,
+                            "payload": [
+                                {
+                                    "a": 1
+                                }
+                            ]
+                        },
+                        "source_filters": []
+                    }
+                }
+            ],
+            "rules": [
+                {
+                    "Rule": {
+                        "name": "r1",
+                        "condition": {
+                            "AllCondition": [
+                                {
+                                    "IsDefinedExpression": {
+                                        "Event": "i"
+                                    }
+                                }
+                            ]
+                        },
+                        "action": {
+                            "Action": {
+                                "action": "debug",
+                                "action_args": {}
+                            }
+                        },
+                        "enabled": true
+                    }
+                }
+            ]
+        }
+    }
+]

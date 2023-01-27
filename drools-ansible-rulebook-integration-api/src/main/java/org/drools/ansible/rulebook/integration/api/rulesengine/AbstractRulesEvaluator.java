@@ -14,7 +14,6 @@ import org.drools.ansible.rulebook.integration.api.io.AstRuleMatch;
 import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.drools.core.common.InternalFactHandle;
-import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,17 +142,16 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     protected List<Match> process(Map<String, Object> factMap, boolean event) {
-        Collection<FactHandle> fhs = insertFacts(factMap, event);
+        Collection<InternalFactHandle> fhs = insertFacts(factMap, event);
         if (event) {
-            fhs.stream()
-                    .map(InternalFactHandle.class::cast)
-                    .map(InternalFactHandle::getId)
-                    .forEach(registerOnlyAgendaFilter::registerEphemeralFact);
+            for (InternalFactHandle fh : fhs) {
+                registerOnlyAgendaFilter.registerEphemeralFact(fh.getId());
+            }
         }
         return getMatches(event);
     }
 
-    private Collection<FactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
+    private Collection<InternalFactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
         String key = event ? "events" : "facts";
         if (factMap.size() == 1 && factMap.containsKey(key)) {
             return ((List<Map<String, Object>>)factMap.get(key)).stream()
@@ -164,8 +162,8 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         }
     }
 
-    private FactHandle insertFact(Map<String, Object> factMap, boolean event) {
-        return rulesExecutorSession.insert( mapToFact(factMap, event) );
+    private InternalFactHandle insertFact(Map<String, Object> factMap, boolean event) {
+        return (InternalFactHandle) rulesExecutorSession.insert( mapToFact(factMap, event) );
     }
 
     protected List<Match> getMatches(boolean event) {

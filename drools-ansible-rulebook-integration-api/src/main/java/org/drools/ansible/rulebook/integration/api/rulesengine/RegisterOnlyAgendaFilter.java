@@ -69,7 +69,10 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
     }
 
     public List<Match> finalizeAndGetResults() {
-        factsToBeDeleted.forEach(rulesExecutorSession::delete);
+        for (FactHandle toBeDeleted : factsToBeDeleted) {
+            rulesExecutorSession.delete(toBeDeleted);
+        }
+        factsToBeDeleted.clear();
         List<Match> matches = new ArrayList<>( matchedRules );
         matchedRules.clear();
         return matches;
