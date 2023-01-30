@@ -291,4 +291,77 @@ public class OnceWithinTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testRepeatedOnceWithin() {
+        String json =
+                "{" +
+                "    \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"r1\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"OrExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"EqualsExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"Event\": \"alert.level\"\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"String\": \"warning\"\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"EqualsExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"Event\": \"alert.level\"\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"String\": \"error\"\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"action\": {\n" +
+                "                    \"Action\": {\n" +
+                "                        \"action\": \"print_event\",\n" +
+                "                        \"action_args\": {}\n" +
+                "                    }\n" +
+                "                },\n" +
+                "                \"enabled\": true,\n" +
+                "                \"throttle\": {\n" +
+                "                    \"group_by_attributes\": [\n" +
+                "                        \"event.meta.hosts\",\n" +
+                "                        \"event.alert.level\"\n" +
+                "                    ],\n" +
+                "                    \"once_within\": \"10 seconds\"\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
+
+        for (int i = 0; i < 3; i++) {
+            processEvent(rulesExecutor, "{ \"meta\": { \"hosts\":\"HostA\" }, \"alert\": { \"level\":\"warning\" } }", 1);
+            processEvent(rulesExecutor, "{ \"meta\": { \"hosts\":\"HostB\" }, \"alert\": { \"level\":\"error\" } }", 1);
+            processEvent(rulesExecutor, "{ \"meta\": { \"hosts\":\"HostA\" }, \"alert\": { \"level\":\"warning\" } }", 0);
+            processEvent(rulesExecutor, "{ \"meta\": { \"hosts\":\"HostB\" }, \"alert\": { \"level\":\"error\" } }", 0);
+            processEvent(rulesExecutor, "{ \"meta\": { \"hosts\":\"HostA\" }, \"alert\": { \"level\":\"warning\" } }", 0);
+            processEvent(rulesExecutor, "{ \"meta\": { \"hosts\":\"HostB\" }, \"alert\": { \"level\":\"error\" } }", 0);
+            rulesExecutor.advanceTime(15, TimeUnit.SECONDS);
+        }
+    }
+
+    private void processEvent(RulesExecutor rulesExecutor, String payload, int expectedFires) {
+        List<Match> matchedRules = rulesExecutor.processEvents(payload).join();
+        assertEquals(expectedFires, matchedRules.size());
+    }
 }

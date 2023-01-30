@@ -51,7 +51,7 @@ public class RulesExecutorFactory {
         RulesExecutor rulesExecutor = new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(ASYNC_EVALUATION));
         if (rulesSet.getClockPeriod() != null) {
             rulesExecutor.startAutomaticPseudoClock(rulesSet.getClockPeriod().getAmount(), rulesSet.getClockPeriod().getTimeUnit());
-        } else if (rulesSet.requiresAsyncExecution()) {
+        } else if (rulesSet.hasTemporalConstraint()) {
             // if no automatic pseudo clock advance has been set but the rule set requires async execution anyway start a 1 second timer
             rulesExecutor.startAutomaticPseudoClock(DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS, TimeUnit.MILLISECONDS);
         }

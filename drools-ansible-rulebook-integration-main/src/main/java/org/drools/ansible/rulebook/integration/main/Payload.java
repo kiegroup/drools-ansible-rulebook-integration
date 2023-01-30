@@ -25,15 +25,21 @@ public class Payload {
         JSONObject sourcesArgs = (JSONObject) sources.get("source_args");
         List<String> payloadList = new ArrayList<>();
 
+        int repeatCount = 1;
         try {
-            for (Object p : (JSONArray) sourcesArgs.get("payload")) {
-                payloadList.add(p.toString());
+            repeatCount = sourcesArgs.getInt("repeat_count");
+        } catch (JSONException e) { /* ignore */ }
+
+        try {
+            for (int i = 0; i < repeatCount; i++) {
+                for (Object p : (JSONArray) sourcesArgs.get("payload")) {
+                    payloadList.add(p.toString());
+                }
             }
         } catch (JSONException e) { /* ignore */ }
 
         try {
             String indexName = sourcesArgs.getString("create_index");
-            int repeatCount = sourcesArgs.getInt("repeat_count");
             for (int i = 0; i < repeatCount; i++) {
                 String payload = "{\"" + indexName + "\" : " + i + "}";
                 payloadList.add(payload);

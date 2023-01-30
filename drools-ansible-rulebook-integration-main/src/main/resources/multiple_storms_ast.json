@@ -1,0 +1,98 @@
+[
+    {
+        "RuleSet": {
+            "name": "Multiple Event Storms (3)",
+            "hosts": [
+                "all"
+            ],
+            "sources": [
+                {
+                    "EventSource": {
+                        "name": "generic",
+                        "source_name": "generic",
+                        "source_args": {
+                            "repeat_count": 3,
+                            "loop_count": 3,
+                            "loop_delay": 15,
+                            "shutdown_after": 5,
+                            "create_index": "event_index",
+                            "display": true,
+                            "payload": [
+                                {
+                                    "alert": {
+                                        "level": "warning",
+                                        "message": "Low disk space"
+                                    },
+                                    "meta": {
+                                        "hosts": "HostA"
+                                    }
+                                },
+                                {
+                                    "alert": {
+                                        "level": "error",
+                                        "message": "Disk failure"
+                                    },
+                                    "meta": {
+                                        "hosts": "HostB"
+                                    }
+                                }
+                            ]
+                        },
+                        "source_filters": []
+                    }
+                }
+            ],
+            "rules": [
+                {
+                    "Rule": {
+                        "name": "multiple_storms",
+                        "condition": {
+                            "AllCondition": [
+                                {
+                                    "OrExpression": {
+                                        "lhs": {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "alert.level"
+                                                },
+                                                "rhs": {
+                                                    "String": "warning"
+                                                }
+                                            }
+                                        },
+                                        "rhs": {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "alert.level"
+                                                },
+                                                "rhs": {
+                                                    "String": "error"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "Action": {
+                                    "action": "print_event",
+                                    "action_args": {}
+                                }
+                            }
+                        ],
+                        "enabled": true,
+                        "throttle": {
+                            "group_by_attributes": [
+                                "event.alert.level",
+                                "event.meta.hosts"
+                            ],
+                            "once_within": "10 seconds"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+]
