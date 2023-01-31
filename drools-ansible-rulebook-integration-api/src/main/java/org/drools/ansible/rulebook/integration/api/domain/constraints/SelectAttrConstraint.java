@@ -58,20 +58,28 @@ public enum SelectAttrConstraint implements ConstraintOperator, ConditionFactory
     public static class SelectAttrOperator implements ConstraintOperator {
 
         private final Function keyExtractor;
-        private final Predicate<?> opPred;
+        private final Predicate opPred;
 
-        public SelectAttrOperator(Predicate<?> opPred) {
+        public SelectAttrOperator(Predicate opPred) {
             this( Function.identity(), opPred );
         }
 
-        public SelectAttrOperator(Function keyExtractor, Predicate<?> opPred) {
+        public SelectAttrOperator(Function keyExtractor, Predicate opPred) {
             this.keyExtractor = keyExtractor;
             this.opPred = opPred;
         }
 
         @Override
         public <T, V> BiPredicate<T, V> asPredicate() {
-            return (t, v) -> t instanceof Collection && ((Collection) t).stream().map(keyExtractor).anyMatch(opPred) == (boolean) v;
+            return (t, v) -> {
+                if (t == null) {
+                    return false;
+                }
+                if (t instanceof Collection) {
+                    return ((Collection) t).stream().map(keyExtractor).anyMatch(opPred) == (boolean) v;
+                }
+                return opPred.test(keyExtractor.apply(t)) == (boolean) v;
+            };
         }
     }
 }
