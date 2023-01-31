@@ -12,6 +12,8 @@ import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInL
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListNotContainsConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SearchMatchesConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.SelectAttrConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.SelectConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceAfterDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeConstraint;
@@ -231,6 +233,12 @@ public class MapCondition implements Condition {
             case SearchMatchesConstraint.EXPRESSION_NAME:
             case SearchMatchesConstraint.NEGATED_EXPRESSION_NAME:
                 return SearchMatchesConstraint.INSTANCE;
+            case SelectConstraint.EXPRESSION_NAME:
+            case SelectConstraint.NEGATED_EXPRESSION_NAME:
+                return SelectConstraint.INSTANCE;
+            case SelectAttrConstraint.EXPRESSION_NAME:
+            case SelectAttrConstraint.NEGATED_EXPRESSION_NAME:
+                return SelectAttrConstraint.INSTANCE;
         }
         throw new UnsupportedOperationException("Unrecognized operation type: " + expressionName);
     }

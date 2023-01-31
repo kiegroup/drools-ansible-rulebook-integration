@@ -11,6 +11,7 @@ import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.ConstraintOperator;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toRegexPattern;
 import static org.drools.model.PrototypeExpression.fixedValue;
 
 public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFactory {
@@ -44,12 +45,8 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
 
     private static String parsePattern(Map searchType) {
         String kind = ((Map) searchType.get("kind")).get("String").toString();
-        String pattern = ((Map) searchType.get("pattern")).get("String").toString();
-        if (kind.equals("match")) {
-            pattern = pattern + ".*";
-        } else if (kind.equals("search") || kind.equals("regex")) {
-            pattern = ".*" + pattern + ".*";
-        } else {
+        String pattern = toRegexPattern(((Map) searchType.get("pattern")).get("String").toString(), kind);
+        if (pattern == null) {
             throw new UnsupportedOperationException("Unknown kind: " + kind);
         }
         return pattern;

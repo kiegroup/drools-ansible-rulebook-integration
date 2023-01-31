@@ -9,8 +9,9 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
-import org.json.JSONObject;
 
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isKnownType;
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toJsonValue;
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
 import static org.drools.model.PrototypeExpression.fixedValue;
 
@@ -77,7 +78,7 @@ public class ConditionExpression {
             for (Object item : (Collection)expr) {
                 Map.Entry itemEntry = ((Map<?,?>) item).entrySet().iterator().next();
                 if (isKnownType( (String) itemEntry.getKey() )) {
-                    list.add( toJsonValue( (String) itemEntry.getKey(), itemEntry.getValue() ) );
+                    list.add( toJsonValue( itemEntry ) );
                 } else {
                     throw new UnsupportedOperationException("Unknown list item: " + itemEntry);
                 }
@@ -114,17 +115,6 @@ public class ConditionExpression {
         }
 
         throw new UnsupportedOperationException("Invalid expression: " + (expr != null ? expr : entry));
-    }
-
-    private static boolean isKnownType(String type) {
-        return type.equals("Integer") || type.equals("Float") || type.equals("String") || type.equals("Boolean");
-    }
-
-    private static Object toJsonValue(String type, Object value) {
-        if (type.equals("String")) {
-            return value.toString();
-        }
-        return JSONObject.stringToValue(value.toString());
     }
 
     private static ConditionExpression createFieldExpression(RuleGenerationContext ruleContext, String fieldName) {
