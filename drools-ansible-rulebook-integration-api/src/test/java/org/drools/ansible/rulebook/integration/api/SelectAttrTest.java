@@ -246,6 +246,9 @@ public class SelectAttrTest {
         matchedRules = rulesExecutor.processFacts( "{ \"people\": { \"person\": { \"name\": \"Wilma\", \"age\": 23 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
 
+        matchedRules = rulesExecutor.processFacts( "{ \"people\": { \"man\": { \"name\": \"Barney\" } } }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
         rulesExecutor.dispose();
     }
 

@@ -42,6 +42,9 @@ public class ConditionParseUtil {
     }
 
     public static Object extractMapAttribute(Map map, String attr) {
+        if (map == null) {
+            return null;
+        }
         int dotPos = attr.indexOf('.');
         return dotPos < 0 ?
                 map.get(attr) :
