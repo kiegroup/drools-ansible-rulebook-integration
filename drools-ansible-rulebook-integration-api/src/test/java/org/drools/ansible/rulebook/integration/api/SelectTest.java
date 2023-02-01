@@ -214,17 +214,52 @@ public class SelectTest {
                 "                ],\n" +
                 "                \"enabled\": true\n" +
                 "            }\n" +
-                "        }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"r2\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SelectNotExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"addresses\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"operator\": {\n" +
+                "                                       \"String\": \"regex\"\n" +
+                "                                     },\n" +
+                "                                     \"value\": {\n" +
+                "                                        \"String\": \"Major St\"\n" +
+                "                                     }\n" +
+                "                                  }\n" +
+                "                              }\n" +
+                "                          }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                     {\n" +
+                "                         \"Action\": {\n" +
+                "                             \"action\": \"echo\",\n" +
+                "                             \"action_args\": {\n" +
+                "                                 \"message\": \"No one lives on Major St\"\n" +
+                "                             }\n" +
+                "                         }\n" +
+                "                      }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "             }\n" +
+                "         }" +
                 "    ]\n" +
                 "}";
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"name\": \"Fred\", \"age\": 54, \"addresses\": [ \"123 Main St, Bedrock, MI\", \"545 Spring St, Cresskill, NJ\", \"435 Wall Street, New York, NY\"] }" ).join();
-        assertEquals( 1, matchedRules.size() );
+        assertEquals( 2, matchedRules.size() );
 
         matchedRules = rulesExecutor.processFacts( "{ \"name\": \"Barney\", \"age\": 53, \"addresses\": [ \"432 Raymond Blvd, Newark, NJ\", \"145 Wall St, Dumont, NJ\"] }" ).join();
-        assertEquals( 0, matchedRules.size() );
+        assertEquals( 1, matchedRules.size() );
 
         rulesExecutor.dispose();
     }
