@@ -14,6 +14,7 @@ import static org.drools.ansible.rulebook.integration.api.domain.conditions.Cond
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toJsonValue;
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
 import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.PrototypeExpression.prototypeField;
 
 public class ConditionExpression {
 
@@ -34,11 +35,14 @@ public class ConditionExpression {
     }
 
     public ConditionExpression composeWith(PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator, ConditionExpression rhs) {
-        PrototypeExpression composed = prototypeExpression.composeWith(decodeBinaryOperator, rhs.prototypeExpression);
-        if (field) {
-            return new ConditionExpression(composed, true, prototypeName, betaVariable);
+        if (isBeta() && rhs.isBeta() && !prototypeName.equals(rhs.getPrototypeName())) {
+            PrototypeExpression composed = prototypeField(betaVariable, getFieldName())
+                    .composeWith(decodeBinaryOperator, prototypeField(rhs.getBetaVariable(), rhs.getFieldName()));
+            return new ConditionExpression(composed);
         }
-        if (rhs.field) {
+
+        PrototypeExpression composed = prototypeExpression.composeWith(decodeBinaryOperator, rhs.prototypeExpression);
+        if (field || rhs.field) {
             return new ConditionExpression(composed, true, prototypeName, betaVariable);
         }
         return new ConditionExpression(composed);
