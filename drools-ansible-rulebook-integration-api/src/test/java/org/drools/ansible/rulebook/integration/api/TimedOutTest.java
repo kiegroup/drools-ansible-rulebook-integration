@@ -174,6 +174,13 @@ public class TimedOutTest {
         assertEquals( 1, match.getDeclarationIds().size() );
         assertEquals( "m_1", match.getDeclarationIds().get(0) );
         assertEquals( 1, ((Fact) match.getDeclarationValue("m_1")).get("j") );
+
+        SessionStats stats = rulesExecutor.dispose();
+        assertEquals(1, stats.getNumberOfRules());
+        assertEquals(1, stats.getRulesTriggered());
+        assertEquals(1, stats.getEventsMatched());
+        assertEquals(1, stats.getEventsProcessed());
+        assertEquals(0, stats.getEventsSuppressed());
     }
 
     @Test

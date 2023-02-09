@@ -49,6 +49,22 @@ public class SessionStats {
         this.bytesSentOnAsync = bytesSentOnAsync;
     }
 
+    @Override
+    public String toString() {
+        return "SessionStats{" +
+                "start=" + start +
+                ", end=" + end +
+                ", numberOfRules=" + numberOfRules +
+                ", rulesTriggered=" + rulesTriggered +
+                ", eventsProcessed=" + eventsProcessed +
+                ", eventsMatched=" + eventsMatched +
+                ", eventsSuppressed=" + eventsSuppressed +
+                ", permanentStorageSize=" + permanentStorageSize +
+                ", asyncResponses=" + asyncResponses +
+                ", bytesSentOnAsync=" + bytesSentOnAsync +
+                '}';
+    }
+
     public Instant getStart() {
         return start;
     }
