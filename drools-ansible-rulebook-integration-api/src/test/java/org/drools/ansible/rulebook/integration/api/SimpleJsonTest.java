@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
@@ -94,7 +95,10 @@ public class SimpleJsonTest {
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R4", matchedRules.get(0).getRule().getName() );
 
-        rulesExecutor.dispose();
+        SessionStats stats = rulesExecutor.dispose();
+        assertEquals( 4, stats.getNumberOfRules() );
+        assertEquals( 2, stats.getRulesTriggered() );
+        assertEquals( 2, stats.getPermanentStorageSize() );
     }
 
     @Test

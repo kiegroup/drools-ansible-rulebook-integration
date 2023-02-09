@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
@@ -37,7 +36,7 @@ public interface RulesEvaluator {
     void startAutomaticPseudoClock(long period, TimeUnit unit);
     long getAutomaticPseudoClockPeriod();
 
-    void dispose();
+    SessionStats dispose();
 
     static RulesEvaluator createRulesEvaluator( RulesExecutorSession rulesExecutorSession, boolean async ) {
         return async ? new AsyncRulesEvaluator(rulesExecutorSession) : new SyncRulesEvaluator(rulesExecutorSession);

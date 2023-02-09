@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 
 public class RulesExecutorContainer {
 
@@ -27,17 +28,24 @@ public class RulesExecutorContainer {
         return rulesExecutor;
     }
 
-    public void dispose(long rulesExecutorId) {
-        rulesExecutors.remove(rulesExecutorId);
+    public SessionStats dispose(long rulesExecutorId) {
+        return removeExecutor(rulesExecutorId).dispose();
     }
 
-    public void disposeAll() {
-        rulesExecutors.values().forEach(RulesExecutor::dispose);
+    public RulesExecutor removeExecutor(long rulesExecutorId) {
+        return rulesExecutors.remove(rulesExecutorId);
+    }
+
+    public SessionStats disposeAll() {
+        SessionStats aggregatedStats = rulesExecutors.values().stream()
+                .map(RulesExecutor::dispose)
+                .reduce(SessionStats::aggregate).orElse(null);
         rulesExecutors.clear();
         if (channel != null) {
             asyncExecutor.shutdown();
             channel.shutdown();
         }
+        return aggregatedStats;
     }
 
     public RulesExecutor get(Long id) {

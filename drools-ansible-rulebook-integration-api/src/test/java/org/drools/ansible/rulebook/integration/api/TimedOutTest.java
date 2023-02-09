@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.core.facttemplates.Fact;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -75,8 +76,6 @@ public class TimedOutTest {
                 "   ]\n" +
                 "}";
 
-        System.out.println(json);
-
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
         // using a rule with a timed_out option automatically starts the scheduled pseudo clock
@@ -117,7 +116,9 @@ public class TimedOutTest {
         assertEquals( "myevent", matchedRules.get(0).getDeclarationIds().get(0) );
         assertNotNull( matchedRules.get(0).getDeclarationValue("myevent") );
 
-        rulesExecutor.dispose();
+        SessionStats stats = rulesExecutor.dispose();
+        assertEquals( 1, stats.getNumberOfRules() );
+        assertEquals( 1, stats.getRulesTriggered() );
     }
 
     @Test
@@ -253,7 +254,9 @@ public class TimedOutTest {
 
             assertNotNull(match.get("maint failed"));
         } finally {
-            rulesExecutorContainer.disposeAll();
+            SessionStats stats = rulesExecutorContainer.disposeAll();
+            assertEquals(1, stats.getAsyncResponses());
+            assertTrue(stats.getBytesSentOnAsync() > 100);
         }
     }
 }

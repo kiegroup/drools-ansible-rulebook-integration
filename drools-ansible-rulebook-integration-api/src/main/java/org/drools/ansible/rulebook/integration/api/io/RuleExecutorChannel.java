@@ -65,7 +65,7 @@ public class RuleExecutorChannel {
         return connected;
     }
 
-    public void write(Response response) {
+    public byte[] write(Response response) {
         try {
             String payload = toJson(response);
 
@@ -81,6 +81,8 @@ public class RuleExecutorChannel {
             if (log.isInfoEnabled()) {
                 log.info(bytes.length  + " bytes have been written on the async channel");
             }
+
+            return bytes;
         } catch (IOException | UncheckedIOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

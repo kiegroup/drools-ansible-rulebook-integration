@@ -10,6 +10,8 @@ import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.time.SessionPseudoClock;
 
+import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
+
 
 public class RulesExecutorSession {
 
@@ -19,10 +21,13 @@ public class RulesExecutorSession {
 
     private final long id;
 
+    private final SessionStatsCollector sessionStatsCollector;
+
     public RulesExecutorSession(KieSession kieSession, RulesExecutionController rulesExecutionController, long id) {
         this.kieSession = kieSession;
         this.rulesExecutionController = rulesExecutionController;
         this.id = id;
+        this.sessionStatsCollector = new SessionStatsCollector(id);
     }
 
     long getId() {
@@ -58,12 +63,21 @@ public class RulesExecutorSession {
         return kieSession.fireAllRules(agendaFilter);
     }
 
-    void dispose() {
+    public SessionStatsCollector getSessionStats() {
+        return sessionStatsCollector;
+    }
+
+    SessionStats dispose() {
+        SessionStats stats = sessionStatsCollector.generateStats(this);
         kieSession.dispose();
+        return stats;
     }
 
     long rulesCount() {
-        return kieSession.getKieBase().getKiePackages().stream().mapToLong(p -> p.getRules().size()).sum();
+        return kieSession.getKieBase().getKiePackages().stream()
+                .flatMap(p -> p.getRules().stream())
+                .filter( r -> r.getMetaData().get(SYNTHETIC_RULE_TAG) == null )
+                .count();
     }
 
     void advanceTime( long amount, TimeUnit unit ) {

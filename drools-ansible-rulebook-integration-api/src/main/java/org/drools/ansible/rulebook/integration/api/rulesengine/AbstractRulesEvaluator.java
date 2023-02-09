@@ -76,7 +76,6 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return rulesExecutorSession.getObjects();
     }
 
-
     @Override
     public CompletableFuture<List<Match>> fire() {
         return engineEvaluate(() -> getMatches(false));
@@ -132,23 +131,18 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     @Override
-    public void dispose() {
+    public SessionStats dispose() {
         if (rulesExecutorContainer != null) {
-            rulesExecutorContainer.dispose(getSessionId());
+            rulesExecutorContainer.removeExecutor(getSessionId());
         }
         if (automaticClock != null) {
             automaticClock.shutdown();
         }
-        rulesExecutorSession.dispose();
+        return rulesExecutorSession.dispose();
     }
 
     protected List<Match> process(Map<String, Object> factMap, boolean event) {
-        Collection<InternalFactHandle> fhs = insertFacts(factMap, event);
-        if (event) {
-            for (InternalFactHandle fh : fhs) {
-                registerOnlyAgendaFilter.registerEphemeralFact(fh.getId());
-            }
-        }
+        insertFacts(factMap, event);
         return getMatches(event);
     }
 
@@ -164,7 +158,11 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     private InternalFactHandle insertFact(Map<String, Object> factMap, boolean event) {
-        return (InternalFactHandle) rulesExecutorSession.insert( mapToFact(factMap, event) );
+        InternalFactHandle fh = (InternalFactHandle) rulesExecutorSession.insert( mapToFact(factMap, event) );
+        if (event) {
+            rulesExecutorSession.getSessionStats().registerProcessedEvent(fh);
+        }
+        return fh;
     }
 
     protected List<Match> getMatches(boolean event) {
@@ -201,7 +199,8 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     protected List<Match> writeResponseOnChannel(List<Match> matches) {
         if (!matches.isEmpty()) { // skip empty result
-            channel.write(new Response(getSessionId(), AstRuleMatch.asList(matches)));
+            byte[] bytes = channel.write(new Response(getSessionId(), AstRuleMatch.asList(matches)));
+            rulesExecutorSession.getSessionStats().registerAsyncResponse(bytes);
         }
         return matches;
     }

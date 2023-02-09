@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.drools.core.common.InternalFactHandle;
@@ -26,18 +25,12 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     private final RulesExecutorSession rulesExecutorSession;
 
-    private final Set<Long> ephemeralFactHandleIds = ConcurrentHashMap.newKeySet();
-
     private final Set<Match> matchedRules = new LinkedHashSet<>();
 
-    private final List<FactHandle> factsToBeDeleted = new ArrayList<>();
+    private final List<FactHandle> eventsToBeDeleted = new ArrayList<>();
 
     public RegisterOnlyAgendaFilter(RulesExecutorSession rulesExecutorSession) {
         this.rulesExecutorSession = rulesExecutorSession;
-    }
-
-    public void registerEphemeralFact(Long factId) {
-        ephemeralFactHandleIds.add(factId);
     }
 
     @Override
@@ -58,21 +51,22 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
             matchedRules.add( matchTransformers.getOrDefault(metadata.get(RULE_TYPE_TAG), Function.identity()).apply(match) );
         }
 
-        if (!ephemeralFactHandleIds.isEmpty()) {
-            for (FactHandle fh : fhs) {
-                if (ephemeralFactHandleIds.remove(((InternalFactHandle) fh).getId())) {
-                    factsToBeDeleted.add(fh);
-                }
+        for (InternalFactHandle fh : fhs) {
+            if (fh.isEvent()) {
+                eventsToBeDeleted.add(fh);
             }
         }
+
+        rulesExecutorSession.getSessionStats().registerMatch(match);
         return validMatch;
     }
 
     public List<Match> finalizeAndGetResults() {
-        for (FactHandle toBeDeleted : factsToBeDeleted) {
+        rulesExecutorSession.getSessionStats().registerMatchedEvents(eventsToBeDeleted);
+        for (FactHandle toBeDeleted : eventsToBeDeleted) {
             rulesExecutorSession.delete(toBeDeleted);
         }
-        factsToBeDeleted.clear();
+        eventsToBeDeleted.clear();
         List<Match> matches = new ArrayList<>( matchedRules );
         matchedRules.clear();
         return matches;

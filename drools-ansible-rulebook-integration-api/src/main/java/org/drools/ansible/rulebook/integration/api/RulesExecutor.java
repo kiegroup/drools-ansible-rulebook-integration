@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesEvaluator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.core.facttemplates.Fact;
 import org.json.JSONObject;
 import org.kie.api.runtime.rule.Match;
@@ -39,8 +40,8 @@ public class RulesExecutor {
         return rulesEvaluator.getSessionId();
     }
 
-    public void dispose() {
-        rulesEvaluator.dispose();
+    public SessionStats dispose() {
+        return rulesEvaluator.dispose();
     }
 
     public long rulesCount() {
