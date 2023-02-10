@@ -221,6 +221,8 @@ public class LogicalOperatorsTest {
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" ).join();
         assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
     }
 
     @Test
@@ -273,6 +275,8 @@ public class LogicalOperatorsTest {
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":4 }" ).join();
         assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
     }
 
     @Test
@@ -339,6 +343,8 @@ public class LogicalOperatorsTest {
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":14 }" ).join();
         assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
     }
 
     @Test
@@ -412,6 +418,8 @@ public class LogicalOperatorsTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON4);
         checkAnyExecution(rulesExecutor);
+
+        rulesExecutor.dispose();
     }
 
     private void checkAnyExecution(RulesExecutor rulesExecutor) {
@@ -624,5 +632,7 @@ public class LogicalOperatorsTest {
 
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\":3, \"action\":\"go\" }" ).join();
         assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
     }
 }
