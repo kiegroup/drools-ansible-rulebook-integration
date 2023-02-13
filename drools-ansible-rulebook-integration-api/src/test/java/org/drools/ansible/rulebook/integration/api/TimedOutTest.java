@@ -238,8 +238,8 @@ public class TimedOutTest {
 
         int port = rulesExecutorContainer.port();
 
-        try (Socket socket = new Socket("localhost", port)) {
-            DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
+        try (Socket socket = new Socket("localhost", port);
+             DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream())) {
 
             long assertTime = System.nanoTime();
             List<Match> matchedRules = rulesExecutor.processEvents( "{ \"alert\": { \"code\": 1001, \"message\": \"Applying maintenance\" } }" ).join();
