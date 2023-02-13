@@ -11,9 +11,11 @@ import java.util.stream.Collectors;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.io.AstRuleMatch;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.drools.core.common.InternalFactHandle;
+import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,8 +144,17 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     protected List<Match> process(Map<String, Object> factMap, boolean event) {
-        insertFacts(factMap, event);
-        return getMatches(event);
+        Collection<InternalFactHandle> fhs = insertFacts(factMap, event);
+        List<Match> matches = getMatches(event);
+        if (log.isDebugEnabled()) {
+            for (InternalFactHandle fh : fhs) {
+                if (fh.isDisconnected()) {
+                    String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((Fact)fh.getObject()).asMap());
+                    log.debug((event ? "Event " : "Fact ") + factAsString + " didn't match any rule and has been immediately discarded");
+                }
+            }
+        }
+        return matches;
     }
 
     private Collection<InternalFactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
