@@ -241,7 +241,7 @@ public class TimedOutTest {
         try (Socket socket = new Socket("localhost", port)) {
             DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
 
-            long assertTime = System.currentTimeMillis();
+            long assertTime = System.nanoTime();
             List<Match> matchedRules = rulesExecutor.processEvents( "{ \"alert\": { \"code\": 1001, \"message\": \"Applying maintenance\" } }" ).join();
             assertEquals( 0, matchedRules.size() );
 
@@ -249,8 +249,8 @@ public class TimedOutTest {
             int l = bufferedInputStream.readInt();
 
             // fires after at least 2 seconds
-            long elapsed = System.currentTimeMillis() - assertTime;
-            assertTrue("rule fired after " + elapsed + " milliseconds", elapsed >= 2000);
+            long elapsed = (System.nanoTime() - assertTime) / 1_000_000;
+            assertTrue("rule fired after " + elapsed + " milliseconds", elapsed >= 2_000);
 
             byte[] bytes = bufferedInputStream.readNBytes(l);
             String r = new String(bytes, StandardCharsets.UTF_8);
