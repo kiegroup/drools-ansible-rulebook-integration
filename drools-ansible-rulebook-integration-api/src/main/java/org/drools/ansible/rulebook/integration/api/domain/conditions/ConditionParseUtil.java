@@ -11,6 +11,10 @@ public class ConditionParseUtil {
         return type.equals("Integer") || type.equals("Float") || type.equals("String") || type.equals("Boolean");
     }
 
+    public static boolean isRegexOperator(String operator) {
+        return operator.equals("match") || operator.equals("search") || operator.equals("regex");
+    }
+
     public static Object toJsonValue(Object object) {
         if (object instanceof Map) {
             return toJsonValue( ((Map<?,?>)object).entrySet().iterator().next() );
@@ -30,15 +34,6 @@ public class ConditionParseUtil {
             return value.toString();
         }
         return JSONObject.stringToValue(value.toString());
-    }
-
-    public static String toRegexPattern(String value, String operator) {
-        if (operator.equals("match")) {
-            return value + ".*";
-        } else if (operator.equals("search") || operator.equals("regex")) {
-            return ".*" + value + ".*";
-        }
-        return null;
     }
 
     public static Object extractMapAttribute(Map map, String attr) {

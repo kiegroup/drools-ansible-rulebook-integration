@@ -11,7 +11,7 @@ import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.ConstraintOperator;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
-import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toRegexPattern;
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isRegexOperator;
 import static org.drools.model.PrototypeExpression.fixedValue;
 
 public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFactory {
@@ -45,11 +45,10 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
 
     private static String parsePattern(Map searchType) {
         String kind = ((Map) searchType.get("kind")).get("String").toString();
-        String pattern = toRegexPattern(((Map) searchType.get("pattern")).get("String").toString(), kind);
-        if (pattern == null) {
+        if (!isRegexOperator(kind)) {
             throw new UnsupportedOperationException("Unknown kind: " + kind);
         }
-        return pattern;
+        return ((Map) searchType.get("pattern")).get("String").toString();
     }
 
     private static int parseOptions(Map searchType) {
@@ -86,7 +85,7 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
 
         @Override
         public <T, V> BiPredicate<T, V> asPredicate() {
-            return (t, v) -> t != null && regexPattern.matcher(t.toString()).matches() == (boolean) v;
+            return (t, v) -> t != null && regexPattern.matcher(t.toString()).find() == (boolean) v;
         }
     }
 }

@@ -6,7 +6,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toRegexPattern;
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isRegexOperator;
 import static org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint.listContains;
 
 public class Operators {
@@ -27,10 +27,10 @@ public class Operators {
     }
 
     public static Predicate<?> toOperatorPredicate(String operator, Object value) {
-        String regexPattern = value instanceof String ? toRegexPattern((String)value, operator) : null;
+        String regexPattern = value instanceof String && isRegexOperator(operator) ? (String)value : null;
         if (regexPattern != null) {
             Pattern pattern = Pattern.compile(regexPattern);
-            return a -> a != null && pattern.matcher(a.toString()).matches();
+            return a -> a != null && pattern.matcher(a.toString()).find();
         }
 
 
