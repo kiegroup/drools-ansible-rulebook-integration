@@ -25,10 +25,17 @@ public class AstRulesEngineTest {
     @Test
     public void testJpyApi() {
         String rules = JsonTest.JSON1;
-        try (AstRulesEngine engine = new AstRulesEngine()) {
-            long id = engine.createRuleset(rules);
-            String result = engine.assertFact(id, "{ \"sensu\": { \"data\": { \"i\":1 } } }");
+        AstRulesEngine engine = new AstRulesEngine();
+        long sessionId = 0;
+        try {
+            sessionId = engine.createRuleset(rules);
+            String result = engine.assertFact(sessionId, "{ \"sensu\": { \"data\": { \"i\":1 } } }");
             assertNotNull(result);
+        } finally {
+            String sessionStats = engine.dispose(sessionId);
+            Map<String, Object> statsMap = new JSONObject(sessionStats).toMap();
+            assertEquals(4, statsMap.get("numberOfRules"));
+            assertEquals(1, statsMap.get("rulesTriggered"));
         }
     }
 

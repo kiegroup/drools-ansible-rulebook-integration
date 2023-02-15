@@ -42,11 +42,12 @@ public class AstRulesEngine implements Closeable {
         return executor.getId();
     }
 
-    public void dispose(long sessionId) {
+    public String dispose(long sessionId) {
         RulesExecutor rulesExecutor = rulesExecutorContainer.get(sessionId);
-        if (rulesExecutor != null) { // ignore if already disposed
-            rulesExecutor.dispose();
+        if (rulesExecutor == null) { // ignore if already disposed
+            return null;
         }
+        return toJson( rulesExecutor.dispose() );
     }
 
     /**

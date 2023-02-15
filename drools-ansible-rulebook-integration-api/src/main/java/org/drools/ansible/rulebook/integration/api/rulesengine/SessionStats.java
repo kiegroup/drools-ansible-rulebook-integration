@@ -7,8 +7,8 @@ import org.drools.core.facttemplates.Event;
 import static java.util.function.Predicate.not;
 
 public class SessionStats {
-    private final Instant start;
-    private final Instant end;
+    private final String start;
+    private final String end;
 
     private final int numberOfRules;
     private final int rulesTriggered;
@@ -23,8 +23,8 @@ public class SessionStats {
     private final int bytesSentOnAsync;
 
     public SessionStats(SessionStatsCollector stats, RulesExecutorSession session) {
-        this.start = stats.getStart();
-        this.end = Instant.now();
+        this.start = stats.getStart().toString();
+        this.end = Instant.now().toString();
         this.numberOfRules = (int) session.rulesCount();
         this.rulesTriggered = stats.getRulesTriggered();
         this.eventsProcessed = stats.getTotalEvents();
@@ -35,7 +35,7 @@ public class SessionStats {
         this.bytesSentOnAsync = stats.getBytesSentOnAsync();
     }
 
-    public SessionStats(Instant start, Instant end, int numberOfRules, int rulesTriggered, int eventsProcessed,
+    public SessionStats(String start, String end, int numberOfRules, int rulesTriggered, int eventsProcessed,
                         int eventsMatched, int eventsSuppressed, int permanentStorageSize, int asyncResponses, int bytesSentOnAsync) {
         this.start = start;
         this.end = end;
@@ -65,11 +65,11 @@ public class SessionStats {
                 '}';
     }
 
-    public Instant getStart() {
+    public String getStart() {
         return start;
     }
 
-    public Instant getEnd() {
+    public String getEnd() {
         return end;
     }
 
