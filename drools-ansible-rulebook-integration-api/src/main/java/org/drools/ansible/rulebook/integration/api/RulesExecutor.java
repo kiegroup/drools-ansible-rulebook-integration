@@ -13,10 +13,14 @@ import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.core.facttemplates.Fact;
 import org.json.JSONObject;
 import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
 public class RulesExecutor {
+
+    protected static final Logger log = LoggerFactory.getLogger(RulesExecutor.class);
 
     private final RulesEvaluator rulesEvaluator;
 
@@ -41,6 +45,9 @@ public class RulesExecutor {
     }
 
     public SessionStats dispose() {
+        if (log.isInfoEnabled()) {
+            log.info("Disposing session with id: " + getId());
+        }
         return rulesEvaluator.dispose();
     }
 

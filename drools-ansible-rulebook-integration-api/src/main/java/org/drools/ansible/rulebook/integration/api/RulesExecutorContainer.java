@@ -6,8 +6,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RulesExecutorContainer {
+
+    protected static final Logger log = LoggerFactory.getLogger(RulesExecutorContainer.class);
 
     private Map<Long, RulesExecutor> rulesExecutors = new ConcurrentHashMap<>();
 
@@ -49,7 +53,11 @@ public class RulesExecutorContainer {
     }
 
     public RulesExecutor get(Long id) {
-        return rulesExecutors.get(id);
+        RulesExecutor rulesExecutor = rulesExecutors.get(id);
+        if (rulesExecutor == null) {
+            log.error("Cannot find any rulesExecutor with id: " + id);
+        }
+        return rulesExecutor;
     }
 
     public AsyncExecutor getAsyncExecutor() {
