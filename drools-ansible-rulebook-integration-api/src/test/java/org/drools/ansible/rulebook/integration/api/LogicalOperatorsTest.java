@@ -635,4 +635,62 @@ public class LogicalOperatorsTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testEqualityWithDifferentNumericTypes() {
+        String json =
+                "{\n" +
+                "    \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"echo\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"AndExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"EqualsExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"Event\": \"action\"\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"String\": \"go\"\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"EqualsExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"Event\": \"i\"\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"Float\": 3.0\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"print_event\",\n" +
+                "                            \"action_args\": {}\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\":3, \"action\":\"go\" }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }

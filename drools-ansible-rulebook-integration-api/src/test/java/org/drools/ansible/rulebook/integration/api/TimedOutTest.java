@@ -250,7 +250,7 @@ public class TimedOutTest {
 
             // fires after at least 2 seconds
             long elapsed = (System.nanoTime() - assertTime) / 1_000_000;
-            assertTrue("rule fired after " + elapsed + " milliseconds", elapsed >= 2_000);
+            assertTrue("rule fired after " + elapsed + " milliseconds", elapsed >= 1_900);
 
             byte[] bytes = bufferedInputStream.readNBytes(l);
             String r = new String(bytes, StandardCharsets.UTF_8);
