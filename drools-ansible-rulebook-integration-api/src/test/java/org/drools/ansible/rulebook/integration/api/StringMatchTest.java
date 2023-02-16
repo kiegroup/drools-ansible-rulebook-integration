@@ -268,6 +268,59 @@ public class StringMatchTest {
                 "                                \"rhs\": {\n" +
                 "                                    \"SearchType\": {\n" +
                 "                                        \"kind\": {\n" +
+                "                                            \"String\": \"match\"\n" +
+                "                                        },\n" +
+                "                                        \"pattern\": {\n" +
+                "                                            \"String\": \"his is a\"\n" +
+                "                                        },\n" +
+                "                                        \"options\": [\n" +
+                "                                            {\n" +
+                "                                                \"name\": {\n" +
+                "                                                    \"String\": \"ignorecase\"\n" +
+                "                                                },\n" +
+                "                                                \"value\": {\n" +
+                "                                                    \"Boolean\": false\n" +
+                "                                                }\n" +
+                "                                            },\n" +
+                "                                            {\n" +
+                "                                                \"name\": {\n" +
+                "                                                    \"String\": \"multiline\"\n" +
+                "                                                },\n" +
+                "                                                \"value\": {\n" +
+                "                                                    \"Boolean\": true\n" +
+                "                                                }\n" +
+                "                                            }\n" +
+                "                                        ]\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"print_event\",\n" +
+                "                            \"action_args\": {}\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"R4\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SearchMatchesExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"string4\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"SearchType\": {\n" +
+                "                                        \"kind\": {\n" +
                 "                                            \"String\": \"regex\"\n" +
                 "                                        },\n" +
                 "                                        \"pattern\": {\n" +
@@ -322,8 +375,11 @@ public class StringMatchTest {
         assertEquals( "R2", matchedRules.get(0).getRule().getName() );
 
         matchedRules = rulesExecutor.processFacts( "{ \"string3\": \"This is a\\nmultiline string for\\nthe purposes of testing search\\n\" }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"string4\": \"This is a\\nmultiline string for\\nthe purposes of testing search\\n\" }" ).join();
         assertEquals( 1, matchedRules.size() );
-        assertEquals( "R3", matchedRules.get(0).getRule().getName() );
+        assertEquals( "R4", matchedRules.get(0).getRule().getName() );
 
         rulesExecutor.dispose();
     }

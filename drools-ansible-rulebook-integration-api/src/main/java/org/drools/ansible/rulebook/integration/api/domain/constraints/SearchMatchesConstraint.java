@@ -48,7 +48,11 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
         if (!isRegexOperator(kind)) {
             throw new UnsupportedOperationException("Unknown kind: " + kind);
         }
-        return ((Map) searchType.get("pattern")).get("String").toString();
+        String pattern = ((Map) searchType.get("pattern")).get("String").toString();
+        if (kind.equals("match")) {
+            pattern = "\\A" + pattern;
+        }
+        return pattern;
     }
 
     private static int parseOptions(Map searchType) {
