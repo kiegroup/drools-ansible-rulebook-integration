@@ -194,20 +194,20 @@ public class AstCondition implements Condition {
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
             PrototypeDSL.PrototypePatternDef pattern = getPattern(ruleContext, binding);
-            pattern = pattern.or();
             addConditionToPattern(ruleContext, pattern);
-            pattern = (PrototypeDSL.PrototypePatternDef) pattern.endOr();
             return processTimeConstraint(ruleContext, pattern);
         }
 
         @Override
         public ViewItem addConditionToPattern(RuleGenerationContext ruleContext, PrototypeDSL.PrototypePatternDef pattern) {
+            pattern = pattern.or();
             PrototypeDSL.PrototypePatternDef p1 = pattern.and();
             lhs.addConditionToPattern(ruleContext, p1);
             p1.endAnd();
             PrototypeDSL.PrototypePatternDef p2 = pattern.and();
             rhs.addConditionToPattern(ruleContext, p2);
             p2.endAnd();
+            pattern = (PrototypeDSL.PrototypePatternDef) pattern.endOr();
             return pattern;
         }
 

@@ -693,4 +693,81 @@ public class LogicalOperatorsTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testOrWithAnd() {
+        String json =
+                "{\n" +
+                "    \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"Test and-or operator simple\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"AndExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"OrExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"EqualsExpression\": {\n" +
+                "                                                \"lhs\": {\n" +
+                "                                                    \"Event\": \"myint\"\n" +
+                "                                                },\n" +
+                "                                                \"rhs\": {\n" +
+                "                                                    \"Integer\": 73\n" +
+                "                                                }\n" +
+                "                                            }\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"EqualsExpression\": {\n" +
+                "                                                \"lhs\": {\n" +
+                "                                                    \"Event\": \"mystring\"\n" +
+                "                                                },\n" +
+                "                                                \"rhs\": {\n" +
+                "                                                    \"String\": \"world\"\n" +
+                "                                                }\n" +
+                "                                            }\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"EqualsExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"Event\": \"mystring\"\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"String\": \"hello\"\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"echo\",\n" +
+                "                            \"action_args\": {\n" +
+                "                                \"message\": \"Test and-or operator #1 passes\"\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n\n" +
+        "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"id\": \"test_and_operator\", \"myint\": 73, \"mystring\": \"hello\" }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processEvents( "{ \"id\": \"test_and_operator\", \"myint\": 73, \"mystring\": \"world\" }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }
