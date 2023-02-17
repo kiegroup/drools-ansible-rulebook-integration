@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
@@ -15,6 +16,8 @@ import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOn
 
 public class RulesExecutorSession {
 
+    private final RulesSet rulesSet;
+
     private final KieSession kieSession;
 
     private final RulesExecutionController rulesExecutionController;
@@ -23,7 +26,8 @@ public class RulesExecutorSession {
 
     private final SessionStatsCollector sessionStatsCollector;
 
-    public RulesExecutorSession(KieSession kieSession, RulesExecutionController rulesExecutionController, long id) {
+    public RulesExecutorSession(RulesSet rulesSet, KieSession kieSession, RulesExecutionController rulesExecutionController, long id) {
+        this.rulesSet = rulesSet;
         this.kieSession = kieSession;
         this.rulesExecutionController = rulesExecutionController;
         this.id = id;
@@ -32,6 +36,10 @@ public class RulesExecutorSession {
 
     long getId() {
         return id;
+    }
+
+    String getRuleSetName() {
+        return rulesSet.getName();
     }
 
     Collection<? extends Object> getObjects() {

@@ -22,6 +22,10 @@ public class SessionStats {
     private final int asyncResponses;
     private final int bytesSentOnAsync;
 
+    private final long sessionId;
+
+    private final String ruleSetName;
+
     public SessionStats(SessionStatsCollector stats, RulesExecutorSession session) {
         this.start = stats.getStart().toString();
         this.end = Instant.now().toString();
@@ -33,10 +37,14 @@ public class SessionStats {
         this.permanentStorageSize = (int) session.getObjects().stream().filter(not(Event.class::isInstance)).count();
         this.asyncResponses = stats.getAsyncResponses();
         this.bytesSentOnAsync = stats.getBytesSentOnAsync();
+        this.sessionId = session.getId();
+        this.ruleSetName = session.getRuleSetName();
+
     }
 
     public SessionStats(String start, String end, int numberOfRules, int rulesTriggered, int eventsProcessed,
-                        int eventsMatched, int eventsSuppressed, int permanentStorageSize, int asyncResponses, int bytesSentOnAsync) {
+                        int eventsMatched, int eventsSuppressed, int permanentStorageSize, int asyncResponses, int bytesSentOnAsync,
+                        long sessionId, String ruleSetName) {
         this.start = start;
         this.end = end;
         this.numberOfRules = numberOfRules;
@@ -47,6 +55,8 @@ public class SessionStats {
         this.permanentStorageSize = permanentStorageSize;
         this.asyncResponses = asyncResponses;
         this.bytesSentOnAsync = bytesSentOnAsync;
+        this.sessionId = sessionId;
+        this.ruleSetName = ruleSetName;
     }
 
     @Override
@@ -105,6 +115,14 @@ public class SessionStats {
         return bytesSentOnAsync;
     }
 
+    public long getSessionId() {
+        return sessionId;
+    }
+
+    public String getRuleSetName() {
+        return ruleSetName;
+    }
+
     public static SessionStats aggregate(SessionStats stats1, SessionStats stats2) {
         return new SessionStats(
                 stats1.getStart().compareTo(stats2.getStart()) < 0 ? stats1.getStart() : stats2.getStart(),
@@ -116,7 +134,9 @@ public class SessionStats {
                 stats1.eventsSuppressed + stats2.eventsSuppressed,
                 stats1.permanentStorageSize + stats2.permanentStorageSize,
                 stats1.asyncResponses + stats2.asyncResponses,
-                stats1.bytesSentOnAsync + stats2.bytesSentOnAsync
+                stats1.bytesSentOnAsync + stats2.bytesSentOnAsync,
+                -1,
+                stats1.getRuleSetName().equals(stats2.getRuleSetName()) ? stats1.getRuleSetName() : ""
         );
     }
 }

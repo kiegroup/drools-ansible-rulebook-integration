@@ -61,7 +61,7 @@ public class RulesExecutorFactory {
     private static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
         RulesExecutionController rulesExecutionController = new RulesExecutionController();
         KieSession kieSession = createKieSession(rulesSet, rulesExecutionController);
-        return new RulesExecutorSession(kieSession, rulesExecutionController, ID_GENERATOR.getAndIncrement());
+        return new RulesExecutorSession(rulesSet, kieSession, rulesExecutionController, ID_GENERATOR.getAndIncrement());
     }
 
     private static KieSession createKieSession(RulesSet rulesSet, RulesExecutionController rulesExecutionController) {

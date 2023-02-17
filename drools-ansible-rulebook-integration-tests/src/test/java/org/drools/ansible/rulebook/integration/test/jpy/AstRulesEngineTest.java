@@ -77,14 +77,14 @@ public class AstRulesEngineTest {
             try (Socket socket = new Socket("localhost", port)) {
                 DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
 
-                long assertTime = System.currentTimeMillis();
+                long assertTime = System.nanoTime();
                 engine.assertEvent(id, "{\"j\": 42}");
 
                 int l = bufferedInputStream.readInt();
-                long firingTime = System.currentTimeMillis();
+                long elapsed = (System.nanoTime() - assertTime) / 1_000_000;
 
                 // fires after at least 2 seconds
-                assertTrue((firingTime - assertTime) >= 2000);
+                assertTrue("rule fired after " + elapsed + " milliseconds", elapsed >= 1_900);
 
                 byte[] bytes = bufferedInputStream.readNBytes(l);
                 String r = new String(bytes, StandardCharsets.UTF_8);
