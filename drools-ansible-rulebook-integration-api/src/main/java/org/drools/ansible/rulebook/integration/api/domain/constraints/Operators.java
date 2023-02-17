@@ -38,6 +38,6 @@ public class Operators {
         if (op == null) {
             throw new UnsupportedOperationException("Unknown operator: " + operator);
         }
-        return a -> a != null && op.test(a, value);
+        return a -> a != null ? op.test(a, value) : value == null;
     }
 }
