@@ -2,13 +2,17 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
 public class ConditionParseUtil {
+
+    private static final Set<String> KNOWN_TYPES = Set.of("Integer", "Float", "String", "Boolean", "NullType");
+
     public static boolean isKnownType(String type) {
-        return type.equals("Integer") || type.equals("Float") || type.equals("String") || type.equals("Boolean");
+        return KNOWN_TYPES.contains(type);
     }
 
     public static boolean isRegexOperator(String operator) {
@@ -30,6 +34,9 @@ public class ConditionParseUtil {
     }
 
     public static Object toJsonValue(String type, Object value) {
+        if (value == null) {
+            return null;
+        }
         if (type.equals("String")) {
             return value.toString();
         }
