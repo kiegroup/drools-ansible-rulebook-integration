@@ -206,7 +206,8 @@ public class RuleGenerationContext {
         this.ruleName = ruleName;
     }
 
-    List<Rule> toExecModelRules(RulesSet rulesSet, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
+    List<Rule> toExecModelRules(RulesSet rulesSet, org.drools.ansible.rulebook.integration.api.domain.Rule ansibleRule, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
+    	updateContextFromRule(ansibleRule);
 	    if (getRuleName() == null) {
 	        setRuleName("r_" + ruleCounter.getAndIncrement());
 	    }
@@ -216,6 +217,10 @@ public class RuleGenerationContext {
 	        rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
 	    }
 	    return rules;
+	}
+
+	private void updateContextFromRule(org.drools.ansible.rulebook.integration.api.domain.Rule anisbleRule) {
+		setRuleName(anisbleRule.getName());
 	}
 
 	private static class StackedContext<K, V> {

@@ -16,12 +16,14 @@ public class Rule {
 
     final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
+	private String name;
+
     public String getName() {
-        return ruleGenerationContext.getRuleName();
+    	return name;
     }
 
     public void setName(String name) {
-        ruleGenerationContext.setRuleName(name);
+    	this.name = name;
     }
 
     public void setCondition(Condition condition) {
