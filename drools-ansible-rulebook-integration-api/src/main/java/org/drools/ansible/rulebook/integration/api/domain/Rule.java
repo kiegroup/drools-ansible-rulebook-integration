@@ -18,6 +18,8 @@ public class Rule {
 
 	private String name;
 
+	private Action action;
+
     public String getName() {
     	return name;
     }
@@ -40,13 +42,17 @@ public class Rule {
         ruleGenerationContext.setCondition(condition);
         return condition;
     }
+    
+    public Action getAction() {
+    	return action;
+    }
 
     public void setAction(MapAction action) {
-        ruleGenerationContext.setAction(action);
+    	this.action = action;
     }
 
     public void setGenericAction(Action action) {
-        ruleGenerationContext.setAction(action);
+    	this.action = action;
     }
 
     public void setEnabled(boolean enabled) {
