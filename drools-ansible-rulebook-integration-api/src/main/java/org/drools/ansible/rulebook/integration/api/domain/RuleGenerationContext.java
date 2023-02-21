@@ -131,7 +131,8 @@ public class RuleGenerationContext {
         return timeConstraint != null;
     }
 
-    public boolean requiresAsyncExecution() {
+    public boolean requiresAsyncExecution(org.drools.ansible.rulebook.integration.api.domain.Rule rule) {
+    	updateContextFromRule(rule);
         getOrCreateLHS();
         return timeConstraint != null && timeConstraint.requiresAsyncExecution();
     }
@@ -222,7 +223,10 @@ public class RuleGenerationContext {
 	private void updateContextFromRule(org.drools.ansible.rulebook.integration.api.domain.Rule anisbleRule) {
 		setRuleName(anisbleRule.getName());
 		setAction(anisbleRule.getAction());
-		addOptions(anisbleRule.getOptions().getOptions());
+		if (anisbleRule.getOptions() != null) {
+			addOptions(anisbleRule.getOptions().getOptions());
+		}
+		setCondition(anisbleRule.getCondition());
 	}
 
 	private static class StackedContext<K, V> {

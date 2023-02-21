@@ -22,16 +22,14 @@ public class Rule {
 
 	private RuleConfigurationOptions options;
 
+	private Condition condition;
+
     public String getName() {
     	return name;
     }
 
     public void setName(String name) {
     	this.name = name;
-    }
-
-    public void setCondition(Condition condition) {
-        ruleGenerationContext.setCondition(condition);
     }
 
     public Rule withOptions(RuleConfigurationOptions options) {
@@ -43,9 +41,17 @@ public class Rule {
     	return options;
     }
 
+    public Condition getCondition() {
+    	return condition;
+    }
+    
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
     public AstCondition withCondition() {
         AstCondition condition = new AstCondition(ruleGenerationContext);
-        ruleGenerationContext.setCondition(condition);
+        this.condition = condition;
         return condition;
     }
     
@@ -82,7 +88,7 @@ public class Rule {
     }
 
     public boolean requiresAsyncExecution() {
-        return ruleGenerationContext.requiresAsyncExecution();
+        return ruleGenerationContext.requiresAsyncExecution(this);
     }
 
     @Override
