@@ -222,6 +222,7 @@ public class RuleGenerationContext {
 	private void updateContextFromRule(org.drools.ansible.rulebook.integration.api.domain.Rule anisbleRule) {
 		setRuleName(anisbleRule.getName());
 		setAction(anisbleRule.getAction());
+		addOptions(anisbleRule.getOptions().getOptions());
 	}
 
 	private static class StackedContext<K, V> {

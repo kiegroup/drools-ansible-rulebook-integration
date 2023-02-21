@@ -20,6 +20,8 @@ public class Rule {
 
 	private Action action;
 
+	private RuleConfigurationOptions options;
+
     public String getName() {
     	return name;
     }
@@ -33,8 +35,12 @@ public class Rule {
     }
 
     public Rule withOptions(RuleConfigurationOptions options) {
-        this.ruleGenerationContext.addOptions(options.getOptions());
+    	this.options = options;
         return this;
+    }
+    
+    public RuleConfigurationOptions getOptions() {
+    	return options;
     }
 
     public AstCondition withCondition() {
