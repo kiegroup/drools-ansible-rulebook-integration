@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
@@ -205,7 +206,19 @@ public class RuleGenerationContext {
         this.ruleName = ruleName;
     }
 
-    private static class StackedContext<K, V> {
+    List<Rule> toExecModelRules(RulesSet rulesSet, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
+	    if (getRuleName() == null) {
+	        setRuleName("r_" + ruleCounter.getAndIncrement());
+	    }
+	
+	    List<org.drools.model.Rule> rules = createRules(rulesExecutionController);
+	    if (hasTemporalConstraint()) {
+	        rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
+	    }
+	    return rules;
+	}
+
+	private static class StackedContext<K, V> {
         private final Deque<Map<K, V>> stack = new ArrayDeque<>();
 
         public StackedContext() {

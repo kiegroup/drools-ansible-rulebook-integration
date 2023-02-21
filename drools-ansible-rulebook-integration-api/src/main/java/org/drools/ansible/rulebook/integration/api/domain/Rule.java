@@ -1,10 +1,7 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
@@ -12,13 +9,12 @@ import org.drools.ansible.rulebook.integration.api.domain.conditions.AstConditio
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.Throttle;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDefinition;
-import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Rule {
     private boolean enabled;
 
-    private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
+    final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
     public String getName() {
         return ruleGenerationContext.getRuleName();
@@ -82,17 +78,5 @@ public class Rule {
                 ", condition='" + ruleGenerationContext.getCondition() + '\'' +
                 ", action='" + ruleGenerationContext.getAction() + '\'' +
                 '}';
-    }
-
-    List<org.drools.model.Rule> toExecModelRules(RulesSet rulesSet, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
-        if (ruleGenerationContext.getRuleName() == null) {
-            ruleGenerationContext.setRuleName("r_" + ruleCounter.getAndIncrement());
-        }
-
-        List<org.drools.model.Rule> rules = ruleGenerationContext.createRules(rulesExecutionController);
-        if (ruleGenerationContext.hasTemporalConstraint()) {
-            rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
-        }
-        return rules;
     }
 }
