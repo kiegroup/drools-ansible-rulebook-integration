@@ -48,7 +48,7 @@ public class RulesSet {
         ModelImpl model = new ModelImpl();
         rules.stream().map(RuleContainer::getRule)
                 .map(r -> r.withOptions(options))
-                .flatMap(rule -> rule.ruleGenerationContext.toExecModelRules(this, rule, rulesExecutionController, ruleCounter).stream())
+                .flatMap(rule -> rule.toExecModelRules(this, rulesExecutionController, ruleCounter).stream())
                 .forEach(model::addRule);
         return model;
     }
