@@ -88,7 +88,7 @@ public class Rule {
     }
 
     public boolean hasTemporalConstraint() {
-        return ruleGenerationContext.hasTemporalConstraint();
+        return ruleGenerationContext.hasTemporalConstraint(this);
     }
 
     public boolean requiresAsyncExecution() {

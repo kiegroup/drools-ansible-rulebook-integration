@@ -126,7 +126,8 @@ public class RuleGenerationContext {
         this.timeConstraint = timeConstraint;
     }
 
-    public boolean hasTemporalConstraint() {
+    public boolean hasTemporalConstraint(org.drools.ansible.rulebook.integration.api.domain.Rule ansibleRule) {
+    	updateContextFromRule(ansibleRule);
         getOrCreateLHS();
         return timeConstraint != null;
     }
@@ -214,7 +215,7 @@ public class RuleGenerationContext {
 	    }
 	
 	    List<org.drools.model.Rule> rules = createRules(rulesExecutionController);
-	    if (hasTemporalConstraint()) {
+	    if (hasTemporalConstraint(ansibleRule)) {
 	        rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
 	    }
 	    return rules;
