@@ -263,4 +263,61 @@ public class SelectTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testSelectWithFloat() {
+        String JSON1 =
+                "{\n" +
+                "    \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"test float\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SelectExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"radius\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"operator\": {\n" +
+                "                                        \"String\": \">=\"\n" +
+                "                                    },\n" +
+                "                                    \"value\": {\n" +
+                "                                        \"Integer\": 500\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"debug\",\n" +
+                "                            \"action_args\": {\n" +
+                "                                \"msg\": \"Float test passes\"\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"radius\": 600.0 }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"radius\": 400.0 }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"radius\": 500.0 }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }

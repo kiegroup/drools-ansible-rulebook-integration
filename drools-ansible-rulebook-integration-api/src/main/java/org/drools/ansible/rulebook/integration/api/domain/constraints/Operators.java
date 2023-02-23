@@ -6,6 +6,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import org.drools.model.Index;
+
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isRegexOperator;
 import static org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint.listContains;
 
@@ -14,12 +16,12 @@ public class Operators {
     private static final Map<String, BiPredicate> OPERATORS_MAP = new HashMap<>();
 
     static {
-        OPERATORS_MAP.put("==", (a,b) -> a.equals(b));
-        OPERATORS_MAP.put("!=", (a,b) -> !a.equals(b));
-        OPERATORS_MAP.put(">", (a,b) -> ((Comparable) a).compareTo(b) > 0);
-        OPERATORS_MAP.put(">=", (a,b) -> ((Comparable) a).compareTo(b) >= 0);
-        OPERATORS_MAP.put("<", (a,b) -> ((Comparable) a).compareTo(b) < 0);
-        OPERATORS_MAP.put("<=", (a,b) -> ((Comparable) a).compareTo(b) <= 0);
+        OPERATORS_MAP.put("==", Index.ConstraintType.EQUAL.asPredicate());
+        OPERATORS_MAP.put("!=", Index.ConstraintType.NOT_EQUAL.asPredicate());
+        OPERATORS_MAP.put(">", Index.ConstraintType.GREATER_THAN.asPredicate());
+        OPERATORS_MAP.put(">=", Index.ConstraintType.GREATER_OR_EQUAL.asPredicate());
+        OPERATORS_MAP.put("<", Index.ConstraintType.LESS_THAN.asPredicate());
+        OPERATORS_MAP.put("<=", Index.ConstraintType.LESS_OR_EQUAL.asPredicate());
         OPERATORS_MAP.put("in", (a,b) -> listContains(b, a));
         OPERATORS_MAP.put("not in", (a,b) -> !listContains(b, a));
         OPERATORS_MAP.put("contains", (a,b) -> listContains(a, b));
