@@ -165,11 +165,14 @@ public class SelectTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"name\": \"Fred\", \"age\": 54, \"levels\": [ 10, 20, 30] }" ).join();
-        assertEquals( 0, matchedRules.size() );
-
-        matchedRules = rulesExecutor.processFacts( "{ \"name\": \"Barney\", \"age\": 53, \"levels\": [ 11, 15, 16] }" ).join();
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"name\": \"Fred\", \"age\": 54, \"levels\": [ 10, 20, 30 ] }" ).join();
         assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"name\": \"Barney\", \"age\": 53, \"levels\": [ 11, 15, 16 ] }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"name\": \"Barney\", \"age\": 53, \"levels\": [ 31, 35, 36 ] }" ).join();
+        assertEquals( 0, matchedRules.size() );
 
         rulesExecutor.dispose();
     }

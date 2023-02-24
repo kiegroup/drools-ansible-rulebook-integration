@@ -76,7 +76,9 @@ public enum SelectAttrConstraint implements ConstraintOperator, ConditionFactory
                     return false;
                 }
                 if (t instanceof Collection) {
-                    return ((Collection) t).stream().map(keyExtractor).anyMatch(opPred) == (boolean) v;
+                    return (boolean) v ?
+                            ((Collection) t).stream().map(keyExtractor).anyMatch(opPred) :
+                            !((Collection) t).stream().map(keyExtractor).allMatch(opPred);
                 }
                 Object value = keyExtractor.apply(t);
                 return value != null && opPred.test(value) == (boolean) v;
