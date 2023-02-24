@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.NegationOperator;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.PrototypeDSL;
@@ -7,9 +8,7 @@ import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
-import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 
-import static org.drools.model.DSL.not;
 import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.model.PrototypeExpression.prototypeField;
 
@@ -18,8 +17,6 @@ public class ParsedCondition {
     private final PrototypeExpression left;
     private final ConstraintOperator operator;
     private final PrototypeExpression right;
-
-    private boolean notPattern = false;
 
     private boolean implicitPattern = false;
 
@@ -47,11 +44,6 @@ public class ParsedCondition {
         return right;
     }
 
-    public ParsedCondition withNotPattern(boolean notPattern) {
-        this.notPattern = notPattern;
-        return this;
-    }
-
     public ParsedCondition withImplicitPattern(boolean implicitPattern) {
         this.implicitPattern = implicitPattern;
         return this;
@@ -70,7 +62,7 @@ public class ParsedCondition {
         }
 
         pattern.expr(getLeft(), getOperator(), getRight());
-        return notPattern ? not(pattern) : pattern;
+        return pattern;
     }
 
     @Override

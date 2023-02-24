@@ -17,7 +17,6 @@ public enum ExistsField implements ConstraintOperator, ConditionFactory {
     INSTANCE;
 
     public static final String EXPRESSION_NAME = "IsDefinedExpression";
-    public static final String NEGATED_EXPRESSION_NAME = "IsNotDefinedExpression";
 
     @Override
     public <T, V> BiPredicate<T, V> asPredicate() {
@@ -31,6 +30,6 @@ public enum ExistsField implements ConstraintOperator, ConditionFactory {
 
     @Override
     public ParsedCondition createParsedCondition(RuleGenerationContext ruleContext, String expressionName, Map<?, ?> expression) {
-        return new ParsedCondition(thisPrototype(), this, fixedValue(map2Expr(ruleContext, expression).getFieldName())).withNotPattern(expressionName.equals(NEGATED_EXPRESSION_NAME));
+        return new ParsedCondition(thisPrototype(), this, fixedValue(map2Expr(ruleContext, expression).getFieldName()));
     }
 }
