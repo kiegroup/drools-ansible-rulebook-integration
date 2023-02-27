@@ -11,7 +11,6 @@ import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemInList
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListNotContainsConstraint;
-import org.drools.ansible.rulebook.integration.api.domain.constraints.NotExistsField;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SearchMatchesConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SelectAttrConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SelectConstraint;
@@ -221,9 +220,8 @@ public class MapCondition implements Condition {
             case "LessThanOrEqualToExpression":
                 return Index.ConstraintType.LESS_OR_EQUAL;
             case ExistsField.EXPRESSION_NAME:
+            case ExistsField.NEGATED_EXPRESSION_NAME:
                 return ExistsField.INSTANCE;
-            case NotExistsField.EXPRESSION_NAME:
-                return NotExistsField.INSTANCE;
             case ListContainsConstraint.EXPRESSION_NAME:
                 return ListContainsConstraint.INSTANCE;
             case ListNotContainsConstraint.EXPRESSION_NAME:

@@ -49,6 +49,24 @@ public class AstRulesEngineTest {
     }
 
     @Test
+    public void testRetractFact() throws IOException {
+        try (AstRulesEngine engine = new AstRulesEngine();
+             InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
+            String rules = new String(s.readAllBytes());
+
+            long id = engine.createRuleset(rules);
+            engine.assertFact(id, "{\"j\": 42}");
+            engine.assertFact(id, "{\"i\": 67}");
+            String retractedFact = "{\"i\": 67}";
+            String r = engine.retractFact(id, retractedFact);
+
+            List<Map<String, Map>> v = readValue(r);
+
+            assertEquals(v.get(0).get("r_0").get("m"), new JSONObject(retractedFact).toMap());
+        }
+    }
+
+    @Test
     public void testTimedOut() throws IOException {
         try (AstRulesEngine engine = new AstRulesEngine();
              InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {

@@ -13,49 +13,49 @@ import static org.junit.Assert.assertTrue;
 
 public class ProcessEventTest {
 
+    public static final String JSON1 =
+            "{\n" +
+            "    \"rules\": [\n" +
+            "            {\n" +
+            "                \"Rule\": {\n" +
+            "                    \"condition\": {\n" +
+            "                        \"AllCondition\": [\n" +
+            "                            {\n" +
+            "                                \"EqualsExpression\": {\n" +
+            "                                    \"lhs\": {\n" +
+            "                                        \"Event\": \"i\"\n" +
+            "                                    },\n" +
+            "                                    \"rhs\": {\n" +
+            "                                        \"Integer\": 1\n" +
+            "                                    }\n" +
+            "                                }\n" +
+            "                            }\n" +
+            "                        ]\n" +
+            "                    },\n" +
+            "                    \"enabled\": true,\n" +
+            "                    \"name\": null\n" +
+            "                }\n" +
+            "            },\n" +
+            "            {\n" +
+            "                \"Rule\": {\n" +
+            "                    \"condition\": {\n" +
+            "                        \"AllCondition\": [\n" +
+            "                            {\n" +
+            "                                \"IsNotDefinedExpression\": {\n" +
+            "                                    \"Event\": \"msg\"\n" +
+            "                                }\n" +
+            "                            }\n" +
+            "                        ]\n" +
+            "                    },\n" +
+            "                    \"enabled\": true,\n" +
+            "                    \"name\": null\n" +
+            "                }\n" +
+            "            }\n" +
+            "        ]\n" +
+            "}";
+
     @Test
     public void testExecuteRules() {
-        String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"EqualsExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Integer\": 1\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            },\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"IsNotDefinedExpression\": {\n" +
-                "                                    \"Event\": \"msg\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
-
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 1 }" ).join();
@@ -65,45 +65,44 @@ public class ProcessEventTest {
         rulesExecutor.dispose();
     }
 
+    public static final String JSON2 =
+            "{\n" +
+            "    \"rules\": [\n" +
+            "            {\n" +
+            "                \"Rule\": {\n" +
+            "                    \"condition\": {\n" +
+            "                        \"AllCondition\": [\n" +
+            "                            {\n" +
+            "                                \"EqualsExpression\": {\n" +
+            "                                    \"lhs\": {\n" +
+            "                                        \"Fact\": \"os\"\n" +
+            "                                    },\n" +
+            "                                    \"rhs\": {\n" +
+            "                                        \"String\": \"linux\"\n" +
+            "                                    }\n" +
+            "                                }\n" +
+            "                            },\n" +
+            "                            {\n" +
+            "                                \"EqualsExpression\": {\n" +
+            "                                    \"lhs\": {\n" +
+            "                                        \"Event\": \"i\"\n" +
+            "                                    },\n" +
+            "                                    \"rhs\": {\n" +
+            "                                        \"Integer\": 1\n" +
+            "                                    }\n" +
+            "                                }\n" +
+            "                            }\n" +
+            "                        ]\n" +
+            "                    },\n" +
+            "                    \"enabled\": true,\n" +
+            "                    \"name\": null\n" +
+            "                }\n" +
+            "            }\n" +
+            "        ]\n" +
+            "}";
+
     @Test
     public void testEventShouldProduceMultipleMatchesForSameRule() {
-
-        String JSON2 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"EqualsExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Fact\": \"os\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"String\": \"linux\"\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            },\n" +
-                "                            {\n" +
-                "                                \"EqualsExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Integer\": 1\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
-
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
         rulesExecutor.processFacts( "{ \"host\": \"A\", \"os\": \"linux\" }" );
