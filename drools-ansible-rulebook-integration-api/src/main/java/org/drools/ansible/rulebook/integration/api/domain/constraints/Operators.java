@@ -7,11 +7,15 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.drools.model.Index;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isRegexOperator;
 import static org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint.listContains;
 
 public class Operators {
+
+    private static final Logger log = LoggerFactory.getLogger(Operators.class);
 
     private static final Map<String, BiPredicate> OPERATORS_MAP = new HashMap<>();
 
@@ -40,6 +44,20 @@ public class Operators {
         if (op == null) {
             throw new UnsupportedOperationException("Unknown operator: " + operator);
         }
-        return a -> a != null ? op.test(a, value) : value == null;
+        return a -> extracted(a, op, value);
+    }
+
+    private static boolean extracted(Object attributeValue, BiPredicate op, Object value) {
+        if (attributeValue == null) {
+            return value == null;
+        }
+        try {
+            return op.test(attributeValue, value);
+        } catch (ClassCastException cce) {
+            if (log.isWarnEnabled()) {
+                log.warn(cce.getMessage());
+            }
+            return false;
+        }
     }
 }

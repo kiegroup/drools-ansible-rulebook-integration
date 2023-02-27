@@ -382,4 +382,59 @@ public class SelectAttrTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testSelectAttrIncompatibleTypes() {
+
+        String JSON1 =
+                "{\n" +
+                "    \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"Go\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SelectAttrExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"my_obj\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"key\": {\n" +
+                "                                        \"String\": \"thing.size\"\n" +
+                "                                    },\n" +
+                "                                    \"operator\": {\n" +
+                "                                        \"String\": \">=\"\n" +
+                "                                    },\n" +
+                "                                    \"value\": {\n" +
+                "                                        \"Integer\": 50\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"print_event\",\n" +
+                "                            \"action_args\": {}\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"my_obj\": [ { \"thing\": { \"name\": \"a\", \"size\": \"large\" } }," +
+                "{ \"thing\": { \"name\": \"b\", \"size\": \"medium\" } }," +
+                "{ \"thing\": { \"name\": \"c\", \"size\": \"small\" } } ] }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }
