@@ -1,10 +1,10 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
@@ -20,35 +20,55 @@ public class Rule {
 
     private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
+	private String name;
+
+	private Action action;
+
+	private RuleConfigurationOptions options;
+
+	private Condition condition;
+
     public String getName() {
-        return ruleGenerationContext.getRuleName();
+    	return name;
     }
 
     public void setName(String name) {
-        ruleGenerationContext.setRuleName(name);
-    }
-
-    public void setCondition(Condition condition) {
-        ruleGenerationContext.setCondition(condition);
+    	this.name = name;
     }
 
     public Rule withOptions(RuleConfigurationOptions options) {
-        this.ruleGenerationContext.addOptions(options.getOptions());
+    	this.options = options;
         return this;
+    }
+    
+    public RuleConfigurationOptions getOptions() {
+    	return options;
+    }
+
+    public Condition getCondition() {
+    	return condition;
+    }
+    
+    public void setCondition(Condition condition) {
+        this.condition = condition;
     }
 
     public AstCondition withCondition() {
         AstCondition condition = new AstCondition(ruleGenerationContext);
-        ruleGenerationContext.setCondition(condition);
+        this.condition = condition;
         return condition;
+    }
+    
+    public Action getAction() {
+    	return action;
     }
 
     public void setAction(MapAction action) {
-        ruleGenerationContext.setAction(action);
+    	this.action = action;
     }
 
     public void setGenericAction(Action action) {
-        ruleGenerationContext.setAction(action);
+    	this.action = action;
     }
 
     public void setEnabled(boolean enabled) {
@@ -68,11 +88,16 @@ public class Rule {
     }
 
     public boolean hasTemporalConstraint() {
-        return ruleGenerationContext.hasTemporalConstraint();
+        return ruleGenerationContext.hasTemporalConstraint(this);
     }
 
     public boolean requiresAsyncExecution() {
-        return ruleGenerationContext.requiresAsyncExecution();
+        return ruleGenerationContext.requiresAsyncExecution(this);
+    }
+    
+    public List<org.drools.model.Rule> toExecModelRules(RulesSet rulesSet, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
+    	return ruleGenerationContext.toExecModelRules(rulesSet, this, rulesExecutionController, ruleCounter);
+    	
     }
 
     @Override
@@ -82,17 +107,5 @@ public class Rule {
                 ", condition='" + ruleGenerationContext.getCondition() + '\'' +
                 ", action='" + ruleGenerationContext.getAction() + '\'' +
                 '}';
-    }
-
-    List<org.drools.model.Rule> toExecModelRules(RulesSet rulesSet, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
-        if (ruleGenerationContext.getRuleName() == null) {
-            ruleGenerationContext.setRuleName("r_" + ruleCounter.getAndIncrement());
-        }
-
-        List<org.drools.model.Rule> rules = ruleGenerationContext.createRules(rulesExecutionController);
-        if (ruleGenerationContext.hasTemporalConstraint()) {
-            rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
-        }
-        return rules;
     }
 }

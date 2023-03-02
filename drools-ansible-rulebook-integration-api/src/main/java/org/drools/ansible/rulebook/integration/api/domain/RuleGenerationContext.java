@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
@@ -125,12 +126,14 @@ public class RuleGenerationContext {
         this.timeConstraint = timeConstraint;
     }
 
-    public boolean hasTemporalConstraint() {
+    public boolean hasTemporalConstraint(org.drools.ansible.rulebook.integration.api.domain.Rule ansibleRule) {
+    	updateContextFromRule(ansibleRule);
         getOrCreateLHS();
         return timeConstraint != null;
     }
 
-    public boolean requiresAsyncExecution() {
+    public boolean requiresAsyncExecution(org.drools.ansible.rulebook.integration.api.domain.Rule rule) {
+    	updateContextFromRule(rule);
         getOrCreateLHS();
         return timeConstraint != null && timeConstraint.requiresAsyncExecution();
     }
@@ -205,7 +208,29 @@ public class RuleGenerationContext {
         this.ruleName = ruleName;
     }
 
-    private static class StackedContext<K, V> {
+    List<Rule> toExecModelRules(RulesSet rulesSet, org.drools.ansible.rulebook.integration.api.domain.Rule ansibleRule, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
+    	updateContextFromRule(ansibleRule);
+	    if (getRuleName() == null) {
+	        setRuleName("r_" + ruleCounter.getAndIncrement());
+	    }
+	
+	    List<org.drools.model.Rule> rules = createRules(rulesExecutionController);
+	    if (hasTemporalConstraint(ansibleRule)) {
+	        rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
+	    }
+	    return rules;
+	}
+
+	private void updateContextFromRule(org.drools.ansible.rulebook.integration.api.domain.Rule anisbleRule) {
+		setRuleName(anisbleRule.getName());
+		setAction(anisbleRule.getAction());
+		if (anisbleRule.getOptions() != null) {
+			addOptions(anisbleRule.getOptions().getOptions());
+		}
+		setCondition(anisbleRule.getCondition());
+	}
+
+	private static class StackedContext<K, V> {
         private final Deque<Map<K, V>> stack = new ArrayDeque<>();
 
         public StackedContext() {
