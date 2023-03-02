@@ -4,7 +4,7 @@
 
 An integration layer allowing Ansible Rulebook to use Drools as rule engine for rules evaluation. Drools can be invoked from Ansible either via a REST API or natively through [jpy](https://pypi.org/project/jpy/).
 
-## Installing and Running
+## Installing and Running REST API service
 
 ### Prerequisites
 
@@ -14,20 +14,23 @@ You will need:
   - Maven 3.8.1+ installed
 
 When using native image compilation, you will also need:
-  - [GraalVM 21.1.0](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-21.1.0) installed
+  - [GraalVM 22.1.0](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.1.0) installed
   - Environment variable GRAALVM_HOME set accordingly
   - Note that GraalVM native image compilation typically requires other packages (glibc-devel, zlib-devel and gcc) to be installed too.  You also need 'native-image' installed in GraalVM (using 'gu install native-image'). Please refer to [GraalVM installation documentation](https://www.graalvm.org/docs/reference-manual/aot-compilation/#prerequisites) for more details.
 
 ### Compile and Run in Local Dev Mode
 
 ```sh
+mvn clean install
+cd drools-ansible-rulebook-integration-core-rest
 mvn clean compile quarkus:dev
 ```
 
 ### Package and Run in JVM mode
 
 ```sh
-mvn clean package
+mvn clean install
+cd drools-ansible-rulebook-integration-core-rest
 java -jar target/quarkus-app/quarkus-run.jar
 ```
 
@@ -35,13 +38,15 @@ java -jar target/quarkus-app/quarkus-run.jar
 Note that this requires GRAALVM_HOME to point to a valid GraalVM installation
 
 ```sh
+mvn clean install
+cd drools-ansible-rulebook-integration-core-rest
 mvn clean package -Pnative
 ```
 
 To run the generated native executable, generated in `target/`, execute
 
 ```sh
-./target/drools-ansible-rulebook-integration-1.0.0-SNAPSHOT-runner
+./target/drools-ansible-rulebook-integration-core-rest-1.0.0-SNAPSHOT-runner
 ```
 
 Note: This does not yet work on Windows, GraalVM and Quarkus should be rolling out support for Windows soon.
@@ -63,70 +68,70 @@ Creates a rules executor with the set of rules defined in the json payload as in
 
 ```sh
 curl -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{
-   "host_rules":[
-      {
-         "name":"R1",
-         "condition":"sensu.data.i == 1",
-         "action":{
-            "assert_fact":{
-               "ruleset":"Test rules4",
-               "fact":{
-                  "j":1
-               }
-            }
-         }
-      },
-      {
-         "name":"R2",
-         "condition":"sensu.data.i == 2",
-         "action":{
-            "run_playbook":[
-               {
-                  "name":"hello_playbook.yml"
-               }
-            ]
-         }
-      },
-      {
-         "name":"R3",
-         "condition":{
-            "any":[
-               {
-                  "all":[
-                     "sensu.data.i == 3",
-                     "j == 2"
-                  ]
-               },
-               {
-                  "all":[
-                     "sensu.data.i == 4",
-                     "j == 3"
-                  ]
-               }
-            ]
-         },
-         "action":{
-            "retract_fact":{
-               "ruleset":"Test rules4",
-               "fact":{
-                  "j":3
-               }
-            }
-         }
-      },
-      {
-         "name":"R4",
-         "condition":"j == 1",
-         "action":{
-            "post_event":{
-               "ruleset":"Test rules4",
-               "fact":{
-                  "j":4
-               }
-            }
-         }
+  "rules": [
+    {"Rule": {
+      "name": "R1",
+      "condition": "sensu.data.i == 1",
+      "action": {
+        "assert_fact": {
+          "ruleset": "Test rules4",
+          "fact": {
+            "j": 1
+          }
+        }
       }
-   ]
+    }},
+    {"Rule": {
+      "name": "R2",
+      "condition": "sensu.data.i == 2",
+      "action": {
+        "run_playbook": [
+          {
+            "name": "hello_playbook.yml"
+          }
+        ]
+      }
+    }},
+    {"Rule": {
+      "name": "R3",
+      "condition":{
+        "any":[
+          {
+            "all":[
+              "sensu.data.i == 3",
+              "j == 2"
+            ]
+          },
+          {
+            "all":[
+              "sensu.data.i == 4",
+              "j == 3"
+            ]
+          }
+        ]
+      },
+      "action": {
+        "retract_fact": {
+          "ruleset": "Test rules4",
+          "fact": {
+            "j": 3
+          }
+        }
+      }
+    }},
+    {"Rule": {
+      "name": "R4",
+      "condition": "j == 1",
+      "action": {
+        "post_event": {
+          "ruleset": "Test rules4",
+          "fact": {
+            "j": 4
+          }
+        }
+      }
+    }}
+  ]
 }' http://localhost:8080/create-rules-executor
 ```
 
@@ -157,12 +162,11 @@ Example response:
 ```json
 [
   {
-    "ruleName": "R1",
-    "facts": {
-      "sensu": {
-        "type": "sensu",
-        "values": {
-          "data.i": 1
+    "ruleName":"R1",
+    "facts":{
+      "sensu":{
+        "data":{
+          "i":1
         }
       }
     }
