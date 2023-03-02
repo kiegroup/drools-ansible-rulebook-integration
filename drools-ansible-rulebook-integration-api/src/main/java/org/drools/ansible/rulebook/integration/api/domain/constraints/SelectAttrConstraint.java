@@ -10,6 +10,7 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.ConstraintOperator;
+import org.drools.model.Prototype;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.extractMapAttribute;
@@ -72,16 +73,13 @@ public enum SelectAttrConstraint implements ConstraintOperator, ConditionFactory
         @Override
         public <T, V> BiPredicate<T, V> asPredicate() {
             return (t, v) -> {
-                if (t == null) {
-                    return false;
-                }
                 if (t instanceof Collection) {
                     return (boolean) v ?
                             ((Collection) t).stream().map(keyExtractor).anyMatch(opPred) :
                             !((Collection) t).stream().map(keyExtractor).allMatch(opPred);
                 }
                 Object value = keyExtractor.apply(t);
-                return value != null && opPred.test(value) == (boolean) v;
+                return value != Prototype.UNDEFINED_VALUE && opPred.test(value) == (boolean) v;
             };
         }
     }

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.drools.model.Prototype;
 import org.json.JSONObject;
 
 public class ConditionParseUtil {
@@ -48,8 +49,12 @@ public class ConditionParseUtil {
             return null;
         }
         int dotPos = attr.indexOf('.');
-        return dotPos < 0 ?
-                map.get(attr) :
-                extractMapAttribute( (Map) map.get(attr.substring(0, dotPos)), attr.substring(dotPos+1) );
+        if (dotPos < 0) {
+            return map.containsKey(attr) ? map.get(attr) : Prototype.UNDEFINED_VALUE;
+        }
+        if (!map.containsKey(attr.substring(0, dotPos))) {
+            return Prototype.UNDEFINED_VALUE;
+        }
+        return extractMapAttribute( (Map) map.get(attr.substring(0, dotPos)), attr.substring(dotPos+1) );
     }
 }

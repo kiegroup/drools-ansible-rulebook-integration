@@ -323,4 +323,56 @@ public class SelectTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testSelectOnNull() {
+        String JSON1 =
+                "{\n" +
+                "    \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"with select\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SelectExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"my_obj\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"operator\": {\n" +
+                "                                        \"String\": \"==\"\n" +
+                "                                    },\n" +
+                "                                    \"value\": {\n" +
+                "                                        \"NullType\": null\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"print_event\",\n" +
+                "                            \"action_args\": {}\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"my_obj\": null }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"another_obj\": null }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }
