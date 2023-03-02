@@ -28,6 +28,11 @@ public class EmptyMatchDecorator implements Match {
     }
 
     @Override
+    public int getSalience() {
+        return delegate.getSalience();
+    }
+
+    @Override
     public List<Object> getObjects() {
         List<Object> objects = new ArrayList<>();
         objects.addAll( boundObjects.values() );
