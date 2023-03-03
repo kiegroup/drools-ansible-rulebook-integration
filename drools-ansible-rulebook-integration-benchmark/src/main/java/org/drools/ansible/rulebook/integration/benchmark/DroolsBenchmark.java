@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
-import org.drools.ansible.rulebook.integration.durable.DurableNotation;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -22,7 +21,9 @@ import org.openjdk.jmh.annotations.Warmup;
 @Measurement(iterations = 10)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(2)
-public class DroolsDurableBenchmark {
+public class DroolsBenchmark {
+
+    static final String JSON_RULE = "{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"event\":\"i\" }, \"rhs\":{ \"String\":\"Done\" } } } }} ] }";
 
     @Param({"1000", "10000", "100000"})
     private int eventsNr;
@@ -31,8 +32,7 @@ public class DroolsDurableBenchmark {
 
     @Setup
     public void setup() {
-        String jsonRule = "{ \"rules\": {\"r_0\": {\"all\": [{\"m\": {\"$ex\": {\"event.i\": 1}}}]}}}";
-        rulesExecutor = RulesExecutorFactory.createFromJson(DurableNotation.INSTANCE, jsonRule);
+        rulesExecutor = RulesExecutorFactory.createFromJson(JSON_RULE);
     }
 
     @Benchmark
@@ -40,7 +40,7 @@ public class DroolsDurableBenchmark {
     public int benchmark() {
         int count = 0;
         for (int i = 0; i < eventsNr; i++) {
-            count += rulesExecutor.processEvents("{ \"event\": { \"i\": \"Done\" } }").join().size();
+            count += rulesExecutor.processEvents("{ \"i\": \"Done\" }").join().size();
         }
         if (count != eventsNr) {
             throw new IllegalStateException("Matched " + count + " rules, expected " + eventsNr);

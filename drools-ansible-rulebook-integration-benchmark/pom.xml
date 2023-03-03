@@ -27,7 +27,7 @@
 
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-ansible-rulebook-integration-durable</artifactId>
+      <artifactId>drools-ansible-rulebook-integration-api</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
