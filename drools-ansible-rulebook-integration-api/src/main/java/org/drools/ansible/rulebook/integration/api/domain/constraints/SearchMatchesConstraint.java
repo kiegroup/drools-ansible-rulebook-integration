@@ -40,17 +40,18 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
 
     public static ConstraintOperator createMatchOperator(Map<?,?> rhs) {
         Map searchType = (Map)rhs.get("SearchType");
-        return new RegexConstraint(parsePattern(searchType), parseOptions(searchType));
+        int options = parseOptions(searchType);
+        return new RegexConstraint(parsePattern(searchType, options), options);
     }
 
-    private static String parsePattern(Map searchType) {
+    private static String parsePattern(Map searchType, int options) {
         String kind = ((Map) searchType.get("kind")).get("String").toString();
         if (!isRegexOperator(kind)) {
             throw new UnsupportedOperationException("Unknown kind: " + kind);
         }
         String pattern = ((Map) searchType.get("pattern")).get("String").toString();
         if (kind.equals("match")) {
-            pattern = "\\A" + pattern;
+            pattern = ((options | Pattern.MULTILINE) != 0 ? "^" : "\\A") + pattern;
         }
         return pattern;
     }

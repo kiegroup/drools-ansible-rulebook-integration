@@ -366,11 +366,16 @@ public class StringMatchTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"string1\": \"This is a\\nmultiline string for\\nthe purposes of testing search\\n\" }" ).join();
+        List<Match> matchedRules;
+        matchedRules = rulesExecutor.processFacts( "{ \"string1\": \"This is a\\nmultiline string for\\nthe purposes of testing search\\n\" }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
         matchedRules = rulesExecutor.processFacts( "{ \"string2\": \"This is a\\nmultiline string for\\nthe purposes of testing search\\n\" }" ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R2", matchedRules.get(0).getRule().getName() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"string2\": \"For the purposes of testing search\\nThis is a\\nmultiline string\\n\" }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R2", matchedRules.get(0).getRule().getName() );
 
