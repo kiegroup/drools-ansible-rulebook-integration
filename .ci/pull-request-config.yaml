@@ -1,0 +1,12 @@
+version: "2.1"
+
+dependencies: ./project-dependencies.yaml
+
+build:
+  - project: kiegroup/drools
+    build-command:
+      current: mvn --batch-mode --update-snapshots install -Dquickly
+
+  - project: kiegroup/drools-ansible-rulebook-integration
+    build-command:
+      current: mvn --batch-mode --update-snapshots verify
