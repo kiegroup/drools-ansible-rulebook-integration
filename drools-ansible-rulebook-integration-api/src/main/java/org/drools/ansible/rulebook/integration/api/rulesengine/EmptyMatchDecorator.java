@@ -27,10 +27,11 @@ public class EmptyMatchDecorator implements Match {
         return delegate.getFactHandles();
     }
 
-    @Override
-    public int getSalience() {
-        return delegate.getSalience();
-    }
+// TODO - required since drools 8.36.0.Final
+//    @Override
+//    public int getSalience() {
+//        return delegate.getSalience();
+//    }
 
     @Override
     public List<Object> getObjects() {
