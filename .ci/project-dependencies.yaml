@@ -1,0 +1,17 @@
+version: "2.1"
+dependencies:
+  - project: kiegroup/drools
+    mapping:
+      dependant:
+        default:
+          - source: 8.35.x
+            target: 1.0.x
+
+  - project: kiegroup/drools-ansible-rulebook-integration
+    dependencies:
+      - project: kiegroup/drools
+    mapping:
+      dependencies:
+        default:
+          - source: 1.0.x
+            target: 8.35.x
