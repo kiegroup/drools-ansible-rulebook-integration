@@ -1,10 +1,9 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
 import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;

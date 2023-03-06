@@ -1,0 +1,79 @@
+[
+    {
+        "RuleSet": {
+            "name": "54 time window",
+            "hosts": [
+                "all"
+            ],
+            "sources": [
+                {
+                    "EventSource": {
+                        "name": "generic",
+                        "source_name": "generic",
+                        "source_args": {
+                            "create_index": "event_index",
+                            "shutdown_after": 15,
+                            "event_delay": 5,
+                            "payload": [
+                                {
+                                    "alert": {
+                                        "code": 1001,
+                                        "message": "Applying maintenance"
+                                    }
+                                },
+                                {
+                                    "alert": {
+                                        "code": 1002,
+                                        "message": "Restarted"
+                                    }
+                                }
+                            ]
+                        },
+                        "source_filters": []
+                    }
+                }
+            ],
+            "rules": [
+                {
+                    "Rule": {
+                        "name": "maint cycle",
+                        "condition": {
+                            "AllCondition": [
+                                {
+                                    "EqualsExpression": {
+                                        "lhs": {
+                                            "Event": "alert.code"
+                                        },
+                                        "rhs": {
+                                            "Integer": 1001
+                                        }
+                                    }
+                                },
+                                {
+                                    "EqualsExpression": {
+                                        "lhs": {
+                                            "Event": "alert.code"
+                                        },
+                                        "rhs": {
+                                            "Integer": 1002
+                                        }
+                                    }
+                                }
+                            ],
+                            "timeout": "10 seconds"
+                        },
+                        "actions": [
+                            {
+                                "Action": {
+                                    "action": "print_event",
+                                    "action_args": {}
+                                }
+                            }
+                        ],
+                        "enabled": true
+                    }
+                }
+            ]
+        }
+    }
+]
