@@ -184,7 +184,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
                 matches.stream().takeWhile(match -> match.getRule().getName().equals(matches.get(0).getRule().getName())).collect(Collectors.toList());
     }
 
-    private List<Match> findMatchedRules() {
+    private synchronized List<Match> findMatchedRules() {
         rulesExecutorSession.setExecuteActions(false);
         rulesExecutorSession.fireAllRules(registerOnlyAgendaFilter);
         rulesExecutorSession.setExecuteActions(true);

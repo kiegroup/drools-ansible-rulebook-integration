@@ -191,7 +191,7 @@ public class RuleGenerationContext {
     }
 
     private void defaultConsequence(RulesExecutionController rulesExecutionController, Action action, Drools drools) {
-        if (rulesExecutionController.executeActions()) {
+        if (action != null && rulesExecutionController.executeActions()) {
             action.execute(drools);
         }
     }

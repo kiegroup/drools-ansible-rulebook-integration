@@ -2,7 +2,7 @@ package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 public class RulesExecutionController {
 
-    public boolean executeActions = true;
+    public volatile boolean executeActions = true;
 
     public boolean executeActions() {
         return executeActions;
