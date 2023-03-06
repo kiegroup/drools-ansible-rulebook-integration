@@ -23,7 +23,7 @@ public class Main {
 
     private static final boolean EXECUTE_PAYLOAD_ASYNC = true;
 
-    private static final String DEFAULT_JSON = "multiple_storms_ast.json";
+    private static final String DEFAULT_JSON = "54_time_window_ast.json";
 
     private static volatile boolean terminated = false;
 

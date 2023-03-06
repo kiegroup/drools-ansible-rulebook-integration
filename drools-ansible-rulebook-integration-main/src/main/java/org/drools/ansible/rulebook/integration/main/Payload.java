@@ -16,6 +16,8 @@ public class Payload {
     private int loopDelay = 0;
     private int delay = 0;
 
+    private int shutdown = 0;
+
     private Payload(List<String> list) {
         this.list = list;
     }
@@ -50,13 +52,28 @@ public class Payload {
 
         try {
             payload.delay = sourcesArgs.getInt("delay");
-        } catch (JSONException e) { /* ignore */ }
+        } catch (JSONException e) {
+            try {
+            payload.delay = sourcesArgs.getInt("event_delay");
+            } catch (JSONException e1) {
+                /* ignore */
+            }
+        }
         try {
             payload.loopCount = sourcesArgs.getInt("loop_count");
-        } catch (JSONException e) { /* ignore */ }
+        } catch (JSONException e) {
+            /* ignore */
+        }
         try {
             payload.loopDelay = sourcesArgs.getInt("loop_delay");
-        } catch (JSONException e) { /* ignore */ }
+        } catch (JSONException e) {
+            /* ignore */
+        }
+        try {
+            payload.shutdown = sourcesArgs.getInt("loop_delay");
+        } catch (JSONException e) {
+            /* ignore */
+        }
 
         return payload;
     }
@@ -81,24 +98,30 @@ public class Payload {
 
         @Override
         public void run() {
+            long start = System.currentTimeMillis();
             for (int i = 0; i < payload.loopCount; i++) {
                 for (String p : payload.list) {
                     engine.assertEvent(sessionId, p);
-                    sleep(payload.delay);
+                    sleepSeconds(payload.delay);
                 }
-                sleep(payload.loopDelay);
+                sleepSeconds(payload.loopDelay);
             }
+            long elapsed = System.currentTimeMillis() - start;
+            sleepMillis( (payload.shutdown * 1000L) - elapsed );
         }
 
-        private void sleep(int secondsToSleep) {
-            if (secondsToSleep > 0) {
+        private void sleepSeconds(int secondsToSleep) {
+            sleepMillis(secondsToSleep * 1000L);
+        }
+
+        private void sleepMillis(long millisToSleep) {
+            if (millisToSleep > 0) {
                 try {
-                    Thread.sleep(secondsToSleep * 1000L);
+                    Thread.sleep(millisToSleep);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
     }
-
 }
