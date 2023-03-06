@@ -1,0 +1,37 @@
+version: "2.1"
+
+dependencies: ./project-dependencies.yaml
+
+pre: |
+  export BUILD_MVN_OPTS="${{ env.BUILD_MVN_OPTS }} -s ${{ env.PME_MAVEN_SETTINGS_XML }} dependency:tree"
+  echo "BUILD_MVN_OPTS=${{ env.BUILD_MVN_OPTS }}"
+  export BUILD_MVN_OPTS_CURRENT="${{ env.BUILD_MVN_OPTS_CURRENT }}"
+  echo "BUILD_MVN_OPTS_CURRENT=${{ env.BUILD_MVN_OPTS_CURRENT }}"
+
+default:
+  build-command:
+    current: mvn clean install ${{ env.BUILD_MVN_OPTS }} ${{ env.BUILD_MVN_OPTS_CURRENT }}
+    upstream: mvn clean install -Dquickly ${{ env.BUILD_MVN_OPTS }} ${{ env.BUILD_MVN_OPTS_UPSTREAM }}
+    after:
+      current: |
+        docker system prune -f
+
+build:
+  - project: kiegroup/drools
+    build-command:
+      current: |
+        java -jar ${{ env.PME_CLI_PATH }} -s ${{ env.PME_MAVEN_SETTINGS_XML }} -DallowConfigFilePrecedence=true -DprojectSrcSkip=false ${{ env.PME_ALIGNMENT_PARAMS_kiegroup_drools }}
+        ${{ env.PME_BUILD_SCRIPT_kiegroup_drools }} ${{ env.BUILD_MVN_OPTS }} ${{ env.BUILD_MVN_OPTS_CURRENT }} ${{ env.DROOLS_BUILD_MVN_OPTS }}
+      upstream: |
+        java -jar ${{ env.PME_CLI_PATH }} -s ${{ env.PME_MAVEN_SETTINGS_XML }} -DallowConfigFilePrecedence=true -DprojectSrcSkip=false ${{ env.PME_ALIGNMENT_PARAMS_kiegroup_drools }}
+        ${{ env.PME_BUILD_SCRIPT_kiegroup_drools }} ${{ env.BUILD_MVN_OPTS }} ${{ env.BUILD_MVN_OPTS_UPSTREAM }} ${{ env.DROOLS_BUILD_MVN_OPTS_UPSTREAM }}
+
+  - project: kiegroup/drools-ansible-rulebook-integration
+    build-command: 
+      current: |
+        java -jar ${{ env.PME_CLI_PATH }} -s ${{ env.PME_MAVEN_SETTINGS_XML }} -DallowConfigFilePrecedence=true -DprojectSrcSkip=false ${{ env.PME_ALIGNMENT_PARAMS_kiegroup_drools_ansible_rulebook_integration }}
+        ${{ env.PME_BUILD_SCRIPT_kiegroup_drools_ansible_rulebook_integration }} ${{ env.BUILD_MVN_OPTS }} ${{ env.BUILD_MVN_OPTS_CURRENT }} ${{ env.DROOLS_BUILD_MVN_OPTS }}
+      upstream: |
+        java -jar ${{ env.PME_CLI_PATH }} -s ${{ env.PME_MAVEN_SETTINGS_XML }} -DallowConfigFilePrecedence=true -DprojectSrcSkip=false ${{ env.PME_ALIGNMENT_PARAMS_kiegroup_drools_ansible_rulebook_integration }}
+        ${{ env.PME_BUILD_SCRIPT_kiegroup_drools_ansible_rulebook_integration }} ${{ env.BUILD_MVN_OPTS }} ${{ env.BUILD_MVN_OPTS_UPSTREAM }} ${{ env.DROOLS_BUILD_MVN_OPTS_UPSTREAM }}
+      
