@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.api.domain.constraints;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
@@ -33,27 +34,37 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
 
     @Override
     public ParsedCondition createParsedCondition(RuleGenerationContext ruleContext, String expressionName, Map<?, ?> expression) {
-        ConditionExpression left = map2Expr(ruleContext, expression.get("lhs"));
-        ConstraintOperator operator = createMatchOperator((Map<?,?>)expression.get("rhs"));
-        return new ParsedCondition(left.getPrototypeExpression(), operator, fixedValue(expressionName.equals(EXPRESSION_NAME)));
+        ConditionExpression lhs = map2Expr(ruleContext, expression.get("lhs"));
+        Map searchType = (Map) ((Map)expression.get("rhs")).get("SearchType");
+        boolean positive = expressionName.equals(EXPRESSION_NAME);
+
+        return lhs.isFixedValue() ?
+                createConditionWithFixedLeft(ruleContext, lhs.getFixedValue().toString(), searchType, positive) :
+                createConditionWithFixedRight(lhs, searchType, positive);
     }
 
-    public static ConstraintOperator createMatchOperator(Map<?,?> rhs) {
-        Map searchType = (Map)rhs.get("SearchType");
+    private ParsedCondition createConditionWithFixedRight(ConditionExpression lhs, Map searchType, boolean positive) {
         int options = parseOptions(searchType);
-        return new RegexConstraint(parsePattern(searchType, options), options);
+        String pattern = ((Map) searchType.get("pattern")).get("String").toString();
+        ConstraintOperator operator = new RegexConstraint(getPatternTransformerForKind(searchType, options).apply(pattern), options);
+        return new ParsedCondition(lhs.getPrototypeExpression(), operator, fixedValue(positive));
     }
 
-    private static String parsePattern(Map searchType, int options) {
+    private ParsedCondition createConditionWithFixedLeft(RuleGenerationContext ruleContext, String pattern, Map searchType, boolean positive) {
+        int options = parseOptions(searchType);
+        ConstraintOperator operator = new InvertedRegexConstraint(pattern, options, getPatternTransformerForKind(searchType, options));
+        return new ParsedCondition(map2Expr(ruleContext, searchType.get("pattern")).getPrototypeExpression(), operator, fixedValue(positive));
+    }
+
+    private static UnaryOperator<String> getPatternTransformerForKind(Map searchType, int options) {
         String kind = ((Map) searchType.get("kind")).get("String").toString();
         if (!isRegexOperator(kind)) {
             throw new UnsupportedOperationException("Unknown kind: " + kind);
         }
-        String pattern = ((Map) searchType.get("pattern")).get("String").toString();
         if (kind.equals("match")) {
-            pattern = ((options | Pattern.MULTILINE) != 0 ? "^" : "\\A") + pattern;
+            return pattern -> ((options | Pattern.MULTILINE) != 0 ? "^" : "\\A") + pattern;
         }
-        return pattern;
+        return UnaryOperator.identity();
     }
 
     private static int parseOptions(Map searchType) {
@@ -91,6 +102,24 @@ public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFact
         @Override
         public <T, V> BiPredicate<T, V> asPredicate() {
             return (t, v) -> t != null && regexPattern.matcher(t.toString()).find() == (boolean) v;
+        }
+    }
+
+    public static class InvertedRegexConstraint implements ConstraintOperator {
+
+        private final String pattern;
+        private final int flags;
+        private final UnaryOperator<String> patternTransformer;
+
+        public InvertedRegexConstraint(String pattern, int flags, UnaryOperator<String> patternTransformer) {
+            this.pattern = pattern;
+            this.flags = flags;
+            this.patternTransformer = patternTransformer;
+        }
+
+        @Override
+        public <T, V> BiPredicate<T, V> asPredicate() {
+            return (t, v) -> t != null && Pattern.compile(patternTransformer.apply(t.toString()), flags).matcher(pattern).find() == (boolean) v;
         }
     }
 }

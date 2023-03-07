@@ -64,6 +64,14 @@ public class ConditionExpression {
         return field;
     }
 
+    public boolean isFixedValue() {
+        return prototypeExpression instanceof PrototypeExpression.FixedValue;
+    }
+
+    public Object getFixedValue() {
+        return ((PrototypeExpression.FixedValue) prototypeExpression).getValue();
+    }
+
     public String getPrototypeName() {
         return prototypeName;
     }
