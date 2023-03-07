@@ -388,4 +388,114 @@ public class StringMatchTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testSearchPatternInEvent() {
+        String json =
+                "{\n" +
+                "     \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"R1\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SearchMatchesExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"String\": \"select selectattr search matches should matches in\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"SearchType\": {\n" +
+                "                                        \"kind\": {\n" +
+                "                                            \"String\": \"search\"\n" +
+                "                                        },\n" +
+                "                                        \"pattern\": {\n" +
+                "                                            \"Event\": \"my_str\"\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"print_event\",\n" +
+                "                            \"action_args\": {}\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "   ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"my_str\": \"must\" }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"my_str\": \"should\" }" ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testMatchPatternInEvent() {
+        String json =
+                "{\n" +
+                "     \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"R1\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SearchMatchesExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"String\": \"select selectattr search matches should matches in\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"SearchType\": {\n" +
+                "                                        \"kind\": {\n" +
+                "                                            \"String\": \"match\"\n" +
+                "                                        },\n" +
+                "                                        \"pattern\": {\n" +
+                "                                            \"Event\": \"my_str\"\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"print_event\",\n" +
+                "                            \"action_args\": {}\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "   ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"my_str\": \"should\" }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"my_str\": \"select\" }" ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
 }
