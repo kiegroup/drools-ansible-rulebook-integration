@@ -10,6 +10,7 @@ import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
 
+import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isEventOrFact;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isKnownType;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toJsonValue;
 import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
@@ -117,7 +118,7 @@ public class ConditionExpression {
         }
 
         if (value instanceof String) {
-            String fieldName = ignoreKey(key) ? (String) value : key + "." + value;
+            String fieldName = isEventOrFact(key) ? (String) value : key + "." + value;
             return createFieldExpression(ruleContext, fieldName);
         }
 
@@ -142,10 +143,6 @@ public class ConditionExpression {
             }
         }
         return new ConditionExpression(fieldName2PrototypeExpression(fieldName), true, prototypeName, betaVariable);
-    }
-
-    private static boolean ignoreKey(String key) {
-        return key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("facts") || key.equalsIgnoreCase("event") || key.equalsIgnoreCase("events");
     }
 
     private static PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator(String operator) {

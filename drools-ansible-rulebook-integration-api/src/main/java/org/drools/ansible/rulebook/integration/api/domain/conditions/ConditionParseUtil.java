@@ -57,4 +57,8 @@ public class ConditionParseUtil {
         }
         return extractMapAttribute( (Map) map.get(attr.substring(0, dotPos)), attr.substring(dotPos+1) );
     }
+
+    public static boolean isEventOrFact(String key) {
+        return key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("facts") || key.equalsIgnoreCase("event") || key.equalsIgnoreCase("events");
+    }
 }

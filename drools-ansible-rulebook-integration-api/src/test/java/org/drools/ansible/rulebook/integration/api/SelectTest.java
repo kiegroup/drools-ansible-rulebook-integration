@@ -375,4 +375,56 @@ public class SelectTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testSelectOnField() {
+        String JSON1 =
+                "{\n" +
+                "    \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"R1\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SelectExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"my_list1\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"operator\": {\n" +
+                "                                        \"String\": \"==\"\n" +
+                "                                    },\n" +
+                "                                    \"value\": {\n" +
+                "                                        \"Event\": \"my_int1\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"print_event\",\n" +
+                "                            \"action_args\": {}\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"action\": \"go\", \"my_int1\": 3, \"my_list1\": [ 1, 3, 7 ] }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"action\": \"go\", \"my_int1\": 4, \"my_list1\": [ 1, 3, 7 ] }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }

@@ -3,7 +3,6 @@ package org.drools.ansible.rulebook.integration.api.domain.constraints;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.drools.model.Index;
@@ -32,27 +31,21 @@ public class Operators {
         OPERATORS_MAP.put("not contains", (a,b) -> !listContains(a, b));
     }
 
-    public static Predicate<?> toOperatorPredicate(String operator, Object value) {
-        String regexPattern = value instanceof String && isRegexOperator(operator) ? (String)value : null;
-        if (regexPattern != null) {
-            Pattern pattern = Pattern.compile(regexPattern);
-            return a -> a != null && pattern.matcher(a.toString()).find();
+    public static BiPredicate<?, ?> toOperatorPredicate(String operator) {
+        if (isRegexOperator(operator)) {
+            return (a,b) -> a != null && b != null && Pattern.compile(b.toString()).matcher(a.toString()).find();
         }
-
 
         BiPredicate op = OPERATORS_MAP.get(operator);
         if (op == null) {
             throw new UnsupportedOperationException("Unknown operator: " + operator);
         }
-        return a -> extracted(a, op, value);
+        return (a,b) -> testPredicate(a, op, b);
     }
 
-    private static boolean extracted(Object attributeValue, BiPredicate op, Object value) {
-        if (attributeValue == null) {
-            return value == null;
-        }
+    private static boolean testPredicate(Object left, BiPredicate op, Object right) {
         try {
-            return op.test(attributeValue, value);
+            return left == null ? right == null : op.test(left, right);
         } catch (ClassCastException cce) {
             if (log.isWarnEnabled()) {
                 log.warn(cce.getMessage());
