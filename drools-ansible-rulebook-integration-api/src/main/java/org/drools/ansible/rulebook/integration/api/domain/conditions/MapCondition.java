@@ -3,7 +3,6 @@ package org.drools.ansible.rulebook.integration.api.domain.conditions;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ConditionFactory;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ExistsField;
@@ -194,15 +193,7 @@ public class MapCondition implements Condition {
         ConditionExpression right = map2Expr(ruleContext, expression.get("rhs"));
         return right.isBeta() ?
                 new BetaParsedCondition(left.getPrototypeExpression(), operator, right.getBetaVariable(), right.getPrototypeExpression()) :
-                new ParsedCondition(left.getPrototypeExpression(), operator, right.getPrototypeExpression()).withImplicitPattern(hasImplicitPattern(ruleContext, left, right));
-    }
-
-    private boolean hasImplicitPattern(RuleGenerationContext ruleContext, ConditionExpression left, ConditionExpression right) {
-        boolean hasImplicitPattern = left.isField() && right.isField() && !left.getPrototypeName().equals(right.getPrototypeName()) && !ruleContext.isExistingBoundVariable(right.getPrototypeName());
-        if (hasImplicitPattern && !ruleContext.hasOption(RuleConfigurationOption.ALLOW_IMPLICIT_JOINS)) {
-            throw new UnsupportedOperationException("Cannot have an implicit pattern without using ALLOW_IMPLICIT_JOINS option");
-        }
-        return hasImplicitPattern;
+                new ParsedCondition(left.getPrototypeExpression(), operator, right.getPrototypeExpression());
     }
 
     private static ConstraintOperator decodeOperation(String expressionName) {
