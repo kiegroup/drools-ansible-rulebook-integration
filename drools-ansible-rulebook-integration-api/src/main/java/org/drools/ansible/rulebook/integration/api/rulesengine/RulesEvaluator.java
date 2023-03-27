@@ -28,8 +28,10 @@ public interface RulesEvaluator {
     CompletableFuture<List<Match>> fire();
 
     CompletableFuture<List<Match>> processRetract(Map<String, Object> json);
+    CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json);
 
     boolean retractFact(Map<String, Object> factMap);
+    int retractMatchingFacts(Map<String, Object> factMap);
 
     void setRulesExecutorContainer(RulesExecutorContainer rulesExecutorContainer);
 
