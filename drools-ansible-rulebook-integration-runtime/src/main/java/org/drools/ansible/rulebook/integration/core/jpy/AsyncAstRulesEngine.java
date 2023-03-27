@@ -48,9 +48,11 @@ public class AsyncAstRulesEngine {
     }
 
     public void retractFact(long sessionId, String serializedFact) {
-        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        Map<String, Object> boundFact = Map.of("m", fact);
-        rulesExecutorContainer.get(sessionId).processRetract(fact);
+        rulesExecutorContainer.get(sessionId).processRetract(serializedFact);
+    }
+
+    public void retractMatchingFacts(long sessionId, String serializedFact) {
+        rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact);
     }
 
     public void assertFact(long sessionId, String serializedFact) {

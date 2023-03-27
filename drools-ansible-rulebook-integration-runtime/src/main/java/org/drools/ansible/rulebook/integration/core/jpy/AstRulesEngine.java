@@ -50,12 +50,13 @@ public class AstRulesEngine implements Closeable {
         return toJson( rulesExecutor.dispose() );
     }
 
-    /**
-     * @return error code (currently always 0)
-     */
     public String retractFact(long sessionId, String serializedFact) {
-        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetract(fact).join();
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetract(serializedFact).join();
+        return toJson( AstRuleMatch.asList(matches) );
+    }
+
+    public String retractMatchingFacts(long sessionId, String serializedFact) {
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact).join();
         return toJson( AstRuleMatch.asList(matches) );
     }
 

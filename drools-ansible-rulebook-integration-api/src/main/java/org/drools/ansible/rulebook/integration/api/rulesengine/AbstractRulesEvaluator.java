@@ -117,7 +117,12 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     @Override
     public CompletableFuture<List<Match>> processRetract(Map<String, Object> json) {
-        return engineEvaluate(() -> syncProcessRetract(json));
+        return engineEvaluate(() -> retractFact(json) ? enrichMatchesWithFact( findMatchedRules(), json ) : Collections.emptyList());
+    }
+
+    @Override
+    public CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json) {
+        return engineEvaluate(() -> retractMatchingFacts(json) > 0 ? enrichMatchesWithFact( findMatchedRules(), json ) : Collections.emptyList());
     }
 
     protected abstract CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier);
@@ -191,15 +196,18 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return registerOnlyAgendaFilter.finalizeAndGetResults();
     }
 
-    protected List<Match> syncProcessRetract(Map<String, Object> json) {
-        List<Match> matches = retractFact(json) ? findMatchedRules() : Collections.emptyList();
-        matches = matches.stream().map( FullMatchDecorator::new ).map(m -> m.withBoundObject("m", json) ).collect(Collectors.toList());
-        return matches;
+    private List<Match> enrichMatchesWithFact(List<Match> matches, Map<String, Object> json) {
+        return matches.stream().map(FullMatchDecorator::new).map(m -> m.withBoundObject("m", json)).collect(Collectors.toList());
     }
 
     @Override
     public boolean retractFact(Map<String, Object> factMap) {
-        return rulesExecutorSession.deleteFact( mapToFact(factMap, false) );
+        return rulesExecutorSession.deleteFact( factMap );
+    }
+
+    @Override
+    public int retractMatchingFacts(Map<String, Object> factMap) {
+        return rulesExecutorSession.deleteAllMatchingFacts( factMap );
     }
 
     protected <T> CompletableFuture<T> completeFutureOf(T value) {

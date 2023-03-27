@@ -91,8 +91,12 @@ public class RulesExecutor {
         return rulesEvaluator.processRetract(json);
     }
 
-    public boolean retractFact(Map<String, Object> factMap) {
-        return rulesEvaluator.retractFact( factMap );
+    public CompletableFuture<List<Match>> processRetractMatchingFacts(String json) {
+        return processRetractMatchingFacts(new JSONObject(json).toMap());
+    }
+
+    public CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json) {
+        return rulesEvaluator.processRetractMatchingFacts(json);
     }
 
     public Collection<?> getAllFacts() {
