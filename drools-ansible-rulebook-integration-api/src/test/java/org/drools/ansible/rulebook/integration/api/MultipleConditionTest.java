@@ -93,12 +93,11 @@ public class MultipleConditionTest {
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
 
         RuleMatch ruleMatch = RuleMatch.from(matchedRules.get(0));
-        assertEquals(3, ruleMatch.getFacts().size());
-        assertEquals(Map.of("i", 0), ruleMatch.getFacts().get("first"));
-        assertEquals(Map.of("i", 1), ruleMatch.getFacts().get("second"));
-        assertEquals(Map.of("i", 2), ruleMatch.getFacts().get("third"));
+        assertEquals(3, ruleMatch.getFactsSize());
+        assertEquals(Map.of("i", 0), ruleMatch.getFact("first"));
+        assertEquals(Map.of("i", 1), ruleMatch.getFact("second"));
+        assertEquals(Map.of("i", 2), ruleMatch.getFact("third"));
 
         rulesExecutor.dispose();
     }
-
 }

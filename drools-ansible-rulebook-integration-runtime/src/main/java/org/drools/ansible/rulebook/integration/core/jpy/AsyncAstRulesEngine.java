@@ -1,6 +1,5 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
@@ -11,7 +10,6 @@ import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.json.JSONObject;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
@@ -56,13 +54,11 @@ public class AsyncAstRulesEngine {
     }
 
     public void assertFact(long sessionId, String serializedFact) {
-        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        rulesExecutorContainer.get(sessionId).processFacts(fact);
+        rulesExecutorContainer.get(sessionId).processFacts(serializedFact);
     }
 
     public void assertEvent(long sessionId, String serializedFact) {
-        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        rulesExecutorContainer.get(sessionId).processEvents(fact);
+        rulesExecutorContainer.get(sessionId).processEvents(serializedFact);
     }
 
     public String getFacts(long sessionId) {

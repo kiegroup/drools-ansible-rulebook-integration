@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.core.common.InternalFactHandle;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
@@ -78,8 +79,8 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     private static String matchToString(Match match) {
         Map<String, Object> metadata = match.getRule().getMetaData();
-        String ruleType = metadata.get(SYNTHETIC_RULE_TAG) != null ? "synthetic" : "effective";
-        return "Activation of " + ruleType + " rule \"" + match.getRule().getName() + "\" with facts: " + match.getObjects();
+        String ruleType = metadata.get(SYNTHETIC_RULE_TAG) != null ? " synthetic " : " effective ";
+        return "Activation of" + ruleType + RuleMatch.from(match);
     }
 
     private boolean isValidMatch(List<InternalFactHandle> fhs) {

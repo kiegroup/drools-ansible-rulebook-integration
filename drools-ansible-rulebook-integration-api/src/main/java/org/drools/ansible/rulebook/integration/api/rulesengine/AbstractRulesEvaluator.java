@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.drools.ansible.rulebook.integration.api.io.AstRuleMatch;
+import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.addOriginalMap;
 
 public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
@@ -202,7 +203,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     @Override
     public boolean retractFact(Map<String, Object> factMap) {
-        return rulesExecutorSession.deleteFact( factMap );
+        return rulesExecutorSession.deleteFact( addOriginalMap( factMap ) );
     }
 
     @Override
@@ -218,7 +219,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     protected List<Match> writeResponseOnChannel(List<Match> matches) {
         if (!matches.isEmpty()) { // skip empty result
-            byte[] bytes = channel.write(new Response(getSessionId(), AstRuleMatch.asList(matches)));
+            byte[] bytes = channel.write(new Response(getSessionId(), RuleMatch.asList(matches)));
             rulesExecutorSession.getSessionStats().registerAsyncResponse(bytes);
         }
         return matches;
