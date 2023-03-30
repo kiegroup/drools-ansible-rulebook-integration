@@ -11,12 +11,12 @@ import org.drools.ansible.rulebook.integration.api.rulesengine.RulesEvaluator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.core.facttemplates.Fact;
-import org.json.JSONObject;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.asFactMap;
 
 public class RulesExecutor {
 
@@ -56,27 +56,15 @@ public class RulesExecutor {
     }
 
     public CompletableFuture<Integer> executeFacts(String json) {
-        return executeFacts( new JSONObject(json).toMap() );
-    }
-
-    public CompletableFuture<Integer> executeFacts(Map<String, Object> factMap) {
-        return rulesEvaluator.executeFacts(factMap);
+        return rulesEvaluator.executeFacts(asFactMap(json));
     }
 
     public CompletableFuture<List<Match>> processFacts(String json) {
-        return processFacts( new JSONObject(json).toMap() );
-    }
-
-    public CompletableFuture<List<Match>> processFacts(Map<String, Object> factMap) {
-        return rulesEvaluator.processFacts(factMap);
+        return rulesEvaluator.processFacts(asFactMap(json));
     }
 
     public CompletableFuture<List<Match>> processEvents(String json) {
-        return processEvents( new JSONObject(json).toMap() );
-    }
-
-    public CompletableFuture<List<Match>> processEvents(Map<String, Object> factMap) {
-        return rulesEvaluator.processEvents(factMap);
+        return rulesEvaluator.processEvents(asFactMap(json));
     }
 
     public CompletableFuture<List<Match>> fire() {
@@ -84,19 +72,11 @@ public class RulesExecutor {
     }
 
     public CompletableFuture<List<Match>> processRetract(String json) {
-        return processRetract(new JSONObject(json).toMap());
-    }
-
-    public CompletableFuture<List<Match>> processRetract(Map<String, Object> json) {
-        return rulesEvaluator.processRetract(json);
+        return rulesEvaluator.processRetract(asFactMap(json));
     }
 
     public CompletableFuture<List<Match>> processRetractMatchingFacts(String json) {
-        return processRetractMatchingFacts(new JSONObject(json).toMap());
-    }
-
-    public CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json) {
-        return rulesEvaluator.processRetractMatchingFacts(json);
+        return rulesEvaluator.processRetractMatchingFacts(asFactMap(json));
     }
 
     public Collection<?> getAllFacts() {

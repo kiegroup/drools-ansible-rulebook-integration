@@ -147,9 +147,9 @@ public class LogicalOperatorsTest {
 
         RuleMatch ruleMatch = RuleMatch.from( matchedRules.get(0) );
         assertEquals( "R3", ruleMatch.getRuleName() );
-        assertEquals( 3, ruleMatch.getFacts().get("j") );
+        assertEquals( 3, ((Map) ruleMatch.getFact("m_3")).get("j") );
 
-        assertEquals( 4, ((Map) ((Map) ruleMatch.getFacts().get("sensu")).get("data")).get("i") );
+        assertEquals( 4, ((Map) ((Map) ((Map) ruleMatch.getFact("m_2")).get("sensu")).get("data")).get("i") );
 
         rulesExecutor.dispose();
     }

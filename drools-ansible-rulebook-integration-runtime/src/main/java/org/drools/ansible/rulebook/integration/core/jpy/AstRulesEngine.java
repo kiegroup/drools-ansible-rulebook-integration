@@ -2,7 +2,6 @@ package org.drools.ansible.rulebook.integration.core.jpy;
 
 import java.io.Closeable;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
@@ -12,9 +11,8 @@ import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
+import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.drools.ansible.rulebook.integration.api.io.AstRuleMatch;
-import org.json.JSONObject;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
@@ -52,24 +50,22 @@ public class AstRulesEngine implements Closeable {
 
     public String retractFact(long sessionId, String serializedFact) {
         List<Match> matches = rulesExecutorContainer.get(sessionId).processRetract(serializedFact).join();
-        return toJson( AstRuleMatch.asList(matches) );
+        return toJson( RuleMatch.asList(matches) );
     }
 
     public String retractMatchingFacts(long sessionId, String serializedFact) {
         List<Match> matches = rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact).join();
-        return toJson( AstRuleMatch.asList(matches) );
+        return toJson( RuleMatch.asList(matches) );
     }
 
     public String assertFact(long sessionId, String serializedFact) {
-        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processFacts(fact).join();
-        return toJson(AstRuleMatch.asList(matches));
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processFacts(serializedFact).join();
+        return toJson( RuleMatch.asList(matches) );
     }
 
     public String assertEvent(long sessionId, String serializedFact) {
-        Map<String, Object> fact = new JSONObject(serializedFact).toMap();
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processEvents(fact).join();
-        return toJson(AstRuleMatch.asList(matches));
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processEvents(serializedFact).join();
+        return toJson( RuleMatch.asList(matches) );
     }
 
     public String getFacts(long sessionId) {
@@ -89,7 +85,7 @@ public class AstRulesEngine implements Closeable {
      */
     public String advanceTime(long sessionId, long amount, String unit) {
         List<Match> matches = rulesExecutorContainer.get(sessionId).advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase())).join();
-        return toJson(AstRuleMatch.asList(matches));
+        return toJson( RuleMatch.asList(matches) );
     }
 
     public void shutdown() {
