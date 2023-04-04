@@ -33,7 +33,7 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
     @Test
     public void selectExpression() throws Exception {
         // Create MapCondition
-        LinkedHashMap<Object, Object> lhsValueMap = createLhsForEventField("levels");
+        LinkedHashMap<Object, Object> lhsValueMap = createEventField("levels");
         LinkedHashMap<Object, Object> rhsValueMap = createRhsWithOperatorAndValue("String", ">", "Integer", 25);
         LinkedHashMap<Object, Object> selectExpression = createSelectExpression(lhsValueMap, rhsValueMap);
         LinkedHashMap<Object, Object> rootMap = createAllCondition(selectExpression);
@@ -55,7 +55,7 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
     @Test
     public void selectNotExpression() throws Exception {
         // Create MapCondition
-        LinkedHashMap<Object, Object> lhsValueMap = createLhsForEventField("levels");
+        LinkedHashMap<Object, Object> lhsValueMap = createEventField("levels");
         LinkedHashMap<Object, Object> rhsValueMap = createRhsWithOperatorAndValue("String", ">", "Integer", 25);
         LinkedHashMap<Object, Object> selectNotExpression = createSelectNotExpression(lhsValueMap, rhsValueMap);
         LinkedHashMap<Object, Object> rootMap = createAllCondition(selectNotExpression);
@@ -67,17 +67,17 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
         Event event1 = createEvent("levels", 25);
         assertThat(predicate.test(event1)).isTrue();
 
-        Event event2 = createEvent("levels", 26);
+        Event event2 = createEvent("levels", 26, 30);
         assertThat(predicate.test(event2)).isFalse();
 
         Event event3 = createEvent("levels", 10, 25, 26);
-        assertThat(predicate.test(event2)).isFalse();
+        assertThat(predicate.test(event3)).isTrue();
     }
 
     @Test
     public void selectExpressionWithRegex() throws Exception {
         // Create MapCondition
-        LinkedHashMap<Object, Object> lhsValueMap = createLhsForEventField("addresses");
+        LinkedHashMap<Object, Object> lhsValueMap = createEventField("addresses");
         LinkedHashMap<Object, Object> rhsValueMap = createRhsWithOperatorAndValue("String", "regex", "String", "Main St");
         LinkedHashMap<Object, Object> selectExpression = createSelectExpression(lhsValueMap, rhsValueMap);
         LinkedHashMap<Object, Object> rootMap = createAllCondition(selectExpression);
@@ -96,7 +96,7 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
     @Test
     public void selectExpressionOnField() throws Exception {
         // Create MapCondition
-        LinkedHashMap<Object, Object> lhsValueMap = createLhsForEventField("my_list1");
+        LinkedHashMap<Object, Object> lhsValueMap = createEventField("my_list1");
         LinkedHashMap<Object, Object> rhsValueMap = createRhsWithOperatorAndValue("String", "==", "Event", "my_int1");
         LinkedHashMap<Object, Object> selectExpression = createSelectExpression(lhsValueMap, rhsValueMap);
         LinkedHashMap<Object, Object> rootMap = createAllCondition(selectExpression);
@@ -107,13 +107,13 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
 
         Map<String, Object> factMap1 = new HashMap<>();
         factMap1.put("my_int1", 3);
-        factMap1.put("my_list1", Arrays.asList(new Integer[]{1, 3, 7}));
+        factMap1.put("my_list1", Arrays.asList(1, 3, 7));
         Event event1 = createEvent(factMap1);
         assertThat(predicate.test(event1)).isTrue();
 
         Map<String, Object> factMap2 = new HashMap<>();
         factMap2.put("my_int1", 4);
-        factMap2.put("my_list1", Arrays.asList(new Integer[]{1, 3, 7}));
+        factMap2.put("my_list1", Arrays.asList(1, 3, 7));
         Event event2 = createEvent(factMap2);
         assertThat(predicate.test(event2)).isFalse();
     }
