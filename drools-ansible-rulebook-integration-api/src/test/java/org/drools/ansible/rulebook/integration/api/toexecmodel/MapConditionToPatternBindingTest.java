@@ -32,7 +32,7 @@ public class MapConditionToPatternBindingTest extends ToPatternTestBase {
     @Test
     public void assignmentExpression() throws Exception {
         // Create MapCondition
-        LinkedHashMap<Object, Object> lhsValueMap = createLhsForEventField("abc");
+        LinkedHashMap<Object, Object> lhsValueMap = createEventField("abc");
         LinkedHashMap<Object, Object> equalsExpression = createEqualsExpression(createSingleMap("Event", "i"), createSingleMap("Integer", 1));
         LinkedHashMap<Object, Object> assignmentExpression = createAssignmentExpression(lhsValueMap, equalsExpression);
         LinkedHashMap<Object, Object> rootMap = createAllCondition(assignmentExpression);
@@ -47,7 +47,7 @@ public class MapConditionToPatternBindingTest extends ToPatternTestBase {
     }
 
     @Test
-    public void defaultBinding_oneCondition() throws Exception {
+    public void defaultBinding_oneCondition() {
         // Create MapCondition
         LinkedHashMap<Object, Object> equalsExpression = createEqualsExpression(createSingleMap("Event", "i"), createSingleMap("Integer", 1));
         LinkedHashMap<Object, Object> rootMap = createAllCondition(equalsExpression);
@@ -62,7 +62,7 @@ public class MapConditionToPatternBindingTest extends ToPatternTestBase {
     }
 
     @Test
-    public void defaultBinding_multipleConditions() throws Exception {
+    public void defaultBinding_multipleConditions() {
         // Create MapCondition
         LinkedHashMap<Object, Object> equalsExpression1 = createEqualsExpression(createSingleMap("Event", "i"), createSingleMap("Integer", 1));
         LinkedHashMap<Object, Object> equalsExpression2 = createEqualsExpression(createSingleMap("Event", "i"), createSingleMap("Integer", 2));
