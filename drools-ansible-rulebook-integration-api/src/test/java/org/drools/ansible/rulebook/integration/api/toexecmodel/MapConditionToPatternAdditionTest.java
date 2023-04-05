@@ -32,7 +32,7 @@ public class MapConditionToPatternAdditionTest extends ToPatternTestBase {
     @Test
     public void additionExpression() throws Exception {
         // Create MapCondition
-        LinkedHashMap<Object, Object> lhsValueMap = createLhsForEventField("nested.i");
+        LinkedHashMap<Object, Object> lhsValueMap = createEventField("nested.i");
         LinkedHashMap<Object, Object> rhsValueMap = createAdditionExpression("Event", "nested.j", "Integer", 1);
         LinkedHashMap<Object, Object> equalsExpression = createEqualsExpression(lhsValueMap, rhsValueMap);
         LinkedHashMap<Object, Object> rootMap = createAllCondition(equalsExpression);
