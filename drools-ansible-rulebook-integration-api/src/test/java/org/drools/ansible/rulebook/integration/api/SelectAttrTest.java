@@ -437,4 +437,66 @@ public class SelectAttrTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testSelectAttrWithScientificNotation() {
+
+        String JSON1 =
+                "{\n" +
+                "    \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"r1\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"SelectAttrExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"people\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"key\": {\n" +
+                "                                        \"String\": \"person.age\"\n" +
+                "                                    },\n" +
+                "                                    \"operator\": {\n" +
+                "                                        \"String\": \"contains\"\n" +
+                "                                    },\n" +
+                "                                    \"value\": {\n" +
+                "                                        \"Integer\": 1.021e+3\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"echo\",\n" +
+                "                            \"action_args\": {\n" +
+                "                                \"message\": \"Has a person greater than 30\"\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"people\": [ { \"person\": { \"name\": \"Fred\", \"age\": 54 } }, " +
+                "{ \"person\": { \"name\": \"Barney\", \"age\": 45 } }, " +
+                "{ \"person\": { \"name\": \"Wilma\", \"age\": 23 } }, " +
+                "{ \"person\": { \"name\": \"Betty\", \"age\": 1021 } } ] }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"people\": [ { \"person\": { \"name\": \"Wilma\", \"age\": 23 } }, " +
+                "{ \"person\": { \"name\": \"Betty\", \"age\": 25 } } ] }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }

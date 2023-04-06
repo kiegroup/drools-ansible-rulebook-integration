@@ -1,7 +1,9 @@
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
 
@@ -52,5 +54,25 @@ public class Operators {
             }
             return false;
         }
+    }
+
+    static boolean areEqual(Object o1, Object o2) {
+        return o1 instanceof Number && o2 instanceof Number ? areNumericEqual((Number) o1, (Number) o2) : Objects.equals(o1, o2);
+    }
+
+    static <T, V> boolean areNumericEqual(Number n1, Number n2) {
+        return n1.getClass() != n2.getClass() ?
+                asBigDecimal(n1).equals(asBigDecimal(n2)) :
+                Objects.equals(n1, n2);
+    }
+
+    static int compare(Object o1, Object o2) {
+        return o1.getClass() != o2.getClass() && o1 instanceof Number && o2 instanceof Number ?
+                asBigDecimal(o1).compareTo(asBigDecimal(o2)) :
+                ((Comparable) o1).compareTo(o2);
+    }
+
+    static BigDecimal asBigDecimal(Object obj) {
+        return obj instanceof BigDecimal ? (BigDecimal) obj : BigDecimal.valueOf(((Number) obj).doubleValue());
     }
 }
