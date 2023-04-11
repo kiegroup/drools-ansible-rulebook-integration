@@ -61,4 +61,12 @@ public class ConditionParseUtil {
     public static boolean isEventOrFact(String key) {
         return key.equalsIgnoreCase("fact") || key.equalsIgnoreCase("facts") || key.equalsIgnoreCase("event") || key.equalsIgnoreCase("events");
     }
+
+    public static String mapToStringValue(Object rhsValue) {
+        Map<?,?> rhsMap = (Map<?,?>)rhsValue;
+        if (rhsMap.size() != 1) {
+            throw new UnsupportedOperationException("The map " + rhsMap + " must have exactly 1 entry");
+        }
+        return rhsMap.entrySet().iterator().next().getValue().toString().trim();
+    }
 }

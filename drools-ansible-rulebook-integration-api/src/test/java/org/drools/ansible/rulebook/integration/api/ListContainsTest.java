@@ -266,4 +266,63 @@ public class ListContainsTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testListContainsWithJoinCondition() {
+
+        String JSON1 =
+                "{\n" +
+                "        \"rules\": [\n" +
+                "        {\n" +
+                "            \"Rule\": {\n" +
+                "                \"name\": \"r1\",\n" +
+                "                \"condition\": {\n" +
+                "                    \"AllCondition\": [\n" +
+                "                        {\n" +
+                "                            \"EqualsExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"otherlist.name\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"String\": \"Delete\"\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        },\n" +
+                "                        {\n" +
+                "                            \"ListContainsItemExpression\": {\n" +
+                "                                \"lhs\": {\n" +
+                "                                    \"Event\": \"thirdlist.rnames\"\n" +
+                "                                },\n" +
+                "                                \"rhs\": {\n" +
+                "                                    \"Events\": \"m_0.otherlist.resource_name\"\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                },\n" +
+                "                \"actions\": [\n" +
+                "                    {\n" +
+                "                        \"Action\": {\n" +
+                "                            \"action\": \"debug\",\n" +
+                "                            \"action_args\": {}\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"enabled\": true\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"otherlist\": { \"name\": \"Delete\", \"resource_name\": \"fred\" } }" ).join();
+        assertEquals( 0, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processFacts( "{ \"thirdlist\": { \"rnames\": [ \"fred\", \"barney\" ] } }" ).join();
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "r1", matchedRules.get(0).getRule().getName() );
+
+        rulesExecutor.dispose();
+    }
 }
