@@ -20,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
-
 public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     protected static final Logger log = LoggerFactory.getLogger(AbstractRulesEvaluator.class);
@@ -128,7 +126,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     protected int internalExecuteFacts(Map<String, Object> factMap) {
-        insertFact( factMap, false );
+        rulesExecutorSession.insert( factMap, false );
         return rulesExecutorSession.fireAllRules();
     }
 
@@ -164,16 +162,8 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
                     .flatMap(map -> this.insertFacts(map, event).stream())
                     .collect(Collectors.toList());
         } else {
-            return Collections.singletonList( insertFact(factMap, event) );
+            return Collections.singletonList( rulesExecutorSession.insert(factMap, event) );
         }
-    }
-
-    private InternalFactHandle insertFact(Map<String, Object> factMap, boolean event) {
-        InternalFactHandle fh = (InternalFactHandle) rulesExecutorSession.insert( mapToFact(factMap, event) );
-        if (event) {
-            rulesExecutorSession.getSessionStats().registerProcessedEvent(fh);
-        }
-        return fh;
     }
 
     protected List<Match> getMatches(boolean event) {

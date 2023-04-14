@@ -1,10 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
@@ -12,6 +7,11 @@ import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.model.Model;
 import org.drools.model.impl.ModelImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RulesSet {
@@ -23,6 +23,9 @@ public class RulesSet {
     private List<RuleContainer> rules;
 
     private TimeAmount clockPeriod;
+
+    private static final TimeAmount DEFAULT_MAX_TTL = new TimeAmount(2, TimeUnit.HOURS);
+    private TimeAmount maxTtl = DEFAULT_MAX_TTL;
 
     private final RuleConfigurationOptions options = new RuleConfigurationOptions();
 
@@ -94,6 +97,18 @@ public class RulesSet {
 
     public TimeAmount getClockPeriod() {
         return clockPeriod;
+    }
+
+    public void setDefault_max_ttl(String clockPeriod) {
+        this.maxTtl = TimeAmount.parseTimeAmount(clockPeriod);
+    }
+
+    public void setDefaultMaxTtl(int amount, TimeUnit timeUnit) {
+        this.maxTtl = new TimeAmount(amount, timeUnit);
+    }
+
+    public TimeAmount getMaxTtl() {
+        return maxTtl;
     }
 
     public boolean hasTemporalConstraint() {
