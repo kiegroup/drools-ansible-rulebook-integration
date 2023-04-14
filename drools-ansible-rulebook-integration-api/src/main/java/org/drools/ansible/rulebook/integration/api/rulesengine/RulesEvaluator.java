@@ -1,13 +1,13 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
+import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
+import org.kie.api.runtime.rule.Match;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.kie.api.runtime.rule.Match;
 
 public interface RulesEvaluator {
 
@@ -27,11 +27,9 @@ public interface RulesEvaluator {
 
     CompletableFuture<List<Match>> fire();
 
-    CompletableFuture<List<Match>> processRetract(Map<String, Object> json);
-    CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json);
+    CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json, boolean allowPartialMatch, String... keysToExclude);
 
-    boolean retractFact(Map<String, Object> factMap);
-    int retractMatchingFacts(Map<String, Object> factMap);
+    int retractMatchingFacts(Map<String, Object> factMap, boolean allowPartialMatch, String... keysToExclude);
 
     void setRulesExecutorContainer(RulesExecutorContainer rulesExecutorContainer);
 

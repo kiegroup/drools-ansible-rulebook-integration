@@ -1,5 +1,10 @@
 package org.drools.ansible.rulebook.integration.test.jpy;
 
+import org.drools.ansible.rulebook.integration.api.JsonTest;
+import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
+import org.json.JSONObject;
+import org.junit.Test;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,17 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.ansible.rulebook.integration.api.JsonTest;
-import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.json.JSONObject;
-import org.junit.Test;
-
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 
 public class AstRulesEngineTest {
@@ -76,7 +72,7 @@ public class AstRulesEngineTest {
             engine.assertFact(id, "{\"j\": 42, \"y\": 2}");
             engine.assertFact(id, "{\"i\": 67, \"x\": 1}");
             String retractedFact = "{\"i\": 67}";
-            String r = engine.retractMatchingFacts(id, retractedFact);
+            String r = engine.retractMatchingFacts(id, retractedFact, true);
 
             List<Map<String, Map>> v = readValue(r);
 

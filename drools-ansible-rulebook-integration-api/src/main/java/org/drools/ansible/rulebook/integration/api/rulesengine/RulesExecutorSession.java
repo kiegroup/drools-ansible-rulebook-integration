@@ -1,11 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.KieSession;
@@ -13,7 +7,12 @@ import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.time.SessionPseudoClock;
 
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiPredicate;
+
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.ORIGINAL_MAP_FIELD;
 
 
 public class RulesExecutorSession {
@@ -56,21 +55,38 @@ public class RulesExecutorSession {
         kieSession.delete(fh);
     }
 
-    boolean deleteFact(Map<String, Object> toBeRetracted) {
-        return kieSession.getFactHandles(o -> o instanceof Fact && ((Fact) o).asMap().equals( toBeRetracted ))
-                .stream().findFirst()
-                .map( fh -> {
-                    kieSession.delete( fh );
-                    return true;
-                }).orElse(false);
-    }
+    int deleteAllMatchingFacts(Map<String, Object> toBeRetracted, boolean allowPartialMatch, String... keysToExclude) {
+        BiPredicate<Map<String, Object>, Map<String, Object>> factsComparator = allowPartialMatch ?
+                (wmFact, retract) -> wmFact.entrySet().containsAll(retract.entrySet()) :
+                (wmFact, retract) -> areFactsEqual(wmFact, retract, keysToExclude);
 
-    int deleteAllMatchingFacts(Map<String, Object> toBeRetracted) {
-        Set<Map.Entry<String, Object>> retractingEntrySet = toBeRetracted.entrySet();
-        Collection<FactHandle> fhs = kieSession.getFactHandles(o -> o instanceof Fact && ((Fact) o).asMap().entrySet().containsAll( retractingEntrySet ) );
+        Collection<FactHandle> fhs = kieSession.getFactHandles(o -> o instanceof Fact && factsComparator.test( ((Fact) o).asMap(), toBeRetracted ) );
         int result = fhs.size();
         new ArrayList<>( fhs ).forEach( kieSession::delete );
         return result;
+    }
+
+    private static boolean areFactsEqual(Map<String, Object> wmFact, Map<String, Object> retract, String... keysToExclude) {
+        Set<String> checkedKeys = new HashSet<>();
+        for (Map.Entry<String, Object> wmFactValue : wmFact.entrySet()) {
+            String wmFactKey = wmFactValue.getKey();
+            if (!isKeyToBeIgnored(wmFactKey, keysToExclude) && !wmFactValue.getValue().equals(retract.get(wmFactKey))) {
+                return false;
+            }
+            checkedKeys.add(wmFactKey);
+        }
+        return checkedKeys.size() == wmFact.size();
+    }
+
+    private static boolean isKeyToBeIgnored(String wmFactKey, String... keysToExclude) {
+        if (keysToExclude != null && keysToExclude.length > 0) {
+            for (String keyToExclude : keysToExclude) {
+                if (keyToExclude.equals(wmFactKey)) {
+                    return true;
+                }
+            }
+        }
+        return wmFactKey.equals(ORIGINAL_MAP_FIELD);
     }
 
     int fireAllRules() {
