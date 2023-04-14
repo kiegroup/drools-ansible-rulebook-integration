@@ -1,6 +1,8 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.core.common.InternalFactHandle;
+import org.drools.core.facttemplates.Event;
 import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
@@ -13,6 +15,7 @@ import java.util.function.BiPredicate;
 
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.ORIGINAL_MAP_FIELD;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
 
 
 public class RulesExecutorSession {
@@ -47,8 +50,16 @@ public class RulesExecutorSession {
         return kieSession.getObjects();
     }
 
-    FactHandle insert(Object object) {
-        return kieSession.insert(object);
+    InternalFactHandle insert(Map<String, Object> factMap, boolean event) {
+        Fact fact = mapToFact(factMap, event);
+        if (event) {
+            ((Event) fact).withExpiration(rulesSet.getMaxTtl().getAmount(), rulesSet.getMaxTtl().getTimeUnit());
+        }
+        InternalFactHandle fh = (InternalFactHandle) kieSession.insert(fact);
+        if (event) {
+            getSessionStats().registerProcessedEvent(fh);
+        }
+        return fh;
     }
 
     void delete(FactHandle fh) {

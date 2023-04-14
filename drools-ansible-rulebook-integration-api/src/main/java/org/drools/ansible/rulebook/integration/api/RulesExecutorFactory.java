@@ -1,8 +1,5 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
@@ -17,9 +14,10 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 
-import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.ASYNC_EVALUATION;
-import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.EVENTS_PROCESSING;
-import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.USE_PSEUDO_CLOCK;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.*;
 
 public class RulesExecutorFactory {
 
@@ -51,8 +49,7 @@ public class RulesExecutorFactory {
         RulesExecutor rulesExecutor = new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(ASYNC_EVALUATION));
         if (rulesSet.getClockPeriod() != null) {
             rulesExecutor.startAutomaticPseudoClock(rulesSet.getClockPeriod().getAmount(), rulesSet.getClockPeriod().getTimeUnit());
-        } else if (rulesSet.hasTemporalConstraint()) {
-            // if no automatic pseudo clock advance has been set but the rule set requires async execution anyway start a 1 second timer
+        } else {
             rulesExecutor.startAutomaticPseudoClock(DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS, TimeUnit.MILLISECONDS);
         }
         return rulesExecutor;
@@ -66,15 +63,9 @@ public class RulesExecutorFactory {
 
     private static KieSession createKieSession(RulesSet rulesSet, RulesExecutionController rulesExecutionController) {
         Model model = rulesSet.toExecModel(rulesExecutionController);
-        KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model,
-                KieBaseMutabilityOption.DISABLED,
-                rulesSet.hasOption(EVENTS_PROCESSING) ? EventProcessingOption.STREAM : EventProcessingOption.CLOUD );
-
-        if (rulesSet.hasOption(USE_PSEUDO_CLOCK) || rulesSet.hasTemporalConstraint()) {
-            KieSessionConfiguration conf = KieServices.get().newKieSessionConfiguration();
-            conf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
-            return kieBase.newKieSession(conf, null);
-        }
-        return kieBase.newKieSession();
+        KieBase kieBase = KieBaseBuilder.createKieBaseFromModel( model, KieBaseMutabilityOption.DISABLED, EventProcessingOption.STREAM );
+        KieSessionConfiguration conf = KieServices.get().newKieSessionConfiguration();
+        conf.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+        return kieBase.newKieSession(conf, null);
     }
 }
