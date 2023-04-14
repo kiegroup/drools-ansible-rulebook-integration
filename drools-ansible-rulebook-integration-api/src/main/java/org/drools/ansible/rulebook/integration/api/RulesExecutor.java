@@ -1,12 +1,5 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesEvaluator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
@@ -14,6 +7,13 @@ import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.asFactMap;
@@ -71,12 +71,8 @@ public class RulesExecutor {
         return rulesEvaluator.fire();
     }
 
-    public CompletableFuture<List<Match>> processRetract(String json) {
-        return rulesEvaluator.processRetract(asFactMap(json));
-    }
-
-    public CompletableFuture<List<Match>> processRetractMatchingFacts(String json) {
-        return rulesEvaluator.processRetractMatchingFacts(asFactMap(json));
+    public CompletableFuture<List<Match>> processRetractMatchingFacts(String json, boolean allowPartialMatch, String... keysToExclude) {
+        return rulesEvaluator.processRetractMatchingFacts(asFactMap(json), allowPartialMatch, keysToExclude);
     }
 
     public Collection<?> getAllFacts() {

@@ -1,19 +1,14 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
+import org.drools.ansible.rulebook.integration.api.*;
+import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.kie.api.runtime.rule.Match;
+
 import java.io.Closeable;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
-
-import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
-import org.drools.ansible.rulebook.integration.api.RuleFormat;
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
-import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
-import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
@@ -48,13 +43,14 @@ public class AstRulesEngine implements Closeable {
         return toJson( rulesExecutor.dispose() );
     }
 
+    @Deprecated
     public String retractFact(long sessionId, String serializedFact) {
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetract(serializedFact).join();
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact, false).join();
         return toJson( RuleMatch.asList(matches) );
     }
 
-    public String retractMatchingFacts(long sessionId, String serializedFact) {
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact).join();
+    public String retractMatchingFacts(long sessionId, String serializedFact, boolean allowPartialMatch, String... keysToExclude) {
+        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact, allowPartialMatch, keysToExclude).join();
         return toJson( RuleMatch.asList(matches) );
     }
 

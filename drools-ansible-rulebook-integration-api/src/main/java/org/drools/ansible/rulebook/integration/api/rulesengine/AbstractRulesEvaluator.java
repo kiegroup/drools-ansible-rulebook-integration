@@ -1,14 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
@@ -20,8 +11,16 @@ import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.addOriginalMap;
 
 public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
@@ -117,13 +116,8 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     @Override
-    public CompletableFuture<List<Match>> processRetract(Map<String, Object> json) {
-        return engineEvaluate(() -> retractFact(json) ? enrichMatchesWithFact( findMatchedRules(), json ) : Collections.emptyList());
-    }
-
-    @Override
-    public CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json) {
-        return engineEvaluate(() -> retractMatchingFacts(json) > 0 ? enrichMatchesWithFact( findMatchedRules(), json ) : Collections.emptyList());
+    public CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json, boolean allowPartialMatch, String... keysToExclude) {
+        return engineEvaluate(() -> retractMatchingFacts(json, allowPartialMatch, keysToExclude) > 0 ? enrichMatchesWithFact( findMatchedRules(), json ) : Collections.emptyList());
     }
 
     protected abstract CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier);
@@ -202,13 +196,8 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     @Override
-    public boolean retractFact(Map<String, Object> factMap) {
-        return rulesExecutorSession.deleteFact( addOriginalMap( factMap ) );
-    }
-
-    @Override
-    public int retractMatchingFacts(Map<String, Object> factMap) {
-        return rulesExecutorSession.deleteAllMatchingFacts( factMap );
+    public int retractMatchingFacts(Map<String, Object> factMap, boolean allowPartialMatch, String... keysToExclude) {
+        return rulesExecutorSession.deleteAllMatchingFacts( factMap, allowPartialMatch, keysToExclude );
     }
 
     protected <T> CompletableFuture<T> completeFutureOf(T value) {

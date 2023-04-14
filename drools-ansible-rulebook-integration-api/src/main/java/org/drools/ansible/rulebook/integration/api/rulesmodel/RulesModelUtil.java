@@ -1,10 +1,9 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.drools.core.facttemplates.Fact;
 import org.json.JSONObject;
+
+import java.util.Map;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
@@ -13,7 +12,7 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFa
 
 public class RulesModelUtil {
 
-    private static final String ORIGINAL_MAP_FIELD = "$_ORIGINAL_$_MAP_$_FIELD_$";
+    public static final String ORIGINAL_MAP_FIELD = "$_ORIGINAL_$_MAP_$_FIELD_$";
 
     private RulesModelUtil() { }
 
@@ -37,11 +36,6 @@ public class RulesModelUtil {
     public static Map<String, Object> factToMap(Fact fact) {
         Map<String, Object> map = (Map<String, Object>) fact.get(ORIGINAL_MAP_FIELD);
         return map != null ? map : fact.asMap();
-    }
-
-    public static Map<String, Object> addOriginalMap(Map<String, Object> factMap) {
-        factMap.put(ORIGINAL_MAP_FIELD, new HashMap<>(factMap));
-        return factMap;
     }
 
     public static Map<String, Object> removeOriginalMap(Map<String, Object> factMap) {

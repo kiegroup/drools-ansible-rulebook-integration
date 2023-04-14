@@ -1,15 +1,10 @@
 package org.drools.ansible.rulebook.integration.core.jpy;
 
+import org.drools.ansible.rulebook.integration.api.*;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
-
-import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
-import org.drools.ansible.rulebook.integration.api.RuleFormat;
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
-import org.drools.ansible.rulebook.integration.api.RulesExecutor;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.drools.ansible.rulebook.integration.api.RulesExecutorFactory;
-import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
@@ -45,12 +40,13 @@ public class AsyncAstRulesEngine {
         }
     }
 
+    @Deprecated
     public void retractFact(long sessionId, String serializedFact) {
-        rulesExecutorContainer.get(sessionId).processRetract(serializedFact);
+        rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact, false);
     }
 
-    public void retractMatchingFacts(long sessionId, String serializedFact) {
-        rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact);
+    public void retractMatchingFacts(long sessionId, String serializedFact, boolean allowPartialMatch, String... keysToExclude) {
+        rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact, allowPartialMatch, keysToExclude);
     }
 
     public void assertFact(long sessionId, String serializedFact) {

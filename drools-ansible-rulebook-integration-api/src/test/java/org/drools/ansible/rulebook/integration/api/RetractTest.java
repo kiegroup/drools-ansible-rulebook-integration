@@ -1,9 +1,9 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -104,7 +104,7 @@ public class RetractTest {
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_1", matchedRules.get(0).getRule().getName() );
 
-        matchedRules = rulesExecutor.processRetract( "{ \"msg\" : \"hello world\" }" ).join();
+        matchedRules = rulesExecutor.processRetractMatchingFacts( "{ \"msg\" : \"hello world\" }", false ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_2", matchedRules.get(0).getRule().getName() );
 
@@ -145,7 +145,7 @@ public class RetractTest {
         assertEquals( 3, matchedRules.size() );
         assertEquals( 3, rulesExecutor.getAllFacts().size() );
 
-        matchedRules = rulesExecutor.processRetract( "{ \"i\" : 1 }" ).join();
+        matchedRules = rulesExecutor.processRetractMatchingFacts( "{ \"i\" : 1 }", false ).join();
         assertEquals( 0, matchedRules.size() );
         assertEquals( 2, rulesExecutor.getAllFacts().size() );
 
@@ -186,9 +186,50 @@ public class RetractTest {
         assertEquals( 3, matchedRules.size() );
         assertEquals( 3, rulesExecutor.getAllFacts().size() );
 
-        matchedRules = rulesExecutor.processRetractMatchingFacts( "{ \"i\" : 1 }" ).join();
+        matchedRules = rulesExecutor.processRetractMatchingFacts( "{ \"i\" : 1 }", true ).join();
         assertEquals( 0, matchedRules.size() );
         assertEquals( 1, rulesExecutor.getAllFacts().size() );
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testRetractMatchingFactsIgnoringKeys() {
+        String JSON1 =
+                "{\n" +
+                "           \"rules\": [\n" +
+                "            {\n" +
+                "                \"Rule\": {\n" +
+                "                    \"condition\": {\n" +
+                "                        \"AllCondition\": [\n" +
+                "                            {\n" +
+                "                                \"GreaterThanExpression\": {\n" +
+                "                                    \"lhs\": {\n" +
+                "                                        \"Event\": \"i\"\n" +
+                "                                    },\n" +
+                "                                    \"rhs\": {\n" +
+                "                                        \"Integer\": 0\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        ]\n" +
+                "                    },\n" +
+                "                    \"enabled\": true,\n" +
+                "                    \"name\": null\n" +
+                "                }\n" +
+                "            }\n" +
+                "        ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"facts\" : [ { \"i\" : 1, \"x\" : 1, \"y\" : 1 }, { \"i\" : 1, \"j\" : 1 }, { \"i\" : 2, \"x\" : 1 } ] }" ).join();
+        assertEquals( 3, matchedRules.size() );
+        assertEquals( 3, rulesExecutor.getAllFacts().size() );
+
+        matchedRules = rulesExecutor.processRetractMatchingFacts( "{ \"i\" : 1 }", false, "x", "y" ).join();
+        assertEquals( 0, matchedRules.size() );
+        assertEquals( 2, rulesExecutor.getAllFacts().size() );
 
         rulesExecutor.dispose();
     }
