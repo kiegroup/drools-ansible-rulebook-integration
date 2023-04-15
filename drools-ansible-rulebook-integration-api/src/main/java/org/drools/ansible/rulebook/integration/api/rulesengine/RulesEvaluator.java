@@ -13,7 +13,7 @@ public interface RulesEvaluator {
 
     long getSessionId();
 
-    long rulesCount();
+    int rulesCount();
 
     Collection<?> getAllFacts();
 
@@ -35,6 +35,8 @@ public interface RulesEvaluator {
 
     void startAutomaticPseudoClock(long period, TimeUnit unit);
     long getAutomaticPseudoClockPeriod();
+
+    SessionStats getSessionStats();
 
     SessionStats dispose();
 

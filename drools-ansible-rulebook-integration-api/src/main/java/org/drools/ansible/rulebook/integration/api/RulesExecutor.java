@@ -44,6 +44,10 @@ public class RulesExecutor {
         return rulesEvaluator.getSessionId();
     }
 
+    public SessionStats getSessionStats() {
+        return rulesEvaluator.getSessionStats();
+
+    }
     public SessionStats dispose() {
         if (log.isInfoEnabled()) {
             log.info("Disposing session with id: " + getId());

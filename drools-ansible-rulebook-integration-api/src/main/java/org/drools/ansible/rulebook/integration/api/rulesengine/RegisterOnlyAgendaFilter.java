@@ -1,13 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.core.common.InternalFactHandle;
 import org.kie.api.runtime.rule.AgendaFilter;
@@ -15,6 +7,14 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
@@ -58,12 +58,12 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
             }
         }
 
-        rulesExecutorSession.getSessionStats().registerMatch(match);
+        rulesExecutorSession.registerMatch(match);
         return validMatch;
     }
 
     public List<Match> finalizeAndGetResults() {
-        rulesExecutorSession.getSessionStats().registerMatchedEvents(eventsToBeDeleted);
+        rulesExecutorSession.registerMatchedEvents(eventsToBeDeleted);
         for (FactHandle toBeDeleted : eventsToBeDeleted) {
             rulesExecutorSession.delete(toBeDeleted);
         }

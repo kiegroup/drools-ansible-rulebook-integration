@@ -67,7 +67,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     @Override
-    public long rulesCount() {
+    public int rulesCount() {
         return rulesExecutorSession.rulesCount();
     }
 
@@ -141,6 +141,11 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return rulesExecutorSession.dispose();
     }
 
+    @Override
+    public SessionStats getSessionStats() {
+        return rulesExecutorSession.getSessionStats();
+    }
+
     protected List<Match> process(Map<String, Object> factMap, boolean event) {
         Collection<InternalFactHandle> fhs = insertFacts(factMap, event);
         List<Match> matches = getMatches(event);
@@ -199,7 +204,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     protected List<Match> writeResponseOnChannel(List<Match> matches) {
         if (!matches.isEmpty()) { // skip empty result
             byte[] bytes = channel.write(new Response(getSessionId(), RuleMatch.asList(matches)));
-            rulesExecutorSession.getSessionStats().registerAsyncResponse(bytes);
+            rulesExecutorSession.registerAsyncResponse(bytes);
         }
         return matches;
     }

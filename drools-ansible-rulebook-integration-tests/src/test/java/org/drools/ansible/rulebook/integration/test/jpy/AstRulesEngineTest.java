@@ -28,10 +28,12 @@ public class AstRulesEngineTest {
             String result = engine.assertFact(sessionId, "{ \"sensu\": { \"data\": { \"i\":1 } } }");
             assertNotNull(result);
         } finally {
-            String sessionStats = engine.dispose(sessionId);
+            String sessionStats = engine.sessionStats(sessionId);
             Map<String, Object> statsMap = new JSONObject(sessionStats).toMap();
             assertEquals(4, statsMap.get("numberOfRules"));
+            assertEquals(0, statsMap.get("numberOfDisabledRules"));
             assertEquals(1, statsMap.get("rulesTriggered"));
+            engine.dispose(sessionId);
         }
     }
 
