@@ -29,6 +29,9 @@ public class RulesSet {
 
     private final RuleConfigurationOptions options = new RuleConfigurationOptions();
 
+    private int enabledRulesNumber;
+    private int disabledRulesNumber;
+
     public String getName() {
         return name;
     }
@@ -47,13 +50,28 @@ public class RulesSet {
 
     public Model toExecModel(RulesExecutionController rulesExecutionController) {
         AtomicInteger ruleCounter = new AtomicInteger(0);
+        AtomicInteger enabledRules = new AtomicInteger(0);
 
         ModelImpl model = new ModelImpl();
         rules.stream().map(RuleContainer::getRule)
+                .filter(Rule::isEnabled)
                 .map(r -> r.withOptions(options))
+                .peek(r -> enabledRules.incrementAndGet())
                 .flatMap(rule -> rule.toExecModelRules(this, rulesExecutionController, ruleCounter).stream())
                 .forEach(model::addRule);
+
+        enabledRulesNumber = enabledRules.get();
+        disabledRulesNumber = rules.size() - enabledRulesNumber;
+
         return model;
+    }
+
+    public int getEnabledRulesNumber() {
+        return enabledRulesNumber;
+    }
+
+    public int getDisabledRulesNumber() {
+        return disabledRulesNumber;
     }
 
     public void setRules(List<RuleContainer> rules) {

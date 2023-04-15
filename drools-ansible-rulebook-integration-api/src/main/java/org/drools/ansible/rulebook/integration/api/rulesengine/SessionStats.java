@@ -1,8 +1,8 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import java.time.Instant;
-
 import org.drools.core.facttemplates.Event;
+
+import java.time.Instant;
 
 import static java.util.function.Predicate.not;
 
@@ -11,6 +11,7 @@ public class SessionStats {
     private final String end;
 
     private final int numberOfRules;
+    private final int numberOfDisabledRules;
     private final int rulesTriggered;
 
     private final int eventsProcessed;
@@ -29,7 +30,8 @@ public class SessionStats {
     public SessionStats(SessionStatsCollector stats, RulesExecutorSession session) {
         this.start = stats.getStart().toString();
         this.end = Instant.now().toString();
-        this.numberOfRules = (int) session.rulesCount();
+        this.numberOfRules = session.rulesCount();
+        this.numberOfDisabledRules = session.disabledRulesCount();
         this.rulesTriggered = stats.getRulesTriggered();
         this.eventsProcessed = stats.getTotalEvents();
         this.eventsMatched = stats.getMatchedEvents();
@@ -42,12 +44,13 @@ public class SessionStats {
 
     }
 
-    public SessionStats(String start, String end, int numberOfRules, int rulesTriggered, int eventsProcessed,
+    public SessionStats(String start, String end, int numberOfRules, int numberOfDisabledRules, int rulesTriggered, int eventsProcessed,
                         int eventsMatched, int eventsSuppressed, int permanentStorageSize, int asyncResponses, int bytesSentOnAsync,
                         long sessionId, String ruleSetName) {
         this.start = start;
         this.end = end;
         this.numberOfRules = numberOfRules;
+        this.numberOfDisabledRules = numberOfDisabledRules;
         this.rulesTriggered = rulesTriggered;
         this.eventsProcessed = eventsProcessed;
         this.eventsMatched = eventsMatched;
@@ -85,6 +88,10 @@ public class SessionStats {
 
     public int getNumberOfRules() {
         return numberOfRules;
+    }
+
+    public int getNumberOfDisabledRules() {
+        return numberOfDisabledRules;
     }
 
     public int getRulesTriggered() {
@@ -128,6 +135,7 @@ public class SessionStats {
                 stats1.getStart().compareTo(stats2.getStart()) < 0 ? stats1.getStart() : stats2.getStart(),
                 stats1.getEnd().compareTo(stats2.getEnd()) > 0 ? stats1.getStart() : stats2.getStart(),
                 stats1.numberOfRules + stats2.numberOfRules,
+                stats1.numberOfDisabledRules + stats2.numberOfDisabledRules,
                 stats1.rulesTriggered + stats2.rulesTriggered,
                 stats1.eventsProcessed + stats2.eventsProcessed,
                 stats1.eventsMatched + stats2.eventsMatched,

@@ -7,13 +7,13 @@ import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.runtime.rule.Match;
 import org.kie.api.time.SessionPseudoClock;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
 
-import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.ORIGINAL_MAP_FIELD;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
 
@@ -57,7 +57,7 @@ public class RulesExecutorSession {
         }
         InternalFactHandle fh = (InternalFactHandle) kieSession.insert(fact);
         if (event) {
-            getSessionStats().registerProcessedEvent(fh);
+            sessionStatsCollector.registerProcessedEvent(fh);
         }
         return fh;
     }
@@ -108,21 +108,34 @@ public class RulesExecutorSession {
         return kieSession.fireAllRules(agendaFilter);
     }
 
-    public SessionStatsCollector getSessionStats() {
-        return sessionStatsCollector;
-    }
-
     SessionStats dispose() {
-        SessionStats stats = sessionStatsCollector.generateStats(this);
+        SessionStats stats = getSessionStats();
         kieSession.dispose();
         return stats;
     }
 
-    long rulesCount() {
-        return kieSession.getKieBase().getKiePackages().stream()
-                .flatMap(p -> p.getRules().stream())
-                .filter( r -> r.getMetaData().get(SYNTHETIC_RULE_TAG) == null )
-                .count();
+    SessionStats getSessionStats() {
+        return sessionStatsCollector.generateStats(this);
+    }
+
+    public void registerMatch(Match match) {
+        sessionStatsCollector.registerMatch(match);
+    }
+
+    public void registerMatchedEvents(List<FactHandle> events) {
+        sessionStatsCollector.registerMatchedEvents(events);
+    }
+
+    public void registerAsyncResponse(byte[] bytes) {
+        sessionStatsCollector.registerAsyncResponse(bytes);
+    }
+
+    int rulesCount() {
+        return rulesSet.getEnabledRulesNumber();
+    }
+
+    int disabledRulesCount() {
+        return rulesSet.getDisabledRulesNumber();
     }
 
     void advanceTime( long amount, TimeUnit unit ) {

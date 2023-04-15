@@ -33,11 +33,14 @@ public class AsyncAstRulesEngine {
         return executor.getId();
     }
 
-    public void dispose(long sessionId) {
+    public String dispose(long sessionId) {
         RulesExecutor rulesExecutor = rulesExecutorContainer.get(sessionId);
-        if (rulesExecutor != null) { // ignore if already disposed
-            rulesExecutor.dispose();
-        }
+        return rulesExecutor == null ? null : toJson( rulesExecutor.dispose() );
+    }
+
+    public String sessionStats(long sessionId) {
+        RulesExecutor rulesExecutor = rulesExecutorContainer.get(sessionId);
+        return rulesExecutor == null ? null : toJson( rulesExecutor.getSessionStats() );
     }
 
     @Deprecated
