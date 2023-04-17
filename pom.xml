@@ -32,7 +32,7 @@
     <version.junit>4.13.2</version.junit>
     <version.assertj>3.20.2</version.assertj>
     <version.jackson>2.13.1</version.jackson>
-    <version.json>20211205</version.json>
+    <version.json>20230227</version.json>
     <version.surefire.plugin>3.0.0-M5</version.surefire.plugin>
     <version.jmh>1.35</version.jmh>
   </properties>
