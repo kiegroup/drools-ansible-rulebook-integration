@@ -29,8 +29,6 @@ public interface RulesEvaluator {
 
     CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json, boolean allowPartialMatch, String... keysToExclude);
 
-    int retractMatchingFacts(Map<String, Object> factMap, boolean allowPartialMatch, String... keysToExclude);
-
     void setRulesExecutorContainer(RulesExecutorContainer rulesExecutorContainer);
 
     void startAutomaticPseudoClock(long period, TimeUnit unit);

@@ -13,6 +13,7 @@ import org.kie.api.time.SessionPseudoClock;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.ORIGINAL_MAP_FIELD;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.mapToFact;
@@ -66,15 +67,13 @@ public class RulesExecutorSession {
         kieSession.delete(fh);
     }
 
-    int deleteAllMatchingFacts(Map<String, Object> toBeRetracted, boolean allowPartialMatch, String... keysToExclude) {
+    List<InternalFactHandle> deleteAllMatchingFacts(Map<String, Object> toBeRetracted, boolean allowPartialMatch, String... keysToExclude) {
         BiPredicate<Map<String, Object>, Map<String, Object>> factsComparator = allowPartialMatch ?
                 (wmFact, retract) -> wmFact.entrySet().containsAll(retract.entrySet()) :
                 (wmFact, retract) -> areFactsEqual(wmFact, retract, keysToExclude);
 
         Collection<FactHandle> fhs = kieSession.getFactHandles(o -> o instanceof Fact && factsComparator.test( ((Fact) o).asMap(), toBeRetracted ) );
-        int result = fhs.size();
-        new ArrayList<>( fhs ).forEach( kieSession::delete );
-        return result;
+        return new ArrayList<>( fhs ).stream().peek( kieSession::delete ).map( InternalFactHandle.class::cast ).collect(Collectors.toList());
     }
 
     private static boolean areFactsEqual(Map<String, Object> wmFact, Map<String, Object> retract, String... keysToExclude) {

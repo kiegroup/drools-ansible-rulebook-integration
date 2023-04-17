@@ -47,20 +47,28 @@ public class AstRulesEngineTest {
     }
 
     @Test
-    public void testRetractFact() throws IOException {
+    public void testRetractFactFullMatch() throws IOException {
         try (AstRulesEngine engine = new AstRulesEngine();
              InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
             String rules = new String(s.readAllBytes());
 
             long id = engine.createRuleset(rules);
-            engine.assertFact(id, "{\"j\": 42}");
-            engine.assertFact(id, "{\"i\": 67}");
+            String fact1 = "{\"j\": 42}";
+            engine.assertFact(id, fact1);
+            String fact2 = "{\"i\": 67}";
+            engine.assertFact(id, fact2);
             String retractedFact = "{\"i\": 67}";
-            String r = engine.retractFact(id, retractedFact);
 
-            List<Map<String, Map>> v = readValue(r);
+            String facts = engine.getFacts(id);
+            List<Map<String, Object>> factList = readValue(facts);
+            assertEquals(1, factList.size());
+            assertEquals(factList.get(0), new JSONObject(fact2).toMap());
 
-            assertEquals(v.get(0).get("r_0").get("m"), new JSONObject(retractedFact).toMap());
+            String r = engine.retractMatchingFacts(id, retractedFact, false);
+
+            List<Map<String, Object>> v = readValue(r);
+            assertEquals(1, v.size());
+            assertEquals(((Map) v.get(0).get("r_0")).get("m"), new JSONObject(fact2).toMap());
         }
     }
 
@@ -71,14 +79,16 @@ public class AstRulesEngineTest {
             String rules = new String(s.readAllBytes());
 
             long id = engine.createRuleset(rules);
-            engine.assertFact(id, "{\"j\": 42, \"y\": 2}");
-            engine.assertFact(id, "{\"i\": 67, \"x\": 1}");
+            String fact1 = "{\"j\": 42, \"y\": 2}";
+            engine.assertFact(id, fact1);
+            String fact2 = "{\"i\": 67, \"x\": 1}";
+            engine.assertFact(id, fact2);
             String retractedFact = "{\"i\": 67}";
             String r = engine.retractMatchingFacts(id, retractedFact, true);
 
-            List<Map<String, Map>> v = readValue(r);
+            List<Map<String, Object>> v = readValue(r);
 
-            assertEquals(v.get(0).get("r_0").get("m"), new JSONObject(retractedFact).toMap());
+            assertEquals(((Map) v.get(0).get("r_0")).get("m"), new JSONObject(fact2).toMap());
         }
     }
 
@@ -128,7 +138,7 @@ public class AstRulesEngineTest {
                 engine.assertFact(id, "{\"j\": 42}");
                 String r = engine.advanceTime(id, 3, "SECONDS");
 
-                List<Map<String, Map>> v = readValue(r);
+                List<Map<String, Object>> v = readValue(r);
                 assertNotNull(v.get(0).get("r1"));
 
                 int l = bufferedInputStream.readInt();
@@ -314,8 +324,8 @@ public class AstRulesEngineTest {
 
             assertTrue(result.contains("template.openshift.io/template-instance-owner"));
 
-            List<Map<String, Map>> v = readValue(result);
-            assertEquals(((Map) v.get(0).get("Create Snapshot").get("m")).get("type"), "MODIFIED");
+            List<Map<String, Object>> v = readValue(result);
+            assertEquals(((Map) ((Map) v.get(0).get("Create Snapshot")).get("m")).get("type"), "MODIFIED");
         }
     }
 }

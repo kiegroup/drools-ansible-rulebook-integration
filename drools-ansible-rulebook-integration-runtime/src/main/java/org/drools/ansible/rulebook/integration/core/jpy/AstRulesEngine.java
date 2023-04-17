@@ -3,12 +3,14 @@ package org.drools.ansible.rulebook.integration.core.jpy;
 import org.drools.ansible.rulebook.integration.api.*;
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
 import org.kie.api.runtime.rule.Match;
 
 import java.io.Closeable;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
@@ -35,43 +37,31 @@ public class AstRulesEngine implements Closeable {
         return executor.getId();
     }
 
-    public String dispose(long sessionId) {
-        RulesExecutor rulesExecutor = rulesExecutorContainer.get(sessionId);
-        return rulesExecutor == null ? null : toJson( rulesExecutor.dispose() );
-    }
-
     public String sessionStats(long sessionId) {
         RulesExecutor rulesExecutor = rulesExecutorContainer.get(sessionId);
         return rulesExecutor == null ? null : toJson( rulesExecutor.getSessionStats() );
     }
 
+    public String dispose(long sessionId) {
+        RulesExecutor rulesExecutor = rulesExecutorContainer.get(sessionId);
+        return rulesExecutor == null ? null : toJson( rulesExecutor.dispose() );
+    }
+
     @Deprecated
     public String retractFact(long sessionId, String serializedFact) {
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact, false).join();
-        return toJson( RuleMatch.asList(matches) );
+        return matchesToJson( rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact, false).join() );
     }
 
     public String retractMatchingFacts(long sessionId, String serializedFact, boolean allowPartialMatch, String... keysToExclude) {
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact, allowPartialMatch, keysToExclude).join();
-        return toJson( RuleMatch.asList(matches) );
+        return matchesToJson( rulesExecutorContainer.get(sessionId).processRetractMatchingFacts(serializedFact, allowPartialMatch, keysToExclude).join() );
     }
 
     public String assertFact(long sessionId, String serializedFact) {
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processFacts(serializedFact).join();
-        return toJson( RuleMatch.asList(matches) );
+        return matchesToJson( rulesExecutorContainer.get(sessionId).processFacts(serializedFact).join() );
     }
 
     public String assertEvent(long sessionId, String serializedFact) {
-        List<Match> matches = rulesExecutorContainer.get(sessionId).processEvents(serializedFact).join();
-        return toJson( RuleMatch.asList(matches) );
-    }
-
-    public String getFacts(long sessionId) {
-        RulesExecutor executor = rulesExecutorContainer.get(sessionId);
-        if (executor == null) {
-            throw new NoSuchElementException("No such session id: " + sessionId + ". " + "Was it disposed?");
-        }
-        return toJson(executor.getAllFactsAsMap());
+        return matchesToJson( rulesExecutorContainer.get(sessionId).processEvents(serializedFact).join() );
     }
 
     /**
@@ -82,8 +72,19 @@ public class AstRulesEngine implements Closeable {
      * @return the events that fired
      */
     public String advanceTime(long sessionId, long amount, String unit) {
-        List<Match> matches = rulesExecutorContainer.get(sessionId).advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase())).join();
-        return toJson( RuleMatch.asList(matches) );
+        return matchesToJson( rulesExecutorContainer.get(sessionId).advanceTime(amount, TimeUnit.valueOf(unit.toUpperCase())).join() );
+    }
+
+    private static String matchesToJson(List<Match> matches) {
+        return toJson(RuleMatch.asList(matches));
+    }
+
+    public String getFacts(long sessionId) {
+        RulesExecutor executor = rulesExecutorContainer.get(sessionId);
+        if (executor == null) {
+            throw new NoSuchElementException("No such session id: " + sessionId + ". " + "Was it disposed?");
+        }
+        return toJson(executor.getAllFactsAsMap().stream().map(RulesModelUtil::factToMap).collect(Collectors.toList()));
     }
 
     public void shutdown() {
