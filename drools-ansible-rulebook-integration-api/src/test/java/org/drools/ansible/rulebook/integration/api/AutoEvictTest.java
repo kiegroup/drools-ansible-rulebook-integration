@@ -202,7 +202,7 @@ public class AutoEvictTest {
                 "         }\n" +
                 "      }\n" +
                 "   ],\n" +
-                "   \"default_max_ttl\":\"10 hours\"\n" +
+                "   \"default_events_ttl\":\"10 hours\"\n" +
                 "}";
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
