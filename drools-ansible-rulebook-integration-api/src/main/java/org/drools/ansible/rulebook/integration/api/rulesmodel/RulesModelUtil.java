@@ -33,14 +33,19 @@ public class RulesModelUtil {
         }
     }
 
-    public static Map<String, Object> factToMap(Fact fact) {
-        Map<String, Object> map = (Map<String, Object>) fact.get(ORIGINAL_MAP_FIELD);
-        return map != null ? map : fact.asMap();
+    public static Object factToMap(Object fact) {
+        if (fact instanceof Fact) {
+            return factToMap(((Fact) fact).asMap());
+        }
+        if (fact instanceof Map) {
+            return factToMap(((Map) fact));
+        }
+        return fact;
     }
 
-    public static Map<String, Object> removeOriginalMap(Map<String, Object> factMap) {
-        factMap.remove(ORIGINAL_MAP_FIELD);
-        return factMap;
+    private static Map<String, Object> factToMap(Map<String, Object> factMap) {
+        Map<String, Object> map = (Map<String, Object>) factMap.get(ORIGINAL_MAP_FIELD);
+        return map != null ? map : factMap;
     }
 
     public static Map<String, Object> asFactMap(String json) {

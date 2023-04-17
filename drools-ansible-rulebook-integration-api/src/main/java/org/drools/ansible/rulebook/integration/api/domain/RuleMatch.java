@@ -1,16 +1,14 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
+import org.kie.api.runtime.rule.Match;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.drools.core.facttemplates.Fact;
-import org.kie.api.runtime.rule.Match;
-
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.factToMap;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.removeOriginalMap;
 
 public class RuleMatch {
 
@@ -41,14 +39,7 @@ public class RuleMatch {
     private static Map<String, Object> matchToMap(Match match) {
         Map<String, Object> facts = new HashMap<>();
         for (String decl : match.getDeclarationIds()) {
-            Object value = match.getDeclarationValue(decl);
-            if (value instanceof Fact) {
-                facts.put(decl, factToMap( (Fact) value ) );
-            } else if (value instanceof Map) {
-                facts.put(decl, removeOriginalMap( (Map) value ));
-            } else {
-                facts.put(decl, value);
-            }
+            facts.put(decl, factToMap( match.getDeclarationValue(decl) ) );
         }
         return facts;
     }

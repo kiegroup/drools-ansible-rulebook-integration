@@ -115,7 +115,20 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     @Override
     public CompletableFuture<List<Match>> processRetractMatchingFacts(Map<String, Object> json, boolean allowPartialMatch, String... keysToExclude) {
-        return engineEvaluate(() -> retractMatchingFacts(json, allowPartialMatch, keysToExclude) > 0 ? enrichMatchesWithFact( findMatchedRules(), json ) : Collections.emptyList());
+        return engineEvaluate(() -> retractMatchingFacts(json, allowPartialMatch, keysToExclude));
+    }
+
+    private List<Match> retractMatchingFacts(Map<String, Object> json, boolean allowPartialMatch, String[] keysToExclude) {
+        List<InternalFactHandle> fhs = rulesExecutorSession.deleteAllMatchingFacts(json, allowPartialMatch, keysToExclude);
+        if (fhs.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Match> matches = findMatchedRules();
+        for (int i = 0; i < matches.size(); i++) {
+            Map<String, Object> jsonFact = ((Fact) fhs.get(matches.size() == fhs.size() ? i : 0).getObject()).asMap();
+            matches.set(i, enrichMatchWithFact(matches.get(i), jsonFact));
+        }
+        return matches;
     }
 
     protected abstract CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier);
@@ -186,13 +199,8 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return registerOnlyAgendaFilter.finalizeAndGetResults();
     }
 
-    private List<Match> enrichMatchesWithFact(List<Match> matches, Map<String, Object> json) {
-        return matches.stream().map(FullMatchDecorator::new).map(m -> m.withBoundObject("m", json)).collect(Collectors.toList());
-    }
-
-    @Override
-    public int retractMatchingFacts(Map<String, Object> factMap, boolean allowPartialMatch, String... keysToExclude) {
-        return rulesExecutorSession.deleteAllMatchingFacts( factMap, allowPartialMatch, keysToExclude );
+    private Match enrichMatchWithFact(Match match, Map<String, Object> jsonFact) {
+        return new FullMatchDecorator(match).withBoundObject("m", jsonFact);
     }
 
     protected <T> CompletableFuture<T> completeFutureOf(T value) {
