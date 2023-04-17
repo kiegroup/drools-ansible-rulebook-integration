@@ -24,8 +24,8 @@ public class RulesSet {
 
     private TimeAmount clockPeriod;
 
-    private static final TimeAmount DEFAULT_MAX_TTL = new TimeAmount(2, TimeUnit.HOURS);
-    private TimeAmount maxTtl = DEFAULT_MAX_TTL;
+    private static final TimeAmount DEFAULT_EVENTS_TTL = new TimeAmount(2, TimeUnit.HOURS);
+    private TimeAmount eventsTtl = DEFAULT_EVENTS_TTL;
 
     private final RuleConfigurationOptions options = new RuleConfigurationOptions();
 
@@ -117,16 +117,16 @@ public class RulesSet {
         return clockPeriod;
     }
 
-    public void setDefault_max_ttl(String clockPeriod) {
-        this.maxTtl = TimeAmount.parseTimeAmount(clockPeriod);
+    public void setDefault_events_ttl(String clockPeriod) {
+        this.eventsTtl = TimeAmount.parseTimeAmount(clockPeriod);
     }
 
-    public void setDefaultMaxTtl(int amount, TimeUnit timeUnit) {
-        this.maxTtl = new TimeAmount(amount, timeUnit);
+    public void setDefaultEventsTtl(int amount, TimeUnit timeUnit) {
+        this.eventsTtl = new TimeAmount(amount, timeUnit);
     }
 
-    public TimeAmount getMaxTtl() {
-        return maxTtl;
+    public TimeAmount getEventsTtl() {
+        return eventsTtl;
     }
 
     public boolean hasTemporalConstraint() {

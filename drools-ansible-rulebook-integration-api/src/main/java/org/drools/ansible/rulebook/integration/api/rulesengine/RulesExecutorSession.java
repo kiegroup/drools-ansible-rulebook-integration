@@ -53,7 +53,7 @@ public class RulesExecutorSession {
     InternalFactHandle insert(Map<String, Object> factMap, boolean event) {
         Fact fact = mapToFact(factMap, event);
         if (event) {
-            ((Event) fact).withExpiration(rulesSet.getMaxTtl().getAmount(), rulesSet.getMaxTtl().getTimeUnit());
+            ((Event) fact).withExpiration(rulesSet.getEventsTtl().getAmount(), rulesSet.getEventsTtl().getTimeUnit());
         }
         InternalFactHandle fh = (InternalFactHandle) kieSession.insert(fact);
         if (event) {
