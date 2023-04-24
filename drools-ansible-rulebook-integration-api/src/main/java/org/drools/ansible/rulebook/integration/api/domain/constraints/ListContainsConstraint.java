@@ -5,7 +5,7 @@ import java.util.function.BiPredicate;
 
 import org.drools.model.ConstraintOperator;
 
-import static org.drools.ansible.rulebook.integration.api.domain.constraints.Operators.areEqual;
+import static org.drools.model.util.OperatorUtils.areEqual;
 
 public enum ListContainsConstraint implements ConstraintOperator {
 

@@ -16,6 +16,7 @@
 
 package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
@@ -44,6 +45,31 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
 
         Event event2 = createIJEvent(2, 2);
         assertThat(predicate.test(event2)).isTrue();
+    }
+
+    @Test
+    public void equalsExpression_BigDecimalDifferentScale() throws Exception {
+        // Create MapCondition
+        LinkedHashMap<Object, Object> lhsValueMap = createEventField("i");
+        LinkedHashMap<Object, Object> rhsValueMap = createSingleMap("Integer", 1.0); // actually, this will be BigDecimal("1.0")
+        LinkedHashMap<Object, Object> equalsExpression = createEqualsExpression(lhsValueMap, rhsValueMap);
+        LinkedHashMap<Object, Object> rootMap = createAllCondition(equalsExpression);
+        MapCondition mapCondition = new MapCondition(rootMap);
+
+        // toPattern and extract its predicate
+        Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
+
+        Event event1 = createIEvent(0);
+        assertThat(predicate.test(event1)).isFalse();
+
+        Event event2 = createIEvent(1);
+        assertThat(predicate.test(event2)).isTrue();
+
+        Event event3 = createIEvent(new BigDecimal("1.0"));
+        assertThat(predicate.test(event3)).isTrue();
+
+        Event event4 = createIEvent(new BigDecimal("1.00")); // different scale
+        assertThat(predicate.test(event4)).isTrue();
     }
 
     @Test

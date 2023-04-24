@@ -664,7 +664,7 @@ public class LogicalOperatorsTest {
                 "                                            \"Event\": \"i\"\n" +
                 "                                        },\n" +
                 "                                        \"rhs\": {\n" +
-                "                                            \"Float\": 3.0\n" +
+                "                                            \"Float\": 3.0\n" + // 3.0 becomes BigDecimal("3.0") by ConditionParseUtil.toJsonValue()
                 "                                        }\n" +
                 "                                    }\n" +
                 "                                }\n" +
@@ -689,6 +689,9 @@ public class LogicalOperatorsTest {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\":3, \"action\":\"go\" }" ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        matchedRules = rulesExecutor.processEvents( "{ \"i\":3.00, \"action\":\"go\" }" ).join(); // 3.00 becomes BigDecimal("3.00") by RulesModelUtil.asFactMap()
         assertEquals( 1, matchedRules.size() );
 
         rulesExecutor.dispose();
