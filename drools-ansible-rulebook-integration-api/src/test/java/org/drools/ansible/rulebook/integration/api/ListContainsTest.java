@@ -264,6 +264,10 @@ public class ListContainsTest {
         assertEquals( 1, matchedRules.size() );
         assertEquals( "contains_rule_int", matchedRules.get(0).getRule().getName() );
 
+        matchedRules = rulesExecutor.processFacts( "{ \"id_list\" : [3,1021.00] }" ).join(); // 1021.00 becomes BigDecimal("1021.00") by RulesModelUtil.asFactMap()
+        assertEquals( 1, matchedRules.size() );
+        assertEquals( "contains_rule_int", matchedRules.get(0).getRule().getName() );
+
         rulesExecutor.dispose();
     }
 
