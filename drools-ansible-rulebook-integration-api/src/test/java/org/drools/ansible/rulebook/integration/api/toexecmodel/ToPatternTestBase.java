@@ -54,6 +54,12 @@ public class ToPatternTestBase {
         return createEvent(factMap);
     }
 
+    protected Event createIEvent(Object i) {
+        Map<String, Object> factMap = new HashMap<>();
+        factMap.put("i", i);
+        return createEvent(factMap);
+    }
+
     protected Event createIJEvent(Object i, Object j) {
         Map<String, Object> factMap = new HashMap<>();
         factMap.put("i", i);
