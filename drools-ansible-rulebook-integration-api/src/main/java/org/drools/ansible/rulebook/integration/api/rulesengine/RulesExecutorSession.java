@@ -91,7 +91,7 @@ public class RulesExecutorSession {
     private static boolean isKeyToBeIgnored(String wmFactKey, String... keysToExclude) {
         if (keysToExclude != null && keysToExclude.length > 0) {
             for (String keyToExclude : keysToExclude) {
-                if (keyToExclude.equals(wmFactKey)) {
+                if (wmFactKey.equals(keyToExclude) || wmFactKey.startsWith(keyToExclude + ".")) {
                     return true;
                 }
             }
