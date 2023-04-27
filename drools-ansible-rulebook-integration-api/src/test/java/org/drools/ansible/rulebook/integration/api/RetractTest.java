@@ -223,9 +223,14 @@ public class RetractTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"facts\" : [ { \"i\" : 1, \"x\" : 1, \"y\" : 1 }, { \"i\" : 1, \"j\" : 1 }, { \"i\" : 2, \"x\" : 1 } ] }" ).join();
-        assertEquals( 3, matchedRules.size() );
-        assertEquals( 3, rulesExecutor.getAllFacts().size() );
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"facts\" : [ " +
+                "{ \"i\" : 1, \"x\" : 1, \"y\" : 1 }, " +
+                "{ \"i\" : 1, \"x\" : { \"i\" : 1, \"j\" : 1 } }, " +
+                "{ \"i\" : 1, \"j\" : 1 }, " +
+                "{ \"i\" : 2, \"x\" : 1 } ] }" ).join();
+
+        assertEquals( 4, matchedRules.size() );
+        assertEquals( 4, rulesExecutor.getAllFacts().size() );
 
         matchedRules = rulesExecutor.processRetractMatchingFacts( "{ \"i\" : 1 }", false, "x", "y" ).join();
         assertEquals( 0, matchedRules.size() );
