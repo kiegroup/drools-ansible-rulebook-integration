@@ -1,11 +1,11 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.drools.core.facttemplates.Fact;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -97,6 +97,21 @@ public class OnceAfterTest {
             assertTrue( host.equals( "h1" ) || host.equals( "h2" ) );
             String level = fact.get("alert.level").toString();
             assertTrue( level.equals( "error" ) || level.equals( "warning" ) );
+        }
+
+        for (int i = 0; i < 2; i++) {
+            matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"h1\" }, \"alert\": { \"level\":\"warning\" } }").join();
+            assertEquals(0, matchedRules.size());
+
+            matchedRules = rulesExecutor.advanceTime(11, TimeUnit.SECONDS).join();
+            assertEquals(1, matchedRules.size());
+            assertEquals("r1", matchedRules.get(0).getRule().getName());
+
+            Fact fact = (Fact) matchedRules.get(0).getDeclarationValue("m");
+            String host = fact.get("meta.hosts").toString();
+            assertTrue(host.equals("h1"));
+            String level = fact.get("alert.level").toString();
+            assertTrue(level.equals("warning"));
         }
 
         rulesExecutor.dispose();
