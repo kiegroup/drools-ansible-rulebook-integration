@@ -1,9 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
@@ -20,6 +16,12 @@ import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
 import org.drools.model.view.ViewItem;
 import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount.parseTimeAmount;
@@ -89,10 +91,11 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *   accumulate( Control( drools_rule_name == "R" ); $result : collectList() )
  * then
  *   delete(c1);
+ *   // traverses all control events, deleting them and collecting the related events
  *   $result.setValue(results.stream().peek(drools::delete).map(r -> ((PrototypeFact) r).get("event")).collect(Collectors.toList()));
  * end
  *
- * rule R_cleanup when
+ * rule R_cleanup_duplicate when
  *   e : Event( sensu.process.type == "alert" )
  *   c1 : Control( sensu.host == e.sensu.host, sensu.process.type == e.sensu.process.type, drools_rule_name == "R" ) )
  * then
@@ -100,6 +103,8 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  * end
  */
 public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
+
+    protected static final Logger log = LoggerFactory.getLogger(OnceAfterDefinition.class);
 
     public static final String KEYWORD = "once_after";
 
@@ -205,12 +210,16 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
                                     Event endControlEvent = createMapBasedEvent( controlPrototype );
                                     endControlEvent.set( "end_once_after", ruleName );
                                     drools.insert(endControlEvent);
+
+                                    if (log.isInfoEnabled()) {
+                                        log.info("Start once_after window for rule " + ruleName);
+                                    }
                                 })
                         )
         );
 
         rules.add(
-                rule(ruleName + "_cleanup").metadata(SYNTHETIC_RULE_TAG, true)
+                rule(ruleName + "_cleanup_duplicate").metadata(SYNTHETIC_RULE_TAG, true)
                         .build(
                                 guardedPattern,
                                 createControlPattern(),
