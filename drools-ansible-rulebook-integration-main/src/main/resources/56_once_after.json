@@ -1,0 +1,95 @@
+[
+  {
+    "RuleSet":{
+      "name":"56 once after",
+      "hosts":[
+        "all"
+      ],
+      "sources":[
+        {
+          "EventSource":{
+            "name":"generic",
+            "source_name":"generic",
+            "source_args":{
+              "loop_count":2,
+              "loop_delay":1,
+              "timestamp":true,
+              "shutdown_after":15,
+              "create_index":"event_index",
+              "payload":[
+                {
+                  "alert":{
+                    "level":"warning",
+                    "message":"Low disk space"
+                  },
+                  "meta":{
+                    "hosts":"localhost0"
+                  }
+                },
+                {
+                  "alert":{
+                    "level":"warning",
+                    "message":"Low disk space"
+                  },
+                  "meta":{
+                    "hosts":"localhost1"
+                  }
+                }
+              ]
+            },
+            "source_filters":[
+
+            ]
+          }
+        }
+      ],
+      "rules":[
+        {
+          "Rule":{
+            "name":"r1",
+            "condition":{
+              "AllCondition":[
+                {
+                  "OrExpression":{
+                    "lhs":{
+                      "EqualsExpression":{
+                        "lhs":{
+                          "Event":"alert.level"
+                        },
+                        "rhs":{
+                          "String":"warning"
+                        }
+                      }
+                    },
+                    "rhs":{
+                      "EqualsExpression":{
+                        "lhs":{
+                          "Event":"alert.level"
+                        },
+                        "rhs":{
+                          "String":"error"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "action":{
+              "debug":{
+                "msg":"Once after 10 seconds"
+              }
+            },
+            "throttle":{
+              "once_after":"10 seconds",
+              "group_by_attributes":[
+                "event.meta.hosts",
+                "event.alert.level"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+]
