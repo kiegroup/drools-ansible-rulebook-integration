@@ -4,7 +4,7 @@ dependencies:
     mapping:
       dependant:
         default:
-          - source: 8.36.x
+          - source: 8.38.x
             target: 1.0.x
 
   - project: kiegroup/drools-ansible-rulebook-integration
@@ -14,4 +14,4 @@ dependencies:
       dependencies:
         default:
           - source: 1.0.x
-            target: 8.36.x
+            target: 8.38.x
