@@ -1,5 +1,12 @@
 package org.drools.ansible.rulebook.integration.main;
 
+import org.drools.ansible.rulebook.integration.api.RuleFormat;
+import org.drools.ansible.rulebook.integration.api.RuleNotation;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,18 +19,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.ansible.rulebook.integration.api.RuleFormat;
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
-import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 public class Main {
 
     private static final boolean EXECUTE_PAYLOAD_ASYNC = true;
 
-    private static final String DEFAULT_JSON = "54_time_window_ast.json";
+    private static final String DEFAULT_JSON = "56_once_after.json";
 
     private static volatile boolean terminated = false;
 
