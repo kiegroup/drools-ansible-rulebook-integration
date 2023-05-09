@@ -24,6 +24,7 @@ public class AutomaticPseudoClock {
     AutomaticPseudoClock(AbstractRulesEvaluator rulesEvaluator, long period) {
         this.period = period;
         this.rulesEvaluator = rulesEvaluator;
+        this.nextTick = rulesEvaluator.getCurrentTime();
         timer.scheduleAtFixedRate(this::advancePseudoClock, period, period, TimeUnit.MILLISECONDS);
     }
 

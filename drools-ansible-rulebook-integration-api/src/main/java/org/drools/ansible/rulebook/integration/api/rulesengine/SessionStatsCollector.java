@@ -1,10 +1,10 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import java.time.Instant;
-import java.util.List;
-
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
+
+import java.time.Instant;
+import java.util.List;
 
 public class SessionStatsCollector {
 
@@ -19,6 +19,9 @@ public class SessionStatsCollector {
 
     private int asyncResponses;
     private int bytesSentOnAsync;
+
+    private String lastRuleFired = "";
+    private long lastRuleFiredTime;
 
     public SessionStatsCollector(long id) {
         this.id = id;
@@ -52,8 +55,18 @@ public class SessionStatsCollector {
         return bytesSentOnAsync;
     }
 
-    public void registerMatch(Match match) {
+    public String getLastRuleFired() {
+        return lastRuleFired;
+    }
+
+    public long getLastRuleFiredTime() {
+        return lastRuleFiredTime;
+    }
+
+    public void registerMatch(RulesExecutorSession session, Match match) {
         rulesTriggered++;
+        lastRuleFired = match.getRule().getName();
+        lastRuleFiredTime = session.getPseudoClock().getCurrentTime();
     }
 
     public void registerMatchedEvents(List<FactHandle> events) {
