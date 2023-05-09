@@ -80,6 +80,7 @@ public class SessionStatsTest {
         assertEquals( 1, stats.getNumberOfDisabledRules() );
         assertEquals( 1, stats.getRulesTriggered() );
         assertEquals( 1, stats.getPermanentStorageSize() );
+        assertEquals( "R1", stats.getLastRuleFired() );
 
         rulesExecutor.dispose();
     }

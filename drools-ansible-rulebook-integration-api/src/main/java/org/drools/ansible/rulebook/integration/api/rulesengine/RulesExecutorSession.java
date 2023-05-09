@@ -37,6 +37,12 @@ public class RulesExecutorSession {
         this.rulesExecutionController = rulesExecutionController;
         this.id = id;
         this.sessionStatsCollector = new SessionStatsCollector(id);
+
+        initClock();
+    }
+
+    private void initClock() {
+        getPseudoClock().advanceTime(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
     long getId() {
@@ -118,7 +124,7 @@ public class RulesExecutorSession {
     }
 
     public void registerMatch(Match match) {
-        sessionStatsCollector.registerMatch(match);
+        sessionStatsCollector.registerMatch(this, match);
     }
 
     public void registerMatchedEvents(List<FactHandle> events) {

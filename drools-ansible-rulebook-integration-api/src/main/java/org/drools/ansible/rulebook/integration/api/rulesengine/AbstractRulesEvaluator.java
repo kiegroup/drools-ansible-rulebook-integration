@@ -66,6 +66,10 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return this.automaticClock == null ? -1 : this.automaticClock.getPeriod();
     }
 
+    long getCurrentTime() {
+        return rulesExecutorSession.getPseudoClock().getCurrentTime();
+    }
+
     @Override
     public int rulesCount() {
         return rulesExecutorSession.rulesCount();
