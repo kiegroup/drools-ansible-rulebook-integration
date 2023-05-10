@@ -111,10 +111,10 @@ String getBuildBranch() {
   return env.BRANCH_NAME ?: env.GIT_BRANCH ?: 'main'
 }
 
-// Parse version from main branch of the given project
+// Parse version from the provided branch/current build branch of the given project
 //      * project: in the form of owner/repository
-def parseVersionFromPom(String project) {
-    def currentBranch = getBuildBranch() ?: env.GIT_BRANCH
+def parseVersionFromPom(String project, String branch = '') {
+    def currentBranch = branch ?: getBuildBranch() ?: env.GIT_BRANCH
     def pomFilename = "${project.replaceAll("/", "_")}_pom.xml"
     def pomPath = "${env.WORKSPACE}/${pomFilename}"
 
