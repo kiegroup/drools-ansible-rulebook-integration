@@ -27,6 +27,8 @@ import org.drools.model.functions.Predicate1;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createEventField;
+import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createRhsWithOperatorAndValue;
 
 public class MapConditionToPatternSelectTest extends ToPatternTestBase {
 

@@ -33,6 +33,8 @@ import org.drools.model.constraints.OrConstraints;
 import org.drools.model.constraints.SingleConstraint1;
 import org.drools.model.functions.Predicate1;
 
+import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createSingleMap;
+
 public class ToPatternTestBase {
 
     // Create an Event with single field. Multiple values is converted to a List
@@ -69,17 +71,6 @@ public class ToPatternTestBase {
 
     protected Event createEvent(Map<String, Object> factMap) {
         return (Event) RulesModelUtil.mapToFact(factMap, true);
-    }
-
-    protected LinkedHashMap<Object, Object> createEventField(String fieldName) {
-        return createSingleMap("Event", fieldName);
-    }
-
-    protected LinkedHashMap<Object, Object> createRhsWithOperatorAndValue(String operatorType, String operatorValue, String valueType, Object valueValue) {
-        LinkedHashMap<Object, Object> rhsValueMap = new LinkedHashMap<>();
-        rhsValueMap.put("operator", createSingleMap(operatorType, operatorValue));
-        rhsValueMap.put("value", createSingleMap(valueType, valueValue));
-        return rhsValueMap;
     }
 
     protected LinkedHashMap<Object, Object> createSelectExpression(LinkedHashMap<Object, Object> lhsValueMap, LinkedHashMap<Object, Object> rhsValueMap) {
@@ -140,12 +131,6 @@ public class ToPatternTestBase {
     protected LinkedHashMap<Object, Object> createAllCondition(LinkedHashMap<Object, Object>... expressions) {
         ArrayList<Object> allCondition = new ArrayList<>(Arrays.asList(expressions));
         return createSingleMap("AllCondition", allCondition);
-    }
-
-    protected LinkedHashMap<Object, Object> createSingleMap(Object key, Object value) {
-        LinkedHashMap<Object, Object> map = new LinkedHashMap<>();
-        map.put(key, value);
-        return map;
     }
 
     protected Predicate1.Impl toPatternAndGetFirstPredicate(Condition condition) {
