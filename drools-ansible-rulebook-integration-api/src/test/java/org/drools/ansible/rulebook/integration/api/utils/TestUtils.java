@@ -17,6 +17,7 @@
 package org.drools.ansible.rulebook.integration.api.utils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /*
  * ToPatternTestBase also has several utility methods. If they are common to other tests, they should be moved here.
@@ -48,5 +49,9 @@ public class TestUtils {
         rhsValueMap.put("operator", createSingleMap(operatorType, operatorValue));
         rhsValueMap.put("value", createSingleMap(valueType, valueValue));
         return rhsValueMap;
+    }
+
+    public static org.drools.model.Rule getRuleByName(List<org.drools.model.Rule> rules, String ruleName) {
+        return rules.stream().filter(r -> r.getName().equals(ruleName)).findFirst().get();
     }
 }
