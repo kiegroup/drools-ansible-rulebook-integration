@@ -155,4 +155,8 @@ public class RulesExecutorSession {
     void setExecuteActions(boolean executeActions) {
         rulesExecutionController.setExecuteActions(executeActions);
     }
+
+    public boolean isMatchMultipleRules() {
+        return rulesSet.isMatchMultipleRules();
+    }
 }

@@ -27,6 +27,8 @@ public class RulesSet {
     private static final TimeAmount DEFAULT_EVENTS_TTL = new TimeAmount(2, TimeUnit.HOURS);
     private TimeAmount eventsTtl = DEFAULT_EVENTS_TTL;
 
+    private boolean matchMultipleRules;
+
     private final RuleConfigurationOptions options = new RuleConfigurationOptions();
 
     private int enabledRulesNumber;
@@ -127,6 +129,14 @@ public class RulesSet {
 
     public TimeAmount getEventsTtl() {
         return eventsTtl;
+    }
+
+    public void setMatch_multiple_rules(boolean matchMultipleRules) {
+        this.matchMultipleRules = matchMultipleRules;
+    }
+
+    public boolean isMatchMultipleRules() {
+        return matchMultipleRules;
     }
 
     public boolean hasTemporalConstraint() {

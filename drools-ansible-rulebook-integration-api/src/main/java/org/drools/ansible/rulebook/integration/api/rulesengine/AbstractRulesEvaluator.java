@@ -190,7 +190,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     protected List<Match> getMatches(boolean event) {
         List<Match> matches = findMatchedRules();
-        return !event || matches.size() < 2 ?
+        return !event || rulesExecutorSession.isMatchMultipleRules() || matches.size() < 2 ?
                 matches :
                 // when processing an event return only the matches for the first matched rule
                 matches.stream().takeWhile(match -> match.getRule().getName().equals(matches.get(0).getRule().getName())).collect(Collectors.toList());
