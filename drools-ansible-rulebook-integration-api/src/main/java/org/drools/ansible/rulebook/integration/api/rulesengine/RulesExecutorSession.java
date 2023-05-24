@@ -127,7 +127,7 @@ public class RulesExecutorSession {
         sessionStatsCollector.registerMatch(this, match);
     }
 
-    public void registerMatchedEvents(List<FactHandle> events) {
+    public void registerMatchedEvents(Collection<FactHandle> events) {
         sessionStatsCollector.registerMatchedEvents(events);
     }
 

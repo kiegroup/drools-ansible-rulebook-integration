@@ -23,7 +23,7 @@ public class Main {
 
     private static final boolean EXECUTE_PAYLOAD_ASYNC = true;
 
-    private static final String DEFAULT_JSON = "regex.json";
+    private static final String DEFAULT_JSON = "test_selectattr_operator_ast.json";
 
     private static volatile boolean terminated = false;
 
