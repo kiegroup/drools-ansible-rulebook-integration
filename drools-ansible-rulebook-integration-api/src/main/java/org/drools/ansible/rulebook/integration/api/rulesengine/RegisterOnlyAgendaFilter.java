@@ -93,11 +93,11 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
         return "Activation of" + ruleType + RuleMatch.from(match);
     }
 
-    private boolean isValidMatch(List<InternalFactHandle> fhs) {
+    private static boolean isValidMatch(List<InternalFactHandle> fhs) {
         return !isSelfJoin(fhs);
     }
 
-    private boolean isSelfJoin(List<InternalFactHandle> fhs) {
+    private static boolean isSelfJoin(List<InternalFactHandle> fhs) {
         for (int i = 0; i < fhs.size()-1; i++) {
             for (int j = i+1; j < fhs.size(); j++) {
                 if (fhs.get(i) == fhs.get(j)) {

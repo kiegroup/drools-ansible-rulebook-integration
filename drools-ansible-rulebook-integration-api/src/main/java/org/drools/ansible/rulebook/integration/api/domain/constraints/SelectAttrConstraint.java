@@ -1,15 +1,15 @@
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.Prototype;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.extractMapAttribute;
@@ -69,13 +69,18 @@ public enum SelectAttrConstraint implements ConstraintOperator, ConditionFactory
             return (leftValue, rightValue) -> {
                 if (leftValue instanceof Collection) {
                     return positive ?
-                            ((Collection) leftValue).stream().anyMatch(left -> opPred.test(leftExtractor.apply(left), rightValue)) :
-                            !((Collection) leftValue).stream().allMatch(left -> opPred.test(leftExtractor.apply(left), rightValue));
+                            ((Collection) leftValue).stream().anyMatch(left -> testPredicate(left, rightValue)) :
+                            !((Collection) leftValue).stream().allMatch(left -> testPredicate(left, rightValue));
                 }
 
                 Object leftObject = leftExtractor.apply(leftValue);
                 return leftObject != Prototype.UNDEFINED_VALUE && opPred.test(leftObject, rightValue) == positive;
             };
+        }
+
+        private <V> boolean testPredicate(Object left, V rightValue) {
+            Object leftValue = leftExtractor.apply(left);
+            return leftValue != Prototype.UNDEFINED_VALUE && opPred.test(leftValue, rightValue);
         }
     }
 }
