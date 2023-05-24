@@ -49,10 +49,11 @@ public class RulesExecutor {
 
     }
     public SessionStats dispose() {
+        SessionStats sessionStats = rulesEvaluator.dispose();
         if (log.isInfoEnabled()) {
-            log.info("Disposing session with id: " + getId());
+            log.info("Disposing session with id: " + getId() + "; " + sessionStats);
         }
-        return rulesEvaluator.dispose();
+        return sessionStats;
     }
 
     public long rulesCount() {

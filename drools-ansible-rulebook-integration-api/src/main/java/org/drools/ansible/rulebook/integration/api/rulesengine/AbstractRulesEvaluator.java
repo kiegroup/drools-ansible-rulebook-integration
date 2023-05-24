@@ -127,7 +127,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         if (fhs.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Match> matches = findMatchedRules();
+        List<Match> matches = findMatchedRules(false);
         for (int i = 0; i < matches.size(); i++) {
             Map<String, Object> jsonFact = ((Fact) fhs.get(matches.size() == fhs.size() ? i : 0).getObject()).asMap();
             matches.set(i, enrichMatchWithFact(matches.get(i), jsonFact));
@@ -139,7 +139,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     private List<Match> internalAdvanceTime(long amount, TimeUnit unit) {
         rulesExecutorSession.advanceTime(amount, unit);
-        return findMatchedRules();
+        return findMatchedRules(false);
     }
 
     protected int internalExecuteFacts(Map<String, Object> factMap) {
@@ -189,18 +189,14 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     protected List<Match> getMatches(boolean event) {
-        List<Match> matches = findMatchedRules();
-        return !event || matches.size() < 2 ?
-                matches :
-                // when processing an event return only the matches for the first matched rule
-                matches.stream().takeWhile(match -> match.getRule().getName().equals(matches.get(0).getRule().getName())).collect(Collectors.toList());
+        return findMatchedRules(event);
     }
 
-    private synchronized List<Match> findMatchedRules() {
+    private synchronized List<Match> findMatchedRules(boolean event) {
         rulesExecutorSession.setExecuteActions(false);
         rulesExecutorSession.fireAllRules(registerOnlyAgendaFilter);
         rulesExecutorSession.setExecuteActions(true);
-        return registerOnlyAgendaFilter.finalizeAndGetResults();
+        return registerOnlyAgendaFilter.finalizeAndGetResults(event);
     }
 
     private Match enrichMatchWithFact(Match match, Map<String, Object> jsonFact) {

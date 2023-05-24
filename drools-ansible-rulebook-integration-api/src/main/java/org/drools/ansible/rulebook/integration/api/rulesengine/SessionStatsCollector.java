@@ -4,7 +4,7 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Collection;
 
 public class SessionStatsCollector {
 
@@ -69,7 +69,7 @@ public class SessionStatsCollector {
         lastRuleFiredTime = session.getPseudoClock().getCurrentTime();
     }
 
-    public void registerMatchedEvents(List<FactHandle> events) {
+    public void registerMatchedEvents(Collection<FactHandle> events) {
         matchedEvents += events.size();
     }
 
