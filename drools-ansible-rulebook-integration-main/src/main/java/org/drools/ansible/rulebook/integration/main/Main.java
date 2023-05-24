@@ -6,6 +6,9 @@ import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -16,21 +19,49 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    
     private static final boolean EXECUTE_PAYLOAD_ASYNC = true;
 
     private static final String DEFAULT_JSON = "test_selectattr_operator_ast.json";
 
+    private static final int MAX_THREAD = 10;
+
     private static volatile boolean terminated = false;
 
-    public static void main(String[] args) {
+    private static boolean foundError = false;
+
+    public static void main(String[] args) throws InterruptedException {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
-        long duration = execute(jsonFile);
-        System.out.println("Executed in " + duration + " msecs");
+
+
+        ExecutorService executor = Executors.newFixedThreadPool(MAX_THREAD);
+
+        for (int n = 0; n < MAX_THREAD; n++) {
+            executor.execute(new Runnable() {
+
+                public void run() {
+                    long duration = execute(jsonFile);
+                    LOGGER.info("Executed in " + duration + " msecs");
+                }
+            });
+        }
+
+        executor.shutdown();
+        executor.awaitTermination(300, TimeUnit.SECONDS);
+
+        if (foundError) {
+            System.out.println("ERROR FOUND!!! Check above logs");
+        }
     }
 
     public static long execute(String jsonFile) {
@@ -44,6 +75,10 @@ public class Main {
 
             Instant start = Instant.now();
             executePayload(engine, rulesSet, id, port, payload);
+
+            String stats = engine.sessionStats(id);
+            LOGGER.info(stats);
+
             return Duration.between(start, Instant.now()).toMillis();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -60,7 +95,18 @@ public class Main {
         if (rulesSet.hasAsyncExecution()) {
             runAsyncExec(engine, id, port, payload);
         } else {
-            payload.asRunnable(engine, id).run();
+            Payload.PayloadRunner payloadRunner = (Payload.PayloadRunner)payload.asRunnable(engine, id);
+            payloadRunner.run();
+            List<Map> returnedMatches = payloadRunner.getReturnedMatches();
+            LOGGER.info("Returned matches: " + returnedMatches.size());
+            returnedMatches.forEach(map -> LOGGER.info("  " + map.entrySet()));
+//            returnedMatches.forEach(map -> System.out.println("  " + map.entrySet()));
+
+            if (returnedMatches.size() != 13) {
+                LOGGER.info("################## Match Error ##################");
+                foundError = true;
+            }
+
         }
     }
 
@@ -103,7 +149,7 @@ public class Main {
             List<Object> matches = v.getJSONArray("result").toList();
             Map<String, Map> match = (Map<String, Map>) matches.get(0);
 
-            System.out.println(match + " fired after " + firingTime + " milliseconds");
+            LOGGER.info(match + " fired after " + firingTime + " milliseconds");
 
             terminated = true;
         } catch (IOException e) {

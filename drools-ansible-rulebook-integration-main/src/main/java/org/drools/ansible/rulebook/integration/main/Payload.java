@@ -2,11 +2,18 @@ package org.drools.ansible.rulebook.integration.main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.drools.ansible.rulebook.integration.api.ObjectMapperFactory;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kie.api.runtime.rule.Match;
 
 public class Payload {
 
@@ -82,13 +89,15 @@ public class Payload {
         return new PayloadRunner(this, engine, sessionId);
     }
 
-    private static class PayloadRunner implements Runnable {
+    public static class PayloadRunner implements Runnable {
 
         private final Payload payload;
 
         private final AstRulesEngine engine;
 
         private final long sessionId;
+
+        private List<Map> returnedMatches = new ArrayList<>();
 
         private PayloadRunner(Payload payload, AstRulesEngine engine, long sessionId) {
             this.payload = payload;
@@ -101,7 +110,15 @@ public class Payload {
             long start = System.currentTimeMillis();
             for (int i = 0; i < payload.loopCount; i++) {
                 for (String p : payload.list) {
-                    engine.assertEvent(sessionId, p);
+                    String resultJson = engine.assertEvent(sessionId, p);
+                    ObjectMapper mapper = ObjectMapperFactory.createMapper(new JsonFactory());
+                    List list = new ArrayList();
+                    try {
+                        list = mapper.readValue(resultJson, List.class);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    returnedMatches.addAll(list);
                     sleepSeconds(payload.delay);
                 }
                 sleepSeconds(payload.loopDelay);
@@ -122,6 +139,10 @@ public class Payload {
                     throw new RuntimeException(e);
                 }
             }
+        }
+
+        public List<Map> getReturnedMatches() {
+            return returnedMatches;
         }
     }
 }
