@@ -5,6 +5,7 @@ import org.drools.core.common.InternalFactHandle;
 import org.drools.core.facttemplates.Event;
 import org.drools.core.facttemplates.Fact;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
@@ -55,6 +56,10 @@ public class RulesExecutorSession {
 
     Collection<? extends Object> getObjects() {
         return kieSession.getObjects();
+    }
+
+    Collection<? extends Object> getObjects(ObjectFilter filter) {
+        return kieSession.getObjects(filter);
     }
 
     InternalFactHandle insert(Map<String, Object> factMap, boolean event) {

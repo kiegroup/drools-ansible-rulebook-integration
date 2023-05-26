@@ -99,7 +99,7 @@ public class SimpleJsonTest {
         assertEquals( 4, stats.getNumberOfRules() );
         assertEquals( 0, stats.getNumberOfDisabledRules() );
         assertEquals( 2, stats.getRulesTriggered() );
-        assertEquals( 2, stats.getPermanentStorageSize() );
+        assertEquals( 2, stats.getPermanentStorageCount() );
     }
 
     @Test
