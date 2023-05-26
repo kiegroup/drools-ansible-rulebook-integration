@@ -7,6 +7,7 @@ import org.kie.api.runtime.rule.Match;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SessionStatsTest {
 
@@ -79,7 +80,9 @@ public class SessionStatsTest {
         assertEquals( 3, stats.getNumberOfRules() );
         assertEquals( 1, stats.getNumberOfDisabledRules() );
         assertEquals( 1, stats.getRulesTriggered() );
-        assertEquals( 1, stats.getPermanentStorageSize() );
+        assertEquals( 1, stats.getPermanentStorageCount() );
+        assertTrue( stats.getPermanentStorageSize() > 10 );
+        assertTrue( stats.getPermanentStorageSize() < 1000 );
         assertEquals( "R1", stats.getLastRuleFired() );
 
         rulesExecutor.dispose();

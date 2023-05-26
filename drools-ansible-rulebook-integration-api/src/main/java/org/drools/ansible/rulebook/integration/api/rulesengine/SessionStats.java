@@ -1,10 +1,10 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import org.drools.core.facttemplates.Event;
+import org.drools.core.facttemplates.Fact;
 
 import java.time.Instant;
-
-import static java.util.function.Predicate.not;
+import java.util.Collection;
+import java.util.stream.Stream;
 
 public class SessionStats {
     private final String start;
@@ -19,6 +19,7 @@ public class SessionStats {
     private final int eventsMatched;
     private final int eventsSuppressed;
 
+    private final int permanentStorageCount;
     private final int permanentStorageSize;
 
     private final int asyncResponses;
@@ -41,7 +42,12 @@ public class SessionStats {
         this.eventsProcessed = stats.getTotalEvents();
         this.eventsMatched = stats.getMatchedEvents();
         this.eventsSuppressed = this.eventsProcessed - this.eventsMatched;
-        this.permanentStorageSize = (int) session.getObjects().stream().filter(not(Event.class::isInstance)).count();
+
+        Collection<Fact> facts = (Collection<Fact>) session.getObjects(Fact.class::isInstance);
+        this.permanentStorageCount = facts.size();
+        Stream<Fact> factStream = permanentStorageCount > Runtime.getRuntime().availableProcessors() * 2 ? facts.parallelStream() : facts.stream();
+        this.permanentStorageSize = factStream.mapToInt(f -> f.asMap().toString().getBytes().length).sum();
+
         this.asyncResponses = stats.getAsyncResponses();
         this.bytesSentOnAsync = stats.getBytesSentOnAsync();
         this.sessionId = session.getId();
@@ -51,7 +57,7 @@ public class SessionStats {
     }
 
     public SessionStats(String start, String end, String lastClockTime, int numberOfRules, int numberOfDisabledRules, int rulesTriggered, int eventsProcessed,
-                        int eventsMatched, int eventsSuppressed, int permanentStorageSize, int asyncResponses, int bytesSentOnAsync,
+                        int eventsMatched, int eventsSuppressed, int permanentStorageCount, int permanentStorageSize, int asyncResponses, int bytesSentOnAsync,
                         long sessionId, String ruleSetName, String lastRuleFired, String lastRuleFiredAt) {
         this.start = start;
         this.end = end;
@@ -62,6 +68,7 @@ public class SessionStats {
         this.eventsProcessed = eventsProcessed;
         this.eventsMatched = eventsMatched;
         this.eventsSuppressed = eventsSuppressed;
+        this.permanentStorageCount = permanentStorageCount;
         this.permanentStorageSize = permanentStorageSize;
         this.asyncResponses = asyncResponses;
         this.bytesSentOnAsync = bytesSentOnAsync;
@@ -83,7 +90,7 @@ public class SessionStats {
                 ", eventsProcessed=" + eventsProcessed +
                 ", eventsMatched=" + eventsMatched +
                 ", eventsSuppressed=" + eventsSuppressed +
-                ", permanentStorageSize=" + permanentStorageSize +
+                ", permanentStorageSize=" + permanentStorageCount +
                 ", asyncResponses=" + asyncResponses +
                 ", bytesSentOnAsync=" + bytesSentOnAsync +
                 ", sessionId=" + sessionId +
@@ -123,6 +130,10 @@ public class SessionStats {
 
     public int getEventsSuppressed() {
         return eventsSuppressed;
+    }
+
+    public int getPermanentStorageCount() {
+        return permanentStorageCount;
     }
 
     public int getPermanentStorageSize() {
@@ -179,6 +190,7 @@ public class SessionStats {
                 stats1.eventsProcessed + stats2.eventsProcessed,
                 stats1.eventsMatched + stats2.eventsMatched,
                 stats1.eventsSuppressed + stats2.eventsSuppressed,
+                stats1.permanentStorageCount + stats2.permanentStorageCount,
                 stats1.permanentStorageSize + stats2.permanentStorageSize,
                 stats1.asyncResponses + stats2.asyncResponses,
                 stats1.bytesSentOnAsync + stats2.bytesSentOnAsync,
