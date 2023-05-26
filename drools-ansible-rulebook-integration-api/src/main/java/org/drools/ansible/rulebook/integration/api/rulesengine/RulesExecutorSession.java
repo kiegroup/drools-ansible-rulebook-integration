@@ -151,6 +151,7 @@ public class RulesExecutorSession {
     void advanceTime( long amount, TimeUnit unit ) {
         SessionPseudoClock clock = getPseudoClock();
         clock.advanceTime(amount, unit);
+        sessionStatsCollector.registerClockAdvance(amount, unit);
     }
 
     SessionPseudoClock getPseudoClock() {

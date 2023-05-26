@@ -5,6 +5,7 @@ import org.kie.api.runtime.rule.Match;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public class SessionStatsCollector {
 
@@ -22,6 +23,8 @@ public class SessionStatsCollector {
 
     private String lastRuleFired = "";
     private long lastRuleFiredTime;
+
+    private int clockAdvanceCount;
 
     public SessionStatsCollector(long id) {
         this.id = id;
@@ -63,6 +66,10 @@ public class SessionStatsCollector {
         return lastRuleFiredTime;
     }
 
+    public int getClockAdvanceCount() {
+        return clockAdvanceCount;
+    }
+
     public void registerMatch(RulesExecutorSession session, Match match) {
         rulesTriggered++;
         lastRuleFired = match.getRule().getName();
@@ -80,5 +87,9 @@ public class SessionStatsCollector {
     public void registerAsyncResponse(byte[] bytes) {
         asyncResponses++;
         bytesSentOnAsync += bytes.length;
+    }
+
+    public void registerClockAdvance(long amount, TimeUnit unit) {
+        clockAdvanceCount++;
     }
 }
