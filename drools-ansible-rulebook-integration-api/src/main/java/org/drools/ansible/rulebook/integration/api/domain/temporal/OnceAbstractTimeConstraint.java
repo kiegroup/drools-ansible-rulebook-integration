@@ -1,10 +1,10 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
-import java.util.List;
-
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeVariable;
+
+import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
@@ -22,6 +22,8 @@ public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
 
     protected PrototypeDSL.PrototypePatternDef guardedPattern;
 
+    private PrototypeVariable controlVariable;
+
     public OnceAbstractTimeConstraint(TimeAmount timeAmount, List<String> groupByAttributes) {
         this.timeAmount = timeAmount;
         this.groupByAttributes = groupByAttributes;
@@ -31,12 +33,17 @@ public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
         return (PrototypeVariable) guardedPattern.getFirstVariable();
     }
 
+    protected PrototypeVariable getControlVariable() {
+        return controlVariable;
+    }
+
     protected PrototypeDSL.PrototypePatternDef createControlPattern() {
         PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(getPrototype(SYNTHETIC_PROTOTYPE_NAME)));
         for (String unique : groupByAttributes) {
             controlPattern.expr( prototypeField(unique), Index.ConstraintType.EQUAL, getPatternVariable(), prototypeField(unique) );
         }
         controlPattern.expr( prototypeField("drools_rule_name"), Index.ConstraintType.EQUAL, fixedValue(ruleName) );
+        this.controlVariable = (PrototypeVariable) controlPattern.getFirstVariable();
         return controlPattern;
     }
 
