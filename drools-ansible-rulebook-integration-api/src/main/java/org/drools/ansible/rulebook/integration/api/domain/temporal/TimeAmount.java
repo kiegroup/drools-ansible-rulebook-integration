@@ -21,7 +21,7 @@ public class TimeAmount {
 
     @Override
     public String toString() {
-        return "TimeAmount{ " + amount + " " + timeUnit + " }";
+        return amount + " " + timeUnit;
     }
 
     public static TimeAmount parseTimeAmount(String timeAmount) {
