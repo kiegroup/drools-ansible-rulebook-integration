@@ -2,7 +2,7 @@ package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Fact;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 

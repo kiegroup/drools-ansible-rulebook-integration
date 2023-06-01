@@ -1,6 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Fact;
 import org.json.JSONObject;
 
 import java.util.HashMap;

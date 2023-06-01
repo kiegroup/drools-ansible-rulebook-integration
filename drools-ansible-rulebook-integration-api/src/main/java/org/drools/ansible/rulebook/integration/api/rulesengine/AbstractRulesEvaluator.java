@@ -6,7 +6,7 @@ import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.drools.core.common.InternalFactHandle;
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Fact;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

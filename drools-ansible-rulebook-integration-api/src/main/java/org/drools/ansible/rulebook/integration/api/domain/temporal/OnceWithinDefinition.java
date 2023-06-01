@@ -1,8 +1,8 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.core.facttemplates.Event;
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Event;
+import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.DroolsEntryPoint;
 import org.drools.model.PrototypeDSL;
