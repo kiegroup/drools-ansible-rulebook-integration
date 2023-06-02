@@ -25,7 +25,7 @@ import java.util.Map;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
-import org.drools.core.facttemplates.Event;
+import org.drools.base.facttemplates.Event;
 import org.drools.model.Constraint;
 import org.drools.model.PatternDSL;
 import org.drools.model.PrototypeDSL;

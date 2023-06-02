@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.domain.conditions.SimpleCondition;
-import org.drools.core.facttemplates.Event;
+import org.drools.base.facttemplates.Event;
 import org.drools.model.functions.Predicate1;
 import org.junit.Test;
 

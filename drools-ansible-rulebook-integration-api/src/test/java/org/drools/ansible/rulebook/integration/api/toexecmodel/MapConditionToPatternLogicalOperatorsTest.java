@@ -19,7 +19,7 @@ package org.drools.ansible.rulebook.integration.api.toexecmodel;
 import java.util.LinkedHashMap;
 
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
-import org.drools.core.facttemplates.Event;
+import org.drools.base.facttemplates.Event;
 import org.drools.model.Constraint;
 import org.drools.model.constraints.OrConstraints;
 import org.drools.model.functions.Predicate1;

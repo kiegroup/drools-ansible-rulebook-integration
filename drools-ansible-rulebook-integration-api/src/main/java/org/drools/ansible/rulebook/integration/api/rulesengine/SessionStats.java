@@ -1,6 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Fact;
 
 import java.time.Instant;
 import java.util.Collection;
