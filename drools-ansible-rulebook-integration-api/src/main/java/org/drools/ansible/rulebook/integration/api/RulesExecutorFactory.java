@@ -4,6 +4,7 @@ import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.core.ClockType;
+import org.drools.core.time.impl.PseudoClockScheduler;
 import org.drools.model.Model;
 import org.drools.modelcompiler.KieBaseBuilder;
 import org.kie.api.KieBase;
@@ -14,6 +15,7 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -52,6 +54,14 @@ public class RulesExecutorFactory {
         } else {
             rulesExecutor.startAutomaticPseudoClock(DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS, TimeUnit.MILLISECONDS);
         }
+
+        List<String> ruleNamesToBeDebugged = List.of("56 once after", "Match rules once after a certain time");
+        if (rulesSet.getName() != null && ruleNamesToBeDebugged.contains(rulesSet.getName())) {
+            PseudoClockScheduler.DEBUG = true;
+        } else {
+            PseudoClockScheduler.DEBUG = false;
+        }
+
         return rulesExecutor;
     }
 

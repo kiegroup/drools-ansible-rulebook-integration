@@ -7,6 +7,7 @@ import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.facttemplates.Fact;
+import org.drools.core.time.impl.PseudoClockScheduler;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +109,9 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     CompletableFuture<List<Match>> scheduledAdvanceTimeToMills(long millis) {
         long currentTime = rulesExecutorSession.getPseudoClock().getCurrentTime();
         if (currentTime >= millis) {
+            if (PseudoClockScheduler.DEBUG) {
+                log.info("No-op. {} >= {}", currentTime, millis);
+            }
             return completeFutureOf(Collections.emptyList());
         }
 
@@ -232,6 +236,9 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
                 fhs = beforeFire.get();
             }
             if (fhs == null || !fhs.isEmpty()) {
+                if (PseudoClockScheduler.DEBUG) {
+                    log.info("fireAllRules");
+                }
                 rulesExecutorSession.setExecuteActions(false);
                 rulesExecutorSession.fireAllRules(registerOnlyAgendaFilter);
                 rulesExecutorSession.setExecuteActions(true);
