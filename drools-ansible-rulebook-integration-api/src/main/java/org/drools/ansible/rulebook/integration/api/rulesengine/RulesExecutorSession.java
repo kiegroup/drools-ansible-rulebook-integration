@@ -2,8 +2,8 @@ package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.core.common.InternalFactHandle;
-import org.drools.core.facttemplates.Event;
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Event;
+import org.drools.base.facttemplates.Fact;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.rule.AgendaFilter;

@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
-import org.drools.core.facttemplates.Event;
+import org.drools.base.facttemplates.Event;
 import org.drools.model.functions.Predicate1;
 import org.junit.Test;
 
