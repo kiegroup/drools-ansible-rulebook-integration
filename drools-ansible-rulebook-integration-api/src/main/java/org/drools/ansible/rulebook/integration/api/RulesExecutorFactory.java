@@ -49,11 +49,6 @@ public class RulesExecutorFactory {
 
     public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
         RulesExecutor rulesExecutor = new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(ASYNC_EVALUATION));
-        if (rulesSet.getClockPeriod() != null) {
-            rulesExecutor.startAutomaticPseudoClock(rulesSet.getClockPeriod().getAmount(), rulesSet.getClockPeriod().getTimeUnit());
-        } else {
-            rulesExecutor.startAutomaticPseudoClock(DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS, TimeUnit.MILLISECONDS);
-        }
 
         List<String> ruleNamesToBeDebugged = List.of("56 once after", "Match rules once after a certain time");
         if (rulesSet.getName() != null && ruleNamesToBeDebugged.contains(rulesSet.getName())) {
@@ -62,6 +57,11 @@ public class RulesExecutorFactory {
             PseudoClockScheduler.DEBUG = false;
         }
 
+        if (rulesSet.getClockPeriod() != null) {
+            rulesExecutor.startAutomaticPseudoClock(rulesSet.getClockPeriod().getAmount(), rulesSet.getClockPeriod().getTimeUnit());
+        } else {
+            rulesExecutor.startAutomaticPseudoClock(DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS, TimeUnit.MILLISECONDS);
+        }
         return rulesExecutor;
     }
 
