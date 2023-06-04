@@ -54,11 +54,15 @@ public class Main {
 
         executor.shutdown();
         executor.awaitTermination(300, TimeUnit.SECONDS);
+//        executor.awaitTermination(15, TimeUnit.SECONDS);
 
         if (foundError) {
             System.err.println("ERROR FOUND!!! Check above logs");
             throw new IllegalStateException();
         }
+
+//        System.out.println("DONE");
+//        System.exit(1);
     }
 
     public static long execute(String jsonFile) {

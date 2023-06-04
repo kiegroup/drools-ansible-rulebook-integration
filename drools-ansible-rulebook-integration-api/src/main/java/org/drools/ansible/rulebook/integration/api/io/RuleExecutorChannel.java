@@ -7,6 +7,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
 import org.slf4j.Logger;
@@ -17,6 +19,13 @@ import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 public class RuleExecutorChannel {
 
     protected static final Logger log = LoggerFactory.getLogger(RuleExecutorChannel.class);
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r);
+        t.setDaemon(true);
+        t.setName("drools-channel-accept-thread");
+        return t;
+    });
 
     private final ServerSocket socketChannel;
     private volatile DataOutputStream dataOutputStream;
@@ -37,11 +46,22 @@ public class RuleExecutorChannel {
         return socketChannel.getLocalPort();
     }
 
-    public RuleExecutorChannel accept(AsyncExecutor asyncExecutor) {
-        asyncExecutor.submit(() -> {
+    public RuleExecutorChannel accept() {
+        executor.submit(() -> {
             try {
+                if (log.isInfoEnabled()) {
+                    log.info("Waiting for the async channel to connect");
+                }
+
                 Socket skt = socketChannel.accept();
                 this.dataOutputStream = new DataOutputStream(skt.getOutputStream());
+
+//                try {
+//                    Thread.sleep(1300);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+
                 this.connected = true;
 
                 if (log.isInfoEnabled()) {
@@ -94,6 +114,7 @@ public class RuleExecutorChannel {
             if (dataOutputStream != null) {
                 dataOutputStream.close();
             }
+            executor.shutdown();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } finally {

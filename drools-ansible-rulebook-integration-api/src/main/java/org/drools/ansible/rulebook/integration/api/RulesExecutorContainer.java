@@ -21,7 +21,7 @@ public class RulesExecutorContainer {
     public RulesExecutorContainer allowAsync() {
         if (asyncExecutor == null) {
             asyncExecutor = new AsyncExecutor();
-            channel = new RuleExecutorChannel().accept(asyncExecutor);
+            channel = new RuleExecutorChannel().accept();
         }
         return this;
     }

@@ -111,6 +111,11 @@ public class Payload {
 
         @Override
         public void run() {
+//            try {
+//                Thread.sleep(1300);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
             long start = System.currentTimeMillis();
             for (int i = 0; i < payload.loopCount; i++) {
                 for (String p : payload.list) {
