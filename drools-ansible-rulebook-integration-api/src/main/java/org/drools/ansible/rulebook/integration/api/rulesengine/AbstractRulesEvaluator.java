@@ -114,10 +114,11 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         if (log.isTraceEnabled()) {
             log.trace("Automatic advance of " + (millis - currentTime) + " milliseconds" );
         }
+        List<Match> matches = internalAdvanceTime(millis - currentTime, TimeUnit.MILLISECONDS);
 
-        return asyncExecutor == null ?
-                completeFutureOf(internalAdvanceTime(millis - currentTime, TimeUnit.MILLISECONDS)) :
-                asyncExecutor.submit(() -> writeResponseOnChannel(internalAdvanceTime(millis - currentTime, TimeUnit.MILLISECONDS) ) );
+        return asyncExecutor == null || matches.isEmpty() ?
+                completeFutureOf(matches) :
+                asyncExecutor.submit(() -> writeResponseOnChannel(matches) );
     }
 
     @Override
