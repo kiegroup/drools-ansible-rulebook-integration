@@ -104,6 +104,12 @@ public class Main {
     }
 
     private static void runAsyncExec(AstRulesEngine engine, long id, int port, Payload payload) throws IOException {
+        // simulate some delay at client side
+//        try {
+//            Thread.sleep(1300);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         try (Socket socket = new Socket("localhost", port)) {
             if (EXECUTE_PAYLOAD_ASYNC) {
                 executeInNewThread(payload.asRunnable(engine, id));
