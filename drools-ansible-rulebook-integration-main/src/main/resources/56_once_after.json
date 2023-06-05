@@ -11,6 +11,7 @@
             "name":"generic",
             "source_name":"generic",
             "source_args":{
+              "start_delay":2,
               "loop_count":2,
               "loop_delay":1,
               "timestamp":true,

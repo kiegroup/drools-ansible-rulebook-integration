@@ -17,9 +17,11 @@ public class Payload {
 
     private final List<String> list;
 
+    private int startDelay = 0;
+
     private int loopCount = 1;
     private int loopDelay = 0;
-    private int delay = 0;
+    private int eventDelay = 0;
 
     private int shutdown = 0;
 
@@ -56,13 +58,18 @@ public class Payload {
         Payload payload = new Payload(payloadList);
 
         try {
-            payload.delay = sourcesArgs.getInt("delay");
+            payload.eventDelay = sourcesArgs.getInt("delay");
         } catch (JSONException e) {
             try {
-            payload.delay = sourcesArgs.getInt("event_delay");
+            payload.eventDelay = sourcesArgs.getInt("event_delay");
             } catch (JSONException e1) {
                 /* ignore */
             }
+        }
+        try {
+            payload.startDelay = sourcesArgs.getInt("start_delay");
+        } catch (JSONException e) {
+            /* ignore */
         }
         try {
             payload.loopCount = sourcesArgs.getInt("loop_count");
@@ -81,6 +88,10 @@ public class Payload {
         }
 
         return payload;
+    }
+
+    public int getStartDelay() {
+        return startDelay;
     }
 
     public Runnable asRunnable(AstRulesEngine engine, long sessionId) {
@@ -121,7 +132,7 @@ public class Payload {
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
-                    sleepSeconds(payload.delay);
+                    sleepSeconds(payload.eventDelay);
                 }
                 sleepSeconds(payload.loopDelay);
             }
