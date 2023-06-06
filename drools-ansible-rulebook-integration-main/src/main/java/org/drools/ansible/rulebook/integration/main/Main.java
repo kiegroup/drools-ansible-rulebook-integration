@@ -42,7 +42,10 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
+        parallelExecute(jsonFile);
+    }
 
+    private static void parallelExecute(String jsonFile) throws InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(THREADS_NR);
 
         for (int n = 0; n < THREADS_NR; n++) {
@@ -104,6 +107,13 @@ public class Main {
     }
 
     private static void runAsyncExec(AstRulesEngine engine, long id, int port, Payload payload) throws IOException {
+        if (payload.getStartDelay() > 0) {
+            try {
+                Thread.sleep( payload.getStartDelay() * 1000L );
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         try (Socket socket = new Socket("localhost", port)) {
             if (EXECUTE_PAYLOAD_ASYNC) {
                 executeInNewThread(payload.asRunnable(engine, id));
