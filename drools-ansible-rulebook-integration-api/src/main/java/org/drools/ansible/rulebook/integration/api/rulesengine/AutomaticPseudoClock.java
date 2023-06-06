@@ -3,7 +3,12 @@ package org.drools.ansible.rulebook.integration.api.rulesengine;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AutomaticPseudoClock {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AutomaticPseudoClock.class.getName());
 
     private final ScheduledThreadPoolExecutor timer = new ScheduledThreadPoolExecutor(1, r -> {
         Thread t = new Thread(r);
@@ -38,6 +43,10 @@ public class AutomaticPseudoClock {
 
     private void advancePseudoClock() {
         nextTick += period;
+        if (Math.abs(System.currentTimeMillis() - nextTick) > period * 2) {
+            LOG.warn("Pseudo clock is diverged, the difference is {} ms", (System.currentTimeMillis() - nextTick));
+            return;
+        }
         rulesEvaluator.scheduledAdvanceTimeToMills(nextTick);
     }
 }
