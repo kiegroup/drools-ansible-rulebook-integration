@@ -1,16 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
-import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
-import org.drools.ansible.rulebook.integration.api.io.Response;
-import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
-import org.drools.core.common.InternalFactHandle;
-import org.drools.base.facttemplates.Fact;
-import org.kie.api.runtime.rule.Match;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,9 +12,22 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
+import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
+import org.drools.ansible.rulebook.integration.api.io.Response;
+import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
+import org.drools.base.facttemplates.Fact;
+import org.drools.core.common.InternalFactHandle;
+import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     protected static final Logger log = LoggerFactory.getLogger(AbstractRulesEvaluator.class);
+
+    public static final String AUTOMATIC_PSEUDO_CLOCK_CUSTOM_CLASS_NAME_PROPERTY = "drools.ansible.AutomaticPseudoClock.customClassName";
 
     protected final RulesExecutorSession rulesExecutorSession;
 
@@ -61,7 +63,22 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         if (log.isInfoEnabled()) {
             log.info("Start automatic pseudo clock with a tick every " + period + " " + unit.toString().toLowerCase());
         }
-        this.automaticClock = new AutomaticPseudoClock(this, period, unit);
+        String automaticPseudoClockCustomClassName = System.getProperty(AUTOMATIC_PSEUDO_CLOCK_CUSTOM_CLASS_NAME_PROPERTY);
+        if (automaticPseudoClockCustomClassName == null) {
+            this.automaticClock = new AutomaticPseudoClock(this, period, unit);
+        } else {
+            // Test purpose only
+            this.automaticClock = instantiateCustomAutomaticPseudoClock(period, unit, automaticPseudoClockCustomClassName);
+        }
+    }
+
+    private AutomaticPseudoClock instantiateCustomAutomaticPseudoClock(long period, TimeUnit unit, String automaticPseudoClockCustomClassName) {
+        try {
+            log.info("instantiate a custom  AutomaticPseudoClock : {}", automaticPseudoClockCustomClassName);
+            return (AutomaticPseudoClock) Class.forName(automaticPseudoClockCustomClassName).getConstructor(AbstractRulesEvaluator.class, long.class, TimeUnit.class).newInstance(this, period, unit);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to instantiate AutomaticPseudoClockCustomClass " + automaticPseudoClockCustomClassName, e);
+        }
     }
 
     @Override
