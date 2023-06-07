@@ -45,7 +45,6 @@ public class AutomaticPseudoClock {
         nextTick += period;
         if (Math.abs(System.currentTimeMillis() - nextTick) > period * 2) {
             LOG.warn("Pseudo clock is diverged, the difference is {} ms", (System.currentTimeMillis() - nextTick));
-            return;
         }
         rulesEvaluator.scheduledAdvanceTimeToMills(nextTick);
     }
