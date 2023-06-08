@@ -162,6 +162,10 @@ public class RulesExecutorSession {
         rulesExecutionController.setExecuteActions(executeActions);
     }
 
+    public boolean isMatchMultipleRules() {
+        return rulesSet.isMatchMultipleRules();
+    }
+    
     long getDelayWarningThreshold() {
         return rulesSet.getDelayWarningThreshold();
     }
