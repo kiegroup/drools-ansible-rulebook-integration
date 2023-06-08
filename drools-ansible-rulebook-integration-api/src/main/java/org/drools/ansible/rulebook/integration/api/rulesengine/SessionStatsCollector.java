@@ -79,7 +79,7 @@ public class SessionStatsCollector {
         lastRuleFired = match.getRule().getName();
         lastRuleFiredTime = session.getPseudoClock().getCurrentTime();
         long delay = System.currentTimeMillis() - lastRuleFiredTime;
-        if (delay > 0) {
+        if (delay > session.getDelayWarningThreshold()) {
             LOG.warn("{} is fired with a delay of {} ms", lastRuleFired, delay);
         }
     }

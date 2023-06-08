@@ -32,6 +32,8 @@ public class RulesSet {
     private int enabledRulesNumber;
     private int disabledRulesNumber;
 
+    private long delayWarningThreshold = 5000; // Default 5 seconds
+
     public String getName() {
         return name;
     }
@@ -127,6 +129,14 @@ public class RulesSet {
 
     public TimeAmount getEventsTtl() {
         return eventsTtl;
+    }
+
+    public long getDelayWarningThreshold() {
+        return delayWarningThreshold;
+    }
+
+    public void setDelay_warning_threshold(String delayWarningThresholdStr) {
+        this.delayWarningThreshold = TimeAmount.parseTimeAmount(delayWarningThresholdStr).toMillis();
     }
 
     public boolean hasTemporalConstraint() {

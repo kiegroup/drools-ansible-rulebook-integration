@@ -52,4 +52,8 @@ public class TimeAmount {
         }
         throw new IllegalArgumentException("Unknown time unit: " + unit);
     }
+
+    public long toMillis() {
+        return timeUnit.toMillis(amount);
+    }
 }

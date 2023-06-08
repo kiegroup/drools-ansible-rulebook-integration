@@ -9,10 +9,9 @@ public class SlowAutomaticPseudoClock extends AutomaticPseudoClock {
 
     private static final Logger LOG = LoggerFactory.getLogger(SlowAutomaticPseudoClock.class.getName());
 
-    public static final String DELAY_PROPERTY = "SlowAutomaticPseudoClock.delay";
-    private final long delay = Long.getLong(DELAY_PROPERTY, 0);
-    public static final String AMOUNT_PROPERTY = "SlowAutomaticPseudoClock.amount";
-    private final long amount = Long.getLong(AMOUNT_PROPERTY, 0);
+    private static boolean enabled = false; // when false, this should work as the same as AutomaticPseudoClock
+    private static long delay = 0;
+    private static long amount = 0;
     private boolean slownessInduced = false;
     private final long startTime;
 
@@ -25,7 +24,7 @@ public class SlowAutomaticPseudoClock extends AutomaticPseudoClock {
     protected void advancePseudoClock() {
         super.advancePseudoClock();
 
-        if (!slownessInduced && nextTick >= startTime + delay) {
+        if (enabled && !slownessInduced && nextTick >= startTime + delay) {
             try {
                 LOG.info("Inducing slowness of {} ms", amount);
                 Thread.sleep(amount);
@@ -34,5 +33,17 @@ public class SlowAutomaticPseudoClock extends AutomaticPseudoClock {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static void enable(long delayValue, long amountValue) {
+        enabled = true;
+        delay = delayValue;
+        amount = amountValue;
+    }
+
+    public static void resetAndDisable() {
+        enabled = false;
+        delay = 0;
+        amount = 0;
     }
 }
