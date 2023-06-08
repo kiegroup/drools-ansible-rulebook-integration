@@ -104,7 +104,7 @@ public class Payload {
         return payloadRunner.getReturnedMatches();
     }
 
-    private static class PayloadRunner implements Runnable {
+    public static class PayloadRunner implements Runnable {
 
         private final Payload payload;
 

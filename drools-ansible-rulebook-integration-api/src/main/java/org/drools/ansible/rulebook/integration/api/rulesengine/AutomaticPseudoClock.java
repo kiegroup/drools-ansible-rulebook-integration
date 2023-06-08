@@ -20,7 +20,7 @@ public class AutomaticPseudoClock {
 
     private final long period;
 
-    private volatile long nextTick;
+    protected volatile long nextTick;
 
     AutomaticPseudoClock(AbstractRulesEvaluator rulesEvaluator, long amount, TimeUnit unit) {
         this(rulesEvaluator, unit.toMillis(amount));
@@ -41,7 +41,7 @@ public class AutomaticPseudoClock {
         timer.shutdown();
     }
 
-    private void advancePseudoClock() {
+    protected void advancePseudoClock() {
         nextTick += period;
         if (Math.abs(System.currentTimeMillis() - nextTick) > period * 2) {
             LOG.warn("Pseudo clock is diverged, the difference is {} ms", (System.currentTimeMillis() - nextTick));
