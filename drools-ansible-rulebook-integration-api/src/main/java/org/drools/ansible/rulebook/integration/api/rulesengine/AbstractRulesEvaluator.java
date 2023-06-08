@@ -189,21 +189,6 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         }
     }
 
-    protected List<Match> getMatches(boolean event) {
-        List<Match> matches = findMatchedRules();
-        return !event || rulesExecutorSession.isMatchMultipleRules() || matches.size() < 2 ?
-                matches :
-                // when processing an event return only the matches for the first matched rule
-                matches.stream().takeWhile(match -> match.getRule().getName().equals(matches.get(0).getRule().getName())).collect(Collectors.toList());
-    }
-
-    private synchronized List<Match> findMatchedRules() {
-        rulesExecutorSession.setExecuteActions(false);
-        rulesExecutorSession.fireAllRules(registerOnlyAgendaFilter);
-        rulesExecutorSession.setExecuteActions(true);
-        return registerOnlyAgendaFilter.finalizeAndGetResults();
-    }
-
     private static Match enrichMatchWithFact(Match match, Map<String, Object> jsonFact) {
         return new FullMatchDecorator(match).withBoundObject("m", jsonFact);
     }
