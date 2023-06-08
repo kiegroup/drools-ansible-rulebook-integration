@@ -41,6 +41,16 @@
         <version>3.4.1</version>
         <configuration>
           <minimizeJar>true</minimizeJar>
+          <filters> <!-- since shading ecj, erase signatures see https://docs.oracle.com/en-us/iaas/data-flow/data-flow-tutorial/develop-apps-locally/create-fat-jars.htm -->
+            <filter>
+            <artifact>*:*</artifact>
+            <excludes>
+                  <exclude>META-INF/*.SF</exclude>
+                  <exclude>META-INF/*.DSA</exclude>
+                  <exclude>META-INF/*.RSA</exclude>
+            </excludes>
+            </filter>
+          </filters>
         </configuration>
         <executions>
           <execution>
