@@ -1,0 +1,115 @@
+[
+  {
+    "RuleSet": {
+      "name": "Test selectattr operator",
+      "hosts": [
+        "all"
+      ],
+      "sources": [
+        {
+          "EventSource": {
+            "name": "generic",
+            "source_name": "generic",
+            "source_args": {
+              "event_delay": 0.05,
+              "payload": [
+                {
+                  "id": "testcase 04",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "venus",
+                        "radius": 1200.01,
+                        "moons": null,
+                        "is_planet": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "source_filters": []
+          }
+        }
+      ],
+      "rules": [
+        {
+          "Rule": {
+            "name": "Multi condition selectattr, bool and null and var",
+            "condition": {
+              "AllCondition": [
+                {
+                  "SelectAttrExpression": {
+                    "lhs": {
+                      "Event": "planets"
+                    },
+                    "rhs": {
+                      "key": {
+                        "String": "planet.radius"
+                      },
+                      "operator": {
+                        "String": "<"
+                      },
+                      "value": {
+                        "Float": 1200.05
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #04"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr with negation and vars",
+            "condition": {
+              "AllCondition": [
+                {
+                  "SelectAttrExpression": {
+                    "lhs": {
+                      "Event": "planets"
+                    },
+                    "rhs": {
+                      "key": {
+                        "String": "planet.radius"
+                      },
+                      "operator": {
+                        "String": ">="
+                      },
+                      "value": {
+                        "Float": 1188.3
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #05"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        }
+      ]
+    }
+  }
+]

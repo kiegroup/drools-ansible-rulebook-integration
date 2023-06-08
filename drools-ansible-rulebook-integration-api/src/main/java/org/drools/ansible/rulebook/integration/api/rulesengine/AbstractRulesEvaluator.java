@@ -1,24 +1,27 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
-import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
-import org.drools.ansible.rulebook.integration.api.io.Response;
-import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
-import org.drools.core.common.InternalFactHandle;
-import org.drools.core.facttemplates.Fact;
-import org.kie.api.runtime.rule.Match;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
+import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
+import org.drools.ansible.rulebook.integration.api.io.Response;
+import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
+import org.drools.base.facttemplates.Fact;
+import org.drools.core.common.InternalFactHandle;
+import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
@@ -58,7 +61,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         if (log.isInfoEnabled()) {
             log.info("Start automatic pseudo clock with a tick every " + period + " " + unit.toString().toLowerCase());
         }
-        this.automaticClock = new AutomaticPseudoClock(this, period, unit);
+        this.automaticClock = AutomaticPseudoClockFactory.get().createAutomaticPseudoClock(this, period, unit);
     }
 
     @Override
@@ -82,7 +85,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     @Override
     public CompletableFuture<List<Match>> fire() {
-        return engineEvaluate(() -> getMatches(false));
+        return engineEvaluate(() -> atomicRuleEvaluation(false, null, null));
     }
 
     @Override
@@ -111,10 +114,11 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         if (log.isTraceEnabled()) {
             log.trace("Automatic advance of " + (millis - currentTime) + " milliseconds" );
         }
+        List<Match> matches = internalAdvanceTime(millis - currentTime, TimeUnit.MILLISECONDS);
 
-        return asyncExecutor == null ?
-                completeFutureOf(internalAdvanceTime(millis - currentTime, TimeUnit.MILLISECONDS)) :
-                asyncExecutor.submit(() -> writeResponseOnChannel(internalAdvanceTime(millis - currentTime, TimeUnit.MILLISECONDS) ) );
+        return asyncExecutor == null || matches.isEmpty() ?
+                completeFutureOf(matches) :
+                asyncExecutor.submit(() -> writeResponseOnChannel(matches) );
     }
 
     @Override
@@ -123,28 +127,24 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     private List<Match> retractMatchingFacts(Map<String, Object> json, boolean allowPartialMatch, String[] keysToExclude) {
-        List<InternalFactHandle> fhs = rulesExecutorSession.deleteAllMatchingFacts(json, allowPartialMatch, keysToExclude);
-        if (fhs.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<Match> matches = findMatchedRules();
-        for (int i = 0; i < matches.size(); i++) {
-            Map<String, Object> jsonFact = ((Fact) fhs.get(matches.size() == fhs.size() ? i : 0).getObject()).asMap();
-            matches.set(i, enrichMatchWithFact(matches.get(i), jsonFact));
-        }
-        return matches;
+        return atomicRuleEvaluation(false,
+                () -> rulesExecutorSession.deleteAllMatchingFacts(json, allowPartialMatch, keysToExclude),
+                (fhs, matches) -> {
+                    for (int i = 0; i < matches.size(); i++) {
+                        Map<String, Object> jsonFact = ((Fact) fhs.get(matches.size() == fhs.size() ? i : 0).getObject()).asMap();
+                        matches.set(i, enrichMatchWithFact(matches.get(i), jsonFact));
+                    }
+                });
     }
 
     protected abstract CompletableFuture<List<Match>> engineEvaluate(Supplier<List<Match>> resultSupplier);
 
     private List<Match> internalAdvanceTime(long amount, TimeUnit unit) {
-        rulesExecutorSession.advanceTime(amount, unit);
-        return findMatchedRules();
-    }
-
-    protected int internalExecuteFacts(Map<String, Object> factMap) {
-        rulesExecutorSession.insert( factMap, false );
-        return rulesExecutorSession.fireAllRules();
+        List<Match> matches = atomicRuleEvaluation(false, () -> rulesExecutorSession.advanceTime(amount, unit));
+        if (!matches.isEmpty() && log.isInfoEnabled()) {
+            log.info("Match(es) caused by automatic clock advance: " + matches);
+        }
+        return matches;
     }
 
     @Override
@@ -163,21 +163,22 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return rulesExecutorSession.getSessionStats();
     }
 
-    protected List<Match> process(Map<String, Object> factMap, boolean event) {
-        Collection<InternalFactHandle> fhs = insertFacts(factMap, event);
-        List<Match> matches = getMatches(event);
-        if (log.isDebugEnabled()) {
-            for (InternalFactHandle fh : fhs) {
-                if (fh.isDisconnected()) {
-                    String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((Fact)fh.getObject()).asMap());
-                    log.debug((event ? "Event " : "Fact ") + factAsString + " didn't match any rule and has been immediately discarded");
-                }
-            }
-        }
-        return matches;
+    protected List<Match> process(Map<String, Object> factMap, boolean processEventInsertion) {
+        return atomicRuleEvaluation(processEventInsertion,
+                () -> insertFacts(factMap, processEventInsertion),
+                (fhs, matches) -> {
+                    if (log.isDebugEnabled()) {
+                        for (InternalFactHandle fh : fhs) {
+                            if (fh.isDisconnected()) {
+                                String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((Fact)fh.getObject()).asMap());
+                                log.debug((processEventInsertion ? "Event " : "Fact ") + factAsString + " didn't match any rule and has been immediately discarded");
+                            }
+                        }
+                    }
+                });
     }
 
-    private Collection<InternalFactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
+    private List<InternalFactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
         String key = event ? "events" : "facts";
         if (factMap.size() == 1 && factMap.containsKey(key)) {
             return ((List<Map<String, Object>>)factMap.get(key)).stream()
@@ -203,7 +204,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return registerOnlyAgendaFilter.finalizeAndGetResults();
     }
 
-    private Match enrichMatchWithFact(Match match, Map<String, Object> jsonFact) {
+    private static Match enrichMatchWithFact(Match match, Map<String, Object> jsonFact) {
         return new FullMatchDecorator(match).withBoundObject("m", jsonFact);
     }
 
@@ -218,6 +219,47 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
             byte[] bytes = channel.write(new Response(getSessionId(), RuleMatch.asList(matches)));
             rulesExecutorSession.registerAsyncResponse(bytes);
         }
+        return matches;
+    }
+
+    private final Lock ruleEvaluationLock = new ReentrantLock();
+
+    protected int internalExecuteFacts(Map<String, Object> factMap) {
+        ruleEvaluationLock.lock();
+        try {
+            rulesExecutorSession.insert(factMap, false);
+            return rulesExecutorSession.fireAllRules();
+        } finally {
+            ruleEvaluationLock.unlock();
+        }
+    }
+
+    private List<Match> atomicRuleEvaluation(boolean processEventInsertion, Runnable beforeFire) {
+        return atomicRuleEvaluation(processEventInsertion, () -> { beforeFire.run(); return null; }, null);
+    }
+
+    private List<Match> atomicRuleEvaluation(boolean processEventInsertion, Supplier<List<InternalFactHandle>> beforeFire, BiConsumer<List<InternalFactHandle>, List<Match>> afterFire) {
+        List<InternalFactHandle> fhs = null;
+        List<Match> matches = Collections.emptyList();;
+
+        ruleEvaluationLock.lock();
+        try {
+            if (beforeFire != null) {
+                fhs = beforeFire.get();
+            }
+            if (fhs == null || !fhs.isEmpty()) {
+                rulesExecutorSession.setExecuteActions(false);
+                rulesExecutorSession.fireAllRules(registerOnlyAgendaFilter);
+                rulesExecutorSession.setExecuteActions(true);
+                matches = registerOnlyAgendaFilter.finalizeAndGetResults(processEventInsertion);
+            }
+        } finally {
+            ruleEvaluationLock.unlock();
+            if (afterFire != null && fhs != null && !fhs.isEmpty()) {
+                afterFire.accept(fhs, matches);
+            }
+        }
+
         return matches;
     }
 }

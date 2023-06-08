@@ -5,12 +5,14 @@
       "hosts":[
         "all"
       ],
+      "delay_warning_threshold":"2 seconds",
       "sources":[
         {
           "EventSource":{
             "name":"generic",
             "source_name":"generic",
             "source_args":{
+              "start_delay":2,
               "loop_count":2,
               "loop_delay":1,
               "timestamp":true,

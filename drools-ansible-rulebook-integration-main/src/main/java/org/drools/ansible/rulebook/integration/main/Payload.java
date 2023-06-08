@@ -1,20 +1,27 @@
 package org.drools.ansible.rulebook.integration.main;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.drools.ansible.rulebook.integration.api.ObjectMapperFactory;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class Payload {
 
     private final List<String> list;
 
+    private int startDelay = 0;
+
     private int loopCount = 1;
     private int loopDelay = 0;
-    private int delay = 0;
+    private int eventDelay = 0;
 
     private int shutdown = 0;
 
@@ -51,13 +58,18 @@ public class Payload {
         Payload payload = new Payload(payloadList);
 
         try {
-            payload.delay = sourcesArgs.getInt("delay");
+            payload.eventDelay = sourcesArgs.getInt("delay");
         } catch (JSONException e) {
             try {
-            payload.delay = sourcesArgs.getInt("event_delay");
+            payload.eventDelay = sourcesArgs.getInt("event_delay");
             } catch (JSONException e1) {
                 /* ignore */
             }
+        }
+        try {
+            payload.startDelay = sourcesArgs.getInt("start_delay");
+        } catch (JSONException e) {
+            /* ignore */
         }
         try {
             payload.loopCount = sourcesArgs.getInt("loop_count");
@@ -78,17 +90,29 @@ public class Payload {
         return payload;
     }
 
+    public int getStartDelay() {
+        return startDelay;
+    }
+
     public Runnable asRunnable(AstRulesEngine engine, long sessionId) {
         return new PayloadRunner(this, engine, sessionId);
     }
 
-    private static class PayloadRunner implements Runnable {
+    public List<Map> execute(AstRulesEngine engine, long sessionId) {
+        PayloadRunner payloadRunner = new PayloadRunner(this, engine, sessionId);
+        payloadRunner.run();
+        return payloadRunner.getReturnedMatches();
+    }
+
+    public static class PayloadRunner implements Runnable {
 
         private final Payload payload;
 
         private final AstRulesEngine engine;
 
         private final long sessionId;
+
+        private List<Map> returnedMatches = new ArrayList<>();
 
         private PayloadRunner(Payload payload, AstRulesEngine engine, long sessionId) {
             this.payload = payload;
@@ -101,8 +125,14 @@ public class Payload {
             long start = System.currentTimeMillis();
             for (int i = 0; i < payload.loopCount; i++) {
                 for (String p : payload.list) {
-                    engine.assertEvent(sessionId, p);
-                    sleepSeconds(payload.delay);
+                    String resultJson = engine.assertEvent(sessionId, p);
+                    ObjectMapper mapper = ObjectMapperFactory.createMapper(new JsonFactory());
+                    try {
+                        returnedMatches.addAll(mapper.readValue(resultJson, List.class));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    sleepSeconds(payload.eventDelay);
                 }
                 sleepSeconds(payload.loopDelay);
             }
@@ -122,6 +152,10 @@ public class Payload {
                     throw new RuntimeException(e);
                 }
             }
+        }
+
+        public List<Map> getReturnedMatches() {
+            return returnedMatches;
         }
     }
 }

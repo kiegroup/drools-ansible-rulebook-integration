@@ -9,12 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
@@ -28,7 +31,7 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     private final Set<Match> matchedRules = new LinkedHashSet<>();
 
-    private final List<FactHandle> eventsToBeDeleted = new ArrayList<>();
+    private final Set<FactHandle> eventsToBeDeleted = Collections.newSetFromMap(new IdentityHashMap<>());
 
     public RegisterOnlyAgendaFilter(RulesExecutorSession rulesExecutorSession) {
         this.rulesExecutorSession = rulesExecutorSession;
@@ -58,18 +61,25 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
             }
         }
 
-        rulesExecutorSession.registerMatch(match);
         return validMatch;
     }
 
-    public List<Match> finalizeAndGetResults() {
+    public List<Match> finalizeAndGetResults(boolean event) {
         rulesExecutorSession.registerMatchedEvents(eventsToBeDeleted);
         for (FactHandle toBeDeleted : eventsToBeDeleted) {
             rulesExecutorSession.delete(toBeDeleted);
         }
         eventsToBeDeleted.clear();
+
         List<Match> matches = new ArrayList<>( matchedRules );
         matchedRules.clear();
+
+        if (event && matches.size() > 1) {
+            String firstMatchedRuleName = matches.get(0).getRule().getName();
+            matches = matches.stream().takeWhile(match -> match.getRule().getName().equals(firstMatchedRuleName)).collect(Collectors.toList());
+        }
+
+        matches.forEach(rulesExecutorSession::registerMatch);
         return matches;
     }
 
@@ -83,11 +93,11 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
         return "Activation of" + ruleType + RuleMatch.from(match);
     }
 
-    private boolean isValidMatch(List<InternalFactHandle> fhs) {
+    private static boolean isValidMatch(List<InternalFactHandle> fhs) {
         return !isSelfJoin(fhs);
     }
 
-    private boolean isSelfJoin(List<InternalFactHandle> fhs) {
+    private static boolean isSelfJoin(List<InternalFactHandle> fhs) {
         for (int i = 0; i < fhs.size()-1; i++) {
             for (int j = i+1; j < fhs.size(); j++) {
                 if (fhs.get(i) == fhs.get(j)) {

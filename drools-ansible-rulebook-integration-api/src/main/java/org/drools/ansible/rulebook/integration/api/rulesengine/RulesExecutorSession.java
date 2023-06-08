@@ -2,9 +2,10 @@ package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.core.common.InternalFactHandle;
-import org.drools.core.facttemplates.Event;
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Event;
+import org.drools.base.facttemplates.Fact;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
@@ -55,6 +56,10 @@ public class RulesExecutorSession {
 
     Collection<? extends Object> getObjects() {
         return kieSession.getObjects();
+    }
+
+    Collection<? extends Object> getObjects(ObjectFilter filter) {
+        return kieSession.getObjects(filter);
     }
 
     InternalFactHandle insert(Map<String, Object> factMap, boolean event) {
@@ -127,7 +132,7 @@ public class RulesExecutorSession {
         sessionStatsCollector.registerMatch(this, match);
     }
 
-    public void registerMatchedEvents(List<FactHandle> events) {
+    public void registerMatchedEvents(Collection<FactHandle> events) {
         sessionStatsCollector.registerMatchedEvents(events);
     }
 
@@ -146,6 +151,7 @@ public class RulesExecutorSession {
     void advanceTime( long amount, TimeUnit unit ) {
         SessionPseudoClock clock = getPseudoClock();
         clock.advanceTime(amount, unit);
+        sessionStatsCollector.registerClockAdvance(amount, unit);
     }
 
     SessionPseudoClock getPseudoClock() {
@@ -158,5 +164,9 @@ public class RulesExecutorSession {
 
     public boolean isMatchMultipleRules() {
         return rulesSet.isMatchMultipleRules();
+    }
+    
+    long getDelayWarningThreshold() {
+        return rulesSet.getDelayWarningThreshold();
     }
 }

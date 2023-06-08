@@ -1,11 +1,8 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.core.facttemplates.Event;
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Event;
+import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.DroolsEntryPoint;
 import org.drools.model.PrototypeDSL;
@@ -14,11 +11,17 @@ import org.drools.model.Variable;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static java.util.stream.Collectors.toList;
 import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount.parseTimeAmount;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.writeMetaDataOnEvent;
 import static org.drools.model.DSL.not;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
@@ -92,6 +95,10 @@ public class OnceWithinDefinition extends OnceAbstractTimeConstraint {
         controlEvent.set("drools_rule_name", ruleName);
         drools.insert(controlEvent);
         drools.delete(fact);
+
+        Map ruleEngineMeta = new HashMap();
+        ruleEngineMeta.put("once_within_time_window", timeAmount.toString());
+        writeMetaDataOnEvent(fact, ruleEngineMeta);
     }
 
     @Override

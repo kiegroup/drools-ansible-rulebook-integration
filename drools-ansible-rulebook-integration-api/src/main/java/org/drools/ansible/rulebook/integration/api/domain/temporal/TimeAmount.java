@@ -21,7 +21,7 @@ public class TimeAmount {
 
     @Override
     public String toString() {
-        return "TimeAmount{ " + amount + " " + timeUnit + " }";
+        return amount + " " + timeUnit;
     }
 
     public static TimeAmount parseTimeAmount(String timeAmount) {
@@ -51,5 +51,9 @@ public class TimeAmount {
             return TimeUnit.DAYS;
         }
         throw new IllegalArgumentException("Unknown time unit: " + unit);
+    }
+
+    public long toMillis() {
+        return timeUnit.toMillis(amount);
     }
 }

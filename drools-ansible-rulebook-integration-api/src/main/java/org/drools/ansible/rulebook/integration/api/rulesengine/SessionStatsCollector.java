@@ -1,12 +1,17 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
+import java.time.Instant;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
-
-import java.time.Instant;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SessionStatsCollector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SessionStatsCollector.class.getName());
 
     private final long id;
 
@@ -22,6 +27,8 @@ public class SessionStatsCollector {
 
     private String lastRuleFired = "";
     private long lastRuleFiredTime;
+
+    private int clockAdvanceCount;
 
     public SessionStatsCollector(long id) {
         this.id = id;
@@ -63,13 +70,21 @@ public class SessionStatsCollector {
         return lastRuleFiredTime;
     }
 
+    public int getClockAdvanceCount() {
+        return clockAdvanceCount;
+    }
+
     public void registerMatch(RulesExecutorSession session, Match match) {
         rulesTriggered++;
         lastRuleFired = match.getRule().getName();
         lastRuleFiredTime = session.getPseudoClock().getCurrentTime();
+        long delay = System.currentTimeMillis() - lastRuleFiredTime;
+        if (delay > session.getDelayWarningThreshold()) {
+            LOG.warn("{} is fired with a delay of {} ms", lastRuleFired, delay);
+        }
     }
 
-    public void registerMatchedEvents(List<FactHandle> events) {
+    public void registerMatchedEvents(Collection<FactHandle> events) {
         matchedEvents += events.size();
     }
 
@@ -80,5 +95,9 @@ public class SessionStatsCollector {
     public void registerAsyncResponse(byte[] bytes) {
         asyncResponses++;
         bytesSentOnAsync += bytes.length;
+    }
+
+    public void registerClockAdvance(long amount, TimeUnit unit) {
+        clockAdvanceCount++;
     }
 }

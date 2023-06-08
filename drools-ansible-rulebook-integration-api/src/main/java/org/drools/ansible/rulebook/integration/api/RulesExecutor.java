@@ -3,7 +3,7 @@ package org.drools.ansible.rulebook.integration.api;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesEvaluator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Fact;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +49,11 @@ public class RulesExecutor {
 
     }
     public SessionStats dispose() {
+        SessionStats sessionStats = rulesEvaluator.dispose();
         if (log.isInfoEnabled()) {
-            log.info("Disposing session with id: " + getId());
+            log.info("Disposing session with id: " + getId() + "; " + sessionStats);
         }
-        return rulesEvaluator.dispose();
+        return sessionStats;
     }
 
     public long rulesCount() {

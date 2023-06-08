@@ -1,0 +1,1118 @@
+[
+  {
+    "RuleSet": {
+      "name": "Test selectattr operator",
+      "hosts": [
+        "all"
+      ],
+      "sources": [
+        {
+          "EventSource": {
+            "name": "generic",
+            "source_name": "generic",
+            "source_args": {
+              "event_delay": 0.05,
+              "payload": [
+                {
+                  "id": "testcase 01",
+                  "asteroids": [
+                    {
+                      "asteroid": {
+                        "name": "apophis"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 02",
+                  "asteroids": [
+                    {
+                      "asteroid": {
+                        "name": "vesta",
+                        "category": "main belt",
+                        "description": "Named after the goddess of\nthe hearth and household in\nRoman mythology.\n"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase negative",
+                  "asteroids": [
+                    {
+                      "asteroid": {
+                        "name": "eros",
+                        "discovered_by": "gustav witt",
+                        "radius": 8.42
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 03",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "jupiter",
+                        "radius": 142984,
+                        "orbital_period": 4311.86
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 03",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "earth",
+                        "radius": 6371,
+                        "orbital_period": 365.01
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 04",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "venus",
+                        "radius": 1200.01,
+                        "moons": null,
+                        "is_planet": true
+                      }
+                    },
+                    {
+                      "planet": {
+                        "name": "x",
+                        "radius": 909.09,
+                        "moons": null,
+                        "is_planet": false
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 05",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "pluto",
+                        "radius": 1188.3,
+                        "total_moons": 5,
+                        "is_planet": false
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 06",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "mars",
+                        "moons": [
+                          "phobos",
+                          "deimos"
+                        ]
+                      }
+                    },
+                    {
+                      "planet": {
+                        "name": "earth",
+                        "moons": [
+                          "moon"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 07",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "eris",
+                        "moons": [
+                          "dysnomia"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 08",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "saturn",
+                        "total_moons": 62,
+                        "largest_moon": "titan"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 09",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "neptune",
+                        "total_moons": 14,
+                        "largest_moon": "triton"
+                      }
+                    },
+                    {
+                      "planet": {
+                        "name": "uranus",
+                        "total_moons": 27,
+                        "largest_moon": "titania"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 09",
+                  "planets": [
+                    {
+                      "planet": {
+                        "name": "earth",
+                        "total_moons": 1,
+                        "largest_moon": "moon"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 10",
+                  "suns": [
+                    {
+                      "sun": {
+                        "name": "sol",
+                        "attributes": {
+                          "physical": {
+                            "age": 4600000000,
+                            "composition": {
+                              "gases": {
+                                "hydrogen": 73.46,
+                                "helium": 24.85
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "testcase 11",
+                  "spacecraft": [
+                    {
+                      "craft": {
+                        "name": "voyager 1",
+                        "detections": [
+                          15,
+                          8121.99,
+                          1111
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "source_filters": []
+          }
+        }
+      ],
+      "rules": [
+        {
+          "Rule": {
+            "name": "Single condition selectattr, case insensitive",
+            "condition": {
+              "AllCondition": [
+                {
+                  "SelectAttrExpression": {
+                    "lhs": {
+                      "Event": "asteroids"
+                    },
+                    "rhs": {
+                      "key": {
+                        "String": "asteroid.name"
+                      },
+                      "operator": {
+                        "String": "regex"
+                      },
+                      "value": {
+                        "String": "(?i)APOPHi"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #01"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr with string search",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "AndExpression": {
+                        "lhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "asteroids"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "asteroid.name"
+                              },
+                              "operator": {
+                                "String": "regex"
+                              },
+                              "value": {
+                                "String": "vest|Vest"
+                              }
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "asteroids"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "asteroid.description"
+                              },
+                              "operator": {
+                                "String": "search"
+                              },
+                              "value": {
+                                "String": "(?si)HeaRTH.*myTHology"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "SelectAttrExpression": {
+                        "lhs": {
+                          "Event": "asteroids"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "asteroid.category"
+                          },
+                          "operator": {
+                            "String": "match"
+                          },
+                          "value": {
+                            "String": "^main.*"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #02"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr negative",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "AndExpression": {
+                        "lhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "asteroids"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "asteroid.name"
+                              },
+                              "operator": {
+                                "String": "match"
+                              },
+                              "value": {
+                                "String": "eros"
+                              }
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "asteroids"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "asteroid.discovered_by"
+                              },
+                              "operator": {
+                                "String": "search"
+                              },
+                              "value": {
+                                "String": "gustav.*"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "SelectAttrExpression": {
+                        "lhs": {
+                          "Event": "asteroids"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "asteroid.radius"
+                          },
+                          "operator": {
+                            "String": "!="
+                          },
+                          "value": {
+                            "Float": 8.42
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Negative testcase (should not fire)"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr, float and int",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "SelectAttrExpression": {
+                        "lhs": {
+                          "Event": "planets"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "planet.name"
+                          },
+                          "operator": {
+                            "String": "regex"
+                          },
+                          "value": {
+                            "String": "jupiter|earth"
+                          }
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "OrExpression": {
+                        "lhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.orbital_period"
+                              },
+                              "operator": {
+                                "String": "<="
+                              },
+                              "value": {
+                                "Float": 365.01
+                              }
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.radius"
+                              },
+                              "operator": {
+                                "String": ">"
+                              },
+                              "value": {
+                                "Integer": 140000
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #03"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr, bool and null and var",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "SelectAttrExpression": {
+                        "lhs": {
+                          "Event": "planets"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "planet.is_planet"
+                          },
+                          "operator": {
+                            "String": "!="
+                          },
+                          "value": {
+                            "Integer": false
+                          }
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "OrExpression": {
+                        "lhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.moons"
+                              },
+                              "operator": {
+                                "String": "=="
+                              },
+                              "value": {
+                                "NullType": null
+                              }
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.radius"
+                              },
+                              "operator": {
+                                "String": "<"
+                              },
+                              "value": {
+                                "Float": 1200.05
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #04"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr with negation and vars",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "AndExpression": {
+                        "lhs": {
+                          "SelectAttrNotExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.is_planet"
+                              },
+                              "operator": {
+                                "String": "=="
+                              },
+                              "value": {
+                                "Boolean": true
+                              }
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.radius"
+                              },
+                              "operator": {
+                                "String": ">="
+                              },
+                              "value": {
+                                "Float": 1188.3
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "OrExpression": {
+                        "lhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.total_moons"
+                              },
+                              "operator": {
+                                "String": "!="
+                              },
+                              "value": {
+                                "NullType": null
+                              }
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrNotExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.total_moons"
+                              },
+                              "operator": {
+                                "String": ">"
+                              },
+                              "value": {
+                                "Integer": 5
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #05"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Single condition selectattr with nested list contains",
+            "condition": {
+              "AllCondition": [
+                {
+                  "SelectAttrExpression": {
+                    "lhs": {
+                      "Event": "planets"
+                    },
+                    "rhs": {
+                      "key": {
+                        "String": "planet.moons"
+                      },
+                      "operator": {
+                        "String": "contains"
+                      },
+                      "value": {
+                        "String": "phobos"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #06"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr with nested list contains with negation",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "SelectAttrExpression": {
+                        "lhs": {
+                          "Event": "planets"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "planet.moons"
+                          },
+                          "operator": {
+                            "String": "contains"
+                          },
+                          "value": {
+                            "String": "dysnomia"
+                          }
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "OrExpression": {
+                        "lhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.moons"
+                              },
+                              "operator": {
+                                "String": "not contains"
+                              },
+                              "value": {
+                                "String": "deimos"
+                              }
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrNotExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.moons"
+                              },
+                              "operator": {
+                                "String": "contains"
+                              },
+                              "value": {
+                                "String": "titan"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #07"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr with nested list in with var",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "SelectAttrExpression": {
+                        "lhs": {
+                          "Event": "planets"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "planet.total_moons"
+                          },
+                          "operator": {
+                            "String": "in"
+                          },
+                          "value": [
+                            {
+                              "Integer": 50
+                            },
+                            {
+                              "Float": 62.0
+                            },
+                            {
+                              "Float": 79.99
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "SelectAttrExpression": {
+                        "lhs": {
+                          "Event": "planets"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "planet.largest_moon"
+                          },
+                          "operator": {
+                            "String": "in"
+                          },
+                          "value": [
+                            {
+                              "String": "titan"
+                            },
+                            {
+                              "String": "triton"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #08"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr with nested list in with negation and var",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "AndExpression": {
+                        "lhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.total_moons"
+                              },
+                              "operator": {
+                                "String": "in"
+                              },
+                              "value": [
+                                {
+                                  "Integer": 27
+                                },
+                                {
+                                  "Integer": 1
+                                },
+                                {
+                                  "Integer": 84
+                                },
+                                {
+                                  "Float": 155.2
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "planets"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "planet.largest_moon"
+                              },
+                              "operator": {
+                                "String": "not in"
+                              },
+                              "value": [
+                                {
+                                  "String": "titania"
+                                },
+                                {
+                                  "String": "x"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "SelectAttrNotExpression": {
+                        "lhs": {
+                          "Event": "planets"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "planet.largest_moon"
+                          },
+                          "operator": {
+                            "String": "in"
+                          },
+                          "value": [
+                            {
+                              "String": "deimos"
+                            },
+                            {
+                              "String": "phobos"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #09"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Multi condition selectattr with deeply nested attributes",
+            "condition": {
+              "AllCondition": [
+                {
+                  "AndExpression": {
+                    "lhs": {
+                      "SelectAttrExpression": {
+                        "lhs": {
+                          "Event": "suns"
+                        },
+                        "rhs": {
+                          "key": {
+                            "String": "sun.attributes.physical.composition.gases.hydrogen"
+                          },
+                          "operator": {
+                            "String": ">"
+                          },
+                          "value": {
+                            "Integer": 73
+                          }
+                        }
+                      }
+                    },
+                    "rhs": {
+                      "OrExpression": {
+                        "lhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "suns"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "sun.attributes.physical.composition.gases.helium"
+                              },
+                              "operator": {
+                                "String": "=="
+                              },
+                              "value": {
+                                "Float": 24.85
+                              }
+                            }
+                          }
+                        },
+                        "rhs": {
+                          "SelectAttrExpression": {
+                            "lhs": {
+                              "Event": "suns"
+                            },
+                            "rhs": {
+                              "key": {
+                                "String": "sun.attributes.physical.age"
+                              },
+                              "operator": {
+                                "String": ">="
+                              },
+                              "value": {
+                                "Integer": 4600000000
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #10"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        },
+        {
+          "Rule": {
+            "name": "Single condition selectattr nested list contains number",
+            "condition": {
+              "AllCondition": [
+                {
+                  "SelectAttrExpression": {
+                    "lhs": {
+                      "Event": "spacecraft"
+                    },
+                    "rhs": {
+                      "key": {
+                        "String": "craft.detections"
+                      },
+                      "operator": {
+                        "String": "contains"
+                      },
+                      "value": {
+                        "Float": 8121.99
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "actions": [
+              {
+                "Action": {
+                  "action": "debug",
+                  "action_args": {
+                    "msg": "Output for testcase #11"
+                  }
+                }
+              }
+            ],
+            "enabled": true
+          }
+        }
+      ]
+    }
+  }
+]

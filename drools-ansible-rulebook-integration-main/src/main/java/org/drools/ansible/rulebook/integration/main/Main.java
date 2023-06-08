@@ -1,12 +1,5 @@
 package org.drools.ansible.rulebook.integration.main;
 
-import org.drools.ansible.rulebook.integration.api.RuleFormat;
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
-import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,22 +11,62 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.drools.ansible.rulebook.integration.api.RuleFormat;
+import org.drools.ansible.rulebook.integration.api.RuleNotation;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
+import org.drools.ansible.rulebook.integration.main.Payload.PayloadRunner;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    
     private static final boolean EXECUTE_PAYLOAD_ASYNC = true;
 
     private static final String DEFAULT_JSON = "56_once_after.json";
 
+    private static final int THREADS_NR = 1; // run with 1 thread by default
+
+    private static final int EXPECTED_MATCHES = -1; // expected number of matches, negative to ignore
+
     private static volatile boolean terminated = false;
 
-    public static void main(String[] args) {
+    private static boolean foundError = false;
+
+    public static void main(String[] args) throws InterruptedException {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
-        long duration = execute(jsonFile);
-        System.out.println("Executed in " + duration + " msecs");
+        parallelExecute(jsonFile);
     }
 
-    public static long execute(String jsonFile) {
+    private static void parallelExecute(String jsonFile) throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(THREADS_NR);
+
+        for (int n = 0; n < THREADS_NR; n++) {
+            executor.execute(() -> {
+                ExecuteResult result = execute(jsonFile);
+                LOGGER.info("Executed in " + result.getDuration() + " msecs");
+            });
+        }
+
+        executor.shutdown();
+        executor.awaitTermination(300, TimeUnit.SECONDS);
+
+        if (foundError) {
+            System.err.println("ERROR FOUND!!! Check above logs");
+            throw new IllegalStateException();
+        }
+    }
+
+    public static ExecuteResult execute(String jsonFile) {
         try (AstRulesEngine engine = new AstRulesEngine()) {
             JSONObject jsonRuleSet = getJsonRuleSet(jsonFile);
             Payload payload = Payload.parsePayload(jsonRuleSet);
@@ -43,8 +76,14 @@ public class Main {
             int port = engine.port();
 
             Instant start = Instant.now();
-            executePayload(engine, rulesSet, id, port, payload);
-            return Duration.between(start, Instant.now()).toMillis();
+            List<Map> returnedMatches = executePayload(engine, rulesSet, id, port, payload);
+
+            String stats = engine.sessionStats(id);
+            LOGGER.info(stats);
+
+            long duration = Duration.between(start, Instant.now()).toMillis();
+
+            return new ExecuteResult(returnedMatches, duration);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,24 +95,41 @@ public class Main {
         return (JSONObject) jsonObject.get("RuleSet");
     }
 
-    private static void executePayload(AstRulesEngine engine, RulesSet rulesSet, long id, int port, Payload payload) throws IOException {
+    private static List<Map> executePayload(AstRulesEngine engine, RulesSet rulesSet, long id, int port, Payload payload) throws IOException {
         if (rulesSet.hasAsyncExecution()) {
-            runAsyncExec(engine, id, port, payload);
+            return runAsyncExec(engine, id, port, payload);
         } else {
-            payload.asRunnable(engine, id).run();
+            List<Map> returnedMatches = payload.execute(engine, id);
+            LOGGER.info("Returned matches: " + returnedMatches.size());
+            returnedMatches.forEach(map -> LOGGER.info("  " + map.entrySet()));
+
+            if (EXPECTED_MATCHES >= 0 && returnedMatches.size() != EXPECTED_MATCHES) {
+                LOGGER.error("Unexpected number of matches, expected = " + EXPECTED_MATCHES + " actual = " + returnedMatches.size());
+                foundError = true;
+            }
+            return returnedMatches;
         }
     }
 
-    private static void runAsyncExec(AstRulesEngine engine, long id, int port, Payload payload) throws IOException {
+    private static List<Map> runAsyncExec(AstRulesEngine engine, long id, int port, Payload payload) throws IOException {
+        if (payload.getStartDelay() > 0) {
+            try {
+                Thread.sleep( payload.getStartDelay() * 1000L );
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         try (Socket socket = new Socket("localhost", port)) {
             if (EXECUTE_PAYLOAD_ASYNC) {
                 executeInNewThread(payload.asRunnable(engine, id));
-                readAsyncChannel(socket);
+                return readAsyncChannel(socket);
             } else {
                 executeInNewThread(() -> readAsyncChannel(socket));
-                payload.asRunnable(engine, id).run();
+                PayloadRunner payloadRunnable = (PayloadRunner) payload.asRunnable(engine, id);
+                payloadRunnable.run();
+                waitForTermination();
+                return payloadRunnable.getReturnedMatches();
             }
-            waitForTermination();
         }
     }
 
@@ -87,7 +143,7 @@ public class Main {
         }
     }
 
-    private static void readAsyncChannel(Socket socket) {
+    private static List<Map> readAsyncChannel(Socket socket) {
         try {
             DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
             long startTime = System.currentTimeMillis();
@@ -103,9 +159,12 @@ public class Main {
             List<Object> matches = v.getJSONArray("result").toList();
             Map<String, Map> match = (Map<String, Map>) matches.get(0);
 
-            System.out.println(match + " fired after " + firingTime + " milliseconds");
+            LOGGER.info(match + " fired after " + firingTime + " milliseconds");
+
+            List<Map> matchMapList = matches.stream().map(Map.class::cast).collect(Collectors.toList());
 
             terminated = true;
+            return matchMapList;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -129,5 +188,23 @@ public class Main {
         Thread thread = new Thread(runnable);
         thread.setDaemon(true);
         thread.start();
+    }
+
+    public static class ExecuteResult {
+        private final List<Map> returnedMatches;
+        private final long duration;
+
+        public ExecuteResult(List<Map> returnedMatches, long duration) {
+            this.returnedMatches = returnedMatches;
+            this.duration = duration;
+        }
+
+        public List<Map> getReturnedMatches() {
+            return returnedMatches;
+        }
+
+        public long getDuration() {
+            return duration;
+        }
     }
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.drools.core.facttemplates.Fact;
+import org.drools.base.facttemplates.Fact;
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.kie.api.runtime.rule.Match;
 
