@@ -46,7 +46,7 @@ mvn clean package -Pnative
 To run the generated native executable, generated in `target/`, execute
 
 ```sh
-./target/drools-ansible-rulebook-integration-core-rest-1.0.2-SNAPSHOT-runner
+./target/drools-ansible-rulebook-integration-core-rest-1.0.3-SNAPSHOT-runner
 ```
 
 Note: This does not yet work on Windows, GraalVM and Quarkus should be rolling out support for Windows soon.
