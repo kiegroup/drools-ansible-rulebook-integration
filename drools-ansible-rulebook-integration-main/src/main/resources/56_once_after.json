@@ -5,6 +5,7 @@
       "hosts":[
         "all"
       ],
+      "delay_warning_threshold":"2 seconds",
       "sources":[
         {
           "EventSource":{

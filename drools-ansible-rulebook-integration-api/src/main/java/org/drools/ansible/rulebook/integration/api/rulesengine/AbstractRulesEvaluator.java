@@ -1,16 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
-import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
-import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
-import org.drools.ansible.rulebook.integration.api.io.Response;
-import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
-import org.drools.core.common.InternalFactHandle;
-import org.drools.base.facttemplates.Fact;
-import org.kie.api.runtime.rule.Match;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +11,17 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
+import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
+import org.drools.ansible.rulebook.integration.api.io.Response;
+import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
+import org.drools.base.facttemplates.Fact;
+import org.drools.core.common.InternalFactHandle;
+import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
@@ -61,7 +61,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         if (log.isInfoEnabled()) {
             log.info("Start automatic pseudo clock with a tick every " + period + " " + unit.toString().toLowerCase());
         }
-        this.automaticClock = new AutomaticPseudoClock(this, period, unit);
+        this.automaticClock = AutomaticPseudoClockFactory.get().createAutomaticPseudoClock(this, period, unit);
     }
 
     @Override

@@ -1,14 +1,5 @@
 package org.drools.ansible.rulebook.integration.main;
 
-import org.drools.ansible.rulebook.integration.api.RuleFormat;
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
-import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,6 +14,17 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.drools.ansible.rulebook.integration.api.RuleFormat;
+import org.drools.ansible.rulebook.integration.api.RuleNotation;
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
+import org.drools.ansible.rulebook.integration.main.Payload.PayloadRunner;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
 
@@ -50,8 +52,8 @@ public class Main {
 
         for (int n = 0; n < THREADS_NR; n++) {
             executor.execute(() -> {
-                long duration = execute(jsonFile);
-                LOGGER.info("Executed in " + duration + " msecs");
+                ExecuteResult result = execute(jsonFile);
+                LOGGER.info("Executed in " + result.getDuration() + " msecs");
             });
         }
 
@@ -64,7 +66,7 @@ public class Main {
         }
     }
 
-    public static long execute(String jsonFile) {
+    public static ExecuteResult execute(String jsonFile) {
         try (AstRulesEngine engine = new AstRulesEngine()) {
             JSONObject jsonRuleSet = getJsonRuleSet(jsonFile);
             Payload payload = Payload.parsePayload(jsonRuleSet);
@@ -74,12 +76,14 @@ public class Main {
             int port = engine.port();
 
             Instant start = Instant.now();
-            executePayload(engine, rulesSet, id, port, payload);
+            List<Map> returnedMatches = executePayload(engine, rulesSet, id, port, payload);
 
             String stats = engine.sessionStats(id);
             LOGGER.info(stats);
 
-            return Duration.between(start, Instant.now()).toMillis();
+            long duration = Duration.between(start, Instant.now()).toMillis();
+
+            return new ExecuteResult(returnedMatches, duration);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,9 +95,9 @@ public class Main {
         return (JSONObject) jsonObject.get("RuleSet");
     }
 
-    private static void executePayload(AstRulesEngine engine, RulesSet rulesSet, long id, int port, Payload payload) throws IOException {
+    private static List<Map> executePayload(AstRulesEngine engine, RulesSet rulesSet, long id, int port, Payload payload) throws IOException {
         if (rulesSet.hasAsyncExecution()) {
-            runAsyncExec(engine, id, port, payload);
+            return runAsyncExec(engine, id, port, payload);
         } else {
             List<Map> returnedMatches = payload.execute(engine, id);
             LOGGER.info("Returned matches: " + returnedMatches.size());
@@ -103,10 +107,11 @@ public class Main {
                 LOGGER.error("Unexpected number of matches, expected = " + EXPECTED_MATCHES + " actual = " + returnedMatches.size());
                 foundError = true;
             }
+            return returnedMatches;
         }
     }
 
-    private static void runAsyncExec(AstRulesEngine engine, long id, int port, Payload payload) throws IOException {
+    private static List<Map> runAsyncExec(AstRulesEngine engine, long id, int port, Payload payload) throws IOException {
         if (payload.getStartDelay() > 0) {
             try {
                 Thread.sleep( payload.getStartDelay() * 1000L );
@@ -117,12 +122,14 @@ public class Main {
         try (Socket socket = new Socket("localhost", port)) {
             if (EXECUTE_PAYLOAD_ASYNC) {
                 executeInNewThread(payload.asRunnable(engine, id));
-                readAsyncChannel(socket);
+                return readAsyncChannel(socket);
             } else {
                 executeInNewThread(() -> readAsyncChannel(socket));
-                payload.asRunnable(engine, id).run();
+                PayloadRunner payloadRunnable = (PayloadRunner) payload.asRunnable(engine, id);
+                payloadRunnable.run();
+                waitForTermination();
+                return payloadRunnable.getReturnedMatches();
             }
-            waitForTermination();
         }
     }
 
@@ -136,7 +143,7 @@ public class Main {
         }
     }
 
-    private static void readAsyncChannel(Socket socket) {
+    private static List<Map> readAsyncChannel(Socket socket) {
         try {
             DataInputStream bufferedInputStream = new DataInputStream(socket.getInputStream());
             long startTime = System.currentTimeMillis();
@@ -154,7 +161,10 @@ public class Main {
 
             LOGGER.info(match + " fired after " + firingTime + " milliseconds");
 
+            List<Map> matchMapList = matches.stream().map(Map.class::cast).collect(Collectors.toList());
+
             terminated = true;
+            return matchMapList;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -178,5 +188,23 @@ public class Main {
         Thread thread = new Thread(runnable);
         thread.setDaemon(true);
         thread.start();
+    }
+
+    public static class ExecuteResult {
+        private final List<Map> returnedMatches;
+        private final long duration;
+
+        public ExecuteResult(List<Map> returnedMatches, long duration) {
+            this.returnedMatches = returnedMatches;
+            this.duration = duration;
+        }
+
+        public List<Map> getReturnedMatches() {
+            return returnedMatches;
+        }
+
+        public long getDuration() {
+            return duration;
+        }
     }
 }

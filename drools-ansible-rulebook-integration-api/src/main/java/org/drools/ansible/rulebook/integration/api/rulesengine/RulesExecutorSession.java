@@ -161,4 +161,8 @@ public class RulesExecutorSession {
     void setExecuteActions(boolean executeActions) {
         rulesExecutionController.setExecuteActions(executeActions);
     }
+
+    long getDelayWarningThreshold() {
+        return rulesSet.getDelayWarningThreshold();
+    }
 }
