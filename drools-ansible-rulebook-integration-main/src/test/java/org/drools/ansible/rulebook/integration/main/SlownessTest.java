@@ -48,6 +48,7 @@ public class SlownessTest {
             assertThat(returnedMatches.get(0)).containsOnlyKeys("r1");
         } finally {
             SlowAutomaticPseudoClock.resetAndDisable();
+            System.clearProperty("drools.delay.warning.threshold");
         }
     }
 }
