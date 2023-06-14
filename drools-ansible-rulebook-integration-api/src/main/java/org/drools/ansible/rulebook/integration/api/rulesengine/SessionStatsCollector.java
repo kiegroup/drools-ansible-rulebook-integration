@@ -13,6 +13,8 @@ public class SessionStatsCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionStatsCollector.class.getName());
 
+    private static final long DELAY_WARNING_THRESHOLD = Integer.getInteger("drools.delay.warning.threshold", 5) * 1000L; // ms
+
     private final long id;
 
     private final Instant start = Instant.now();
@@ -79,7 +81,7 @@ public class SessionStatsCollector {
         lastRuleFired = match.getRule().getName();
         lastRuleFiredTime = session.getPseudoClock().getCurrentTime();
         long delay = System.currentTimeMillis() - lastRuleFiredTime;
-        if (delay > session.getDelayWarningThreshold()) {
+        if (delay > DELAY_WARNING_THRESHOLD) {
             LOG.warn("{} is fired with a delay of {} ms", lastRuleFired, delay);
         }
     }

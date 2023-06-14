@@ -32,8 +32,12 @@ public class SlownessTest {
     @Test
     public void testOnceAfter() {
         try {
-            SlowAutomaticPseudoClock.enable(11000, 4000);
-            ExecuteResult result = Main.execute("56_once_after.json");// it has "delay_warning_threshold":"2 seconds"
+            // <drools.delay.warning.threshold>2</drools.delay.warning.threshold> configured in pom.xml.
+            // But explicitly set it here in case of running the test from IDE.
+            System.setProperty("drools.delay.warning.threshold", "2");
+
+            SlowAutomaticPseudoClock.enable(2000, 4000); // introduces 4 seconds slowness
+            ExecuteResult result = Main.execute("slowness-test.json");
 
             // a warning is logged. e.g.
             // WARN org.drools.ansible.rulebook.integration.api.rulesengine.SessionStatsCollector - r1 is fired with a delay of 3016 ms
