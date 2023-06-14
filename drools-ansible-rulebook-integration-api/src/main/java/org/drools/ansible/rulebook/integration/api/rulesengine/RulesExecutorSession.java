@@ -165,8 +165,4 @@ public class RulesExecutorSession {
     public boolean isMatchMultipleRules() {
         return rulesSet.isMatchMultipleRules();
     }
-    
-    long getDelayWarningThreshold() {
-        return rulesSet.getDelayWarningThreshold();
-    }
 }

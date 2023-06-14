@@ -59,6 +59,17 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${version.surefire.plugin}</version>
+        <configuration>
+          <systemPropertyVariables>
+            <!-- for SlownessTest -->
+            <drools.delay.warning.threshold>2</drools.delay.warning.threshold>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
