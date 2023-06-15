@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.drools.ansible.rulebook.integration.api.rulesengine.SessionStatsCollector.DELAY_WARNING_THRESHOLD_PROPERTY;
 
 public class SlownessTest {
 
@@ -34,7 +35,7 @@ public class SlownessTest {
         try {
             // <drools.delay.warning.threshold>2</drools.delay.warning.threshold> configured in pom.xml.
             // But explicitly set it here in case of running the test from IDE.
-            System.setProperty("drools.delay.warning.threshold", "2");
+            System.setProperty(DELAY_WARNING_THRESHOLD_PROPERTY, "2");
 
             SlowAutomaticPseudoClock.enable(2000, 4000); // introduces 4 seconds slowness
             ExecuteResult result = Main.execute("slowness-test.json");
@@ -48,7 +49,7 @@ public class SlownessTest {
             assertThat(returnedMatches.get(0)).containsOnlyKeys("r1");
         } finally {
             SlowAutomaticPseudoClock.resetAndDisable();
-            System.clearProperty("drools.delay.warning.threshold");
+            System.clearProperty(DELAY_WARNING_THRESHOLD_PROPERTY);
         }
     }
 }

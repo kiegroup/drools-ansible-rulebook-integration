@@ -13,7 +13,8 @@ public class SessionStatsCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionStatsCollector.class.getName());
 
-    private static final long DELAY_WARNING_THRESHOLD = Integer.getInteger("drools.delay.warning.threshold", 5) * 1000L; // ms
+    public static final String DELAY_WARNING_THRESHOLD_PROPERTY = "drools.delay.warning.threshold";
+    private static final long DELAY_WARNING_THRESHOLD;
 
     private final long id;
 
@@ -31,6 +32,16 @@ public class SessionStatsCollector {
     private long lastRuleFiredTime;
 
     private int clockAdvanceCount;
+
+
+    static {
+        String envValue = System.getenv("DROOLS_LOG_DELAY");
+        if (envValue != null && !envValue.isEmpty()) {
+            // Environment variable takes precedence over system property
+            System.setProperty(DELAY_WARNING_THRESHOLD_PROPERTY, envValue);
+        }
+        DELAY_WARNING_THRESHOLD = Integer.getInteger(DELAY_WARNING_THRESHOLD_PROPERTY, 5) * 1000L; // ms
+    }
 
     public SessionStatsCollector(long id) {
         this.id = id;
