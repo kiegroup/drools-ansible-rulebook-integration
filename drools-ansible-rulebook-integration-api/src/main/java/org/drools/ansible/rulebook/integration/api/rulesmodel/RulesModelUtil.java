@@ -13,6 +13,7 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFa
 
 public class RulesModelUtil {
 
+    @Deprecated // no longer to be used
     public static final String ORIGINAL_MAP_FIELD = "$_ORIGINAL_$_MAP_$_FIELD_$";
     public static final String META_FIELD = "meta";
     public static final String RULE_ENGINE_META_FIELD = "rule_engine";
