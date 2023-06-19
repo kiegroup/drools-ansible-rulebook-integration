@@ -25,7 +25,7 @@ public class ExtractorPrototypeExpression implements PrototypeExpression {
         return pf -> {
             Map<String, Object> asMap = ((Fact) pf).asMap();
             Object value = new ValueExtractionVisitor(asMap).visit(extractorNode);
-            return value != null ? value : Prototype.UNDEFINED_VALUE;
+            return value;
         };
     }
 
