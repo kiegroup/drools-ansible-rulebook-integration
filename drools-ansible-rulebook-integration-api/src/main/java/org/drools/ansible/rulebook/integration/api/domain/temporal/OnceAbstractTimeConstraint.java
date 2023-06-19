@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeVariable;
@@ -40,9 +41,9 @@ public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
     protected PrototypeDSL.PrototypePatternDef createControlPattern() {
         PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(getPrototype(SYNTHETIC_PROTOTYPE_NAME)));
         for (String unique : groupByAttributes) {
-            controlPattern.expr( prototypeField(unique), Index.ConstraintType.EQUAL, getPatternVariable(), prototypeField(unique) );
+            controlPattern.expr( ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(unique), Index.ConstraintType.EQUAL, getPatternVariable(), ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(unique) );
         }
-        controlPattern.expr( prototypeField("drools_rule_name"), Index.ConstraintType.EQUAL, fixedValue(ruleName) );
+        controlPattern.expr( ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("drools_rule_name"), Index.ConstraintType.EQUAL, fixedValue(ruleName) );
         this.controlVariable = (PrototypeVariable) controlPattern.getFirstVariable();
         return controlPattern;
     }

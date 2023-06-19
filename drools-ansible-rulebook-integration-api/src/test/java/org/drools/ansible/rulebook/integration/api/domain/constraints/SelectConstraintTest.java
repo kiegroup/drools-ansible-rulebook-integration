@@ -23,6 +23,7 @@ import java.util.function.BiPredicate;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpression;
 import org.drools.model.PrototypeExpression;
 import org.junit.Test;
 
@@ -42,8 +43,8 @@ public class SelectConstraintTest {
 
         ParsedCondition parsedCondition = SelectConstraint.INSTANCE.createParsedCondition(new RuleGenerationContext(), SelectConstraint.EXPRESSION_NAME, map);
 
-        assertThat(parsedCondition.getLeft()).isInstanceOf(PrototypeExpression.PrototypeFieldValue.class);
-        assertThat(((PrototypeExpression.PrototypeFieldValue)parsedCondition.getLeft()).getFieldName()).isEqualTo("levels");
+        assertThat(parsedCondition.getLeft()).isInstanceOf(ExtractorPrototypeExpression.class);
+        assertThat(((ExtractorPrototypeExpression)parsedCondition.getLeft()).getFieldName()).isEqualTo("levels");
 
         assertThat(parsedCondition.getRight()).isInstanceOf(PrototypeExpression.FixedValue.class); // rightValue is not important. "25" is already incorporated in the operator
 
@@ -65,8 +66,8 @@ public class SelectConstraintTest {
 
         ParsedCondition parsedCondition = SelectConstraint.INSTANCE.createParsedCondition(new RuleGenerationContext(), SelectConstraint.NEGATED_EXPRESSION_NAME, map);
 
-        assertThat(parsedCondition.getLeft()).isInstanceOf(PrototypeExpression.PrototypeFieldValue.class);
-        assertThat(((PrototypeExpression.PrototypeFieldValue)parsedCondition.getLeft()).getFieldName()).isEqualTo("levels");
+        assertThat(parsedCondition.getLeft()).isInstanceOf(ExtractorPrototypeExpression.class);
+        assertThat(((ExtractorPrototypeExpression)parsedCondition.getLeft()).getFieldName()).isEqualTo("levels");
 
         assertThat(parsedCondition.getRight()).isInstanceOf(PrototypeExpression.FixedValue.class); // rightValue is not important. "25" is already incorporated in the operator
 

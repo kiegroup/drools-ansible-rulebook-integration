@@ -14,6 +14,10 @@ public abstract class AbstractNode implements ASTNode {
 
     private String text;
 
+    protected AbstractNode( AbstractNode usingCtxFrom ) {
+        copyLocationAttributesFrom(usingCtxFrom);
+    }
+
     public AbstractNode( ParserRuleContext ctx ) {
         // DO NOT keep the reference to `ParserRuleContext` to avoid unneeded retention of lexer structures.
         this.setStartChar( ctx.getStart().getStartIndex() );
@@ -23,6 +27,17 @@ public abstract class AbstractNode implements ASTNode {
         this.setEndLine( ctx.getStop().getLine() );
         this.setEndColumn( ctx.getStop().getCharPositionInLine() + ctx.getStop().getText().length() );
         this.setText( getOriginalText( ctx ) );
+    }
+
+    private AbstractNode copyLocationAttributesFrom(AbstractNode from) {
+        this.setStartChar(from.getStartChar());
+        this.setStartLine(from.getStartLine());
+        this.setStartColumn(from.getStartColumn());
+        this.setEndChar(from.getEndChar());
+        this.setEndLine(from.getEndLine());
+        this.setEndColumn(from.getEndColumn());
+        this.setText(from.getText());
+        return this;
     }
 
     public static String getOriginalText(ParserRuleContext ctx) {

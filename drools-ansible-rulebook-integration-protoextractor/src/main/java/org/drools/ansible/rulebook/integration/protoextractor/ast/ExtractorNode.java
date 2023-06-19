@@ -15,6 +15,17 @@ public class ExtractorNode extends AbstractNode {
         this.values = Collections.unmodifiableList(values2);
     }
 
+    private ExtractorNode(ExtractorNode extractorNode, List<ASTNode> skippingFirst) {
+        super(extractorNode);
+        Objects.requireNonNull(skippingFirst);
+        this.values = Collections.unmodifiableList(skippingFirst);
+    }
+
+    public ExtractorNode cloneSkipFirst() {
+        final List<ASTNode> skippingFirst = values.subList(1, values.size());
+        return new ExtractorNode(this, skippingFirst);
+    }
+
     public List<ASTNode> getValues() {
         return values;
     }

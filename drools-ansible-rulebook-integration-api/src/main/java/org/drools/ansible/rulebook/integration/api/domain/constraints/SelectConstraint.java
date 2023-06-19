@@ -8,6 +8,7 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.Prototype;
 import org.drools.model.PrototypeDSL;
@@ -63,8 +64,8 @@ public enum SelectConstraint implements ConstraintOperator, ConditionFactory {
         PrototypeDSL.PrototypePatternDef rightPattern = ruleContext.getBoundPattern(rightPatternBindName);
 
         return rightPattern == null ?
-                new ParsedCondition(prototypeField(leftField), operator, prototypeField(rightField)) :
-                new BetaParsedCondition(prototypeField(leftField), operator, (PrototypeVariable) rightPattern.getFirstVariable(), prototypeField(rightField.substring(dotPos+1)));
+                new ParsedCondition(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(leftField), operator, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(rightField)) :
+                new BetaParsedCondition(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(leftField), operator, (PrototypeVariable) rightPattern.getFirstVariable(), ExtractorPrototypeExpressionUtils.prototypeFieldExtractorSkippingFirst(rightField));
     }
 
     static ParsedCondition createSelectConditionWithFixedRight(ConditionExpression left, BiPredicate opPred, Object rhsValue, boolean positive) {

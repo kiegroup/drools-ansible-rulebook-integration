@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpression;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeExpression;
 import org.drools.model.PrototypeVariable;
@@ -37,8 +39,8 @@ public class ConditionExpression {
 
     public ConditionExpression composeWith(PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator, ConditionExpression rhs) {
         if (isBeta() && rhs.isBeta() && !prototypeName.equals(rhs.getPrototypeName())) {
-            PrototypeExpression composed = prototypeField(betaVariable, getFieldName())
-                    .composeWith(decodeBinaryOperator, prototypeField(rhs.getBetaVariable(), rhs.getFieldName()));
+            PrototypeExpression composed = ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(betaVariable, getFieldName())
+                    .composeWith(decodeBinaryOperator, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(rhs.getBetaVariable(), rhs.getFieldName()));
             return new ConditionExpression(composed);
         }
 
@@ -54,7 +56,7 @@ public class ConditionExpression {
     }
 
     public String getFieldName() {
-        return ((PrototypeExpression.PrototypeFieldValue) prototypeExpression).getFieldName();
+        return ((ExtractorPrototypeExpression) prototypeExpression).getFieldName();
     }
 
     public PrototypeExpression getPrototypeExpression() {
@@ -142,7 +144,7 @@ public class ConditionExpression {
                 betaVariable = (PrototypeVariable) boundPattern.getFirstVariable();
             }
         }
-        return new ConditionExpression(fieldName2PrototypeExpression(fieldName), true, prototypeName, betaVariable);
+        return new ConditionExpression(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(fieldName), true, prototypeName, betaVariable);
     }
 
     private static PrototypeExpression.BinaryOperation.Operator decodeBinaryOperator(String operator) {

@@ -205,22 +205,22 @@ public class DurableRule {
 
             String leftBinding = getBindingFromMap(l);
             if (leftBinding != null) {
-                PrototypeExpression rightExpression = prototypeField(((Map) l).get(leftBinding).toString()).composeWith(decodeBinaryOperator(rightKey), toPrototypeExpression(r));
-                return new BetaExpressionCondition(binding, prototypeField(leftValue), decodeConstraintType(decodedOp), leftBinding, rightExpression);
+                PrototypeExpression rightExpression = ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(((Map) l).get(leftBinding).toString()).composeWith(decodeBinaryOperator(rightKey), toPrototypeExpression(r));
+                return new BetaExpressionCondition(binding, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(leftValue), decodeConstraintType(decodedOp), leftBinding, rightExpression);
             }
             String rightBinding = getBindingFromMap(r);
             if (rightBinding != null) {
-                PrototypeExpression rightExpression = toPrototypeExpression(l).composeWith(decodeBinaryOperator(rightKey), prototypeField(((Map) r).get(rightBinding).toString()));
-                return new BetaExpressionCondition(binding, prototypeField(leftValue), decodeConstraintType(decodedOp), rightBinding, rightExpression);
+                PrototypeExpression rightExpression = toPrototypeExpression(l).composeWith(decodeBinaryOperator(rightKey), ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(((Map) r).get(rightBinding).toString()));
+                return new BetaExpressionCondition(binding, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(leftValue), decodeConstraintType(decodedOp), rightBinding, rightExpression);
             }
 
             PrototypeExpression rightExpression = toPrototypeExpression(l).composeWith(decodeBinaryOperator(rightKey), toPrototypeExpression(r));
-            return new ExpressionCondition(binding, prototypeField(leftValue), decodeConstraintType(decodedOp), rightExpression);
+            return new ExpressionCondition(binding, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(leftValue), decodeConstraintType(decodedOp), rightExpression);
         }
 
         if (existingBindings.contains(rightKey)) {
             if (rightValue instanceof String) {
-                return new BetaExpressionCondition(binding, prototypeField(leftValue), decodeConstraintType(decodedOp), rightKey, prototypeField((String) rightValue));
+                return new BetaExpressionCondition(binding, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(leftValue), decodeConstraintType(decodedOp), rightKey, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor((String) rightValue));
             }
             throw new UnsupportedOperationException();
         }
@@ -234,7 +234,7 @@ public class DurableRule {
             assert(map.size() == 1);
             String fieldName = (String) map.get("$m");
             assert(fieldName != null);
-            return prototypeField(fieldName);
+            return ExtractorPrototypeExpressionUtils.prototypeFieldExtractor(fieldName);
         }
         return fixedValue(value);
     }
