@@ -34,7 +34,7 @@ public class CompleteExtractorPrototypeExpression extends ExtractorPrototypeExpr
     @Override
     public Object evaluate(Map<PrototypeVariable, PrototypeFact> factsMap) {
         PrototypeFact prototypeFact = factsMap.get(protoVar);
-        return asFunction(null).apply(prototypeFact);
+        return asFunction(IGNORED).apply(prototypeFact);
     }
 
     @Override

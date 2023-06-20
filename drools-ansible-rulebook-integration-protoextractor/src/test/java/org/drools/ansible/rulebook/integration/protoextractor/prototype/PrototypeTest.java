@@ -39,7 +39,7 @@ public class PrototypeTest {
             .isNotNull()
             .isInstanceOf(Map.class);
 
-        Object valueExtracted = expr.asFunction(null).apply((PrototypeFact) mapBasedFact);
+        Object valueExtracted = expr.asFunction(ExtractorPrototypeExpression.IGNORED).apply((PrototypeFact) mapBasedFact);
         assertThat(valueExtracted)
             .as("ExtractorPrototypeExpression used to extract value based on the path expression")
             .isEqualTo(47);
