@@ -15,9 +15,13 @@ import org.drools.model.functions.Function1;
 
 public class ExtractorPrototypeExpression implements PrototypeExpression {
     protected final ExtractorNode extractorNode;
+    protected final String computedFieldName;
+    protected final Collection<String> computedImpactedFields;
 
     public ExtractorPrototypeExpression(ExtractorNode extractorNode) {
         this.extractorNode = extractorNode;
+        this.computedFieldName = ExtractorUtils.getParts(extractorNode).stream().collect(Collectors.joining());
+        this.computedImpactedFields = Collections.singletonList(ExtractorUtils.getParts(extractorNode).get(0));
     }
 
     @Override
@@ -31,7 +35,7 @@ public class ExtractorPrototypeExpression implements PrototypeExpression {
 
     // TODO used for indexing, normalizing chunks.
     public String getFieldName() {
-        return ExtractorUtils.getParts(extractorNode).stream().collect(Collectors.joining());
+        return this.computedFieldName;
     }
 
     @Override
@@ -41,6 +45,6 @@ public class ExtractorPrototypeExpression implements PrototypeExpression {
 
     @Override
     public Collection<String> getImpactedFields() {
-        return Collections.singletonList(ExtractorUtils.getParts(extractorNode).get(0));
+        return this.computedImpactedFields;
     }
 }
