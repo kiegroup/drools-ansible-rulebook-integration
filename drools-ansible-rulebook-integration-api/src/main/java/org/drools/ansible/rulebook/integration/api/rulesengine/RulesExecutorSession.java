@@ -164,4 +164,8 @@ public class RulesExecutorSession {
     public boolean isMatchMultipleRules() {
         return rulesSet.isMatchMultipleRules();
     }
+
+    public KieSession asKieSession() {
+        return kieSession;
+    }
 }
