@@ -22,8 +22,7 @@ public class ValueExtractionVisitor extends DefaultedVisitor<Object> {
 
     @Override
     public Object defaultVisit(ASTNode n) {
-        cur = null;
-        return cur;
+        throw new UnsupportedOperationException("this visitor implemented all visit methods");
     }
 
     @Override
