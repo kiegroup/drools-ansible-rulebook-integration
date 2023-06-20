@@ -55,7 +55,7 @@ public class ValueExtractionVisitor extends DefaultedVisitor<Object> {
     public Object visit(IndexAccessorNode n) {
         if (cur instanceof List) {
             List<?> theList = (List<?>) cur;
-            int javaIdx = n.getValue() > 0 ? n.getValue() : theList.size() + n.getValue();
+            int javaIdx = n.getValue() >= 0 ? n.getValue() : theList.size() + n.getValue();
             if (javaIdx < theList.size()) { // avoid index out of bounds;
                 cur = theList.get(javaIdx); 
             } else {
