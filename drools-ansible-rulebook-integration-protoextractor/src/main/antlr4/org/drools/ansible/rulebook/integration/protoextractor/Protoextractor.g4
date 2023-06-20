@@ -17,7 +17,7 @@ identifier : ID ;
 ID : [\p{Letter}_][\p{Letter}_0-9]* ;
 
 // ref https://github.com/ansible/ansible-rulebook/blob/24444bfcefcd7e9551d708723b76f58c3de9e976/ansible_rulebook/condition_parser.py#L118-L123
-STRING1 : '\'' ~('\r' | '\n' | '"')* '\'' ;
+STRING1 : '\'' ~('\r' | '\n' | '\'')* '\'' ;
 STRING2 : '"' ~('\r' | '\n' | '"')* '"' ;
 
 SIGNED_INT : (MINUS|PLUS)? DIGITS;
