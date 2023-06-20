@@ -16,7 +16,7 @@ import org.drools.model.functions.Function1;
 public class ExtractorPrototypeExpression implements PrototypeExpression {
     protected final ExtractorNode extractorNode;
 
-    ExtractorPrototypeExpression(ExtractorNode extractorNode) {
+    public ExtractorPrototypeExpression(ExtractorNode extractorNode) {
         this.extractorNode = extractorNode;
     }
 

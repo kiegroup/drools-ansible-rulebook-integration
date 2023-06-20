@@ -12,7 +12,7 @@ import org.drools.model.PrototypeVariable;
 public class CompleteExtractorPrototypeExpression extends ExtractorPrototypeExpression implements EvaluableExpression {
     private final PrototypeVariable protoVar;
 
-    CompleteExtractorPrototypeExpression(PrototypeVariable protoVar, ExtractorNode extractorNode) {
+    public CompleteExtractorPrototypeExpression(PrototypeVariable protoVar, ExtractorNode extractorNode) {
         super(extractorNode);
         this.protoVar = protoVar;
     }
