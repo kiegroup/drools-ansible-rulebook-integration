@@ -27,9 +27,10 @@ public class PrototypeTest {
         assertThat(expr.getImpactedFields())
             .as("always the first of the chunks")
             .isEqualTo(List.of("a"));
-        assertThat(expr.getFieldName())
+        assertThat(expr.getIndexingKey())
             .as("TODO normalization of chunks used for indexing")
-            .isEqualTo("abcde/asdfgh");
+            .isPresent()
+            .contains("abcde/asdfgh");
 
         final String JSON = Files.readString(Paths.get(PrototypeTest.class.getResource("/test1.json").toURI()));
         final Map<String, Object> readValue = new ObjectMapper().readValue(JSON, new TypeReference<Map<String, Object>>() {});

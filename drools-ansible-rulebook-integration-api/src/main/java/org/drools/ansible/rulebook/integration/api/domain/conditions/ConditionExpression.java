@@ -56,7 +56,7 @@ public class ConditionExpression {
     }
 
     public String getFieldName() {
-        return ((ExtractorPrototypeExpression) prototypeExpression).getFieldName();
+        return prototypeExpression.getIndexingKey().orElseThrow(IllegalStateException::new);
     }
 
     public PrototypeExpression getPrototypeExpression() {
