@@ -102,5 +102,10 @@ public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
         public Object evalExtractorOnFact(Fact fact) {
             return ExtractorUtils.getValueFrom(extractor, fact.asMap());
         }
+
+        @Override
+        public String toString() {
+            return "GroupByAttribute [key=" + key + ", extractor=" + extractor + "]";
+        }
     }
 }

@@ -12,7 +12,6 @@ import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.base.facttemplates.Fact;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
