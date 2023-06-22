@@ -1,0 +1,17 @@
+{
+    "range": {
+        "x": [
+            null,
+            [
+                null,
+                null,
+                {
+                    "a": {
+                        "b": 47
+                    }
+                }
+            ]
+        ]
+    },
+    "range2": null
+}

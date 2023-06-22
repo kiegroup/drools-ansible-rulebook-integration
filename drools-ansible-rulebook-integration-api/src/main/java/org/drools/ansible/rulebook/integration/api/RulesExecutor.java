@@ -4,6 +4,7 @@ import org.drools.ansible.rulebook.integration.api.rulesengine.RulesEvaluator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.base.facttemplates.Fact;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,5 +95,9 @@ public class RulesExecutor {
 
     public CompletableFuture<List<Match>> advanceTime(long amount, TimeUnit unit ) {
         return rulesEvaluator.advanceTime(amount, unit );
+    }
+
+    public KieSession asKieSession() {
+        return rulesEvaluator.asKieSession();
     }
 }

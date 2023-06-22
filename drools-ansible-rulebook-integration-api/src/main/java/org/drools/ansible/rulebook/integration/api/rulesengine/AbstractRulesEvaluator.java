@@ -19,6 +19,7 @@ import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
 import org.drools.base.facttemplates.Fact;
 import org.drools.core.common.InternalFactHandle;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,5 +247,10 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         }
 
         return matches;
+    }
+
+    @Override
+    public KieSession asKieSession() {
+        return rulesExecutorSession.asKieSession();
     }
 }

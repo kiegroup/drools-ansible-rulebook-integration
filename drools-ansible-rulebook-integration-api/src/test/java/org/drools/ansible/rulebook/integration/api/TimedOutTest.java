@@ -182,7 +182,7 @@ public class TimedOutTest {
         assertEquals(1, stats.getEventsProcessed());
         assertEquals(0, stats.getEventsSuppressed());
     }
-
+    
     @Test
     public void testTimedOutWithAutomaticClockAdvance() throws IOException {
         String json =

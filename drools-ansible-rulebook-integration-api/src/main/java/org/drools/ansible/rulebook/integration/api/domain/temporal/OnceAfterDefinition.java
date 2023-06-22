@@ -140,7 +140,7 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
         return writeMetaDataOnEvent((Fact) fact.get("event"), ruleEngineMeta);
     }
 
-    public OnceAfterDefinition(TimeAmount timeAmount, List<String> groupByAttributes) {
+    public OnceAfterDefinition(TimeAmount timeAmount, List<GroupByAttribute> groupByAttributes) {
         super(timeAmount, groupByAttributes);
     }
 
@@ -194,8 +194,8 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
                                 not( createControlPattern() ),
                                 on(getPatternVariable()).execute((drools, event) -> {
                                     Event controlEvent = createMapBasedEvent( controlPrototype );
-                                    for (String unique : groupByAttributes) {
-                                        controlEvent.set(unique, event.get(unique));
+                                    for (GroupByAttribute unique : groupByAttributes) {
+                                        controlEvent.set(unique.getKey(), unique.evalExtractorOnFact(event));
                                     }
                                     controlEvent.set("drools_rule_name", ruleName);
                                     controlEvent.set( "event", event );
@@ -250,7 +250,10 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
     }
 
     public static OnceAfterDefinition parseOnceAfter(String onceWithin, List<String> groupByAttributes) {
-        List<String> sanitizedAttributes = groupByAttributes.stream().map(OnceAbstractTimeConstraint::sanitizeAttributeName).collect(toList());
+        List<GroupByAttribute> sanitizedAttributes = groupByAttributes.stream()
+                .map(OnceAbstractTimeConstraint::sanitizeAttributeName)
+                .map(GroupByAttribute::from)
+                .collect(toList());
         return new OnceAfterDefinition(parseTimeAmount(onceWithin), sanitizedAttributes);
     }
 }

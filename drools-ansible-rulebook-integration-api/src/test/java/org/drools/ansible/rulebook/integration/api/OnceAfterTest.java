@@ -2,6 +2,8 @@ package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
+import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
+import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
 import org.drools.base.facttemplates.Fact;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
@@ -96,12 +98,12 @@ public class OnceAfterTest {
 
         for (int i = 0; i < 3; i++) {
             Fact fact = (Fact) matchedRules.get(0).getDeclarationValue("m_" + i);
-            String host = fact.get("meta.hosts").toString();
+            String host = evalAgainstFact(fact, "meta.hosts").toString();
             assertTrue( host.equals( "h1" ) || host.equals( "h2" ) );
-            String level = fact.get("alert.level").toString();
+            String level = evalAgainstFact(fact, "alert.level").toString();
             assertTrue( level.equals( "error" ) || level.equals( "warning" ) );
 
-            Map map = (Map) fact.get(RulesModelUtil.ORIGINAL_MAP_FIELD);
+            Map map = (Map) fact.asMap();
             Map ruleEngineMeta = (Map) ((Map)map.get(RulesModelUtil.META_FIELD)).get(RulesModelUtil.RULE_ENGINE_META_FIELD);
             assertEquals( new TimeAmount(10, TimeUnit.SECONDS).toString(), ruleEngineMeta.get("once_after_time_window") );
             assertEquals( i == 0 ? 2 : 1, ruleEngineMeta.get("events_in_window") );
@@ -116,17 +118,21 @@ public class OnceAfterTest {
             assertEquals("r1", matchedRules.get(0).getRule().getName());
 
             Fact fact = (Fact) matchedRules.get(0).getDeclarationValue("m");
-            String host = fact.get("meta.hosts").toString();
+            String host = evalAgainstFact(fact, "meta.hosts").toString();
             assertTrue(host.equals("h1"));
-            String level = fact.get("alert.level").toString();
+            String level = evalAgainstFact(fact, "alert.level").toString();
             assertTrue(level.equals("warning"));
 
-            Map map = (Map) fact.get(RulesModelUtil.ORIGINAL_MAP_FIELD);
+            Map map = (Map) fact.asMap();
             Map ruleEngineMeta = (Map) ((Map)map.get(RulesModelUtil.META_FIELD)).get(RulesModelUtil.RULE_ENGINE_META_FIELD);
             assertEquals( new TimeAmount(10, TimeUnit.SECONDS).toString(), ruleEngineMeta.get("once_after_time_window") );
             assertEquals( 1, ruleEngineMeta.get("events_in_window") );
         }
 
         rulesExecutor.dispose();
+    }
+
+    private static Object evalAgainstFact(Fact fact, String expr) {
+        return ExtractorUtils.getValueFrom(ExtractorParser.parse(expr), fact.asMap());
     }
 }

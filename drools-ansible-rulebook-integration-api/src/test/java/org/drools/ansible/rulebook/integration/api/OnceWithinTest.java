@@ -122,7 +122,7 @@ public class OnceWithinTest {
         assertEquals(1, matchedRules.size());
 
         Fact fact = (Fact) matchedRules.get(0).getDeclarationValue("singleton");
-        Map map = (Map) fact.get(RulesModelUtil.ORIGINAL_MAP_FIELD);
+        Map map = (Map) fact.asMap();
         Map ruleEngineMeta = (Map) ((Map)map.get(RulesModelUtil.META_FIELD)).get(RulesModelUtil.RULE_ENGINE_META_FIELD);
         assertEquals( new TimeAmount(10, TimeUnit.SECONDS).toString(), ruleEngineMeta.get("once_within_time_window") );
 
