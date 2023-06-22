@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.api;
 import java.util.List;
 
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
@@ -70,7 +71,7 @@ public class AdditionTest {
     public void testExecuteRulesSet() {
         RulesSet rulesSet = new RulesSet();
         rulesSet.addRule().withCondition().all()
-                .addSingleCondition(prototypeField("nested.i"), Index.ConstraintType.EQUAL, prototypeField("nested.j").add(fixedValue(1)));
+                .addSingleCondition(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("nested.i"), Index.ConstraintType.EQUAL, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("nested.j").add(fixedValue(1)));
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createRulesExecutor(rulesSet);
 

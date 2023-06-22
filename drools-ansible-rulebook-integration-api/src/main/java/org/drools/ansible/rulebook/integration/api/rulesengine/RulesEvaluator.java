@@ -1,6 +1,7 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.Collection;
@@ -41,4 +42,6 @@ public interface RulesEvaluator {
     static RulesEvaluator createRulesEvaluator( RulesExecutorSession rulesExecutorSession, boolean async ) {
         return async ? new AsyncRulesEvaluator(rulesExecutorSession) : new SyncRulesEvaluator(rulesExecutorSession);
     }
+
+    KieSession asKieSession();
 }

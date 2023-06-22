@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
 import org.drools.model.PrototypeFact;
 import org.junit.Test;
@@ -351,8 +352,8 @@ public class LogicalOperatorsTest {
     public void testAny() {
         RulesSet rulesSet = new RulesSet();
         rulesSet.addRule().withCondition().any()
-                .addSingleCondition(prototypeField("i"), Index.ConstraintType.EQUAL, fixedValue(0)).withPatternBinding("event")
-                .addSingleCondition(prototypeField("i"), Index.ConstraintType.EQUAL, fixedValue(1)).withPatternBinding("event");
+                .addSingleCondition(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("i"), Index.ConstraintType.EQUAL, fixedValue(0)).withPatternBinding("event")
+                .addSingleCondition(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("i"), Index.ConstraintType.EQUAL, fixedValue(1)).withPatternBinding("event");
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createRulesExecutor(rulesSet);
         checkAnyExecution(rulesExecutor);
