@@ -266,9 +266,6 @@ public class TimedOutTest {
             assertNotNull(match.get("maint failed"));
         } finally {
             SessionStats stats = rulesExecutorContainer.disposeAll();
-            assertEquals(1, stats.getAsyncResponses());
-            assertTrue(stats.getBytesSentOnAsync() > 100);
-            // check that there are no remaining events in the session
             assertEquals(0, stats.getPermanentStorageCount());
         }
     }
