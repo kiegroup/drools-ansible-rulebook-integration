@@ -1,11 +1,9 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
+import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
 import org.drools.base.facttemplates.Event;
 import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
@@ -18,6 +16,9 @@ import org.drools.model.Variable;
 import org.drools.model.view.ViewItem;
 import org.kie.api.runtime.rule.Match;
 import org.kie.api.runtime.rule.RuleContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount.parseTimeAmount;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
@@ -34,6 +35,8 @@ import static org.drools.model.PatternDSL.pattern;
 import static org.drools.model.PatternDSL.rule;
 import static org.drools.model.PrototypeDSL.protoPattern;
 import static org.drools.model.PrototypeDSL.variable;
+import static org.drools.model.PrototypeExpression.prototypeField;
+import static org.drools.model.PrototypeExpression.thisPrototype;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
@@ -124,9 +127,21 @@ import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEv
  *  rule cleanupEvents when
  *    Control( name == "end_R" )
  *    $c : Control( name startsWith "R" )
+ *    $e : Event( this == $c.event )
  *  then
- *    delete($c.get("event"))
+ *    delete($e)
  *    delete($c)
+ *  end
+ *
+ *  rule cleanupEvents2 when
+ *    $start : Control( name == "start_R" )
+ *    not( Control( name == "end_R", this after[0m, 5m] $start ) )
+ *    $c : Control( name startsWith "R" )
+ *    $e : Event( this == $c.event )
+ *  then
+ *    delete($e)
+ *    delete($c)
+ *    delete($start)
  *  end
  *
  *  rule cleanupTerminal when
@@ -148,6 +163,8 @@ public class TimedOutDefinition implements TimeConstraint {
     private final Prototype controlPrototype = getPrototype(SYNTHETIC_PROTOTYPE_NAME);
     private final PrototypeVariable controlVar1 = variable( controlPrototype, "c1" );
     private final PrototypeVariable controlVar2 = variable( controlPrototype, "c2" );
+
+    private final PrototypeVariable eventVar = variable(getPrototype(PrototypeFactory.DEFAULT_PROTOTYPE_NAME), "e");
 
     static {
         RegisterOnlyAgendaFilter.registerMatchTransformer(KEYWORD, TimedOutDefinition::transformTimedOutMatch);
@@ -271,9 +288,10 @@ public class TimedOutDefinition implements TimeConstraint {
                 .build(
                         protoPattern(controlVar1).expr( "rulename", Index.ConstraintType.EQUAL, endTag ),
                         protoPattern(controlVar2).expr(p -> ((String)p.get("rulename")).startsWith(rulePrefix)),
-                        on(controlVar1, controlVar2).execute((drools, c1, c2) -> {
-                            drools.delete(c2.get("event"));
-                            drools.delete(c2);
+                        protoPattern(eventVar).expr( thisPrototype(), Index.ConstraintType.EQUAL, controlVar2, prototypeField("event") ),
+                        on(controlVar2, eventVar).execute((drools, c, e) -> {
+                            drools.delete(e);
+                            drools.delete(c);
                         })
                 )
         );
@@ -286,8 +304,9 @@ public class TimedOutDefinition implements TimeConstraint {
                                 .expr( "rulename", Index.ConstraintType.EQUAL, endTag )
                                 .expr( after(0, timeAmount.getTimeUnit(), timeAmount.getAmount(), timeAmount.getTimeUnit()), controlVar1 ) ),
                         protoPattern(controlVar3).expr(p -> ((String)p.get("rulename")).startsWith(rulePrefix)),
-                        on(controlVar1, controlVar3).execute((drools, c1, c3) -> {
-                            drools.delete(c3.get("event"));
+                        protoPattern(eventVar).expr( thisPrototype(), Index.ConstraintType.EQUAL, controlVar3, prototypeField("event") ),
+                        on(controlVar1, controlVar3, eventVar).execute((drools, c1, c3, e) -> {
+                            drools.delete(e);
                             drools.delete(c3);
                             drools.delete(c1);
                         })
