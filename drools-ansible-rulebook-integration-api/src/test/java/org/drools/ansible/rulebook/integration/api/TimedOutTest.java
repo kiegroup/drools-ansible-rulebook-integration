@@ -1,5 +1,12 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
+import org.drools.base.facttemplates.Fact;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.kie.api.runtime.rule.Match;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -7,13 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.drools.base.facttemplates.Fact;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.RulesExecutorFactory.DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS;
 import static org.junit.Assert.assertEquals;
@@ -98,9 +98,11 @@ public class TimedOutTest {
         matchedRules = rulesExecutor.advanceTime( 2, TimeUnit.SECONDS ).join();
         assertEquals( 0, matchedRules.size() );
 
+        assertEquals( 0, rulesExecutor.getSessionStats().getPermanentStorageCount() );
+
         // --- second round
 
-        rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" );
+        matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" ).join();
         assertEquals( 0, matchedRules.size() );
 
         rulesExecutor.advanceTime( 8, TimeUnit.SECONDS );
@@ -111,7 +113,7 @@ public class TimedOutTest {
         matchedRules = rulesExecutor.advanceTime( 1, TimeUnit.SECONDS ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.advanceTime( 2, TimeUnit.SECONDS ).join();
+        matchedRules = rulesExecutor.advanceTime( 20, TimeUnit.SECONDS ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "myevent", matchedRules.get(0).getDeclarationIds().get(0) );
         assertNotNull( matchedRules.get(0).getDeclarationValue("myevent") );
@@ -119,6 +121,7 @@ public class TimedOutTest {
         SessionStats stats = rulesExecutor.dispose();
         assertEquals( 1, stats.getNumberOfRules() );
         assertEquals( 1, stats.getRulesTriggered() );
+        assertEquals( 0, stats.getPermanentStorageCount() );
     }
 
     @Test
@@ -181,6 +184,7 @@ public class TimedOutTest {
         assertEquals(1, stats.getEventsMatched());
         assertEquals(1, stats.getEventsProcessed());
         assertEquals(0, stats.getEventsSuppressed());
+        assertEquals(0, stats.getPermanentStorageCount());
     }
     
     @Test
@@ -262,8 +266,7 @@ public class TimedOutTest {
             assertNotNull(match.get("maint failed"));
         } finally {
             SessionStats stats = rulesExecutorContainer.disposeAll();
-//            assertEquals(1, stats.getAsyncResponses());
-//            assertTrue(stats.getBytesSentOnAsync() > 100);
+            assertEquals(0, stats.getPermanentStorageCount());
         }
     }
 }
