@@ -14,8 +14,6 @@
     <module>drools-ansible-rulebook-integration-api</module>
     <module>drools-ansible-rulebook-integration-runtime</module>
 <!--    <module>drools-ansible-rulebook-integration-core-rest</module>-->
-<!--    <module>drools-ansible-rulebook-integration-durable</module>-->
-<!--    <module>drools-ansible-rulebook-integration-durable-rest</module>-->
     <module>drools-ansible-rulebook-integration-benchmark</module>
     <module>drools-ansible-rulebook-integration-tests</module>
     <module>drools-ansible-rulebook-integration-main</module>
