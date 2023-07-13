@@ -44,6 +44,24 @@ public class ConditionParseUtil {
         return JSONObject.stringToValue(value.toString());
     }
 
+    /*
+     * implements `selectattr()` per jinja2/Ansible behaviour
+     * 
+     * ie: no braket accessor support, but it actually works by splitting on `.` "brutally"
+     * 
+     * A. `selectatrr()` is "a bit underspecified" in the Ansible playbook manual; that is, the behaviour is not described beyond referencing it to Jinja.
+     * ref https://docs.ansible.com/ansible/latest/playbook_guide/complex_data_manipulation.html
+     * B. in Jinja manual, it is "a bit underspecified" there in the ultimate sense nowhere in the docs I seem to find how the 1st string argument is supposed to behave (just a key? or a "dot accessor expression"?).
+     * ref https://jinja.palletsprojects.com/en/3.1.x/templates/#jinja-filters.selectattr
+     * C. looking at jinja source code I need to perform at least 3 hops before finding any mention if the 1st argument is directly a key or a "dot accessor expression":
+     * https://github.com/pallets/jinja/blob/7b48764688dce68e99341bec59b1eedf0c5c3ba5/src/jinja2/filters.py#L1589
+     * https://github.com/pallets/jinja/blob/7b48764688dce68e99341bec59b1eedf0c5c3ba5/src/jinja2/filters.py#L1757
+     * https://github.com/pallets/jinja/blob/7b48764688dce68e99341bec59b1eedf0c5c3ba5/src/jinja2/filters.py#L1723
+     * https://github.com/pallets/jinja/blob/7b48764688dce68e99341bec59b1eedf0c5c3ba5/src/jinja2/filters.py#L62-L63
+     * and appears to be actually manipulated by splitting on the `.`.
+     * 
+     * See also: https://github.com/ansible/ansible-rulebook/pull/539#discussion_r1243345097
+     */
     public static Object extractMapAttribute(Map map, String attr) {
         if (map == null) {
             return null;
