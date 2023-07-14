@@ -70,7 +70,9 @@ public class Main {
             Map jsonRuleSet = getJsonRuleSet(jsonFile);
             Payload payload = Payload.parsePayload(jsonRuleSet);
 
-            RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, jsonRuleSet.toString());
+            final String JSON_OF_JSONRULESET = JsonMapper.toJson(jsonRuleSet);
+
+            RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, JSON_OF_JSONRULESET);
             long id = engine.createRuleset(rulesSet);
             int port = engine.port();
 

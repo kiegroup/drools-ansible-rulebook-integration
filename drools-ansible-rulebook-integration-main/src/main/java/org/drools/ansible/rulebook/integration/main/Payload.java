@@ -1,9 +1,6 @@
 package org.drools.ansible.rulebook.integration.main;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.drools.ansible.rulebook.integration.api.ObjectMapperFactory;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 
 import java.util.ArrayList;
@@ -39,7 +36,7 @@ public class Payload {
         try {
             for (int i = 0; i < repeatCount; i++) {
                 for (Object p : (List) sourcesArgs.get("payload")) {
-                    payloadList.add(p.toString());
+                    payloadList.add(JsonMapper.toJson(p));
                 }
             }
         } catch (Exception e) { /* ignore */ }
@@ -123,12 +120,7 @@ public class Payload {
             for (int i = 0; i < payload.loopCount; i++) {
                 for (String p : payload.list) {
                     String resultJson = engine.assertEvent(sessionId, p);
-                    ObjectMapper mapper = ObjectMapperFactory.createMapper(new JsonFactory());
-                    try {
-                        returnedMatches.addAll(mapper.readValue(resultJson, List.class));
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
+                    returnedMatches.addAll(JsonMapper.readValueAsListOfMapOfStringAndObject(resultJson));
                     sleepSeconds(payload.eventDelay);
                 }
                 sleepSeconds(payload.loopDelay);
