@@ -1,8 +1,8 @@
 package org.drools.ansible.rulebook.integration.test.jpy;
 
 import org.drools.ansible.rulebook.integration.api.JsonTest;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AsyncAstRulesEngine;
-import org.json.JSONObject;
 import org.junit.Test;
 
 import java.io.DataInputStream;
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -84,9 +85,9 @@ public class AsyncAstRulesEngineTest {
                 int l = bufferedInputStream.readInt();
                 byte[] bytes = bufferedInputStream.readNBytes(l);
                 String r = new String(bytes, StandardCharsets.UTF_8);
-                JSONObject v = new JSONObject(r);
-                assertEquals(v.getJSONArray("result").getJSONObject(0).getJSONObject("r_0").get("m").toString(),
-                        new JSONObject().put("i", 67).toString());
+                
+                assertEquals(JsonMapper.readValueAtAsRawObject(r, "/result/0/r_0/m"),
+                        Map.of("i", 67));
             }
         } finally {
             engine.shutdown();
