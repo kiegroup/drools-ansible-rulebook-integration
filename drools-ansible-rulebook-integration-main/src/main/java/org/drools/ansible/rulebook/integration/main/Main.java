@@ -90,7 +90,7 @@ public class Main {
 
     private static Map getJsonRuleSet(String jsonFile) {
         String rules = readJsonInput(jsonFile);
-        Map jsonObject = rules.startsWith("[") ? (Map) JsonMapper.readValueAsListOfObject(jsonFile).get(0) : JsonMapper.readValueAsMapOfStringAndObject(rules);
+        Map jsonObject = rules.startsWith("[") ? (Map) JsonMapper.readValueAsListOfObject(rules).get(0) : JsonMapper.readValueAsMapOfStringAndObject(rules);
         return (Map) jsonObject.get("RuleSet");
     }
 
