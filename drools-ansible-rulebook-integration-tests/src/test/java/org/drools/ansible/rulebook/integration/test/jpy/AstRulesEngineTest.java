@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValueAsListOfMapOfStringAndObject;
 import static org.junit.Assert.*;
 
 
@@ -60,13 +59,13 @@ public class AstRulesEngineTest {
             String retractedFact = "{\"i\": 67}";
 
             String facts = engine.getFacts(id);
-            List<Map<String, Object>> factList = readValueAsListOfMapOfStringAndObject(facts);
+            List<Map<String, Object>> factList = JsonMapper.readValueAsListOfMapOfStringAndObject(facts);
             assertEquals(1, factList.size());
             assertEquals(factList.get(0), JsonMapper.readValueAsRawObject(fact2));
 
             String r = engine.retractMatchingFacts(id, retractedFact, false);
 
-            List<Map<String, Object>> v = readValueAsListOfMapOfStringAndObject(r);
+            List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(r);
             assertEquals(1, v.size());
             assertEquals(((Map) v.get(0).get("r_0")).get("m"), JsonMapper.readValueAsRawObject(fact2));
         }
@@ -86,7 +85,7 @@ public class AstRulesEngineTest {
             String retractedFact = "{\"i\": 67}";
             String r = engine.retractMatchingFacts(id, retractedFact, true);
 
-            List<Map<String, Object>> v = readValueAsListOfMapOfStringAndObject(r);
+            List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(r);
 
             assertEquals(((Map) v.get(0).get("r_0")).get("m"), JsonMapper.readValueAsRawObject(fact2));
         }
@@ -137,7 +136,7 @@ public class AstRulesEngineTest {
                 engine.assertFact(id, "{\"j\": 42}");
                 String r = engine.advanceTime(id, 3, "SECONDS");
 
-                List<Map<String, Object>> v = readValueAsListOfMapOfStringAndObject(r);
+                List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(r);
                 assertNotNull(v.get(0).get("r1"));
 
                 int l = bufferedInputStream.readInt();
@@ -323,7 +322,7 @@ public class AstRulesEngineTest {
 
             assertTrue(result.contains("template.openshift.io/template-instance-owner"));
 
-            List<Map<String, Object>> v = readValueAsListOfMapOfStringAndObject(result);
+            List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(result);
             assertEquals(((Map) ((Map) v.get(0).get("Create Snapshot")).get("m")).get("type"), "MODIFIED");
         }
     }
