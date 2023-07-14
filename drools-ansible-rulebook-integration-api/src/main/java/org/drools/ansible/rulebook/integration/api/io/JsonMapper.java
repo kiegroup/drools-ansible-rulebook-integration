@@ -17,7 +17,7 @@ public class JsonMapper {
     private static final TypeReference<List<Map<String, Object>>> LIST_OF_MAP_OF_STRING_AND_OBJECT = new TypeReference<List<Map<String, Object>>>(){};
     private static final TypeReference<Map<String, Object>> MAP_OF_STRING_AND_OBJECT = new TypeReference<Map<String, Object>>(){};
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    static {
+    static { // most tests contains non-standard JSON; eventually check assumption non-strict json with Ansible team
         OBJECT_MAPPER.enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES.mappedFeature());
         OBJECT_MAPPER.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES.mappedFeature());
     }

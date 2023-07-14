@@ -9,6 +9,14 @@ import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 
 import org.junit.Test;
 
+/*
+ * The goal of this test was to demonstrate identical behaviour
+ * between
+ * - org.json:json 
+ * - and Jackson (via JsonMapper util class of this project)
+ * extracting a field in a json-object being an json-array.
+ * Ref abff8e133da891569950b8252ed583b4b28b0829 in the PR.
+ */
 public class JSONParsingWithJacksonTest {
 
     @Test
