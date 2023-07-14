@@ -3,6 +3,9 @@ package org.drools.ansible.rulebook.integration.main;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 
+import com.fasterxml.jackson.core.JacksonException;
+
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +34,7 @@ public class Payload {
         int repeatCount = 1;
         try {
             repeatCount = Integer.valueOf(sourcesArgs.get("repeat_count").toString());
-        } catch (Exception e) { /* ignore */ }
+        } catch (NullPointerException | NumberFormatException e) { /* ignore */ }
 
         try {
             for (int i = 0; i < repeatCount; i++) {
@@ -39,7 +42,7 @@ public class Payload {
                     payloadList.add(JsonMapper.toJson(p));
                 }
             }
-        } catch (Exception e) { /* ignore */ }
+        } catch (UncheckedIOException e) { /* ignore */ }
 
         try {
             String indexName = sourcesArgs.get("create_index").toString();
@@ -47,37 +50,37 @@ public class Payload {
                 String payload = "{\"" + indexName + "\" : " + i + "}";
                 payloadList.add(payload);
             }
-        } catch (Exception e) { /* ignore */ }
+        } catch (NullPointerException e) { /* ignore */ }
 
         Payload payload = new Payload(payloadList);
 
         try {
             payload.eventDelay = Integer.valueOf(sourcesArgs.get("delay").toString());
-        } catch (Exception e) {
+        } catch (NullPointerException | NumberFormatException e) {
             try {
             payload.eventDelay = Integer.valueOf(sourcesArgs.get("event_delay").toString());
-            } catch (Exception e1) {
+            } catch (NullPointerException | NumberFormatException e1) {
                 /* ignore */
             }
         }
         try {
             payload.startDelay = Integer.valueOf(sourcesArgs.get("start_delay").toString());
-        } catch (Exception e) {
+        } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
         try {
             payload.loopCount = Integer.valueOf(sourcesArgs.get("loop_count").toString());
-        } catch (Exception e) {
+        } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
         try {
             payload.loopDelay = Integer.valueOf(sourcesArgs.get("loop_delay").toString());
-        } catch (Exception e) {
+        } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
         try {
             payload.shutdown = Integer.valueOf(sourcesArgs.get("loop_delay").toString());
-        } catch (Exception e) {
+        } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
 
