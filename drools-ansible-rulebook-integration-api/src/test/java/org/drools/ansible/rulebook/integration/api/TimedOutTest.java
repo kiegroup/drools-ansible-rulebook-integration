@@ -1,9 +1,9 @@
 package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.base.facttemplates.Fact;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
@@ -258,9 +258,8 @@ public class TimedOutTest {
 
             byte[] bytes = bufferedInputStream.readNBytes(l);
             String r = new String(bytes, StandardCharsets.UTF_8);
-            JSONObject v = new JSONObject(r);
 
-            List<Object> matches = v.getJSONArray("result").toList();
+            List<Object> matches = JsonMapper.readValueExtractFieldAsList(r, "result");
             Map<String, Map> match = (Map<String, Map>) matches.get(0);
 
             assertNotNull(match.get("maint failed"));

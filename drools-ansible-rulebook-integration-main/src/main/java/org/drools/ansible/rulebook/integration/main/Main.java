@@ -19,10 +19,9 @@ import java.util.stream.Collectors;
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
 import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.drools.ansible.rulebook.integration.main.Payload.PayloadRunner;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,10 +67,12 @@ public class Main {
 
     public static ExecuteResult execute(String jsonFile) {
         try (AstRulesEngine engine = new AstRulesEngine()) {
-            JSONObject jsonRuleSet = getJsonRuleSet(jsonFile);
+            Map jsonRuleSet = getJsonRuleSet(jsonFile);
             Payload payload = Payload.parsePayload(jsonRuleSet);
 
-            RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, jsonRuleSet.toString());
+            final String JSON_OF_JSONRULESET = JsonMapper.toJson(jsonRuleSet);
+
+            RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, JSON_OF_JSONRULESET);
             long id = engine.createRuleset(rulesSet);
             int port = engine.port();
 
@@ -89,10 +90,10 @@ public class Main {
         }
     }
 
-    private static JSONObject getJsonRuleSet(String jsonFile) {
+    private static Map getJsonRuleSet(String jsonFile) {
         String rules = readJsonInput(jsonFile);
-        JSONObject jsonObject = rules.startsWith("[") ? (JSONObject) new JSONArray(rules).get(0) : new JSONObject(rules);
-        return (JSONObject) jsonObject.get("RuleSet");
+        Map jsonObject = rules.startsWith("[") ? (Map) JsonMapper.readValueAsListOfObject(rules).get(0) : JsonMapper.readValueAsMapOfStringAndObject(rules);
+        return (Map) jsonObject.get("RuleSet");
     }
 
     private static List<Map> executePayload(AstRulesEngine engine, RulesSet rulesSet, long id, int port, Payload payload) throws IOException {
@@ -154,9 +155,8 @@ public class Main {
 
             byte[] bytes = bufferedInputStream.readNBytes(nBytes);
             String r = new String(bytes, StandardCharsets.UTF_8);
-            JSONObject v = new JSONObject(r);
 
-            List<Object> matches = v.getJSONArray("result").toList();
+            List<Object> matches = JsonMapper.readValueExtractFieldAsList(r, "result");
             Map<String, Map> match = (Map<String, Map>) matches.get(0);
 
             LOGGER.info(match + " fired after " + firingTime + " milliseconds");

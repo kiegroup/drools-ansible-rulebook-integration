@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.model.Prototype;
-import org.json.JSONObject;
 
 public class ConditionParseUtil {
 
@@ -41,7 +41,7 @@ public class ConditionParseUtil {
         if (type.equals("String")) {
             return value.toString();
         }
-        return JSONObject.stringToValue(value.toString());
+        return JsonMapper.readValueAsRawObject(value.toString());
     }
 
     /*
