@@ -1,8 +1,8 @@
 package org.drools.ansible.rulebook.integration.test.jpy;
 
 import org.drools.ansible.rulebook.integration.api.JsonTest;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.json.JSONObject;
 import org.junit.Test;
 
 import java.io.DataInputStream;
@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValue;
 import static org.junit.Assert.*;
 
 
@@ -29,7 +28,7 @@ public class AstRulesEngineTest {
             assertNotNull(result);
         } finally {
             String sessionStats = engine.sessionStats(sessionId);
-            Map<String, Object> statsMap = new JSONObject(sessionStats).toMap();
+            Map<String, Object> statsMap = JsonMapper.readValueAsMapOfStringAndObject(sessionStats);
             assertEquals(4, statsMap.get("numberOfRules"));
             assertEquals(0, statsMap.get("numberOfDisabledRules"));
             assertEquals(1, statsMap.get("rulesTriggered"));
@@ -60,15 +59,15 @@ public class AstRulesEngineTest {
             String retractedFact = "{\"i\": 67}";
 
             String facts = engine.getFacts(id);
-            List<Map<String, Object>> factList = readValue(facts);
+            List<Map<String, Object>> factList = JsonMapper.readValueAsListOfMapOfStringAndObject(facts);
             assertEquals(1, factList.size());
-            assertEquals(factList.get(0), new JSONObject(fact2).toMap());
+            assertEquals(factList.get(0), JsonMapper.readValueAsRawObject(fact2));
 
             String r = engine.retractMatchingFacts(id, retractedFact, false);
 
-            List<Map<String, Object>> v = readValue(r);
+            List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(r);
             assertEquals(1, v.size());
-            assertEquals(((Map) v.get(0).get("r_0")).get("m"), new JSONObject(fact2).toMap());
+            assertEquals(((Map) v.get(0).get("r_0")).get("m"), JsonMapper.readValueAsRawObject(fact2));
         }
     }
 
@@ -86,9 +85,9 @@ public class AstRulesEngineTest {
             String retractedFact = "{\"i\": 67}";
             String r = engine.retractMatchingFacts(id, retractedFact, true);
 
-            List<Map<String, Object>> v = readValue(r);
+            List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(r);
 
-            assertEquals(((Map) v.get(0).get("r_0")).get("m"), new JSONObject(fact2).toMap());
+            assertEquals(((Map) v.get(0).get("r_0")).get("m"), JsonMapper.readValueAsRawObject(fact2));
         }
     }
 
@@ -114,9 +113,8 @@ public class AstRulesEngineTest {
 
                 byte[] bytes = bufferedInputStream.readNBytes(l);
                 String r = new String(bytes, StandardCharsets.UTF_8);
-                JSONObject v = new JSONObject(r);
 
-                List<Object> matches = v.getJSONArray("result").toList();
+                List<Object> matches = JsonMapper.readValueExtractFieldAsList(r, "result");
                 Map<String, Map> match = (Map<String, Map>) matches.get(0);
 
                 assertNotNull(match.get("r1"));
@@ -138,14 +136,14 @@ public class AstRulesEngineTest {
                 engine.assertFact(id, "{\"j\": 42}");
                 String r = engine.advanceTime(id, 3, "SECONDS");
 
-                List<Map<String, Object>> v = readValue(r);
+                List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(r);
                 assertNotNull(v.get(0).get("r1"));
 
                 int l = bufferedInputStream.readInt();
                 byte[] bytes = bufferedInputStream.readNBytes(l);
                 String r2 = new String(bytes, StandardCharsets.UTF_8);
 
-                List<Object> matches2 = new JSONObject(r2).getJSONArray("result").toList();
+                List<Object> matches2 = JsonMapper.readValueExtractFieldAsList(r2, "result");
                 Map<String, Map> match = (Map<String, Map>) matches2.get(0);
                 assertNotNull(match.get("r1"));
             }
@@ -324,7 +322,7 @@ public class AstRulesEngineTest {
 
             assertTrue(result.contains("template.openshift.io/template-instance-owner"));
 
-            List<Map<String, Object>> v = readValue(result);
+            List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(result);
             assertEquals(((Map) ((Map) v.get(0).get("Create Snapshot")).get("m")).get("type"), "MODIFIED");
         }
     }

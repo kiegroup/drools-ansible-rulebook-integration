@@ -1,14 +1,11 @@
 package org.drools.ansible.rulebook.integration.main;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.drools.ansible.rulebook.integration.api.ObjectMapperFactory;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import com.fasterxml.jackson.core.JacksonException;
+
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,61 +26,61 @@ public class Payload {
         this.list = list;
     }
 
-    static Payload parsePayload(JSONObject ruleSet) {
-        JSONObject sources = (JSONObject) ((JSONObject) ((JSONArray) ruleSet.get("sources")).get(0)).get("EventSource");
-        JSONObject sourcesArgs = (JSONObject) sources.get("source_args");
+    static Payload parsePayload(Map ruleSet) {
+        Map sources = (Map) ((Map) ((List) ruleSet.get("sources")).get(0)).get("EventSource");
+        Map sourcesArgs = (Map) sources.get("source_args");
         List<String> payloadList = new ArrayList<>();
 
         int repeatCount = 1;
         try {
-            repeatCount = sourcesArgs.getInt("repeat_count");
-        } catch (JSONException e) { /* ignore */ }
+            repeatCount = Integer.valueOf(sourcesArgs.get("repeat_count").toString());
+        } catch (NullPointerException | NumberFormatException e) { /* ignore */ }
 
         try {
             for (int i = 0; i < repeatCount; i++) {
-                for (Object p : (JSONArray) sourcesArgs.get("payload")) {
-                    payloadList.add(p.toString());
+                for (Object p : (List) sourcesArgs.get("payload")) {
+                    payloadList.add(JsonMapper.toJson(p));
                 }
             }
-        } catch (JSONException e) { /* ignore */ }
+        } catch (UncheckedIOException e) { /* ignore */ }
 
         try {
-            String indexName = sourcesArgs.getString("create_index");
+            String indexName = sourcesArgs.get("create_index").toString();
             for (int i = 0; i < repeatCount; i++) {
                 String payload = "{\"" + indexName + "\" : " + i + "}";
                 payloadList.add(payload);
             }
-        } catch (JSONException e) { /* ignore */ }
+        } catch (NullPointerException e) { /* ignore */ }
 
         Payload payload = new Payload(payloadList);
 
         try {
-            payload.eventDelay = sourcesArgs.getInt("delay");
-        } catch (JSONException e) {
+            payload.eventDelay = Integer.valueOf(sourcesArgs.get("delay").toString());
+        } catch (NullPointerException | NumberFormatException e) {
             try {
-            payload.eventDelay = sourcesArgs.getInt("event_delay");
-            } catch (JSONException e1) {
+            payload.eventDelay = Integer.valueOf(sourcesArgs.get("event_delay").toString());
+            } catch (NullPointerException | NumberFormatException e1) {
                 /* ignore */
             }
         }
         try {
-            payload.startDelay = sourcesArgs.getInt("start_delay");
-        } catch (JSONException e) {
+            payload.startDelay = Integer.valueOf(sourcesArgs.get("start_delay").toString());
+        } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
         try {
-            payload.loopCount = sourcesArgs.getInt("loop_count");
-        } catch (JSONException e) {
+            payload.loopCount = Integer.valueOf(sourcesArgs.get("loop_count").toString());
+        } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
         try {
-            payload.loopDelay = sourcesArgs.getInt("loop_delay");
-        } catch (JSONException e) {
+            payload.loopDelay = Integer.valueOf(sourcesArgs.get("loop_delay").toString());
+        } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
         try {
-            payload.shutdown = sourcesArgs.getInt("loop_delay");
-        } catch (JSONException e) {
+            payload.shutdown = Integer.valueOf(sourcesArgs.get("loop_delay").toString());
+        } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
 
@@ -126,12 +123,7 @@ public class Payload {
             for (int i = 0; i < payload.loopCount; i++) {
                 for (String p : payload.list) {
                     String resultJson = engine.assertEvent(sessionId, p);
-                    ObjectMapper mapper = ObjectMapperFactory.createMapper(new JsonFactory());
-                    try {
-                        returnedMatches.addAll(mapper.readValue(resultJson, List.class));
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
+                    returnedMatches.addAll(JsonMapper.readValueAsListOfMapOfStringAndObject(resultJson));
                     sleepSeconds(payload.eventDelay);
                 }
                 sleepSeconds(payload.loopDelay);

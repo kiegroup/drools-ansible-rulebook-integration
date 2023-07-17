@@ -1,7 +1,7 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.base.facttemplates.Fact;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class RulesModelUtil {
     }
 
     public static Map<String, Object> asFactMap(String json) {
-        return new JSONObject(json).toMap();
+        return JsonMapper.readValueAsMapOfStringAndObject(json);
     }
 
     public static Fact writeMetaDataOnEvent(Fact event, Map ruleEngineMeta) {
