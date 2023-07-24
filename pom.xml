@@ -21,41 +21,27 @@
   
   <name>Drools :: Ansible Rulebook Integration</name>
 
-  <properties>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.drools>8.38.0.Final</version.drools>
-    <version.quarkus>2.11.2.Final</version.quarkus>
-    <version.junit>4.13.2</version.junit>
-    <version.assertj>3.20.2</version.assertj>
-    <version.jackson>2.13.1</version.jackson>
-    <version.org.antlr4>4.10.1</version.org.antlr4>
-    <version.surefire.plugin>3.0.0-M5</version.surefire.plugin>
-    <version.jmh>1.35</version.jmh>
-  </properties>
+        <version.drools>8.43.0.Final</version.drools>
+        <version.org.antlr4>4.10.1</version.org.antlr4><!-- antlr4 (and exec:java) maven plugins not managed in drools-build-parent -->
+        <version.jmh>1.35</version.jmh>
+    </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>${version.jackson}</version>
-    </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+          <groupId>org.kie</groupId>
+          <artifactId>drools-build-parent</artifactId>
+          <version>${version.drools}</version>
+          <type>pom</type>
+          <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${version.junit}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${version.assertj}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>
