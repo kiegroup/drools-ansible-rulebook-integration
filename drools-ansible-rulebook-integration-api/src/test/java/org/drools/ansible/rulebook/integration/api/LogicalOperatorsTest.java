@@ -140,7 +140,7 @@ public class LogicalOperatorsTest {
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );
 
-        matchedRules = rulesExecutor.processFacts( "{ facts: [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" ).join();
+        matchedRules = rulesExecutor.processFacts( "{ \"facts\": [ { \"sensu\": { \"data\": { \"i\":3 } } }, { \"j\":3 } ] }" ).join();
         assertEquals( 0, matchedRules.size() );
 
         matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":4 } } }" ).join();

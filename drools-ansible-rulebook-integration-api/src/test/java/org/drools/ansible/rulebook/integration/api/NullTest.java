@@ -63,7 +63,7 @@ public class NullTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"x\":1, y:null }" ).join();
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"x\":1, \"y\":null }" ).join();
         assertEquals( 1, matchedRules.size() );
 
         matchedRules = rulesExecutor.processFacts( "{ \"x\":1 }" ).join();
@@ -164,7 +164,7 @@ public class NullTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"x\":1, y:null }" ).join();
+        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"x\":1, \"y\":null }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r1", matchedRules.get(0).getRule().getName() );
 

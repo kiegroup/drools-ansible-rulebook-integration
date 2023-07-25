@@ -87,7 +87,7 @@ public class MultipleConditionTest {
     public void testReadJson() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processEvents( "{ events: [ { \"i\":0 }, { \"i\":1 }, { \"i\":2 } ] }" ).join();
+        List<Match> matchedRules = rulesExecutor.processEvents( "{ \"events\": [ { \"i\":0 }, { \"i\":1 }, { \"i\":2 } ] }" ).join();
 
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
