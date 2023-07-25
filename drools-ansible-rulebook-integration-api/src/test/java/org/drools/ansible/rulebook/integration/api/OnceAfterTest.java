@@ -330,21 +330,15 @@ public class OnceAfterTest {
     private void source_generic_loop57(RulesExecutor rulesExecutor) {
         List<Match> matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.11\" }, \"r1\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
         assertEquals(0, matchedRules.size());
-        System.err.println("");
         matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.12\" }, \"r1\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
         assertEquals(0, matchedRules.size());
-                System.err.println("");
         matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.21\" }, \"r2\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
         assertEquals(0, matchedRules.size());
-                System.err.println("");
         matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.22\" }, \"r2\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
         assertEquals(0, matchedRules.size());
-                System.err.println("");
         matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.31\" }, \"r3\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
         assertEquals(0, matchedRules.size());
-                System.err.println("");
         matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.32\" }, \"r3\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
         assertEquals(0, matchedRules.size());
-                System.err.println("");
     }
 }

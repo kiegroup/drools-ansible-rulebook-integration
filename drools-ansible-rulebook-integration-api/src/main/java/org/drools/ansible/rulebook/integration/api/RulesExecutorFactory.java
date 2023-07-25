@@ -10,8 +10,6 @@ import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.conf.KieBaseMutabilityOption;
-import org.kie.api.event.rule.DebugAgendaEventListener;
-import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
@@ -60,8 +58,6 @@ public class RulesExecutorFactory {
     private static RulesExecutorSession createRulesExecutorSession(RulesSet rulesSet) {
         RulesExecutionController rulesExecutionController = new RulesExecutionController();
         KieSession kieSession = createKieSession(rulesSet, rulesExecutionController);
-        kieSession.addEventListener(new DebugAgendaEventListener());
-        kieSession.addEventListener(new DebugRuleRuntimeEventListener());
         return new RulesExecutorSession(rulesSet, kieSession, rulesExecutionController, ID_GENERATOR.getAndIncrement());
     }
 
