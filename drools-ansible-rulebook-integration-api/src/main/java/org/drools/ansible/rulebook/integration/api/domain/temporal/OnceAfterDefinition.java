@@ -3,7 +3,6 @@ package org.drools.ansible.rulebook.integration.api.domain.temporal;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
-import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.base.facttemplates.Event;
 import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
@@ -40,7 +39,6 @@ import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
 import static org.drools.model.PrototypeDSL.protoPattern;
 import static org.drools.model.PrototypeDSL.variable;
-import static org.drools.model.PrototypeExpression.fixedValue;
 import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
@@ -177,9 +175,9 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
         PrototypeVariable controlVar3 = variable( controlPrototype, "c3" );
         return rule( ruleName ).metadata(RULE_TYPE_TAG, KEYWORD)
                 .build(
-                        protoPattern(controlVar1).expr( ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("end_once_after"), Index.ConstraintType.EQUAL, fixedValue(ruleName) ),
-                        not( protoPattern(controlVar2).expr( ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("start_once_after"), Index.ConstraintType.EQUAL, fixedValue(ruleName) ) ),
-                        accumulate( protoPattern(controlVar3).expr(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("drools_rule_name"), Index.ConstraintType.EQUAL, fixedValue(ruleName) ),
+                        protoPattern(controlVar1).expr( "end_once_after", Index.ConstraintType.EQUAL, ruleName ),
+                        not( protoPattern(controlVar2).expr( "start_once_after", Index.ConstraintType.EQUAL, ruleName ) ),
+                        accumulate( protoPattern(controlVar3).expr("drools_rule_name", Index.ConstraintType.EQUAL, ruleName ),
                                 accFunction(org.drools.core.base.accumulators.CollectListAccumulateFunction::new, controlVar3).as(resultsVar)),
                         consequence
                 );
@@ -212,8 +210,8 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
         rules.add(
                 rule(ruleName + "_start").metadata(SYNTHETIC_RULE_TAG, true)
                         .build(
-                                protoPattern(controlVar1).expr( ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("drools_rule_name"), Index.ConstraintType.EQUAL, fixedValue(ruleName) ),
-                                not( protoPattern(controlVar2).expr( ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("end_once_after"), Index.ConstraintType.EQUAL, fixedValue(ruleName) ) ),
+                                protoPattern(controlVar1).expr( "drools_rule_name", Index.ConstraintType.EQUAL, ruleName ),
+                                not( protoPattern(controlVar2).expr( "end_once_after", Index.ConstraintType.EQUAL, ruleName ) ),
                                 on(controlVar1).execute((drools, c1) -> {
                                     Event startControlEvent = createMapBasedEvent( controlPrototype )
                                             .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
