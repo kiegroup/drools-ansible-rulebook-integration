@@ -53,7 +53,7 @@ public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
                     getPatternVariable(),
                     unique.asPrototypeExpression() ); // on the right, we need extractor to check the real fact/event attribute value
         }
-        controlPattern.expr( ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("drools_rule_name"), Index.ConstraintType.EQUAL, fixedValue(ruleName) );
+        controlPattern.expr( "drools_rule_name", Index.ConstraintType.EQUAL, ruleName );
         this.controlVariable = (PrototypeVariable) controlPattern.getFirstVariable();
         return controlPattern;
     }

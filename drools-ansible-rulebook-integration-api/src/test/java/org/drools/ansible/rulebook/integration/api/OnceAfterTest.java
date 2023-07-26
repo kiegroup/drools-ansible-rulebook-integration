@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -134,5 +135,210 @@ public class OnceAfterTest {
 
     private static Object evalAgainstFact(Fact fact, String expr) {
         return ExtractorUtils.getValueFrom(ExtractorParser.parse(expr), fact.asMap());
+    }
+        
+    @Test
+    public void test57_once_after_multiple() {
+        final String RULES = "{\n" + //
+                "\"rules\": [\n" + //
+                "    {\n" + //
+                "        \"Rule\": {\n" + //
+                "            \"name\": \"r1\",\n" + //
+                "            \"condition\": {\n" + //
+                "                \"AllCondition\": [\n" + //
+                "                    {\n" + //
+                "                        \"OrExpression\": {\n" + //
+                "                            \"lhs\": {\n" + //
+                "                                \"EqualsExpression\": {\n" + //
+                "                                    \"lhs\": {\n" + //
+                "                                        \"Event\": \"r1.level\"\n" + //
+                "                                    },\n" + //
+                "                                    \"rhs\": {\n" + //
+                "                                        \"String\": \"warning\"\n" + //
+                "                                    }\n" + //
+                "                                }\n" + //
+                "                            },\n" + //
+                "                            \"rhs\": {\n" + //
+                "                                \"EqualsExpression\": {\n" + //
+                "                                    \"lhs\": {\n" + //
+                "                                        \"Event\": \"r1.level\"\n" + //
+                "                                    },\n" + //
+                "                                    \"rhs\": {\n" + //
+                "                                        \"String\": \"error\"\n" + //
+                "                                    }\n" + //
+                "                                }\n" + //
+                "                            }\n" + //
+                "                        }\n" + //
+                "                    }\n" + //
+                "                ]\n" + //
+                "            },\n" + //
+                "            \"actions\": [\n" + //
+                "                {\n" + //
+                "                    \"Action\": {\n" + //
+                "                        \"action\": \"debug\",\n" + //
+                "                        \"action_args\": {\n" + //
+                "                            \"msg\": \"r1 works\"\n" + //
+                "                        }\n" + //
+                "                    }\n" + //
+                "                }\n" + //
+                "            ],\n" + //
+                "            \"enabled\": true,\n" + //
+                "            \"throttle\": {\n" + //
+                "                \"group_by_attributes\": [\n" + //
+                "                    \"event.meta.hosts\",\n" + //
+                "                    \"event.r1.level\"\n" + //
+                "                ],\n" + //
+                "                \"once_after\": \"15 seconds\"\n" + //
+                "            }\n" + //
+                "        }\n" + //
+                "    },\n" + //
+                "    {\n" + //
+                "        \"Rule\": {\n" + //
+                "            \"name\": \"r2\",\n" + //
+                "            \"condition\": {\n" + //
+                "                \"AllCondition\": [\n" + //
+                "                    {\n" + //
+                "                        \"OrExpression\": {\n" + //
+                "                            \"lhs\": {\n" + //
+                "                                \"EqualsExpression\": {\n" + //
+                "                                    \"lhs\": {\n" + //
+                "                                        \"Event\": \"r2.level\"\n" + //
+                "                                    },\n" + //
+                "                                    \"rhs\": {\n" + //
+                "                                        \"String\": \"warning\"\n" + //
+                "                                    }\n" + //
+                "                                }\n" + //
+                "                            },\n" + //
+                "                            \"rhs\": {\n" + //
+                "                                \"EqualsExpression\": {\n" + //
+                "                                    \"lhs\": {\n" + //
+                "                                        \"Event\": \"r2.level\"\n" + //
+                "                                    },\n" + //
+                "                                    \"rhs\": {\n" + //
+                "                                        \"String\": \"error\"\n" + //
+                "                                    }\n" + //
+                "                                }\n" + //
+                "                            }\n" + //
+                "                        }\n" + //
+                "                    }\n" + //
+                "                ]\n" + //
+                "            },\n" + //
+                "            \"actions\": [\n" + //
+                "                {\n" + //
+                "                    \"Action\": {\n" + //
+                "                        \"action\": \"debug\",\n" + //
+                "                        \"action_args\": {\n" + //
+                "                            \"msg\": \"r2 works\"\n" + //
+                "                        }\n" + //
+                "                    }\n" + //
+                "                }\n" + //
+                "            ],\n" + //
+                "            \"enabled\": true,\n" + //
+                "            \"throttle\": {\n" + //
+                "                \"group_by_attributes\": [\n" + //
+                "                    \"event.meta.hosts\",\n" + //
+                "                    \"event.r2.level\"\n" + //
+                "                ],\n" + //
+                "                \"once_after\": \"30 seconds\"\n" + //
+                "            }\n" + //
+                "        }\n" + //
+                "    },\n" + //
+                "    {\n" + //
+                "        \"Rule\": {\n" + //
+                "            \"name\": \"r3\",\n" + //
+                "            \"condition\": {\n" + //
+                "                \"AllCondition\": [\n" + //
+                "                    {\n" + //
+                "                        \"OrExpression\": {\n" + //
+                "                            \"lhs\": {\n" + //
+                "                                \"EqualsExpression\": {\n" + //
+                "                                    \"lhs\": {\n" + //
+                "                                        \"Event\": \"r3.level\"\n" + //
+                "                                    },\n" + //
+                "                                    \"rhs\": {\n" + //
+                "                                        \"String\": \"warning\"\n" + //
+                "                                    }\n" + //
+                "                                }\n" + //
+                "                            },\n" + //
+                "                            \"rhs\": {\n" + //
+                "                                \"EqualsExpression\": {\n" + //
+                "                                    \"lhs\": {\n" + //
+                "                                        \"Event\": \"r3.level\"\n" + //
+                "                                    },\n" + //
+                "                                    \"rhs\": {\n" + //
+                "                                        \"String\": \"error\"\n" + //
+                "                                    }\n" + //
+                "                                }\n" + //
+                "                            }\n" + //
+                "                        }\n" + //
+                "                    }\n" + //
+                "                ]\n" + //
+                "            },\n" + //
+                "            \"actions\": [\n" + //
+                "                {\n" + //
+                "                    \"Action\": {\n" + //
+                "                        \"action\": \"debug\",\n" + //
+                "                        \"action_args\": {\n" + //
+                "                            \"msg\": \"r3 works\"\n" + //
+                "                        }\n" + //
+                "                    }\n" + //
+                "                }\n" + //
+                "            ],\n" + //
+                "            \"enabled\": true,\n" + //
+                "            \"throttle\": {\n" + //
+                "                \"group_by_attributes\": [\n" + //
+                "                    \"event.meta.hosts\",\n" + //
+                "                    \"event.r3.level\"\n" + //
+                "                ],\n" + //
+                "                \"once_after\": \"45 seconds\"\n" + //
+                "            }\n" + //
+                "        }\n" + //
+                "    }\n" + //
+                "]\n" + //
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), RULES);
+        List<Match> matchedRules;
+
+        source_generic_loop57(rulesExecutor);
+        
+        matchedRules = rulesExecutor.advanceTime(18, TimeUnit.SECONDS).join();
+        assertThat(matchedRules)
+            .hasSize(1)
+            .map(m -> m.getRule().getName())
+            .containsExactly("r1");
+
+        source_generic_loop57(rulesExecutor);
+
+        matchedRules = rulesExecutor.advanceTime(18, TimeUnit.SECONDS).join();
+        assertThat(matchedRules)
+            .hasSize(2)
+            .map(m -> m.getRule().getName())
+            .containsExactlyInAnyOrder("r2", "r1");
+        
+        source_generic_loop57(rulesExecutor);
+
+        matchedRules = rulesExecutor.advanceTime(18, TimeUnit.SECONDS).join();
+        assertThat(matchedRules)
+            .hasSize(2)
+            .map(m -> m.getRule().getName())
+            .containsExactlyInAnyOrder("r3", "r1");
+
+        rulesExecutor.dispose();
+    }
+
+    private void source_generic_loop57(RulesExecutor rulesExecutor) {
+        List<Match> matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.11\" }, \"r1\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
+        assertEquals(0, matchedRules.size());
+        matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.12\" }, \"r1\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
+        assertEquals(0, matchedRules.size());
+        matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.21\" }, \"r2\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
+        assertEquals(0, matchedRules.size());
+        matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.22\" }, \"r2\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
+        assertEquals(0, matchedRules.size());
+        matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.31\" }, \"r3\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
+        assertEquals(0, matchedRules.size());
+        matchedRules = rulesExecutor.processEvents("{ \"meta\": { \"hosts\":\"localhost.32\" }, \"r3\": { \"level\": \"warning\", \"message\": \"Low disk space\" } }").join();
+        assertEquals(0, matchedRules.size());
     }
 }
