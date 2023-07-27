@@ -35,12 +35,10 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.4.1</version>
         <configuration>
           <minimizeJar>true</minimizeJar>
-          <filters> <!-- since shading ecj, erase signatures see https://docs.oracle.com/en-us/iaas/data-flow/data-flow-tutorial/develop-apps-locally/create-fat-jars.htm -->
+          <filters> <!-- since shading ecj (a transitive dependency), erase signatures see https://docs.oracle.com/en-us/iaas/data-flow/data-flow-tutorial/develop-apps-locally/create-fat-jars.htm -->
             <filter>
             <artifact>*:*</artifact>
             <excludes>
