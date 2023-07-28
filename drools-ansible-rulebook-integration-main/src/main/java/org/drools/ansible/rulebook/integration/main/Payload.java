@@ -27,8 +27,13 @@ public class Payload {
     }
 
     static Payload parsePayload(Map ruleSet) {
-        Map sources = (Map) ((Map) ((List) ruleSet.get("sources")).get(0)).get("EventSource");
-        Map sourcesArgs = (Map) sources.get("source_args");
+        Map eventsource = (Map) ((Map) ((List) ruleSet.get("sources")).get(0)).get("EventSource");
+        if (!eventsource.get("source_name").equals("generic")) {
+            // this class currently mimics behaviour of: https://github.com/ansible/event-driven-ansible/blob/main/extensions/eda/plugins/event_source/generic.py
+            // as such we should fail if the provided AST file (json variant) does not contain a `generic` EDA source as the sources[0].
+            throw new IllegalArgumentException("Was expecting EventSource to be of type generic, found instead: "+eventsource);
+        }
+        Map sourcesArgs = (Map) eventsource.get("source_args");
         List<String> payloadList = new ArrayList<>();
 
         int repeatCount = 1;
