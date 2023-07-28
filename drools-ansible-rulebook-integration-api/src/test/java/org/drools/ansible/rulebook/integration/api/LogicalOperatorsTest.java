@@ -16,111 +16,112 @@ import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
 import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.junit.Assert.assertEquals;
 
 public class LogicalOperatorsTest {
 
     private static final String JSON1 =
-            "{\n" +
-            "   \"rules\":[\n" +
-            "      {\n" +
-            "         \"Rule\":{\n" +
-            "            \"name\":\"R1\",\n" +
-            "            \"condition\":{\n" +
-            "               \"EqualsExpression\":{\n" +
-            "                  \"lhs\":{\n" +
-            "                     \"sensu\":\"data.i\"\n" +
-            "                  },\n" +
-            "                  \"rhs\":{\n" +
-            "                     \"Integer\":1\n" +
-            "                  }\n" +
-            "               }\n" +
-            "            }\n" +
-            "         }\n" +
-            "      },\n" +
-            "      {\n" +
-            "         \"Rule\":{\n" +
-            "            \"name\":\"R2\",\n" +
-            "            \"condition\":{\n" +
-            "               \"AllCondition\":[\n" +
-            "                  {\n" +
-            "                     \"EqualsExpression\":{\n" +
-            "                        \"lhs\":{\n" +
-            "                           \"sensu\":\"data.i\"\n" +
-            "                        },\n" +
-            "                        \"rhs\":{\n" +
-            "                           \"Integer\":3\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"EqualsExpression\":{\n" +
-            "                        \"lhs\":\"j\",\n" +
-            "                        \"rhs\":{\n" +
-            "                           \"Integer\":2\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  }\n" +
-            "               ]\n" +
-            "            }\n" +
-            "         }\n" +
-            "      },\n" +
-            "      {\n" +
-            "         \"Rule\":{\n" +
-            "            \"name\":\"R3\",\n" +
-            "            \"condition\":{\n" +
-            "               \"AnyCondition\":[\n" +
-            "                  {\n" +
-            "                     \"AllCondition\":[\n" +
-            "                        {\n" +
-            "                           \"EqualsExpression\":{\n" +
-            "                              \"lhs\":{\n" +
-            "                                 \"sensu\":\"data.i\"\n" +
-            "                              },\n" +
-            "                              \"rhs\":{\n" +
-            "                                 \"Integer\":3\n" +
-            "                              }\n" +
-            "                           }\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                           \"EqualsExpression\":{\n" +
-            "                              \"lhs\":\"j\",\n" +
-            "                              \"rhs\":{\n" +
-            "                                 \"Integer\":2\n" +
-            "                              }\n" +
-            "                           }\n" +
-            "                        }\n" +
-            "                     ]\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"AllCondition\":[\n" +
-            "                        {\n" +
-            "                           \"EqualsExpression\":{\n" +
-            "                              \"lhs\":{\n" +
-            "                                 \"sensu\":\"data.i\"\n" +
-            "                              },\n" +
-            "                              \"rhs\":{\n" +
-            "                                 \"Integer\":4\n" +
-            "                              }\n" +
-            "                           }\n" +
-            "                        },\n" +
-            "                        {\n" +
-            "                           \"EqualsExpression\":{\n" +
-            "                              \"lhs\":\"j\",\n" +
-            "                              \"rhs\":{\n" +
-            "                                 \"Integer\":3\n" +
-            "                              }\n" +
-            "                           }\n" +
-            "                        }\n" +
-            "                     ]\n" +
-            "                  }\n" +
-            "               ]\n" +
-            "            }\n" +
-            "         }\n" +
-            "      }\n" +
-            "   ]\n" +
-            "}";
+            """
+            {
+               "rules":[
+                  {
+                     "Rule":{
+                        "name":"R1",
+                        "condition":{
+                           "EqualsExpression":{
+                              "lhs":{
+                                 "sensu":"data.i"
+                              },
+                              "rhs":{
+                                 "Integer":1
+                              }
+                           }
+                        }
+                     }
+                  },
+                  {
+                     "Rule":{
+                        "name":"R2",
+                        "condition":{
+                           "AllCondition":[
+                              {
+                                 "EqualsExpression":{
+                                    "lhs":{
+                                       "sensu":"data.i"
+                                    },
+                                    "rhs":{
+                                       "Integer":3
+                                    }
+                                 }
+                              },
+                              {
+                                 "EqualsExpression":{
+                                    "lhs":"j",
+                                    "rhs":{
+                                       "Integer":2
+                                    }
+                                 }
+                              }
+                           ]
+                        }
+                     }
+                  },
+                  {
+                     "Rule":{
+                        "name":"R3",
+                        "condition":{
+                           "AnyCondition":[
+                              {
+                                 "AllCondition":[
+                                    {
+                                       "EqualsExpression":{
+                                          "lhs":{
+                                             "sensu":"data.i"
+                                          },
+                                          "rhs":{
+                                             "Integer":3
+                                          }
+                                       }
+                                    },
+                                    {
+                                       "EqualsExpression":{
+                                          "lhs":"j",
+                                          "rhs":{
+                                             "Integer":2
+                                          }
+                                       }
+                                    }
+                                 ]
+                              },
+                              {
+                                 "AllCondition":[
+                                    {
+                                       "EqualsExpression":{
+                                          "lhs":{
+                                             "sensu":"data.i"
+                                          },
+                                          "rhs":{
+                                             "Integer":4
+                                          }
+                                       }
+                                    },
+                                    {
+                                       "EqualsExpression":{
+                                          "lhs":"j",
+                                          "rhs":{
+                                             "Integer":3
+                                          }
+                                       }
+                                    }
+                                 ]
+                              }
+                           ]
+                        }
+                     }
+                  }
+               ]
+            }
+            """;
 
     @Test
     public void testReadJson() throws JsonProcessingException {
@@ -158,56 +159,58 @@ public class LogicalOperatorsTest {
     @Test
     public void testMultipleConditionOnSameFact() {
         String JSON2 =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"AndExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"AndExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"GreaterThanExpression\":{\n" +
-                "                                    \"lhs\":{\n" +
-                "                                       \"Event\":\"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\":{\n" +
-                "                                       \"Integer\":0\n" +
-                "                                    }\n" +
-                "                                 }\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"GreaterThanExpression\":{\n" +
-                "                                    \"lhs\":{\n" +
-                "                                       \"Event\":\"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\":{\n" +
-                "                                       \"Integer\":1\n" +
-                "                                    }\n" +
-                "                                 }\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"GreaterThanExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"i\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":3\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "AndExpression":{
+                                        "lhs":{
+                                           "AndExpression":{
+                                              "lhs":{
+                                                 "GreaterThanExpression":{
+                                                    "lhs":{
+                                                       "Event":"i"
+                                                    },
+                                                    "rhs":{
+                                                       "Integer":0
+                                                    }
+                                                 }
+                                              },
+                                              "rhs":{
+                                                 "GreaterThanExpression":{
+                                                    "lhs":{
+                                                       "Event":"i"
+                                                    },
+                                                    "rhs":{
+                                                       "Integer":1
+                                                    }
+                                                 }
+                                              }
+                                           }
+                                        },
+                                        "rhs":{
+                                           "GreaterThanExpression":{
+                                              "lhs":{
+                                                 "Event":"i"
+                                              },
+                                              "rhs":{
+                                                 "Integer":3
+                                              }
+                                           }
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
@@ -229,42 +232,44 @@ public class LogicalOperatorsTest {
     @Test
     public void testOr() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"OrExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"LessThanExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"i\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":1\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"GreaterThanExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"i\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":3\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "OrExpression":{
+                                        "lhs":{
+                                           "LessThanExpression":{
+                                              "lhs":{
+                                                 "Event":"i"
+                                              },
+                                              "rhs":{
+                                                 "Integer":1
+                                              }
+                                           }
+                                        },
+                                        "rhs":{
+                                           "GreaterThanExpression":{
+                                              "lhs":{
+                                                 "Event":"i"
+                                              },
+                                              "rhs":{
+                                                 "Integer":3
+                                              }
+                                           }
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -283,52 +288,54 @@ public class LogicalOperatorsTest {
     @Test
     public void testNegate() {
         String json =
-                "{\n" +
-                "   \"rules\": [\n" +
-                "                {\n" +
-                "                    \"Rule\": {\n" +
-                "                        \"name\": \"r1\",\n" +
-                "                        \"condition\": {\n" +
-                "                            \"AllCondition\": [\n" +
-                "                                {\n" +
-                "                                    \"NegateExpression\": {\n" +
-                "                                        \"AndExpression\": {\n" +
-                "                                            \"lhs\": {\n" +
-                "                                                \"GreaterThanExpression\": {\n" +
-                "                                                    \"lhs\": {\n" +
-                "                                                        \"Event\": \"i\"\n" +
-                "                                                    },\n" +
-                "                                                    \"rhs\": {\n" +
-                "                                                        \"Integer\": 4\n" +
-                "                                                    }\n" +
-                "                                                }\n" +
-                "                                            },\n" +
-                "                                            \"rhs\": {\n" +
-                "                                                \"LessThanExpression\": {\n" +
-                "                                                    \"lhs\": {\n" +
-                "                                                        \"Event\": \"i\"\n" +
-                "                                                    },\n" +
-                "                                                    \"rhs\": {\n" +
-                "                                                        \"Integer\": 10\n" +
-                "                                                    }\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            ]\n" +
-                "                        },\n" +
-                "                        \"action\": {\n" +
-                "                            \"Action\": {\n" +
-                "                                \"action\": \"print_event\",\n" +
-                "                                \"action_args\": {}\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        \"enabled\": true\n" +
-                "                    }\n" +
-                "                }\n" +
-                "            ]\n" +
-                "}";
+                """
+                {
+                   "rules": [
+                                {
+                                    "Rule": {
+                                        "name": "r1",
+                                        "condition": {
+                                            "AllCondition": [
+                                                {
+                                                    "NegateExpression": {
+                                                        "AndExpression": {
+                                                            "lhs": {
+                                                                "GreaterThanExpression": {
+                                                                    "lhs": {
+                                                                        "Event": "i"
+                                                                    },
+                                                                    "rhs": {
+                                                                        "Integer": 4
+                                                                    }
+                                                                }
+                                                            },
+                                                            "rhs": {
+                                                                "LessThanExpression": {
+                                                                    "lhs": {
+                                                                        "Event": "i"
+                                                                    },
+                                                                    "rhs": {
+                                                                        "Integer": 10
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "action": {
+                                            "Action": {
+                                                "action": "print_event",
+                                                "action_args": {}
+                                            }
+                                        },
+                                        "enabled": true
+                                    }
+                                }
+                            ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -362,60 +369,62 @@ public class LogicalOperatorsTest {
     @Test
     public void testAnyWithJson() {
         String JSON4 =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"action\":{\n" +
-                "               \"Action\":{\n" +
-                "                  \"action\":\"debug\",\n" +
-                "                  \"action_args\":{\n" +
-                "                     \n" +
-                "                  }\n" +
-                "               }\n" +
-                "            },\n" +
-                "            \"condition\":{\n" +
-                "               \"AnyCondition\":[\n" +
-                "                  {\n" +
-                "                     \"AssignmentExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Events\":\"event\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"i\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":0\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"AssignmentExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Events\":\"event\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"i\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":1\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "action":{
+                               "Action":{
+                                  "action":"debug",
+                                  "action_args":{
+                                    \s
+                                  }
+                               }
+                            },
+                            "condition":{
+                               "AnyCondition":[
+                                  {
+                                     "AssignmentExpression":{
+                                        "lhs":{
+                                           "Events":"event"
+                                        },
+                                        "rhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"i"
+                                              },
+                                              "rhs":{
+                                                 "Integer":0
+                                              }
+                                           }
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "AssignmentExpression":{
+                                        "lhs":{
+                                           "Events":"event"
+                                        },
+                                        "rhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"i"
+                                              },
+                                              "rhs":{
+                                                 "Integer":1
+                                              }
+                                           }
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON4);
         checkAnyExecution(rulesExecutor);
@@ -443,78 +452,80 @@ public class LogicalOperatorsTest {
     @Test
     public void testOrWithNestedAnd() {
         String JSON =
-                "{\n" +
-                "   \"rules\": [\n" +
-                "                {\n" +
-                "                    \"Rule\": {\n" +
-                "                        \"name\": \"r1\",\n" +
-                "                        \"condition\": {\n" +
-                "                            \"AllCondition\": [\n" +
-                "                                {\n" +
-                "                                    \"OrExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"AndExpression\": {\n" +
-                "                                                \"lhs\": {\n" +
-                "                                                    \"GreaterThanExpression\": {\n" +
-                "                                                        \"lhs\": {\n" +
-                "                                                            \"Event\": \"i\"\n" +
-                "                                                        },\n" +
-                "                                                        \"rhs\": {\n" +
-                "                                                            \"Integer\": 2\n" +
-                "                                                        }\n" +
-                "                                                    }\n" +
-                "                                                },\n" +
-                "                                                \"rhs\": {\n" +
-                "                                                    \"LessThanExpression\": {\n" +
-                "                                                        \"lhs\": {\n" +
-                "                                                            \"Event\": \"i\"\n" +
-                "                                                        },\n" +
-                "                                                        \"rhs\": {\n" +
-                "                                                            \"Integer\": 4\n" +
-                "                                                        }\n" +
-                "                                                    }\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"AndExpression\": {\n" +
-                "                                                \"lhs\": {\n" +
-                "                                                    \"LessThanExpression\": {\n" +
-                "                                                        \"lhs\": {\n" +
-                "                                                            \"Event\": \"i\"\n" +
-                "                                                        },\n" +
-                "                                                        \"rhs\": {\n" +
-                "                                                            \"Integer\": 8\n" +
-                "                                                        }\n" +
-                "                                                    }\n" +
-                "                                                },\n" +
-                "                                                \"rhs\": {\n" +
-                "                                                    \"GreaterThanExpression\": {\n" +
-                "                                                        \"lhs\": {\n" +
-                "                                                            \"Event\": \"i\"\n" +
-                "                                                        },\n" +
-                "                                                        \"rhs\": {\n" +
-                "                                                            \"Integer\": 6\n" +
-                "                                                        }\n" +
-                "                                                    }\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            ]\n" +
-                "                        },\n" +
-                "                        \"action\": {\n" +
-                "                            \"Action\": {\n" +
-                "                                \"action\": \"print_event\",\n" +
-                "                                \"action_args\": {}\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        \"enabled\": true\n" +
-                "                    }\n" +
-                "                }\n" +
-                "            ]\n" +
-                "}";
+                """
+                {
+                   "rules": [
+                                {
+                                    "Rule": {
+                                        "name": "r1",
+                                        "condition": {
+                                            "AllCondition": [
+                                                {
+                                                    "OrExpression": {
+                                                        "lhs": {
+                                                            "AndExpression": {
+                                                                "lhs": {
+                                                                    "GreaterThanExpression": {
+                                                                        "lhs": {
+                                                                            "Event": "i"
+                                                                        },
+                                                                        "rhs": {
+                                                                            "Integer": 2
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "rhs": {
+                                                                    "LessThanExpression": {
+                                                                        "lhs": {
+                                                                            "Event": "i"
+                                                                        },
+                                                                        "rhs": {
+                                                                            "Integer": 4
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "rhs": {
+                                                            "AndExpression": {
+                                                                "lhs": {
+                                                                    "LessThanExpression": {
+                                                                        "lhs": {
+                                                                            "Event": "i"
+                                                                        },
+                                                                        "rhs": {
+                                                                            "Integer": 8
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "rhs": {
+                                                                    "GreaterThanExpression": {
+                                                                        "lhs": {
+                                                                            "Event": "i"
+                                                                        },
+                                                                        "rhs": {
+                                                                            "Integer": 6
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "action": {
+                                            "Action": {
+                                                "action": "print_event",
+                                                "action_args": {}
+                                            }
+                                        },
+                                        "enabled": true
+                                    }
+                                }
+                            ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON);
 
@@ -533,37 +544,39 @@ public class LogicalOperatorsTest {
     @Test
     public void testPreventSelfJoin() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"name\":\"R1\",\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"sensu\":\"data.i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":3\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":\"j\",\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":2\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"R1",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "sensu":"data.i"
+                                        },
+                                        "rhs":{
+                                           "Integer":3
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":"j",
+                                        "rhs":{
+                                           "Integer":2
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -582,52 +595,54 @@ public class LogicalOperatorsTest {
     @Test
     public void testComparisonWithDifferentNumericTypes() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"echo\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"AndExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"action\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"go\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"GreaterThanExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"i\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Float\": 1.5\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "echo",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "AndExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "action"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "go"
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "GreaterThanExpression": {
+                                                        "lhs": {
+                                                            "Event": "i"
+                                                        },
+                                                        "rhs": {
+                                                            "Float": 1.5
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -640,52 +655,54 @@ public class LogicalOperatorsTest {
     @Test
     public void testEqualityWithDifferentNumericTypes() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"echo\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"AndExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"action\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"go\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"i\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Float\": 3.0\n" + // 3.0 becomes BigDecimal("3.0") by ConditionParseUtil.toJsonValue()
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "echo",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "AndExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "action"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "go"
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "i"
+                                                        },
+                                                        "rhs": {
+                                                            "Float": 3.0
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -701,68 +718,70 @@ public class LogicalOperatorsTest {
     @Test
     public void testOrWithAnd() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"Test and-or operator simple\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"AndExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"OrExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"EqualsExpression\": {\n" +
-                "                                                \"lhs\": {\n" +
-                "                                                    \"Event\": \"myint\"\n" +
-                "                                                },\n" +
-                "                                                \"rhs\": {\n" +
-                "                                                    \"Integer\": 73\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"EqualsExpression\": {\n" +
-                "                                                \"lhs\": {\n" +
-                "                                                    \"Event\": \"mystring\"\n" +
-                "                                                },\n" +
-                "                                                \"rhs\": {\n" +
-                "                                                    \"String\": \"world\"\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"mystring\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"hello\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"echo\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"message\": \"Test and-or operator #1 passes\"\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n\n" +
-        "}";
+                """
+        {
+            "rules": [
+                {
+                    "Rule": {
+                        "name": "Test and-or operator simple",
+                        "condition": {
+                            "AllCondition": [
+                                {
+                                    "AndExpression": {
+                                        "lhs": {
+                                            "OrExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "myint"
+                                                        },
+                                                        "rhs": {
+                                                            "Integer": 73
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "mystring"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "world"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "rhs": {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "mystring"
+                                                },
+                                                "rhs": {
+                                                    "String": "hello"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "Action": {
+                                    "action": "echo",
+                                    "action_args": {
+                                        "message": "Test and-or operator #1 passes"
+                                    }
+                                }
+                            }
+                        ],
+                        "enabled": true
+                    }
+                }
+            ]
+        }
+        """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 

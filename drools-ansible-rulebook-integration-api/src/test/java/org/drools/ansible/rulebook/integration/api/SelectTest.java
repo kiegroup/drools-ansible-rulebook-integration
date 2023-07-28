@@ -13,45 +13,47 @@ public class SelectTest {
     public void testSelect() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"levels\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \">\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"Integer\": 25\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"echo\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"message\": \"Hurray\"\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectExpression": {
+                                                "lhs": {
+                                                    "Event": "levels"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                        "String": ">"
+                                                    },
+                                                    "value": {
+                                                        "Integer": 25
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "echo",
+                                            "action_args": {
+                                                "message": "Hurray"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -68,45 +70,47 @@ public class SelectTest {
     public void testSelectOnSingleItem() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"levels\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \">\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"Integer\": 25\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"echo\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"message\": \"Hurray\"\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectExpression": {
+                                                "lhs": {
+                                                    "Event": "levels"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                        "String": ">"
+                                                    },
+                                                    "value": {
+                                                        "Integer": 25
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "echo",
+                                            "action_args": {
+                                                "message": "Hurray"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -123,45 +127,47 @@ public class SelectTest {
     public void testNegatedSelect() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectNotExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"levels\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \">\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"Integer\": 25\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"echo\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"message\": \"Hurray\"\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectNotExpression": {
+                                                "lhs": {
+                                                    "Event": "levels"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                        "String": ">"
+                                                    },
+                                                    "value": {
+                                                        "Integer": 25
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "echo",
+                                            "action_args": {
+                                                "message": "Hurray"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -181,80 +187,82 @@ public class SelectTest {
     public void testSelectWithRegEx() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"addresses\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \"regex\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"String\": \"Main St\"\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"echo\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"message\": \"Hurray\"\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r2\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectNotExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"addresses\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                       \"String\": \"regex\"\n" +
-                "                                     },\n" +
-                "                                     \"value\": {\n" +
-                "                                        \"String\": \"Major St\"\n" +
-                "                                     }\n" +
-                "                                  }\n" +
-                "                              }\n" +
-                "                          }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                     {\n" +
-                "                         \"Action\": {\n" +
-                "                             \"action\": \"echo\",\n" +
-                "                             \"action_args\": {\n" +
-                "                                 \"message\": \"No one lives on Major St\"\n" +
-                "                             }\n" +
-                "                         }\n" +
-                "                      }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "             }\n" +
-                "         }" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectExpression": {
+                                                "lhs": {
+                                                    "Event": "addresses"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                        "String": "regex"
+                                                    },
+                                                    "value": {
+                                                        "String": "Main St"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "echo",
+                                            "action_args": {
+                                                "message": "Hurray"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "Rule": {
+                                "name": "r2",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectNotExpression": {
+                                                "lhs": {
+                                                    "Event": "addresses"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                       "String": "regex"
+                                                     },
+                                                     "value": {
+                                                        "String": "Major St"
+                                                     }
+                                                  }
+                                              }
+                                          }
+                                    ]
+                                },
+                                "actions": [
+                                     {
+                                         "Action": {
+                                             "action": "echo",
+                                             "action_args": {
+                                                 "message": "No one lives on Major St"
+                                             }
+                                         }
+                                      }
+                                ],
+                                "enabled": true
+                             }
+                         }\
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -270,45 +278,47 @@ public class SelectTest {
     @Test
     public void testSelectWithFloat() {
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"test float\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"radius\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \">=\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"Integer\": 500\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"debug\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"msg\": \"Float test passes\"\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "test float",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectExpression": {
+                                                "lhs": {
+                                                    "Event": "radius"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                        "String": ">="
+                                                    },
+                                                    "value": {
+                                                        "Integer": 500
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "debug",
+                                            "action_args": {
+                                                "msg": "Float test passes"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -327,43 +337,45 @@ public class SelectTest {
     @Test
     public void testSelectOnNull() {
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"with select\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"my_obj\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \"==\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"NullType\": null\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "with select",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectExpression": {
+                                                "lhs": {
+                                                    "Event": "my_obj"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                        "String": "=="
+                                                    },
+                                                    "value": {
+                                                        "NullType": null
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -379,43 +391,45 @@ public class SelectTest {
     @Test
     public void testSelectOnField() {
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"R1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"my_list1\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \"==\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"Event\": \"my_int1\"\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "R1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectExpression": {
+                                                "lhs": {
+                                                    "Event": "my_list1"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                        "String": "=="
+                                                    },
+                                                    "value": {
+                                                        "Event": "my_int1"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -433,53 +447,55 @@ public class SelectTest {
     public void testSelectWithJoinCondition() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"otherlist.name\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"String\": \"Delete\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        {\n" +
-                "                            \"SelectExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"thirdlist.rnames\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \"search\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"Events\": \"m_0.otherlist.resource_name\"\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"debug\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "otherlist.name"
+                                                },
+                                                "rhs": {
+                                                    "String": "Delete"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "SelectExpression": {
+                                                "lhs": {
+                                                    "Event": "thirdlist.rnames"
+                                                },
+                                                "rhs": {
+                                                    "operator": {
+                                                        "String": "search"
+                                                    },
+                                                    "value": {
+                                                        "Events": "m_0.otherlist.resource_name"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "debug",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 

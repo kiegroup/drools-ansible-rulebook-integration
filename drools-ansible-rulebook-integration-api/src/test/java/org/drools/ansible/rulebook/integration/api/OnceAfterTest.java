@@ -21,57 +21,59 @@ public class OnceAfterTest {
     @Test
     public void testOnceAfterWithOr() {
         String json =
-                "{" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"OrExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"alert.level\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"warning\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"alert.level\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"error\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"action\": {\n" +
-                "                    \"Action\": {\n" +
-                "                        \"action\": \"print_event\",\n" +
-                "                        \"action_args\": {}\n" +
-                "                    }\n" +
-                "                },\n" +
-                "                \"enabled\": true,\n" +
-                "                \"throttle\": {\n" +
-                "                    \"group_by_attributes\": [\n" +
-                "                        \"event.meta.hosts\",\n" +
-                "                        \"event.alert.level\"\n" +
-                "                    ],\n" +
-                "                    \"once_after\": \"10 seconds\"\n" +
-                "                }\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {\
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "OrExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "alert.level"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "warning"
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "alert.level"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "error"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "action": {
+                                    "Action": {
+                                        "action": "print_event",
+                                        "action_args": {}
+                                    }
+                                },
+                                "enabled": true,
+                                "throttle": {
+                                    "group_by_attributes": [
+                                        "event.meta.hosts",
+                                        "event.alert.level"
+                                    ],
+                                    "once_after": "10 seconds"
+                                }
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
@@ -139,163 +141,165 @@ public class OnceAfterTest {
         
     @Test
     public void test57_once_after_multiple() {
-        final String RULES = "{\n" + //
-                "\"rules\": [\n" + //
-                "    {\n" + //
-                "        \"Rule\": {\n" + //
-                "            \"name\": \"r1\",\n" + //
-                "            \"condition\": {\n" + //
-                "                \"AllCondition\": [\n" + //
-                "                    {\n" + //
-                "                        \"OrExpression\": {\n" + //
-                "                            \"lhs\": {\n" + //
-                "                                \"EqualsExpression\": {\n" + //
-                "                                    \"lhs\": {\n" + //
-                "                                        \"Event\": \"r1.level\"\n" + //
-                "                                    },\n" + //
-                "                                    \"rhs\": {\n" + //
-                "                                        \"String\": \"warning\"\n" + //
-                "                                    }\n" + //
-                "                                }\n" + //
-                "                            },\n" + //
-                "                            \"rhs\": {\n" + //
-                "                                \"EqualsExpression\": {\n" + //
-                "                                    \"lhs\": {\n" + //
-                "                                        \"Event\": \"r1.level\"\n" + //
-                "                                    },\n" + //
-                "                                    \"rhs\": {\n" + //
-                "                                        \"String\": \"error\"\n" + //
-                "                                    }\n" + //
-                "                                }\n" + //
-                "                            }\n" + //
-                "                        }\n" + //
-                "                    }\n" + //
-                "                ]\n" + //
-                "            },\n" + //
-                "            \"actions\": [\n" + //
-                "                {\n" + //
-                "                    \"Action\": {\n" + //
-                "                        \"action\": \"debug\",\n" + //
-                "                        \"action_args\": {\n" + //
-                "                            \"msg\": \"r1 works\"\n" + //
-                "                        }\n" + //
-                "                    }\n" + //
-                "                }\n" + //
-                "            ],\n" + //
-                "            \"enabled\": true,\n" + //
-                "            \"throttle\": {\n" + //
-                "                \"group_by_attributes\": [\n" + //
-                "                    \"event.meta.hosts\",\n" + //
-                "                    \"event.r1.level\"\n" + //
-                "                ],\n" + //
-                "                \"once_after\": \"15 seconds\"\n" + //
-                "            }\n" + //
-                "        }\n" + //
-                "    },\n" + //
-                "    {\n" + //
-                "        \"Rule\": {\n" + //
-                "            \"name\": \"r2\",\n" + //
-                "            \"condition\": {\n" + //
-                "                \"AllCondition\": [\n" + //
-                "                    {\n" + //
-                "                        \"OrExpression\": {\n" + //
-                "                            \"lhs\": {\n" + //
-                "                                \"EqualsExpression\": {\n" + //
-                "                                    \"lhs\": {\n" + //
-                "                                        \"Event\": \"r2.level\"\n" + //
-                "                                    },\n" + //
-                "                                    \"rhs\": {\n" + //
-                "                                        \"String\": \"warning\"\n" + //
-                "                                    }\n" + //
-                "                                }\n" + //
-                "                            },\n" + //
-                "                            \"rhs\": {\n" + //
-                "                                \"EqualsExpression\": {\n" + //
-                "                                    \"lhs\": {\n" + //
-                "                                        \"Event\": \"r2.level\"\n" + //
-                "                                    },\n" + //
-                "                                    \"rhs\": {\n" + //
-                "                                        \"String\": \"error\"\n" + //
-                "                                    }\n" + //
-                "                                }\n" + //
-                "                            }\n" + //
-                "                        }\n" + //
-                "                    }\n" + //
-                "                ]\n" + //
-                "            },\n" + //
-                "            \"actions\": [\n" + //
-                "                {\n" + //
-                "                    \"Action\": {\n" + //
-                "                        \"action\": \"debug\",\n" + //
-                "                        \"action_args\": {\n" + //
-                "                            \"msg\": \"r2 works\"\n" + //
-                "                        }\n" + //
-                "                    }\n" + //
-                "                }\n" + //
-                "            ],\n" + //
-                "            \"enabled\": true,\n" + //
-                "            \"throttle\": {\n" + //
-                "                \"group_by_attributes\": [\n" + //
-                "                    \"event.meta.hosts\",\n" + //
-                "                    \"event.r2.level\"\n" + //
-                "                ],\n" + //
-                "                \"once_after\": \"30 seconds\"\n" + //
-                "            }\n" + //
-                "        }\n" + //
-                "    },\n" + //
-                "    {\n" + //
-                "        \"Rule\": {\n" + //
-                "            \"name\": \"r3\",\n" + //
-                "            \"condition\": {\n" + //
-                "                \"AllCondition\": [\n" + //
-                "                    {\n" + //
-                "                        \"OrExpression\": {\n" + //
-                "                            \"lhs\": {\n" + //
-                "                                \"EqualsExpression\": {\n" + //
-                "                                    \"lhs\": {\n" + //
-                "                                        \"Event\": \"r3.level\"\n" + //
-                "                                    },\n" + //
-                "                                    \"rhs\": {\n" + //
-                "                                        \"String\": \"warning\"\n" + //
-                "                                    }\n" + //
-                "                                }\n" + //
-                "                            },\n" + //
-                "                            \"rhs\": {\n" + //
-                "                                \"EqualsExpression\": {\n" + //
-                "                                    \"lhs\": {\n" + //
-                "                                        \"Event\": \"r3.level\"\n" + //
-                "                                    },\n" + //
-                "                                    \"rhs\": {\n" + //
-                "                                        \"String\": \"error\"\n" + //
-                "                                    }\n" + //
-                "                                }\n" + //
-                "                            }\n" + //
-                "                        }\n" + //
-                "                    }\n" + //
-                "                ]\n" + //
-                "            },\n" + //
-                "            \"actions\": [\n" + //
-                "                {\n" + //
-                "                    \"Action\": {\n" + //
-                "                        \"action\": \"debug\",\n" + //
-                "                        \"action_args\": {\n" + //
-                "                            \"msg\": \"r3 works\"\n" + //
-                "                        }\n" + //
-                "                    }\n" + //
-                "                }\n" + //
-                "            ],\n" + //
-                "            \"enabled\": true,\n" + //
-                "            \"throttle\": {\n" + //
-                "                \"group_by_attributes\": [\n" + //
-                "                    \"event.meta.hosts\",\n" + //
-                "                    \"event.r3.level\"\n" + //
-                "                ],\n" + //
-                "                \"once_after\": \"45 seconds\"\n" + //
-                "            }\n" + //
-                "        }\n" + //
-                "    }\n" + //
-                "]\n" + //
-                "}";
+        final String RULES = """
+                {
+                "rules": [
+                    {
+                        "Rule": {
+                            "name": "r1",
+                            "condition": {
+                                "AllCondition": [
+                                    {
+                                        "OrExpression": {
+                                            "lhs": {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "r1.level"
+                                                    },
+                                                    "rhs": {
+                                                        "String": "warning"
+                                                    }
+                                                }
+                                            },
+                                            "rhs": {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "r1.level"
+                                                    },
+                                                    "rhs": {
+                                                        "String": "error"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "actions": [
+                                {
+                                    "Action": {
+                                        "action": "debug",
+                                        "action_args": {
+                                            "msg": "r1 works"
+                                        }
+                                    }
+                                }
+                            ],
+                            "enabled": true,
+                            "throttle": {
+                                "group_by_attributes": [
+                                    "event.meta.hosts",
+                                    "event.r1.level"
+                                ],
+                                "once_after": "15 seconds"
+                            }
+                        }
+                    },
+                    {
+                        "Rule": {
+                            "name": "r2",
+                            "condition": {
+                                "AllCondition": [
+                                    {
+                                        "OrExpression": {
+                                            "lhs": {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "r2.level"
+                                                    },
+                                                    "rhs": {
+                                                        "String": "warning"
+                                                    }
+                                                }
+                                            },
+                                            "rhs": {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "r2.level"
+                                                    },
+                                                    "rhs": {
+                                                        "String": "error"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "actions": [
+                                {
+                                    "Action": {
+                                        "action": "debug",
+                                        "action_args": {
+                                            "msg": "r2 works"
+                                        }
+                                    }
+                                }
+                            ],
+                            "enabled": true,
+                            "throttle": {
+                                "group_by_attributes": [
+                                    "event.meta.hosts",
+                                    "event.r2.level"
+                                ],
+                                "once_after": "30 seconds"
+                            }
+                        }
+                    },
+                    {
+                        "Rule": {
+                            "name": "r3",
+                            "condition": {
+                                "AllCondition": [
+                                    {
+                                        "OrExpression": {
+                                            "lhs": {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "r3.level"
+                                                    },
+                                                    "rhs": {
+                                                        "String": "warning"
+                                                    }
+                                                }
+                                            },
+                                            "rhs": {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "r3.level"
+                                                    },
+                                                    "rhs": {
+                                                        "String": "error"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "actions": [
+                                {
+                                    "Action": {
+                                        "action": "debug",
+                                        "action_args": {
+                                            "msg": "r3 works"
+                                        }
+                                    }
+                                }
+                            ],
+                            "enabled": true,
+                            "throttle": {
+                                "group_by_attributes": [
+                                    "event.meta.hosts",
+                                    "event.r3.level"
+                                ],
+                                "once_after": "45 seconds"
+                            }
+                        }
+                    }
+                ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), RULES);
         List<Match> matchedRules;

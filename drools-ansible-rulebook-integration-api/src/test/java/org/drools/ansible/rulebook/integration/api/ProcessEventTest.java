@@ -14,45 +14,47 @@ import static org.junit.Assert.assertTrue;
 public class ProcessEventTest {
 
     public static final String JSON1 =
-            "{\n" +
-            "    \"rules\": [\n" +
-            "            {\n" +
-            "                \"Rule\": {\n" +
-            "                    \"condition\": {\n" +
-            "                        \"AllCondition\": [\n" +
-            "                            {\n" +
-            "                                \"EqualsExpression\": {\n" +
-            "                                    \"lhs\": {\n" +
-            "                                        \"Event\": \"i\"\n" +
-            "                                    },\n" +
-            "                                    \"rhs\": {\n" +
-            "                                        \"Integer\": 1\n" +
-            "                                    }\n" +
-            "                                }\n" +
-            "                            }\n" +
-            "                        ]\n" +
-            "                    },\n" +
-            "                    \"enabled\": true,\n" +
-            "                    \"name\": null\n" +
-            "                }\n" +
-            "            },\n" +
-            "            {\n" +
-            "                \"Rule\": {\n" +
-            "                    \"condition\": {\n" +
-            "                        \"AllCondition\": [\n" +
-            "                            {\n" +
-            "                                \"IsNotDefinedExpression\": {\n" +
-            "                                    \"Event\": \"msg\"\n" +
-            "                                }\n" +
-            "                            }\n" +
-            "                        ]\n" +
-            "                    },\n" +
-            "                    \"enabled\": true,\n" +
-            "                    \"name\": null\n" +
-            "                }\n" +
-            "            }\n" +
-            "        ]\n" +
-            "}";
+            """
+            {
+                "rules": [
+                        {
+                            "Rule": {
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "i"
+                                                },
+                                                "rhs": {
+                                                    "Integer": 1
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "enabled": true,
+                                "name": null
+                            }
+                        },
+                        {
+                            "Rule": {
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "IsNotDefinedExpression": {
+                                                "Event": "msg"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "enabled": true,
+                                "name": null
+                            }
+                        }
+                    ]
+            }
+            """;
 
     @Test
     public void testExecuteRules() {
@@ -66,40 +68,42 @@ public class ProcessEventTest {
     }
 
     public static final String JSON2 =
-            "{\n" +
-            "    \"rules\": [\n" +
-            "            {\n" +
-            "                \"Rule\": {\n" +
-            "                    \"condition\": {\n" +
-            "                        \"AllCondition\": [\n" +
-            "                            {\n" +
-            "                                \"EqualsExpression\": {\n" +
-            "                                    \"lhs\": {\n" +
-            "                                        \"Fact\": \"os\"\n" +
-            "                                    },\n" +
-            "                                    \"rhs\": {\n" +
-            "                                        \"String\": \"linux\"\n" +
-            "                                    }\n" +
-            "                                }\n" +
-            "                            },\n" +
-            "                            {\n" +
-            "                                \"EqualsExpression\": {\n" +
-            "                                    \"lhs\": {\n" +
-            "                                        \"Event\": \"i\"\n" +
-            "                                    },\n" +
-            "                                    \"rhs\": {\n" +
-            "                                        \"Integer\": 1\n" +
-            "                                    }\n" +
-            "                                }\n" +
-            "                            }\n" +
-            "                        ]\n" +
-            "                    },\n" +
-            "                    \"enabled\": true,\n" +
-            "                    \"name\": null\n" +
-            "                }\n" +
-            "            }\n" +
-            "        ]\n" +
-            "}";
+            """
+            {
+                "rules": [
+                        {
+                            "Rule": {
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Fact": "os"
+                                                },
+                                                "rhs": {
+                                                    "String": "linux"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "i"
+                                                },
+                                                "rhs": {
+                                                    "Integer": 1
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "enabled": true,
+                                "name": null
+                            }
+                        }
+                    ]
+            }
+            """;
 
     @Test
     public void testEventShouldProduceMultipleMatchesForSameRule() {

@@ -28,30 +28,32 @@ public class AlphaTest {
     @Test
     public void testEqualsWithFixedValue() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"EqualsExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"j\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Integer\": \"3\"\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": \"R1\"\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "j"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": "3"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": "R1"
+                                }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -96,30 +98,32 @@ public class AlphaTest {
     @Test
     public void testEqualsOn2Fields() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"EqualsExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Event\": \"j\"\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Event": "j"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -139,30 +143,32 @@ public class AlphaTest {
     @Test
     public void testGreaterOn2Fields() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"GreaterThanExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Event\": \"j\"\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "GreaterThanExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Event": "j"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -183,36 +189,38 @@ public class AlphaTest {
     public void testListContainsField() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                    \"Rule\": {\n" +
-                "                        \"name\": \"contains_rule_int\",\n" +
-                "                        \"condition\": {\n" +
-                "                            \"AllCondition\": [\n" +
-                "                                {\n" +
-                "                                    \"ListContainsItemExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"id_list\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Event\": \"i\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            ]\n" +
-                "                        },\n" +
-                "                        \"action\": {\n" +
-                "                            \"Action\": {\n" +
-                "                                \"action\": \"debug\",\n" +
-                "                                \"action_args\": {}\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        \"enabled\": true\n" +
-                "                    }\n" +
-                "                }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                    "Rule": {
+                                        "name": "contains_rule_int",
+                                        "condition": {
+                                            "AllCondition": [
+                                                {
+                                                    "ListContainsItemExpression": {
+                                                        "lhs": {
+                                                            "Event": "id_list"
+                                                        },
+                                                        "rhs": {
+                                                            "Event": "i"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "action": {
+                                            "Action": {
+                                                "action": "debug",
+                                                "action_args": {}
+                                            }
+                                        },
+                                        "enabled": true
+                                    }
+                                }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 

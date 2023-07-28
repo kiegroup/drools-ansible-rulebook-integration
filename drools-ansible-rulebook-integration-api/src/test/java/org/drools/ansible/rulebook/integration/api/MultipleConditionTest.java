@@ -12,76 +12,78 @@ import static org.junit.Assert.assertEquals;
 public class MultipleConditionTest {
 
     public static final String JSON1 =
-            "{\n" +
-            "   \"rules\":[\n" +
-            "      {\n" +
-            "         \"Rule\":{\n" +
-            "            \"condition\":{\n" +
-            "               \"AllCondition\":[\n" +
-            "                  {\n" +
-            "                     \"AssignmentExpression\":{\n" +
-            "                        \"lhs\":{\n" +
-            "                           \"Events\":\"first\"\n" +
-            "                        },\n" +
-            "                        \"rhs\":{\n" +
-            "                           \"EqualsExpression\":{\n" +
-            "                              \"lhs\":{\n" +
-            "                                 \"Event\":\"i\"\n" +
-            "                              },\n" +
-            "                              \"rhs\":{\n" +
-            "                                 \"Integer\":0\n" +
-            "                              }\n" +
-            "                           }\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"AssignmentExpression\":{\n" +
-            "                        \"lhs\":{\n" +
-            "                           \"Events\":\"second\"\n" +
-            "                        },\n" +
-            "                        \"rhs\":{\n" +
-            "                           \"EqualsExpression\":{\n" +
-            "                              \"lhs\":{\n" +
-            "                                 \"Event\":\"i\"\n" +
-            "                              },\n" +
-            "                              \"rhs\":{\n" +
-            "                                 \"Integer\":1\n" +
-            "                              }\n" +
-            "                           }\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"AssignmentExpression\":{\n" +
-            "                        \"lhs\":{\n" +
-            "                           \"Events\":\"third\"\n" +
-            "                        },\n" +
-            "                        \"rhs\":{\n" +
-            "                           \"EqualsExpression\":{\n" +
-            "                              \"lhs\":{\n" +
-            "                                 \"Event\":\"i\"\n" +
-            "                              },\n" +
-            "                              \"rhs\":{\n" +
-            "                                 \"AdditionExpression\":{\n" +
-            "                                    \"lhs\":{\n" +
-            "                                       \"Events\":\"first.i\"\n" +
-            "                                    },\n" +
-            "                                    \"rhs\":{\n" +
-            "                                       \"Integer\":2\n" +
-            "                                    }\n" +
-            "                                 }\n" +
-            "                              }\n" +
-            "                           }\n" +
-            "                        }\n" +
-            "                     }\n" +
-            "                  }\n" +
-            "               ]\n" +
-            "            }\n" +
-            "         }\n" +
-            "      }\n" +
-            "   ]\n" +
-            "}";
+            """
+            {
+               "rules":[
+                  {
+                     "Rule":{
+                        "condition":{
+                           "AllCondition":[
+                              {
+                                 "AssignmentExpression":{
+                                    "lhs":{
+                                       "Events":"first"
+                                    },
+                                    "rhs":{
+                                       "EqualsExpression":{
+                                          "lhs":{
+                                             "Event":"i"
+                                          },
+                                          "rhs":{
+                                             "Integer":0
+                                          }
+                                       }
+                                    }
+                                 }
+                              },
+                              {
+                                 "AssignmentExpression":{
+                                    "lhs":{
+                                       "Events":"second"
+                                    },
+                                    "rhs":{
+                                       "EqualsExpression":{
+                                          "lhs":{
+                                             "Event":"i"
+                                          },
+                                          "rhs":{
+                                             "Integer":1
+                                          }
+                                       }
+                                    }
+                                 }
+                              },
+                              {
+                                 "AssignmentExpression":{
+                                    "lhs":{
+                                       "Events":"third"
+                                    },
+                                    "rhs":{
+                                       "EqualsExpression":{
+                                          "lhs":{
+                                             "Event":"i"
+                                          },
+                                          "rhs":{
+                                             "AdditionExpression":{
+                                                "lhs":{
+                                                   "Events":"first.i"
+                                                },
+                                                "rhs":{
+                                                   "Integer":2
+                                                }
+                                             }
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           ]
+                        }
+                     }
+                  }
+               ]
+            }
+            """;
 
     @Test
     public void testReadJson() {

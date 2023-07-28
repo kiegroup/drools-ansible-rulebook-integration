@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
 import static org.junit.Assert.assertEquals;
 
 public class AdditionTest {
@@ -17,43 +16,45 @@ public class AdditionTest {
     @Test
     public void testExecuteRules() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"action\": {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"debug\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    },\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"EqualsExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"nested.i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"AdditionExpression\": {\n" +
-                "                                            \"lhs\": {\n" +
-                "                                                \"Event\": \"nested.j\"\n" +
-                "                                            },\n" +
-                "                                            \"rhs\": {\n" +
-                "                                                \"Integer\": 1\n" +
-                "                                            }\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "action": {
+                                        "Action": {
+                                            "action": "debug",
+                                            "action_args": {}
+                                        }
+                                    },
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "nested.i"
+                                                    },
+                                                    "rhs": {
+                                                        "AdditionExpression": {
+                                                            "lhs": {
+                                                                "Event": "nested.j"
+                                                            },
+                                                            "rhs": {
+                                                                "Integer": 1
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -88,63 +89,65 @@ public class AdditionTest {
     @Test
     public void testAdditionOnDifferentEvents() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"AssignmentExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Events\": \"abc\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"i\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Integer\": 1\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"i\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"Integer\": 3\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"i\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"AdditionExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Events\": \"abc.i\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Events\": \"m_1.i\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                }\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "AssignmentExpression": {
+                                                "lhs": {
+                                                    "Events": "abc"
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "i"
+                                                        },
+                                                        "rhs": {
+                                                            "Integer": 1
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "i"
+                                                },
+                                                "rhs": {
+                                                    "Integer": 3
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "i"
+                                                },
+                                                "rhs": {
+                                                    "AdditionExpression": {
+                                                        "lhs": {
+                                                            "Events": "abc.i"
+                                                        },
+                                                        "rhs": {
+                                                            "Events": "m_1.i"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 

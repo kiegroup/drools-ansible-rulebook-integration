@@ -12,42 +12,44 @@ public class BetaEqualsTest {
     @Test
     public void testExecuteRulesWithExplicitJoin() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"AssignmentExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Facts\":\"first\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"IsDefinedExpression\":{\n" +
-                "                              \"Fact\":\"custom.expected_index\"\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Facts\":\"first.custom.expected_index\"\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"enabled\":true,\n" +
-                "            \"name\":null\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "AssignmentExpression":{
+                                        "lhs":{
+                                           "Facts":"first"
+                                        },
+                                        "rhs":{
+                                           "IsDefinedExpression":{
+                                              "Fact":"custom.expected_index"
+                                           }
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"i"
+                                        },
+                                        "rhs":{
+                                           "Facts":"first.custom.expected_index"
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "enabled":true,
+                            "name":null
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
