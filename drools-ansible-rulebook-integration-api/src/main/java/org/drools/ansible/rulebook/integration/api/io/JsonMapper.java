@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,10 +16,6 @@ public class JsonMapper {
     private static final TypeReference<List<Map<String, Object>>> LIST_OF_MAP_OF_STRING_AND_OBJECT = new TypeReference<List<Map<String, Object>>>(){};
     private static final TypeReference<Map<String, Object>> MAP_OF_STRING_AND_OBJECT = new TypeReference<Map<String, Object>>(){};
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    static { // most tests contains non-standard JSON; eventually check assumption non-strict json with Ansible team
-        OBJECT_MAPPER.enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES.mappedFeature());
-        OBJECT_MAPPER.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES.mappedFeature());
-    }
     private static final JavaType JACKSON_RAW_LIST = OBJECT_MAPPER.getTypeFactory().constructRawCollectionLikeType(List.class);
 
     public static String toJson(Object object) {
