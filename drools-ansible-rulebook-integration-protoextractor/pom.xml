@@ -52,7 +52,6 @@
       <plugin>
         <groupId>org.antlr</groupId>
         <artifactId>antlr4-maven-plugin</artifactId>
-        <version>${version.org.antlr4}</version>
         <executions>
           <execution>
             <goals>
@@ -68,7 +67,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
         <executions>
           <execution>
             <id>TestRigGui</id> <!-- mvn exec:java@TestRigGui -->
