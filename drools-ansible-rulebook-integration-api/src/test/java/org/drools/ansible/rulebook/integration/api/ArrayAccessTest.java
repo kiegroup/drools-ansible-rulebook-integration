@@ -38,10 +38,10 @@ public class ArrayAccessTest {
     public void testArrayAccess() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{'host': 'A', 'os': {'array': ['abc']}}" ).join();
+        List<Match> matchedRules = rulesExecutor.processFacts( "{\"host\": \"A\", \"os\": {\"array\": [\"abc\"]}}" ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{'host': 'B', 'os': {'array': ['abc', 'windows']}}" ).join();
+        matchedRules = rulesExecutor.processFacts( "{\"host\": \"B\", \"os\": {\"array\": [\"abc\", \"windows\"]}}" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
 
