@@ -297,7 +297,7 @@ public class OnceAfterTest {
                 "]\n" + //
                 "}";
 
-        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), RULES);
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.FULLY_MANUAL_PSEUDOCLOCK), RULES);
         List<Match> matchedRules;
 
         source_generic_loop57(rulesExecutor);

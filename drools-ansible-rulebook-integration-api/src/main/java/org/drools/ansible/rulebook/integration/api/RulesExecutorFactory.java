@@ -13,6 +13,8 @@ import org.kie.api.conf.KieBaseMutabilityOption;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -20,6 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOption.*;
 
 public class RulesExecutorFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(RulesExecutorFactory.class);
 
     private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
 
@@ -47,10 +50,14 @@ public class RulesExecutorFactory {
 
     public static RulesExecutor createRulesExecutor(RulesSet rulesSet) {
         RulesExecutor rulesExecutor = new RulesExecutor(createRulesExecutorSession(rulesSet), rulesSet.hasOption(ASYNC_EVALUATION));
-        if (rulesSet.getClockPeriod() != null) {
-            rulesExecutor.startAutomaticPseudoClock(rulesSet.getClockPeriod().getAmount(), rulesSet.getClockPeriod().getTimeUnit());
+        if (!rulesSet.hasOption(FULLY_MANUAL_PSEUDOCLOCK)) {
+            if (rulesSet.getClockPeriod() != null) {
+                rulesExecutor.startAutomaticPseudoClock(rulesSet.getClockPeriod().getAmount(), rulesSet.getClockPeriod().getTimeUnit());
+            } else {
+                rulesExecutor.startAutomaticPseudoClock(DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS, TimeUnit.MILLISECONDS);
+            }
         } else {
-            rulesExecutor.startAutomaticPseudoClock(DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS, TimeUnit.MILLISECONDS);
+            LOG.info("No automatic advance of internal pseudo-clock since option {} was detected", FULLY_MANUAL_PSEUDOCLOCK);
         }
         return rulesExecutor;
     }
