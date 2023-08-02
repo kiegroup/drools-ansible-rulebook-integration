@@ -12,91 +12,93 @@ public class RetractTest {
     @Test
     public void testExecuteRules() {
         String JSON1 =
-                "{\n" +
-                "           \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"action\": {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"assert_fact\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"fact\": {\n" +
-                "                                    \"msg\": \"hello world\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    },\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"EqualsExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Integer\": 1\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            },\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"action\": {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"retract_fact\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"fact\": {\n" +
-                "                                    \"msg\": \"hello world\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    },\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"EqualsExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"msg\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"String\": \"hello world\"\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            },\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"action\": {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"debug\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    },\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"IsNotDefinedExpression\": {\n" +
-                "                                    \"Event\": \"msg\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                           "rules": [
+                            {
+                                "Rule": {
+                                    "action": {
+                                        "Action": {
+                                            "action": "assert_fact",
+                                            "action_args": {
+                                                "fact": {
+                                                    "msg": "hello world"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": 1
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            },
+                            {
+                                "Rule": {
+                                    "action": {
+                                        "Action": {
+                                            "action": "retract_fact",
+                                            "action_args": {
+                                                "fact": {
+                                                    "msg": "hello world"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "msg"
+                                                    },
+                                                    "rhs": {
+                                                        "String": "hello world"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            },
+                            {
+                                "Rule": {
+                                    "action": {
+                                        "Action": {
+                                            "action": "debug",
+                                            "action_args": {}
+                                        }
+                                    },
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "IsNotDefinedExpression": {
+                                                    "Event": "msg"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -114,30 +116,32 @@ public class RetractTest {
     @Test
     public void testRetract() {
         String JSON1 =
-                "{\n" +
-                "           \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"GreaterThanExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Integer\": 0\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                           "rules": [
+                            {
+                                "Rule": {
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "GreaterThanExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": 0
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -155,30 +159,32 @@ public class RetractTest {
     @Test
     public void testRetractMatchingFacts() {
         String JSON1 =
-                "{\n" +
-                "           \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"GreaterThanExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Integer\": 0\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                           "rules": [
+                            {
+                                "Rule": {
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "GreaterThanExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": 0
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -196,38 +202,42 @@ public class RetractTest {
     @Test
     public void testRetractMatchingFactsIgnoringKeys() {
         String JSON1 =
-                "{\n" +
-                "           \"rules\": [\n" +
-                "            {\n" +
-                "                \"Rule\": {\n" +
-                "                    \"condition\": {\n" +
-                "                        \"AllCondition\": [\n" +
-                "                            {\n" +
-                "                                \"GreaterThanExpression\": {\n" +
-                "                                    \"lhs\": {\n" +
-                "                                        \"Event\": \"i\"\n" +
-                "                                    },\n" +
-                "                                    \"rhs\": {\n" +
-                "                                        \"Integer\": 0\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        ]\n" +
-                "                    },\n" +
-                "                    \"enabled\": true,\n" +
-                "                    \"name\": null\n" +
-                "                }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                           "rules": [
+                            {
+                                "Rule": {
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "GreaterThanExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": 0
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": null
+                                }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"facts\" : [ " +
-                "{ \"i\" : 1, \"x\" : 1, \"y\" : 1 }, " +
-                "{ \"i\" : 1, \"x\" : { \"i\" : 1, \"j\" : 1 } }, " +
-                "{ \"i\" : 1, \"j\" : 1 }, " +
-                "{ \"i\" : 2, \"x\" : 1 } ] }" ).join();
+        List<Match> matchedRules = rulesExecutor.processFacts( """
+                { "facts" : [ 
+                { "i" : 1, "x" : 1, "y" : 1 }, 
+                { "i" : 1, "x" : { "i" : 1, "j" : 1 } }, 
+                { "i" : 1, "j" : 1 }, 
+                { "i" : 2, "x" : 1 } ] }
+                """ ).join();
 
         assertEquals( 4, matchedRules.size() );
         assertEquals( 4, rulesExecutor.getAllFacts().size() );

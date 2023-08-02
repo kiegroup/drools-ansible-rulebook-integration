@@ -12,54 +12,56 @@ public class StringMatchTest {
     @Test
     public void testMatch() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"name\":\"R1\",\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"SearchMatchesExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"url1\"\n" +
-                "                        },\n" +
-                "                        \"rhs\": {\n" +
-                "                            \"SearchType\": {\n" +
-                "                                \"kind\": {\n" +
-                "                                    \"String\": \"match\"\n" +
-                "                                },\n" +
-                "                                \"pattern\": {\n" +
-                "                                    \"String\": \"https://example.com/users/.*/resources\"\n" +
-                "                                },\n" +
-                "                                \"options\": [\n" +
-                "                                    {\n" +
-                "                                        \"name\": {\n" +
-                "                                            \"String\": \"ignorecase\"\n" +
-                "                                        },\n" +
-                "                                        \"value\": {\n" +
-                "                                            \"Boolean\": true\n" +
-                "                                        }\n" +
-                "                                    },\n" +
-                "                                    {\n" +
-                "                                        \"name\": {\n" +
-                "                                            \"String\": \"multiline\"\n" +
-                "                                        },\n" +
-                "                                        \"value\": {\n" +
-                "                                            \"Boolean\": true\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                ]\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"R1",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "SearchMatchesExpression":{
+                                        "lhs":{
+                                           "Event":"url1"
+                                        },
+                                        "rhs": {
+                                            "SearchType": {
+                                                "kind": {
+                                                    "String": "match"
+                                                },
+                                                "pattern": {
+                                                    "String": "https://example.com/users/.*/resources"
+                                                },
+                                                "options": [
+                                                    {
+                                                        "name": {
+                                                            "String": "ignorecase"
+                                                        },
+                                                        "value": {
+                                                            "Boolean": true
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": {
+                                                            "String": "multiline"
+                                                        },
+                                                        "value": {
+                                                            "Boolean": true
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -80,54 +82,56 @@ public class StringMatchTest {
     @Test
     public void testNotMatch() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"name\":\"R1\",\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"SearchNotMatchesExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"url1\"\n" +
-                "                        },\n" +
-                "                        \"rhs\": {\n" +
-                "                            \"SearchType\": {\n" +
-                "                                \"kind\": {\n" +
-                "                                    \"String\": \"match\"\n" +
-                "                                },\n" +
-                "                                \"pattern\": {\n" +
-                "                                    \"String\": \"https://example.com/users/.*/resources\"\n" +
-                "                                },\n" +
-                "                                \"options\": [\n" +
-                "                                    {\n" +
-                "                                        \"name\": {\n" +
-                "                                            \"String\": \"ignorecase\"\n" +
-                "                                        },\n" +
-                "                                        \"value\": {\n" +
-                "                                            \"Boolean\": true\n" +
-                "                                        }\n" +
-                "                                    },\n" +
-                "                                    {\n" +
-                "                                        \"name\": {\n" +
-                "                                            \"String\": \"multiline\"\n" +
-                "                                        },\n" +
-                "                                        \"value\": {\n" +
-                "                                            \"Boolean\": true\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                ]\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"R1",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "SearchNotMatchesExpression":{
+                                        "lhs":{
+                                           "Event":"url1"
+                                        },
+                                        "rhs": {
+                                            "SearchType": {
+                                                "kind": {
+                                                    "String": "match"
+                                                },
+                                                "pattern": {
+                                                    "String": "https://example.com/users/.*/resources"
+                                                },
+                                                "options": [
+                                                    {
+                                                        "name": {
+                                                            "String": "ignorecase"
+                                                        },
+                                                        "value": {
+                                                            "Boolean": true
+                                                        }
+                                                    },
+                                                    {
+                                                        "name": {
+                                                            "String": "multiline"
+                                                        },
+                                                        "value": {
+                                                            "Boolean": true
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -147,222 +151,224 @@ public class StringMatchTest {
     @Test
     public void testMultiline() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"R1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SearchMatchesExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"string1\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"SearchType\": {\n" +
-                "                                        \"kind\": {\n" +
-                "                                            \"String\": \"search\"\n" +
-                "                                        },\n" +
-                "                                        \"pattern\": {\n" +
-                "                                            \"String\": \"multiline string\"\n" +
-                "                                        },\n" +
-                "                                        \"options\": [\n" +
-                "                                            {\n" +
-                "                                                \"name\": {\n" +
-                "                                                    \"String\": \"ignorecase\"\n" +
-                "                                                },\n" +
-                "                                                \"value\": {\n" +
-                "                                                    \"Boolean\": false\n" +
-                "                                                }\n" +
-                "                                            },\n" +
-                "                                            {\n" +
-                "                                                \"name\": {\n" +
-                "                                                    \"String\": \"multiline\"\n" +
-                "                                                },\n" +
-                "                                                \"value\": {\n" +
-                "                                                    \"Boolean\": true\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        ]\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"R2\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SearchMatchesExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"string2\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"SearchType\": {\n" +
-                "                                        \"kind\": {\n" +
-                "                                            \"String\": \"match\"\n" +
-                "                                        },\n" +
-                "                                        \"pattern\": {\n" +
-                "                                            \"String\": \"This is a\"\n" +
-                "                                        },\n" +
-                "                                        \"options\": [\n" +
-                "                                            {\n" +
-                "                                                \"name\": {\n" +
-                "                                                    \"String\": \"ignorecase\"\n" +
-                "                                                },\n" +
-                "                                                \"value\": {\n" +
-                "                                                    \"Boolean\": false\n" +
-                "                                                }\n" +
-                "                                            },\n" +
-                "                                            {\n" +
-                "                                                \"name\": {\n" +
-                "                                                    \"String\": \"multiline\"\n" +
-                "                                                },\n" +
-                "                                                \"value\": {\n" +
-                "                                                    \"Boolean\": true\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        ]\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"R3\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SearchMatchesExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"string3\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"SearchType\": {\n" +
-                "                                        \"kind\": {\n" +
-                "                                            \"String\": \"match\"\n" +
-                "                                        },\n" +
-                "                                        \"pattern\": {\n" +
-                "                                            \"String\": \"his is a\"\n" +
-                "                                        },\n" +
-                "                                        \"options\": [\n" +
-                "                                            {\n" +
-                "                                                \"name\": {\n" +
-                "                                                    \"String\": \"ignorecase\"\n" +
-                "                                                },\n" +
-                "                                                \"value\": {\n" +
-                "                                                    \"Boolean\": false\n" +
-                "                                                }\n" +
-                "                                            },\n" +
-                "                                            {\n" +
-                "                                                \"name\": {\n" +
-                "                                                    \"String\": \"multiline\"\n" +
-                "                                                },\n" +
-                "                                                \"value\": {\n" +
-                "                                                    \"Boolean\": true\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        ]\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"R4\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SearchMatchesExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"string4\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"SearchType\": {\n" +
-                "                                        \"kind\": {\n" +
-                "                                            \"String\": \"regex\"\n" +
-                "                                        },\n" +
-                "                                        \"pattern\": {\n" +
-                "                                            \"String\": \"^This.is.*\"\n" +
-                "                                        },\n" +
-                "                                        \"options\": [\n" +
-                "                                            {\n" +
-                "                                                \"name\": {\n" +
-                "                                                    \"String\": \"ignorecase\"\n" +
-                "                                                },\n" +
-                "                                                \"value\": {\n" +
-                "                                                    \"Boolean\": false\n" +
-                "                                                }\n" +
-                "                                            },\n" +
-                "                                            {\n" +
-                "                                                \"name\": {\n" +
-                "                                                    \"String\": \"multiline\"\n" +
-                "                                                },\n" +
-                "                                                \"value\": {\n" +
-                "                                                    \"Boolean\": true\n" +
-                "                                                }\n" +
-                "                                            }\n" +
-                "                                        ]\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "R1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SearchMatchesExpression": {
+                                                "lhs": {
+                                                    "Event": "string1"
+                                                },
+                                                "rhs": {
+                                                    "SearchType": {
+                                                        "kind": {
+                                                            "String": "search"
+                                                        },
+                                                        "pattern": {
+                                                            "String": "multiline string"
+                                                        },
+                                                        "options": [
+                                                            {
+                                                                "name": {
+                                                                    "String": "ignorecase"
+                                                                },
+                                                                "value": {
+                                                                    "Boolean": false
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": {
+                                                                    "String": "multiline"
+                                                                },
+                                                                "value": {
+                                                                    "Boolean": true
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "Rule": {
+                                "name": "R2",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SearchMatchesExpression": {
+                                                "lhs": {
+                                                    "Event": "string2"
+                                                },
+                                                "rhs": {
+                                                    "SearchType": {
+                                                        "kind": {
+                                                            "String": "match"
+                                                        },
+                                                        "pattern": {
+                                                            "String": "This is a"
+                                                        },
+                                                        "options": [
+                                                            {
+                                                                "name": {
+                                                                    "String": "ignorecase"
+                                                                },
+                                                                "value": {
+                                                                    "Boolean": false
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": {
+                                                                    "String": "multiline"
+                                                                },
+                                                                "value": {
+                                                                    "Boolean": true
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "Rule": {
+                                "name": "R3",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SearchMatchesExpression": {
+                                                "lhs": {
+                                                    "Event": "string3"
+                                                },
+                                                "rhs": {
+                                                    "SearchType": {
+                                                        "kind": {
+                                                            "String": "match"
+                                                        },
+                                                        "pattern": {
+                                                            "String": "his is a"
+                                                        },
+                                                        "options": [
+                                                            {
+                                                                "name": {
+                                                                    "String": "ignorecase"
+                                                                },
+                                                                "value": {
+                                                                    "Boolean": false
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": {
+                                                                    "String": "multiline"
+                                                                },
+                                                                "value": {
+                                                                    "Boolean": true
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "Rule": {
+                                "name": "R4",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SearchMatchesExpression": {
+                                                "lhs": {
+                                                    "Event": "string4"
+                                                },
+                                                "rhs": {
+                                                    "SearchType": {
+                                                        "kind": {
+                                                            "String": "regex"
+                                                        },
+                                                        "pattern": {
+                                                            "String": "^This.is.*"
+                                                        },
+                                                        "options": [
+                                                            {
+                                                                "name": {
+                                                                    "String": "ignorecase"
+                                                                },
+                                                                "value": {
+                                                                    "Boolean": false
+                                                                }
+                                                            },
+                                                            {
+                                                                "name": {
+                                                                    "String": "multiline"
+                                                                },
+                                                                "value": {
+                                                                    "Boolean": true
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -392,45 +398,47 @@ public class StringMatchTest {
     @Test
     public void testSearchPatternInEvent() {
         String json =
-                "{\n" +
-                "     \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"R1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SearchMatchesExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"String\": \"select selectattr search matches should matches in\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"SearchType\": {\n" +
-                "                                        \"kind\": {\n" +
-                "                                            \"String\": \"search\"\n" +
-                "                                        },\n" +
-                "                                        \"pattern\": {\n" +
-                "                                            \"Event\": \"my_str\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                     "rules": [
+                        {
+                            "Rule": {
+                                "name": "R1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SearchMatchesExpression": {
+                                                "lhs": {
+                                                    "String": "select selectattr search matches should matches in"
+                                                },
+                                                "rhs": {
+                                                    "SearchType": {
+                                                        "kind": {
+                                                            "String": "search"
+                                                        },
+                                                        "pattern": {
+                                                            "Event": "my_str"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -447,45 +455,47 @@ public class StringMatchTest {
     @Test
     public void testMatchPatternInEvent() {
         String json =
-                "{\n" +
-                "     \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"R1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SearchMatchesExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"String\": \"select selectattr search matches should matches in\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"SearchType\": {\n" +
-                "                                        \"kind\": {\n" +
-                "                                            \"String\": \"match\"\n" +
-                "                                        },\n" +
-                "                                        \"pattern\": {\n" +
-                "                                            \"Event\": \"my_str\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                     "rules": [
+                        {
+                            "Rule": {
+                                "name": "R1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SearchMatchesExpression": {
+                                                "lhs": {
+                                                    "String": "select selectattr search matches should matches in"
+                                                },
+                                                "rhs": {
+                                                    "SearchType": {
+                                                        "kind": {
+                                                            "String": "match"
+                                                        },
+                                                        "pattern": {
+                                                            "Event": "my_str"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 

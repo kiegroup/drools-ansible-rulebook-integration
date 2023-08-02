@@ -20,42 +20,44 @@ import static org.junit.Assert.assertEquals;
 public class SimpleLogicalOperatorsTest {
 
     private static final String JSON1 =
-            "{\n" +
-            "   \"rules\":[\n" +
-            "      {\"Rule\": {\n" +
-            "         \"name\":\"R1\",\n" +
-            "         \"condition\":\"sensu.data.i == 1\"\n" +
-            "      }},\n" +
-            "      {\"Rule\": {\n" +
-            "         \"name\":\"R2\",\n" +
-            "         \"condition\":{\n" +
-            "            \"all\":[\n" +
-            "               \"sensu.data.i == 3\",\n" +
-            "               \"j == 2\"\n" +
-            "            ]\n" +
-            "         }\n" +
-            "      }},\n" +
-            "      {\"Rule\": {\n" +
-            "         \"name\":\"R3\",\n" +
-            "         \"condition\":{\n" +
-            "            \"any\":[\n" +
-            "               {\n" +
-            "                  \"all\":[\n" +
-            "                     \"sensu.data.i == 3\",\n" +
-            "                     \"j == 2\"\n" +
-            "                  ]\n" +
-            "               },\n" +
-            "               {\n" +
-            "                  \"all\":[\n" +
-            "                     \"sensu.data.i == 4\",\n" +
-            "                     \"j == 3\"\n" +
-            "                  ]\n" +
-            "               }\n" +
-            "            ]\n" +
-            "         }\n" +
-            "      }}\n" +
-            "   ]\n" +
-            "}";
+            """
+            {
+               "rules":[
+                  {"Rule": {
+                     "name":"R1",
+                     "condition":"sensu.data.i == 1"
+                  }},
+                  {"Rule": {
+                     "name":"R2",
+                     "condition":{
+                        "all":[
+                           "sensu.data.i == 3",
+                           "j == 2"
+                        ]
+                     }
+                  }},
+                  {"Rule": {
+                     "name":"R3",
+                     "condition":{
+                        "any":[
+                           {
+                              "all":[
+                                 "sensu.data.i == 3",
+                                 "j == 2"
+                              ]
+                           },
+                           {
+                              "all":[
+                                 "sensu.data.i == 4",
+                                 "j == 3"
+                              ]
+                           }
+                        ]
+                     }
+                  }}
+               ]
+            }
+            """;
 
 
     @Test

@@ -12,59 +12,61 @@ public class ImplicitBindingTest {
     @Test
     public void testAllCondition() {
         String JSON1 =
-                "  {\n" +
-                "      \"rules\": [\n" +
-                "        {\n" +
-                "          \"Rule\": {\n" +
-                "            \"condition\": {\n" +
-                "              \"AllCondition\": [\n" +
-                "                {\n" +
-                "                  \"AndExpression\": {\n" +
-                "                    \"lhs\": {\n" +
-                "                      \"AndExpression\": {\n" +
-                "                        \"lhs\": {\n" +
-                "                          \"GreaterThanExpression\": {\n" +
-                "                            \"lhs\": {\n" +
-                "                              \"Event\": \"i\"\n" +
-                "                            },\n" +
-                "                            \"rhs\": {\n" +
-                "                              \"Integer\": 0\n" +
-                "                            }\n" +
-                "                          }\n" +
-                "                        },\n" +
-                "                        \"rhs\": {\n" +
-                "                          \"GreaterThanExpression\": {\n" +
-                "                            \"lhs\": {\n" +
-                "                              \"Event\": \"i\"\n" +
-                "                            },\n" +
-                "                            \"rhs\": {\n" +
-                "                              \"Integer\": 1\n" +
-                "                            }\n" +
-                "                          }\n" +
-                "                        }\n" +
-                "                      }\n" +
-                "                    },\n" +
-                "                    \"rhs\": {\n" +
-                "                      \"GreaterThanExpression\": {\n" +
-                "                        \"lhs\": {\n" +
-                "                          \"Event\": \"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\": {\n" +
-                "                          \"Integer\": 3\n" +
-                "                        }\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            },\n" +
-                "            \"enabled\": true,\n" +
-                "            \"name\": \"r1\"\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  }";
+                """
+                  {
+                      "rules": [
+                        {
+                          "Rule": {
+                            "condition": {
+                              "AllCondition": [
+                                {
+                                  "AndExpression": {
+                                    "lhs": {
+                                      "AndExpression": {
+                                        "lhs": {
+                                          "GreaterThanExpression": {
+                                            "lhs": {
+                                              "Event": "i"
+                                            },
+                                            "rhs": {
+                                              "Integer": 0
+                                            }
+                                          }
+                                        },
+                                        "rhs": {
+                                          "GreaterThanExpression": {
+                                            "lhs": {
+                                              "Event": "i"
+                                            },
+                                            "rhs": {
+                                              "Integer": 1
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "rhs": {
+                                      "GreaterThanExpression": {
+                                        "lhs": {
+                                          "Event": "i"
+                                        },
+                                        "rhs": {
+                                          "Integer": 3
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "enabled": true,
+                            "name": "r1"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -80,40 +82,42 @@ public class ImplicitBindingTest {
     @Test
     public void testAnyCondition() {
         String JSON1 =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AnyCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":0\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"GreaterThanExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":1\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"enabled\":true,\n" +
-                "            \"name\":\"r1\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AnyCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"i"
+                                        },
+                                        "rhs":{
+                                           "Integer":0
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "GreaterThanExpression":{
+                                        "lhs":{
+                                           "Event":"i"
+                                        },
+                                        "rhs":{
+                                           "Integer":1
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "enabled":true,
+                            "name":"r1"
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -133,47 +137,49 @@ public class ImplicitBindingTest {
     @Test
     public void testAnyConditionWithPartialBinding() {
         String JSON1 =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AnyCondition\":[\n" +
-                "                  {\n" +
-                "                     \"AssignmentExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Facts\":\"first\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"i\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":0\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"GreaterThanExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":1\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"enabled\":true,\n" +
-                "            \"name\":\"r1\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AnyCondition":[
+                                  {
+                                     "AssignmentExpression":{
+                                        "lhs":{
+                                           "Facts":"first"
+                                        },
+                                        "rhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"i"
+                                              },
+                                              "rhs":{
+                                                 "Integer":0
+                                              }
+                                           }
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "GreaterThanExpression":{
+                                        "lhs":{
+                                           "Event":"i"
+                                        },
+                                        "rhs":{
+                                           "Integer":1
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "enabled":true,
+                            "name":"r1"
+                         }
+                      }
+                   ]
+                }
+                """;
 
         System.out.println(JSON1);
 
@@ -195,52 +201,54 @@ public class ImplicitBindingTest {
     @Test
     public void testWithOr() {
         String JSON1 =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"name\":\"r1\",\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"OrExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"nested.i\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":1\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"nested.j\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":1\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"action\":{\n" +
-                "               \"Action\":{\n" +
-                "                  \"action\":\"debug\",\n" +
-                "                  \"action_args\":{\n" +
-                "                     \n" +
-                "                  }\n" +
-                "               }\n" +
-                "            },\n" +
-                "            \"enabled\":true\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}\n";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"r1",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "OrExpression":{
+                                        "lhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"nested.i"
+                                              },
+                                              "rhs":{
+                                                 "Integer":1
+                                              }
+                                           }
+                                        },
+                                        "rhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"nested.j"
+                                              },
+                                              "rhs":{
+                                                 "Integer":1
+                                              }
+                                           }
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "action":{
+                               "Action":{
+                                  "action":"debug",
+                                  "action_args":{
+                                    \s
+                                  }
+                               }
+                            },
+                            "enabled":true
+                         }
+                      }
+                   ]
+                }
+                """;
 
         System.out.println(JSON1);
 

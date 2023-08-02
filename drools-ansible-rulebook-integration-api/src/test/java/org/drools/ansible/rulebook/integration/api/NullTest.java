@@ -12,54 +12,56 @@ public class NullTest {
     @Test
     public void test() {
         String json =
-                "{\n" +
-                "     \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"AndExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"x\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Integer\": 1\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"y\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"NullType\": null\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"pretty\": true\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                     "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "AndExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "x"
+                                                        },
+                                                        "rhs": {
+                                                            "Integer": 1
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "y"
+                                                        },
+                                                        "rhs": {
+                                                            "NullType": null
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {
+                                                "pretty": true
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -75,92 +77,94 @@ public class NullTest {
     @Test
     public void testWithSelectAttr() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"AndExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"x\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Integer\": 1\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"y\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"NullType\": null\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"pretty\": true\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r2\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"SelectAttrExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"persons\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"key\": {\n" +
-                "                                        \"String\": \"occupation\"\n" +
-                "                                    },\n" +
-                "                                    \"operator\": {\n" +
-                "                                        \"String\": \"==\"\n" +
-                "                                    },\n" +
-                "                                    \"value\": {\n" +
-                "                                        \"NullType\": null\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"print_event\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"pretty\": true\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "AndExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "x"
+                                                        },
+                                                        "rhs": {
+                                                            "Integer": 1
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "y"
+                                                        },
+                                                        "rhs": {
+                                                            "NullType": null
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {
+                                                "pretty": true
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "Rule": {
+                                "name": "r2",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "SelectAttrExpression": {
+                                                "lhs": {
+                                                    "Event": "persons"
+                                                },
+                                                "rhs": {
+                                                    "key": {
+                                                        "String": "occupation"
+                                                    },
+                                                    "operator": {
+                                                        "String": "=="
+                                                    },
+                                                    "value": {
+                                                        "NullType": null
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "print_event",
+                                            "action_args": {
+                                                "pretty": true
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -168,8 +172,10 @@ public class NullTest {
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r1", matchedRules.get(0).getRule().getName() );
 
-        matchedRules = rulesExecutor.processFacts( "{ \"persons\": [ { \"age\": 45, \"name\": \"Fred\", \"occupation\": \"Dino Driver\" }," +
-                "{ \"age\": 46, \"name\": \"Barney\", \"occupation\": null } ] }" ).join();
+        matchedRules = rulesExecutor.processFacts( """
+                { "persons": [ { "age": 45, "name": "Fred", "occupation": "Dino Driver" },\
+                { "age": 46, "name": "Barney", "occupation": null } ] }
+                """ ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r2", matchedRules.get(0).getRule().getName() );
 

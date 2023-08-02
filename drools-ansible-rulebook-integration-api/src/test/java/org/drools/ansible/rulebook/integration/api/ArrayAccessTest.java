@@ -9,30 +9,32 @@ import static org.junit.Assert.assertEquals;
 
 public class ArrayAccessTest {
     public static final String JSON1 =
-            "{\n" +
-            "    \"rules\": [\n" +
-            "            {\n" +
-            "                \"Rule\": {\n" +
-            "                    \"condition\": {\n" +
-            "                        \"AllCondition\": [\n" +
-            "                            {\n" +
-            "                                \"EqualsExpression\": {\n" +
-            "                                    \"lhs\": {\n" +
-            "                                        \"Fact\": \"os.array[1]\"\n" +
-            "                                    },\n" +
-            "                                    \"rhs\": {\n" +
-            "                                        \"String\": \"windows\"\n" +
-            "                                    }\n" +
-            "                                }\n" +
-            "                            }\n" +
-            "                        ]\n" +
-            "                    },\n" +
-            "                    \"enabled\": true,\n" +
-            "                    \"name\": null\n" +
-            "                }\n" +
-            "            }\n" +
-            "        ]\n" +
-            "}";
+            """
+            {
+                "rules": [
+                        {
+                            "Rule": {
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Fact": "os.array[1]"
+                                                },
+                                                "rhs": {
+                                                    "String": "windows"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "enabled": true,
+                                "name": null
+                            }
+                        }
+                    ]
+            }
+            """;
 
     @Test
     public void testArrayAccess() {
@@ -49,67 +51,73 @@ public class ArrayAccessTest {
     }
 
     public static final String JSON2 =
-            "{\n" +
-            "    \"rules\": [\n" +
-            "            {\n" +
-            "                \"Rule\": {\n" +
-            "                    \"condition\": {\n" +
-            "                        \"AllCondition\": [\n" +
-            "                            {\n" +
-            "                                \"EqualsExpression\": {\n" +
-            "                                    \"lhs\": {\n" +
-            "                                        \"Fact\": \"os.array[1].versions[2]\"\n" +
-            "                                    },\n" +
-            "                                    \"rhs\": {\n" +
-            "                                        \"String\": \"Vista\"\n" +
-            "                                    }\n" +
-            "                                }\n" +
-            "                            }\n" +
-            "                        ]\n" +
-            "                    },\n" +
-            "                    \"enabled\": true,\n" +
-            "                    \"name\": null\n" +
-            "                }\n" +
-            "            }\n" +
-            "        ]\n" +
-            "}";
+            """
+            {
+                "rules": [
+                        {
+                            "Rule": {
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Fact": "os.array[1].versions[2]"
+                                                },
+                                                "rhs": {
+                                                    "String": "Vista"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "enabled": true,
+                                "name": null
+                            }
+                        }
+                    ]
+            }
+            """;
 
     @Test
     public void testNestedArrayAccess() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
-        List<Match> matchedRules = rulesExecutor.processFacts( "{\n" +
-                "   \"host\":\"B\",\n" +
-                "   \"os\":{\n" +
-                "      \"array\":[\n" +
-                "         {\n" +
-                "            \"name\":\"abc\",\n" +
-                "            \"versions\":\"Unknown\"\n" +
-                "         },\n" +
-                "         {\n" +
-                "            \"name\":\"windows\",\n" +
-                "            \"versions\":[\"XP\", \"Millenium\"]\n" +
-                "         }\n" +
-                "      ]\n" +
-                "   }\n" +
-                "}" ).join();
+        List<Match> matchedRules = rulesExecutor.processFacts( """
+                {
+                   "host":"B",
+                   "os":{
+                      "array":[
+                         {
+                            "name":"abc",
+                            "versions":"Unknown"
+                         },
+                         {
+                            "name":"windows",
+                            "versions":["XP", "Millenium"]
+                         }
+                      ]
+                   }
+                }
+                """ ).join();
         assertEquals( 0, matchedRules.size() );
 
-        matchedRules = rulesExecutor.processFacts( "{\n" +
-                "   \"host\":\"B\",\n" +
-                "   \"os\":{\n" +
-                "      \"array\":[\n" +
-                "         {\n" +
-                "            \"name\":\"abc\",\n" +
-                "            \"versions\":\"Unknown\"\n" +
-                "         },\n" +
-                "         {\n" +
-                "            \"name\":\"windows\",\n" +
-                "            \"versions\":[\"XP\", \"Millenium\", \"Vista\"]\n" +
-                "         }\n" +
-                "      ]\n" +
-                "   }\n" +
-                "}" ).join();
+        matchedRules = rulesExecutor.processFacts( """
+                {
+                   "host":"B",
+                   "os":{
+                      "array":[
+                         {
+                            "name":"abc",
+                            "versions":"Unknown"
+                         },
+                         {
+                            "name":"windows",
+                            "versions":["XP", "Millenium", "Vista"]
+                         }
+                      ]
+                   }
+                }
+                """ ).join();
 
         assertEquals( 1, matchedRules.size() );
         assertEquals( "r_0", matchedRules.get(0).getRule().getName() );
