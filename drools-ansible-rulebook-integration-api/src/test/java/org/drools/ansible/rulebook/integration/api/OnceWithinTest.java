@@ -17,50 +17,52 @@ public class OnceWithinTest {
     @Test
     public void testOnceWithinInCondition() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"AssignmentExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Events\":\"singleton\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"sensu.process.type\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"String\":\"alert\"\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ],\n" +
-                "               \"throttle\": {\n" +
-                "                   \"group_by_attributes\": [\n" +
-                "                       \"event.sensu.host\",\n" +
-                "                       \"event.sensu.process.type\"\n" +
-                "                   ],\n" +
-                "                   \"once_within\": \"10 seconds\"\n" +
-                "               }\n" +
-                "            },\n" +
-                "            \"action\":{\n" +
-                "               \"assert_fact\":{\n" +
-                "                  \"ruleset\":\"Test rules4\",\n" +
-                "                  \"fact\":{\n" +
-                "                     \"j\":1\n" +
-                "                  }\n" +
-                "               }\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "AssignmentExpression":{
+                                        "lhs":{
+                                           "Events":"singleton"
+                                        },
+                                        "rhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"sensu.process.type"
+                                              },
+                                              "rhs":{
+                                                 "String":"alert"
+                                              }
+                                           }
+                                        }
+                                     }
+                                  }
+                               ],
+                               "throttle": {
+                                   "group_by_attributes": [
+                                       "event.sensu.host",
+                                       "event.sensu.process.type"
+                                   ],
+                                   "once_within": "10 seconds"
+                               }
+                            },
+                            "action":{
+                               "assert_fact":{
+                                  "ruleset":"Test rules4",
+                                  "fact":{
+                                     "j":1
+                                  }
+                               }
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         onceWithinTest(json);
     }
@@ -68,50 +70,52 @@ public class OnceWithinTest {
     @Test
     public void testOnceWithinInRule() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"AssignmentExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Events\":\"singleton\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"sensu.process.type\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"String\":\"alert\"\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"action\":{\n" +
-                "               \"assert_fact\":{\n" +
-                "                  \"ruleset\":\"Test rules4\",\n" +
-                "                  \"fact\":{\n" +
-                "                     \"j\":1\n" +
-                "                  }\n" +
-                "               }\n" +
-                "            },\n" +
-                "            \"throttle\":{\n" +
-                "               \"group_by_attributes\":[\n" +
-                "                  \"event.sensu.host\",\n" +
-                "                  \"event.sensu.process.type\"\n" +
-                "               ],\n" +
-                "               \"once_within\":\"10 seconds\"\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "AssignmentExpression":{
+                                        "lhs":{
+                                           "Events":"singleton"
+                                        },
+                                        "rhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"sensu.process.type"
+                                              },
+                                              "rhs":{
+                                                 "String":"alert"
+                                              }
+                                           }
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "action":{
+                               "assert_fact":{
+                                  "ruleset":"Test rules4",
+                                  "fact":{
+                                     "j":1
+                                  }
+                               }
+                            },
+                            "throttle":{
+                               "group_by_attributes":[
+                                  "event.sensu.host",
+                                  "event.sensu.process.type"
+                               ],
+                               "once_within":"10 seconds"
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         onceWithinTest(json);
     }
@@ -150,57 +154,59 @@ public class OnceWithinTest {
     @Test
     public void testOnceWithinWithOr() {
         String json =
-                "{" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"OrExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"alert.level\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"warning\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"alert.level\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"error\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"action\": {\n" +
-                "                    \"Action\": {\n" +
-                "                        \"action\": \"print_event\",\n" +
-                "                        \"action_args\": {}\n" +
-                "                    }\n" +
-                "                },\n" +
-                "                \"enabled\": true,\n" +
-                "                \"throttle\": {\n" +
-                "                    \"group_by_attributes\": [\n" +
-                "                        \"event.meta.hosts\",\n" +
-                "                        \"event.alert.level\"\n" +
-                "                    ],\n" +
-                "                    \"once_within\": \"10 seconds\"\n" +
-                "                }\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "OrExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "alert.level"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "warning"
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "alert.level"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "error"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "action": {
+                                    "Action": {
+                                        "action": "print_event",
+                                        "action_args": {}
+                                    }
+                                },
+                                "enabled": true,
+                                "throttle": {
+                                    "group_by_attributes": [
+                                        "event.meta.hosts",
+                                        "event.alert.level"
+                                    ],
+                                    "once_within": "10 seconds"
+                                }
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
@@ -231,57 +237,59 @@ public class OnceWithinTest {
     @Test
     public void testOnceWithinWithAnd() {
         String json =
-                "{" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"AndExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"alert.level\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"error\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"meta.hosts\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"h1\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"action\": {\n" +
-                "                    \"Action\": {\n" +
-                "                        \"action\": \"print_event\",\n" +
-                "                        \"action_args\": {}\n" +
-                "                    }\n" +
-                "                },\n" +
-                "                \"enabled\": true,\n" +
-                "                \"throttle\": {\n" +
-                "                    \"group_by_attributes\": [\n" +
-                "                        \"event.meta.hosts\",\n" +
-                "                        \"event.alert.level\"\n" +
-                "                    ],\n" +
-                "                    \"once_within\": \"10 seconds\"\n" +
-                "                }\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "AndExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "alert.level"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "error"
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "meta.hosts"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "h1"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "action": {
+                                    "Action": {
+                                        "action": "print_event",
+                                        "action_args": {}
+                                    }
+                                },
+                                "enabled": true,
+                                "throttle": {
+                                    "group_by_attributes": [
+                                        "event.meta.hosts",
+                                        "event.alert.level"
+                                    ],
+                                    "once_within": "10 seconds"
+                                }
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
@@ -304,57 +312,59 @@ public class OnceWithinTest {
     @Test
     public void testRepeatedOnceWithin() {
         String json =
-                "{" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"OrExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"alert.level\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"warning\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"EqualsExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"alert.level\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"error\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"action\": {\n" +
-                "                    \"Action\": {\n" +
-                "                        \"action\": \"print_event\",\n" +
-                "                        \"action_args\": {}\n" +
-                "                    }\n" +
-                "                },\n" +
-                "                \"enabled\": true,\n" +
-                "                \"throttle\": {\n" +
-                "                    \"group_by_attributes\": [\n" +
-                "                        \"event.meta.hosts\",\n" +
-                "                        \"event.alert.level\"\n" +
-                "                    ],\n" +
-                "                    \"once_within\": \"10 seconds\"\n" +
-                "                }\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "OrExpression": {
+                                                "lhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "alert.level"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "warning"
+                                                        }
+                                                    }
+                                                },
+                                                "rhs": {
+                                                    "EqualsExpression": {
+                                                        "lhs": {
+                                                            "Event": "alert.level"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "error"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "action": {
+                                    "Action": {
+                                        "action": "print_event",
+                                        "action_args": {}
+                                    }
+                                },
+                                "enabled": true,
+                                "throttle": {
+                                    "group_by_attributes": [
+                                        "event.meta.hosts",
+                                        "event.alert.level"
+                                    ],
+                                    "once_within": "10 seconds"
+                                }
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 

@@ -13,31 +13,33 @@ public class AutoEvictTest {
     @Test
     public void testClockPeriod() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Fact\":\"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":2\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"enabled\":true,\n" +
-                "            \"name\":\"r_0\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ],\n" +
-                "   \"clock_period\":\"1 second\"\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Fact":"i"
+                                        },
+                                        "rhs":{
+                                           "Integer":2
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "enabled":true,
+                            "name":"r_0"
+                         }
+                      }
+                   ],
+                   "clock_period":"1 second"
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -58,40 +60,42 @@ public class AutoEvictTest {
     @Test
     public void testAutomaticEvictEventsOnFiring() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":2\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"j\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Event\":\"m_0.i\"\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"enabled\":true,\n" +
-                "            \"name\":\"r_0\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"i"
+                                        },
+                                        "rhs":{
+                                           "Integer":2
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"j"
+                                        },
+                                        "rhs":{
+                                           "Event":"m_0.i"
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "enabled":true,
+                            "name":"r_0"
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -110,40 +114,42 @@ public class AutoEvictTest {
     @Test
     public void testEvictEventsUsingDefaultExpiration() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":2\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"j\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Event\":\"m_0.i\"\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"enabled\":true,\n" +
-                "            \"name\":\"r_0\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"i"
+                                        },
+                                        "rhs":{
+                                           "Integer":2
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"j"
+                                        },
+                                        "rhs":{
+                                           "Event":"m_0.i"
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "enabled":true,
+                            "name":"r_0"
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -169,41 +175,43 @@ public class AutoEvictTest {
     @Test
     public void testEvictEventsUsingGivenExpiration() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":2\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"j\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Event\":\"m_0.i\"\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"enabled\":true,\n" +
-                "            \"name\":\"r_0\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ],\n" +
-                "   \"default_events_ttl\":\"10 hours\"\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"i"
+                                        },
+                                        "rhs":{
+                                           "Integer":2
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"j"
+                                        },
+                                        "rhs":{
+                                           "Event":"m_0.i"
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "enabled":true,
+                            "name":"r_0"
+                         }
+                      }
+                   ],
+                   "default_events_ttl":"10 hours"
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 

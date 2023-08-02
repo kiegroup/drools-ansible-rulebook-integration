@@ -13,49 +13,51 @@ public class TimeWindowTest {
     @Test
     public void testTimeWindowInCondition() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"ping.timeout\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Boolean\":true\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"sensu.process.status\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"String\":\"stopped\"\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"GreaterThanExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"sensu.storage.percent\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":95\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ],\n" +
-                "               \"timeout\":\"10 seconds\"\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"ping.timeout"
+                                        },
+                                        "rhs":{
+                                           "Boolean":true
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"sensu.process.status"
+                                        },
+                                        "rhs":{
+                                           "String":"stopped"
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "GreaterThanExpression":{
+                                        "lhs":{
+                                           "Event":"sensu.storage.percent"
+                                        },
+                                        "rhs":{
+                                           "Integer":95
+                                        }
+                                     }
+                                  }
+                               ],
+                               "timeout":"10 seconds"
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         timeWindowTest(json);
     }
@@ -63,49 +65,51 @@ public class TimeWindowTest {
     @Test
     public void testTimeWindowInRule() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"ping.timeout\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Boolean\":true\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"sensu.process.status\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"String\":\"stopped\"\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"GreaterThanExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"sensu.storage.percent\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":95\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            },\n" +
-                "            \"timeout\":\"10 seconds\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"ping.timeout"
+                                        },
+                                        "rhs":{
+                                           "Boolean":true
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"sensu.process.status"
+                                        },
+                                        "rhs":{
+                                           "String":"stopped"
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "GreaterThanExpression":{
+                                        "lhs":{
+                                           "Event":"sensu.storage.percent"
+                                        },
+                                        "rhs":{
+                                           "Integer":95
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "timeout":"10 seconds"
+                         }
+                      }
+                   ]
+                }
+                """;
 
         timeWindowTest(json);
     }

@@ -12,100 +12,102 @@ public class GetAllFactsTest {
     @Test
     public void test() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"i\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"Integer\": 0\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"set_fact\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"fact\": {\n" +
-                "                                    \"status\": \"created\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r2\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"i\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"Integer\": 4\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"debug\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r3\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Fact\": \"status\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"String\": \"created\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"echo\",\n" +
-                "                            \"action_args\": {\n" +
-                "                                \"message\": \"Fact matches\"\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "i"
+                                                },
+                                                "rhs": {
+                                                    "Integer": 0
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "set_fact",
+                                            "action_args": {
+                                                "fact": {
+                                                    "status": "created"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "Rule": {
+                                "name": "r2",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "i"
+                                                },
+                                                "rhs": {
+                                                    "Integer": 4
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "debug",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        },
+                        {
+                            "Rule": {
+                                "name": "r3",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Fact": "status"
+                                                },
+                                                "rhs": {
+                                                    "String": "created"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "echo",
+                                            "action_args": {
+                                                "message": "Fact matches"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 

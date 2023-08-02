@@ -16,57 +16,59 @@ import static org.junit.Assert.assertEquals;
 public class SimpleJsonTest {
 
     private static final String JSON1 =
-            "{\n" +
-            "  \"rules\": [\n" +
-            "    {\"Rule\": {\n" +
-            "      \"name\": \"R1\",\n" +
-            "      \"condition\": \"sensu.data.i == 1\",\n" +
-            "      \"action\": {\n" +
-            "        \"assert_fact\": {\n" +
-            "          \"ruleset\": \"Test rules4\",\n" +
-            "          \"fact\": {\n" +
-            "            \"j\": 1\n" +
-            "          }\n" +
-            "        }\n" +
-            "      }\n" +
-            "    }},\n" +
-            "    {\"Rule\": {\n" +
-            "      \"name\": \"R2\",\n" +
-            "      \"condition\": \"sensu.data.i == 2\",\n" +
-            "      \"action\": {\n" +
-            "        \"run_playbook\": [\n" +
-            "          {\n" +
-            "            \"name\": \"hello_playbook.yml\"\n" +
-            "          }\n" +
-            "        ]\n" +
-            "      }\n" +
-            "    }},\n" +
-            "    {\"Rule\": {\n" +
-            "      \"name\": \"R3\",\n" +
-            "      \"condition\": \"sensu.data.i == 3\",\n" +
-            "      \"action\": {\n" +
-            "        \"retract_fact\": {\n" +
-            "          \"ruleset\": \"Test rules4\",\n" +
-            "          \"fact\": {\n" +
-            "            \"j\": 3\n" +
-            "          }\n" +
-            "        }\n" +
-            "      }\n" +
-            "    }},\n" +
-            "    {\"Rule\": {\n" +
-            "      \"name\": \"R4\",\n" +
-            "      \"condition\": \"j == 1\",\n" +
-            "      \"action\": {\n" +
-            "        \"post_event\": {\n" +
-            "          \"ruleset\": \"Test rules4\",\n" +
-            "          \"fact\": {\n" +
-            "            \"j\": 4\n" +
-            "          }\n" +
-            "        }\n" +
-            "      }\n" +
-            "    }}\n" +
-            "  ]\n" +
-            "}";
+            """
+            {
+              "rules": [
+                {"Rule": {
+                  "name": "R1",
+                  "condition": "sensu.data.i == 1",
+                  "action": {
+                    "assert_fact": {
+                      "ruleset": "Test rules4",
+                      "fact": {
+                        "j": 1
+                      }
+                    }
+                  }
+                }},
+                {"Rule": {
+                  "name": "R2",
+                  "condition": "sensu.data.i == 2",
+                  "action": {
+                    "run_playbook": [
+                      {
+                        "name": "hello_playbook.yml"
+                      }
+                    ]
+                  }
+                }},
+                {"Rule": {
+                  "name": "R3",
+                  "condition": "sensu.data.i == 3",
+                  "action": {
+                    "retract_fact": {
+                      "ruleset": "Test rules4",
+                      "fact": {
+                        "j": 3
+                      }
+                    }
+                  }
+                }},
+                {"Rule": {
+                  "name": "R4",
+                  "condition": "j == 1",
+                  "action": {
+                    "post_event": {
+                      "ruleset": "Test rules4",
+                      "fact": {
+                        "j": 4
+                      }
+                    }
+                  }
+                }}
+              ]
+            }
+            """;
 
     @Test
     public void testReadJson() throws JsonProcessingException {

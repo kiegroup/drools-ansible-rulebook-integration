@@ -13,86 +13,88 @@ public class SingleActivationForEventTest {
     @Test
     public void test() {
         String json =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "        {\n" +
-                "          \"Rule\": {\n" +
-                "            \"name\": \"R1\",\n" +
-                "            \"condition\": {\n" +
-                "              \"AllCondition\": [\n" +
-                "                {\n" +
-                "                  \"SelectAttrExpression\": {\n" +
-                "                    \"lhs\": {\n" +
-                "                      \"Event\": \"planets\"\n" +
-                "                    },\n" +
-                "                    \"rhs\": {\n" +
-                "                      \"key\": {\n" +
-                "                        \"String\": \"planet.radius\"\n" +
-                "                      },\n" +
-                "                      \"operator\": {\n" +
-                "                        \"String\": \"<\"\n" +
-                "                      },\n" +
-                "                      \"value\": {\n" +
-                "                        \"Float\": 1200.05\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            },\n" +
-                "            \"actions\": [\n" +
-                "              {\n" +
-                "                \"Action\": {\n" +
-                "                  \"action\": \"debug\",\n" +
-                "                  \"action_args\": {\n" +
-                "                    \"msg\": \"Output for testcase #04\"\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"enabled\": true\n" +
-                "          }\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"Rule\": {\n" +
-                "            \"name\": \"R2\",\n" +
-                "            \"condition\": {\n" +
-                "              \"AllCondition\": [\n" +
-                "                {\n" +
-                "                  \"SelectAttrExpression\": {\n" +
-                "                    \"lhs\": {\n" +
-                "                      \"Event\": \"planets\"\n" +
-                "                    },\n" +
-                "                    \"rhs\": {\n" +
-                "                      \"key\": {\n" +
-                "                        \"String\": \"planet.radius\"\n" +
-                "                      },\n" +
-                "                      \"operator\": {\n" +
-                "                        \"String\": \">=\"\n" +
-                "                      },\n" +
-                "                      \"value\": {\n" +
-                "                        \"Float\": 1188.3\n" +
-                "                      }\n" +
-                "                    }\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ]\n" +
-                "            },\n" +
-                "            \"actions\": [\n" +
-                "              {\n" +
-                "                \"Action\": {\n" +
-                "                  \"action\": \"debug\",\n" +
-                "                  \"action_args\": {\n" +
-                "                    \"msg\": \"Output for testcase #05\"\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"enabled\": true\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                        {
+                          "Rule": {
+                            "name": "R1",
+                            "condition": {
+                              "AllCondition": [
+                                {
+                                  "SelectAttrExpression": {
+                                    "lhs": {
+                                      "Event": "planets"
+                                    },
+                                    "rhs": {
+                                      "key": {
+                                        "String": "planet.radius"
+                                      },
+                                      "operator": {
+                                        "String": "<"
+                                      },
+                                      "value": {
+                                        "Float": 1200.05
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "actions": [
+                              {
+                                "Action": {
+                                  "action": "debug",
+                                  "action_args": {
+                                    "msg": "Output for testcase #04"
+                                  }
+                                }
+                              }
+                            ],
+                            "enabled": true
+                          }
+                        },
+                        {
+                          "Rule": {
+                            "name": "R2",
+                            "condition": {
+                              "AllCondition": [
+                                {
+                                  "SelectAttrExpression": {
+                                    "lhs": {
+                                      "Event": "planets"
+                                    },
+                                    "rhs": {
+                                      "key": {
+                                        "String": "planet.radius"
+                                      },
+                                      "operator": {
+                                        "String": ">="
+                                      },
+                                      "value": {
+                                        "Float": 1188.3
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "actions": [
+                              {
+                                "Action": {
+                                  "action": "debug",
+                                  "action_args": {
+                                    "msg": "Output for testcase #05"
+                                  }
+                                }
+                              }
+                            ],
+                            "enabled": true
+                          }
+                        }
+                      ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 

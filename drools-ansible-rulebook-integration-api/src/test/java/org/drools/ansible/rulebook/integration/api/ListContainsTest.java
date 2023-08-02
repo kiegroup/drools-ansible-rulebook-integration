@@ -13,36 +13,38 @@ public class ListContainsTest {
     public void testListContainsInt() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                    \"Rule\": {\n" +
-                "                        \"name\": \"contains_rule_int\",\n" +
-                "                        \"condition\": {\n" +
-                "                            \"AllCondition\": [\n" +
-                "                                {\n" +
-                "                                    \"ListContainsItemExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"id_list\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Integer\": 1\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            ]\n" +
-                "                        },\n" +
-                "                        \"action\": {\n" +
-                "                            \"Action\": {\n" +
-                "                                \"action\": \"debug\",\n" +
-                "                                \"action_args\": {}\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        \"enabled\": true\n" +
-                "                    }\n" +
-                "                }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                    "Rule": {
+                                        "name": "contains_rule_int",
+                                        "condition": {
+                                            "AllCondition": [
+                                                {
+                                                    "ListContainsItemExpression": {
+                                                        "lhs": {
+                                                            "Event": "id_list"
+                                                        },
+                                                        "rhs": {
+                                                            "Integer": 1
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "action": {
+                                            "Action": {
+                                                "action": "debug",
+                                                "action_args": {}
+                                            }
+                                        },
+                                        "enabled": true
+                                    }
+                                }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -67,36 +69,38 @@ public class ListContainsTest {
     public void testListNotContainsString() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                    \"Rule\": {\n" +
-                "                        \"name\": \"contains_rule_int\",\n" +
-                "                        \"condition\": {\n" +
-                "                            \"AllCondition\": [\n" +
-                "                                {\n" +
-                "                                    \"ListNotContainsItemExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"friends\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"String\": \"pebbles\"\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            ]\n" +
-                "                        },\n" +
-                "                        \"action\": {\n" +
-                "                            \"Action\": {\n" +
-                "                                \"action\": \"debug\",\n" +
-                "                                \"action_args\": {}\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        \"enabled\": true\n" +
-                "                    }\n" +
-                "                }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                    "Rule": {
+                                        "name": "contains_rule_int",
+                                        "condition": {
+                                            "AllCondition": [
+                                                {
+                                                    "ListNotContainsItemExpression": {
+                                                        "lhs": {
+                                                            "Event": "friends"
+                                                        },
+                                                        "rhs": {
+                                                            "String": "pebbles"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "action": {
+                                            "Action": {
+                                                "action": "debug",
+                                                "action_args": {}
+                                            }
+                                        },
+                                        "enabled": true
+                                    }
+                                }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -114,44 +118,46 @@ public class ListContainsTest {
     public void testIntInList() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                    \"Rule\": {\n" +
-                "                        \"name\": \"in_rule_int\",\n" +
-                "                        \"condition\": {\n" +
-                "                            \"AllCondition\": [\n" +
-                "                                {\n" +
-                "                                    \"ItemInListExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"i\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": [\n" +
-                "                                            {\n" +
-                "                                                \"Integer\": 1\n" +
-                "                                            },\n" +
-                "                                            {\n" +
-                "                                                \"Integer\": 2\n" +
-                "                                            },\n" +
-                "                                            {\n" +
-                "                                                \"Integer\": 3\n" +
-                "                                            }\n" +
-                "                                        ]\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            ]\n" +
-                "                        },\n" +
-                "                        \"action\": {\n" +
-                "                            \"Action\": {\n" +
-                "                                \"action\": \"debug\",\n" +
-                "                                \"action_args\": {}\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        \"enabled\": true\n" +
-                "                    }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                    "Rule": {
+                                        "name": "in_rule_int",
+                                        "condition": {
+                                            "AllCondition": [
+                                                {
+                                                    "ItemInListExpression": {
+                                                        "lhs": {
+                                                            "Event": "i"
+                                                        },
+                                                        "rhs": [
+                                                            {
+                                                                "Integer": 1
+                                                            },
+                                                            {
+                                                                "Integer": 2
+                                                            },
+                                                            {
+                                                                "Integer": 3
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "action": {
+                                            "Action": {
+                                                "action": "debug",
+                                                "action_args": {}
+                                            }
+                                        },
+                                        "enabled": true
+                                    }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -169,44 +175,46 @@ public class ListContainsTest {
     public void testIntNotInList() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                    \"Rule\": {\n" +
-                "                        \"name\": \"not_in_rule_int\",\n" +
-                "                        \"condition\": {\n" +
-                "                            \"AllCondition\": [\n" +
-                "                                {\n" +
-                "                                    \"ItemNotInListExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"i\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": [\n" +
-                "                                            {\n" +
-                "                                                \"Integer\": 1\n" +
-                "                                            },\n" +
-                "                                            {\n" +
-                "                                                \"Integer\": 2\n" +
-                "                                            },\n" +
-                "                                            {\n" +
-                "                                                \"Integer\": 3\n" +
-                "                                            }\n" +
-                "                                        ]\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            ]\n" +
-                "                        },\n" +
-                "                        \"action\": {\n" +
-                "                            \"Action\": {\n" +
-                "                                \"action\": \"debug\",\n" +
-                "                                \"action_args\": {}\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        \"enabled\": true\n" +
-                "                    }\n" +
-                "            }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                    "Rule": {
+                                        "name": "not_in_rule_int",
+                                        "condition": {
+                                            "AllCondition": [
+                                                {
+                                                    "ItemNotInListExpression": {
+                                                        "lhs": {
+                                                            "Event": "i"
+                                                        },
+                                                        "rhs": [
+                                                            {
+                                                                "Integer": 1
+                                                            },
+                                                            {
+                                                                "Integer": 2
+                                                            },
+                                                            {
+                                                                "Integer": 3
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "action": {
+                                            "Action": {
+                                                "action": "debug",
+                                                "action_args": {}
+                                            }
+                                        },
+                                        "enabled": true
+                                    }
+                            }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -224,36 +232,38 @@ public class ListContainsTest {
     public void testListContainsWithScientificNotation() {
 
         String JSON1 =
-                "{\n" +
-                "    \"rules\": [\n" +
-                "            {\n" +
-                "                    \"Rule\": {\n" +
-                "                        \"name\": \"contains_rule_int\",\n" +
-                "                        \"condition\": {\n" +
-                "                            \"AllCondition\": [\n" +
-                "                                {\n" +
-                "                                    \"ListContainsItemExpression\": {\n" +
-                "                                        \"lhs\": {\n" +
-                "                                            \"Event\": \"id_list\"\n" +
-                "                                        },\n" +
-                "                                        \"rhs\": {\n" +
-                "                                            \"Integer\": 1.021e+3\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                            ]\n" +
-                "                        },\n" +
-                "                        \"action\": {\n" +
-                "                            \"Action\": {\n" +
-                "                                \"action\": \"debug\",\n" +
-                "                                \"action_args\": {}\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        \"enabled\": true\n" +
-                "                    }\n" +
-                "                }\n" +
-                "        ]\n" +
-                "}";
+                """
+                {
+                    "rules": [
+                            {
+                                    "Rule": {
+                                        "name": "contains_rule_int",
+                                        "condition": {
+                                            "AllCondition": [
+                                                {
+                                                    "ListContainsItemExpression": {
+                                                        "lhs": {
+                                                            "Event": "id_list"
+                                                        },
+                                                        "rhs": {
+                                                            "Integer": 1.021e+3
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "action": {
+                                            "Action": {
+                                                "action": "debug",
+                                                "action_args": {}
+                                            }
+                                        },
+                                        "enabled": true
+                                    }
+                                }
+                        ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
@@ -275,48 +285,50 @@ public class ListContainsTest {
     public void testListContainsWithJoinCondition() {
 
         String JSON1 =
-                "{\n" +
-                "        \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"r1\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"AllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"otherlist.name\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"String\": \"Delete\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        {\n" +
-                "                            \"ListContainsItemExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"thirdlist.rnames\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"Events\": \"m_0.otherlist.resource_name\"\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ]\n" +
-                "                },\n" +
-                "                \"actions\": [\n" +
-                "                    {\n" +
-                "                        \"Action\": {\n" +
-                "                            \"action\": \"debug\",\n" +
-                "                            \"action_args\": {}\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
+                """
+                {
+                        "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "otherlist.name"
+                                                },
+                                                "rhs": {
+                                                    "String": "Delete"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "ListContainsItemExpression": {
+                                                "lhs": {
+                                                    "Event": "thirdlist.rnames"
+                                                },
+                                                "rhs": {
+                                                    "Events": "m_0.otherlist.resource_name"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "debug",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 

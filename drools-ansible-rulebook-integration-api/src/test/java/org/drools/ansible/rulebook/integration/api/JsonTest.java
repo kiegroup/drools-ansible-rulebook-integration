@@ -15,97 +15,99 @@ import static org.junit.Assert.assertEquals;
 public class JsonTest {
 
     public static final String JSON1 =
-            "{\n" +
-            "   \"sources\":{\"EventSource\":\"test\"},\n" +
-            "   \"rules\":[\n" +
-            "      {\"Rule\": {\n" +
-            "         \"condition\":{\n" +
-            "           \"AssignmentExpression\": {\n" +
-            "             \"lhs\": {\n" +
-            "               \"Events\": \"first\"\n" +
-            "             },\n" +
-            "             \"rhs\": {\n" +
-            "               \"EqualsExpression\":{\n" +
-            "                 \"lhs\":{\n" +
-            "                    \"Event\":\"sensu.data.i\"\n" +
-            "                 },\n" +
-            "                 \"rhs\":{\n" +
-            "                    \"Integer\":1\n" +
-            "                 }\n" +
-            "               }\n" +
-            "             }\n" +
-            "           }\n" +
-            "         },\n" +
-            "         \"action\":{\n" +
-            "            \"assert_fact\":{\n" +
-            "               \"ruleset\":\"Test rules4\",\n" +
-            "               \"fact\":{\n" +
-            "                  \"j\":1\n" +
-            "               }\n" +
-            "            }\n" +
-            "         }\n" +
-            "      }},\n" +
-            "      {\"Rule\": {\n" +
-            "         \"condition\":{\n" +
-            "            \"EqualsExpression\":{\n" +
-            "               \"lhs\":{\n" +
-            "                  \"sensu\":\"data.i\"\n" +
-            "               },\n" +
-            "               \"rhs\":{\n" +
-            "                  \"Integer\":2\n" +
-            "               }\n" +
-            "            }\n" +
-            "         },\n" +
-            "         \"action\":{\n" +
-            "            \"run_playbook\":[\n" +
-            "               {\n" +
-            "                  \"name\":\"hello_playbook.yml\"\n" +
-            "               }\n" +
-            "            ]\n" +
-            "         }\n" +
-            "      }},\n" +
-            "      {\"Rule\": {\n" +
-            "         \"condition\":{\n" +
-            "            \"EqualsExpression\":{\n" +
-            "               \"lhs\":{\n" +
-            "                  \"sensu\":\"data.i\"\n" +
-            "               },\n" +
-            "               \"rhs\":{\n" +
-            "                  \"Integer\":3\n" +
-            "               }\n" +
-            "            }\n" +
-            "         },\n" +
-            "         \"action\":{\n" +
-            "            \"retract_fact\":{\n" +
-            "               \"ruleset\":\"Test rules4\",\n" +
-            "               \"fact\":{\n" +
-            "                  \"j\":3\n" +
-            "               }\n" +
-            "            }\n" +
-            "         }\n" +
-            "      }},\n" +
-            "      {\"Rule\": {\n" +
-            "         \"condition\":{\n" +
-            "            \"AllCondition\":[{\n" +
-            "              \"EqualsExpression\":{\n" +
-            "                 \"lhs\":\"j\",\n" +
-            "                 \"rhs\":{\n" +
-            "                    \"Integer\":1\n" +
-            "                 }\n" +
-            "              }\n" +
-            "            }]" +
-            "          },\n" +
-            "         \"action\":{\n" +
-            "            \"post_event\":{\n" +
-            "               \"ruleset\":\"Test rules4\",\n" +
-            "               \"fact\":{\n" +
-            "                  \"j\":4\n" +
-            "               }\n" +
-            "            }\n" +
-            "         }\n" +
-            "      }}\n" +
-            "   ]\n" +
-            "}";
+            """
+            {
+               "sources":{"EventSource":"test"},
+               "rules":[
+                  {"Rule": {
+                     "condition":{
+                       "AssignmentExpression": {
+                         "lhs": {
+                           "Events": "first"
+                         },
+                         "rhs": {
+                           "EqualsExpression":{
+                             "lhs":{
+                                "Event":"sensu.data.i"
+                             },
+                             "rhs":{
+                                "Integer":1
+                             }
+                           }
+                         }
+                       }
+                     },
+                     "action":{
+                        "assert_fact":{
+                           "ruleset":"Test rules4",
+                           "fact":{
+                              "j":1
+                           }
+                        }
+                     }
+                  }},
+                  {"Rule": {
+                     "condition":{
+                        "EqualsExpression":{
+                           "lhs":{
+                              "sensu":"data.i"
+                           },
+                           "rhs":{
+                              "Integer":2
+                           }
+                        }
+                     },
+                     "action":{
+                        "run_playbook":[
+                           {
+                              "name":"hello_playbook.yml"
+                           }
+                        ]
+                     }
+                  }},
+                  {"Rule": {
+                     "condition":{
+                        "EqualsExpression":{
+                           "lhs":{
+                              "sensu":"data.i"
+                           },
+                           "rhs":{
+                              "Integer":3
+                           }
+                        }
+                     },
+                     "action":{
+                        "retract_fact":{
+                           "ruleset":"Test rules4",
+                           "fact":{
+                              "j":3
+                           }
+                        }
+                     }
+                  }},
+                  {"Rule": {
+                     "condition":{
+                        "AllCondition":[{
+                          "EqualsExpression":{
+                             "lhs":"j",
+                             "rhs":{
+                                "Integer":1
+                             }
+                          }
+                        }]\
+                      },
+                     "action":{
+                        "post_event":{
+                           "ruleset":"Test rules4",
+                           "fact":{
+                              "j":4
+                           }
+                        }
+                     }
+                  }}
+               ]
+            }
+            """;
 
     @Test
     public void testReadJson() throws JsonProcessingException {

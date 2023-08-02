@@ -25,56 +25,58 @@ public class TimedOutTest {
     @Test
     public void timedOutTest() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"condition\":{\n" +
-                "               \"NotAllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"ping.timeout\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Boolean\":true\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"AssignmentExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Events\":\"myevent\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"sensu.process.status\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"String\":\"stopped\"\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"GreaterThanExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"Event\":\"sensu.storage.percent\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Integer\":95\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ],\n" +
-                "               \"timeout\":\"10 seconds\"\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "condition":{
+                               "NotAllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"ping.timeout"
+                                        },
+                                        "rhs":{
+                                           "Boolean":true
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "AssignmentExpression":{
+                                        "lhs":{
+                                           "Events":"myevent"
+                                        },
+                                        "rhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"sensu.process.status"
+                                              },
+                                              "rhs":{
+                                                 "String":"stopped"
+                                              }
+                                           }
+                                        }
+                                     }
+                                  },
+                                  {
+                                     "GreaterThanExpression":{
+                                        "lhs":{
+                                           "Event":"sensu.storage.percent"
+                                        },
+                                        "rhs":{
+                                           "Integer":95
+                                        }
+                                     }
+                                  }
+                               ],
+                               "timeout":"10 seconds"
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
@@ -127,39 +129,41 @@ public class TimedOutTest {
     @Test
     public void testSimpleTimedOut() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"action\":{\n" +
-                "               \"Action\":{\n" +
-                "                  \"action\":\"debug\",\n" +
-                "                  \"action_args\":{\n" +
-                "                     \n" +
-                "                  }\n" +
-                "               }\n" +
-                "            },\n" +
-                "            \"condition\":{\n" +
-                "               \"NotAllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"IsDefinedExpression\":{\n" +
-                "                        \"Event\":\"i\"\n" +
-                "                     }\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                     \"IsDefinedExpression\":{\n" +
-                "                        \"Event\":\"j\"\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ],\n" +
-                "               \"timeout\":\"10 seconds\"\n" +
-                "            },\n" +
-                "            \"enabled\":true,\n" +
-                "            \"name\":\"r1\"\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "action":{
+                               "Action":{
+                                  "action":"debug",
+                                  "action_args":{
+                                    \s
+                                  }
+                               }
+                            },
+                            "condition":{
+                               "NotAllCondition":[
+                                  {
+                                     "IsDefinedExpression":{
+                                        "Event":"i"
+                                     }
+                                  },
+                                  {
+                                     "IsDefinedExpression":{
+                                        "Event":"j"
+                                     }
+                                  }
+                               ],
+                               "timeout":"10 seconds"
+                            },
+                            "enabled":true,
+                            "name":"r1"
+                         }
+                      }
+                   ]
+                }
+                """;
 
         // pseudo clock should be automatically activated by the presence of the timed_out
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
@@ -190,47 +194,49 @@ public class TimedOutTest {
     @Test
     public void testTimedOutWithAutomaticClockAdvance() throws IOException {
         String json =
-                "{\n" +
-                "       \"rules\": [\n" +
-                "        {\n" +
-                "            \"Rule\": {\n" +
-                "                \"name\": \"maint failed\",\n" +
-                "                \"condition\": {\n" +
-                "                    \"NotAllCondition\": [\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"alert.code\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"Integer\": 1001\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        },\n" +
-                "                        {\n" +
-                "                            \"EqualsExpression\": {\n" +
-                "                                \"lhs\": {\n" +
-                "                                    \"Event\": \"alert.code\"\n" +
-                "                                },\n" +
-                "                                \"rhs\": {\n" +
-                "                                    \"Integer\": 1002\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    ],\n" +
-                "                    \"timeout\": \"2 seconds\"\n" +
-                "                },\n" +
-                "                \"action\": {\n" +
-                "                    \"Action\": {\n" +
-                "                        \"action\": \"print_event\",\n" +
-                "                        \"action_args\": {}\n" +
-                "                    }\n" +
-                "                },\n" +
-                "                \"enabled\": true\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n\n" +
-                "}";
+                """
+                {
+                       "rules": [
+                        {
+                            "Rule": {
+                                "name": "maint failed",
+                                "condition": {
+                                    "NotAllCondition": [
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "alert.code"
+                                                },
+                                                "rhs": {
+                                                    "Integer": 1001
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "alert.code"
+                                                },
+                                                "rhs": {
+                                                    "Integer": 1002
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "timeout": "2 seconds"
+                                },
+                                "action": {
+                                    "Action": {
+                                        "action": "print_event",
+                                        "action_args": {}
+                                    }
+                                },
+                                "enabled": true
+                            }
+                        }
+                    ]
+                }
+                """;
 
         RulesExecutorContainer rulesExecutorContainer = new RulesExecutorContainer();
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, json);

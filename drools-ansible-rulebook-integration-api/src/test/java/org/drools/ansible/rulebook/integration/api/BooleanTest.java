@@ -12,29 +12,31 @@ public class BooleanTest {
     @Test
     public void testProcessRuleWithBoolean() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"name\":\"R1\",\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"EqualsExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"sensu\":\"data.i\"\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Boolean\":true\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"R1",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "sensu":"data.i"
+                                        },
+                                        "rhs":{
+                                           "Boolean":true
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -48,22 +50,24 @@ public class BooleanTest {
     @Test
     public void testProcessRuleWithImplicitBoolean() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"name\":\"R1\",\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"sensu\":\"data.i\"\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"R1",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "sensu":"data.i"
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -80,22 +84,24 @@ public class BooleanTest {
     @Test
     public void testProcessRuleWithImplicitNegateBoolean() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"name\":\"R1\",\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"NegateExpression\": { \"sensu\":\"data.i\" }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"R1",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "NegateExpression": { "sensu":"data.i" }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
@@ -112,36 +118,38 @@ public class BooleanTest {
     @Test
     public void testProcessRuleWithLiteralBoolean() {
         String json =
-                "{\n" +
-                "   \"rules\":[\n" +
-                "      {\n" +
-                "         \"Rule\":{\n" +
-                "            \"name\":\"R1\",\n" +
-                "            \"condition\":{\n" +
-                "               \"AllCondition\":[\n" +
-                "                  {\n" +
-                "                     \"AndExpression\":{\n" +
-                "                        \"lhs\":{\n" +
-                "                           \"EqualsExpression\":{\n" +
-                "                              \"lhs\":{\n" +
-                "                                 \"Event\":\"i\"\n" +
-                "                              },\n" +
-                "                              \"rhs\":{\n" +
-                "                                 \"Integer\":1\n" +
-                "                              }\n" +
-                "                           }\n" +
-                "                        },\n" +
-                "                        \"rhs\":{\n" +
-                "                           \"Boolean\":true\n" +
-                "                        }\n" +
-                "                     }\n" +
-                "                  }\n" +
-                "               ]\n" +
-                "            }\n" +
-                "         }\n" +
-                "      }\n" +
-                "   ]\n" +
-                "}";
+                """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"R1",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "AndExpression":{
+                                        "lhs":{
+                                           "EqualsExpression":{
+                                              "lhs":{
+                                                 "Event":"i"
+                                              },
+                                              "rhs":{
+                                                 "Integer":1
+                                              }
+                                           }
+                                        },
+                                        "rhs":{
+                                           "Boolean":true
+                                        }
+                                     }
+                                  }
+                               ]
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
