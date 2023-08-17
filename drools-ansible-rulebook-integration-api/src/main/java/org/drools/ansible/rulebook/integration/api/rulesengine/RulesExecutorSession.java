@@ -66,6 +66,7 @@ public class RulesExecutorSession {
         if (event) {
             ((Event) fact).withExpiration(rulesSet.getEventsTtl().getAmount(), rulesSet.getEventsTtl().getTimeUnit());
         }
+        InternalFactHandle.tempMethod();
         InternalFactHandle fh = (InternalFactHandle) kieSession.insert(fact);
         if (event) {
             sessionStatsCollector.registerProcessedEvent(fh);
