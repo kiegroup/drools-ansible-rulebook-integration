@@ -243,4 +243,100 @@ public class AlphaTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testEqualsWithNonAlphaField() {
+        String json =
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "node[\\"a/b\\"]"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": "3"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": "R1"
+                                }
+                            }
+                        ]
+                }
+                """;
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        Rete rete = ((InternalKnowledgeBase) rulesExecutor.asKieSession().getKieBase()).getRete();
+        assertConstraintType(rete, "R1", ConstraintTypeOperator.EQUAL);
+
+        List<Match> matchedRules = rulesExecutor.processEvents("{ \"i\": 3 }").join();
+        assertEquals(0, matchedRules.size());
+
+        matchedRules = rulesExecutor.processEvents("{ \"i\": 3, \"node\": {\"a/b\" : 2 } }").join();
+        assertEquals(0, matchedRules.size());
+
+        matchedRules = rulesExecutor.processEvents("{ \"i\": 3, \"node\": {\"a/b\" : 3 } }").join();
+        assertEquals(1, matchedRules.size());
+        assertEquals("R1", matchedRules.get(0).getRule().getName());
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void testEqualsWithNonAlphaRoot() {
+        String json =
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "[\\"a/b\\"]"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": "3"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "enabled": true,
+                                    "name": "R1"
+                                }
+                            }
+                        ]
+                }
+                """;
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
+
+        Rete rete = ((InternalKnowledgeBase) rulesExecutor.asKieSession().getKieBase()).getRete();
+        assertConstraintType(rete, "R1", ConstraintTypeOperator.EQUAL);
+
+        List<Match> matchedRules = rulesExecutor.processEvents("{ \"i\": 3 }").join();
+        assertEquals(0, matchedRules.size());
+
+        matchedRules = rulesExecutor.processEvents("{ \"i\": 3, \"a/b\" : 2 }").join();
+        assertEquals(0, matchedRules.size());
+
+        matchedRules = rulesExecutor.processEvents("{ \"i\": 3, \"a/b\" : 3 }").join();
+        assertEquals(1, matchedRules.size());
+        assertEquals("R1", matchedRules.get(0).getRule().getName());
+
+        rulesExecutor.dispose();
+    }
 }

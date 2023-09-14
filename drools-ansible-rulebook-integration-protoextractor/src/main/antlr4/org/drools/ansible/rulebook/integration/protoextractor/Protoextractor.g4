@@ -1,6 +1,8 @@
 grammar Protoextractor;
 
-extractor : identifier ( chunk )* ;
+extractor : root ( chunk )* ;
+
+root : identifier | squaredAccessor ;
 
 chunk : ('.' identifier) | squaredAccessor | indexAccessor ;
 

@@ -1,8 +1,5 @@
 package org.drools.ansible.rulebook.integration.protoextractor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.drools.ansible.rulebook.integration.protoextractor.ProtoextractorParser.ChunkContext;
 import org.drools.ansible.rulebook.integration.protoextractor.ProtoextractorParser.ExtractorContext;
 import org.drools.ansible.rulebook.integration.protoextractor.ProtoextractorParser.IdentifierContext;
@@ -14,6 +11,9 @@ import org.drools.ansible.rulebook.integration.protoextractor.ast.ASTBuilderFact
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ASTNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.IntegerLiteralNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.TextValue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ASTProductionVisitor extends ProtoextractorBaseVisitor<ASTNode> {
 
@@ -59,7 +59,7 @@ public class ASTProductionVisitor extends ProtoextractorBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitExtractor(ExtractorContext ctx) {
         List<ASTNode> values = new ArrayList<>();
-        ASTNode value0 = ctx.identifier().accept(this);
+        ASTNode value0 = ctx.root().accept(this);
         values.add(value0);
         for (ChunkContext chunk : ctx.chunk()) {
             values.add(chunk.accept(this));
