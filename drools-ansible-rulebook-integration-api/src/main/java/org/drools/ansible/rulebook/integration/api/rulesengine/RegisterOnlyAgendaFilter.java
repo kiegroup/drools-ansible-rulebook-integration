@@ -2,6 +2,10 @@ package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.core.common.InternalFactHandle;
+import org.drools.core.reteoo.LeftTuple;
+import org.drools.core.reteoo.RightTuple;
+import org.drools.core.reteoo.RuleTerminalNodeLeftTuple;
+import org.drools.core.reteoo.Tuple;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
@@ -56,12 +60,42 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
         }
 
         for (InternalFactHandle fh : fhs) {
-            if (fh.isEvent()) {
+            if (fh.isEvent() && discardMatchedEvent(fh)) {
                 eventsToBeDeleted.add(fh);
             }
         }
 
         return validMatch;
+    }
+
+    private boolean discardMatchedEvent(InternalFactHandle fh) {
+        // if an event can match multiple rules and is still part of a partial match it shouldn't be discarded yet
+        return !(rulesExecutorSession.isMatchMultipleRules() && hasPartialMatch(fh));
+    }
+
+    private static boolean hasPartialMatch(InternalFactHandle fh) {
+        // check if all the tuples created from this fact reached the terminal node, otherwise it is a partial match
+        for (RightTuple rt = fh.getLinkedTuples().getFirstRightTuple(0); rt != null; rt = rt.getHandleNext()) {
+            if (isPartialMatch(rt)) {
+                return true;
+            }
+        }
+        for (LeftTuple lt = fh.getLinkedTuples().getFirstLeftTuple(0); lt != null; lt = lt.getHandleNext()) {
+            if (isPartialMatch(lt)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isPartialMatch(Tuple tuple) {
+        // the tuple is a partial match if never reached a terminal node
+        for (; tuple != null; tuple = tuple.getFirstChild()) {
+            if (tuple instanceof RuleTerminalNodeLeftTuple) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public List<Match> finalizeAndGetResults(boolean event) {

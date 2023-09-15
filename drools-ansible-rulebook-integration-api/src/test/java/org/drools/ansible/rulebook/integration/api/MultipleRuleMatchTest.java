@@ -16,10 +16,10 @@
 
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -125,6 +125,126 @@ public class MultipleRuleMatchTest {
         List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"data\": { \"i\":1 } } }").join();
         assertThat(matchedRules).hasSize(2);
         assertThat(matchedRules.stream().map(m -> m.getRule().getName())).contains("R1", "R2");
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void retainLeftPartialMatchesWithMatchMultipleRules() {
+        checkPartialMatchesWithMatchMultipleRules(true, true);
+    }
+
+    @Test
+    public void discardLeftPartialMatchesWithMatchMultipleRules() {
+        checkPartialMatchesWithMatchMultipleRules(false, true);
+    }
+
+    @Test
+    public void retainRightPartialMatchesWithMatchMultipleRules() {
+        checkPartialMatchesWithMatchMultipleRules(true, false);
+    }
+
+    @Test
+    public void discardRightPartialMatchesWithMatchMultipleRules() {
+        checkPartialMatchesWithMatchMultipleRules(false, false);
+    }
+
+    private static void checkPartialMatchesWithMatchMultipleRules(boolean matchMultipleRules, boolean partialOnLeft) {
+        String rules =
+                "{\n" +
+                "   \"match_multiple_rules\":" + matchMultipleRules + ",\n" +
+                "   \"rules\": [\n" +
+                "                {\n" +
+                "                    \"Rule\": {\n" +
+                "                        \"name\": \"R1\",\n" +
+                "                        \"condition\": {\n" +
+                "                            \"AllCondition\": [\n" +
+                "                                {\n" +
+                "                                    \"EqualsExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"Event\": \"i\"\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"Integer\": 0\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        },\n" +
+                "                        \"actions\": [\n" +
+                "                            {\n" +
+                "                                \"Action\": {\n" +
+                "                                    \"action\": \"debug\",\n" +
+                "                                    \"action_args\": {\n" +
+                "                                        \"msg\": \"First one matches\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        ],\n" +
+                "                        \"enabled\": true\n" +
+                "                    }\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"Rule\": {\n" +
+                "                        \"name\": \"R2\",\n" +
+                "                        \"condition\": {\n" +
+                "                            \"AllCondition\": [\n" +
+                "                                {\n" +
+                "                                    \"EqualsExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"Event\": \" " + (partialOnLeft ? "i" : "j") + " \"\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"Integer\": 0\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                },\n" +
+                "                                {\n" +
+                "                                    \"EqualsExpression\": {\n" +
+                "                                        \"lhs\": {\n" +
+                "                                            \"Event\": \"" + (partialOnLeft ? "j" : "i") + " \"\n" +
+                "                                        },\n" +
+                "                                        \"rhs\": {\n" +
+                "                                            \"Integer\": 0\n" +
+                "                                        }\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        },\n" +
+                "                        \"actions\": [\n" +
+                "                            {\n" +
+                "                                \"Action\": {\n" +
+                "                                    \"action\": \"debug\",\n" +
+                "                                    \"action_args\": {\n" +
+                "                                        \"msg\": \"Second one matches\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            }\n" +
+                "                        ],\n" +
+                "                        \"enabled\": true\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "}";
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(rules);
+
+        List<Match> matchedRules = rulesExecutor.processEvents("{ \"i\" : 0 }").join();
+        assertThat(matchedRules).hasSize(1);
+        assertThat(matchedRules.stream().map(m -> m.getRule().getName())).contains("R1");
+
+        matchedRules = rulesExecutor.processEvents("{ \"j\" : 0 }").join();
+        assertThat(matchedRules).hasSize(matchMultipleRules ? 1 : 0);
+
+        if (matchMultipleRules) {
+            // when multiple match is allowed i=0 should be retained and now used to also fire R2
+            assertThat(matchedRules.stream().map(m -> m.getRule().getName())).contains("R2");
+            // if both rules fired now the working memory should be empty
+            assertThat(rulesExecutor.getAllFacts()).isEmpty();
+        } else {
+            // if R2 never fired j=0 should still be there
+            assertThat(rulesExecutor.getAllFacts().size()).isEqualTo(1);
+        }
 
         rulesExecutor.dispose();
     }
