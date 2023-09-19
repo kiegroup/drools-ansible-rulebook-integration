@@ -91,6 +91,12 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
     private static boolean isPartialMatch(Tuple tuple) {
         // the tuple is a partial match if never reached a terminal node
         for (; tuple != null; tuple = tuple.getFirstChild()) {
+            if (tuple instanceof LeftTuple) {
+                LeftTuple peer = ((LeftTuple) tuple).getPeer();
+                if (peer != null && isPartialMatch(peer)) {
+                    return true; // if any peer is a partial match, this tuple is also a partial match
+                }
+            }
             if (tuple instanceof RuleTerminalNodeLeftTuple) {
                 return false;
             }
