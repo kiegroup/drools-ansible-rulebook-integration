@@ -1,0 +1,82 @@
+[
+    {
+        "RuleSet": {
+            "name": "demo",
+            "hosts": [
+                "localhost"
+            ],
+            "sources": [
+                {
+                    "EventSource": {
+                        "name": "generic",
+                        "source_name": "generic",
+                        "source_args": {
+                            "payload": [
+                                {
+                                    "xyz": 300,
+                                    "pr": 456
+                                },
+                                {
+                                    "prs_list": [
+                                        456,
+                                        457
+                                    ]
+                                }
+                            ]
+                        },
+                        "source_filters": []
+                    }
+                }
+            ],
+            "rules": [
+                {
+                    "Rule": {
+                        "name": "r41",
+                        "condition": {
+                            "AllCondition": [
+                                {
+                                    "AssignmentExpression": {
+                                        "lhs": {
+                                            "Events": "varname"
+                                        },
+                                        "rhs": {
+                                            "EqualsExpression": {
+                                                "lhs": {
+                                                    "Event": "xyz"
+                                                },
+                                                "rhs": {
+                                                    "Integer": 300
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "ItemInListExpression": {
+                                        "lhs": {
+                                            "Events": "varname.pr"
+                                        },
+                                        "rhs": {
+                                            "Event": "prs_list"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "Action": {
+                                    "action": "debug",
+                                    "action_args": {
+                                        "msg": "Assignment works"
+                                    }
+                                }
+                            }
+                        ],
+                        "enabled": true
+                    }
+                }
+            ]
+        }
+    }
+]
