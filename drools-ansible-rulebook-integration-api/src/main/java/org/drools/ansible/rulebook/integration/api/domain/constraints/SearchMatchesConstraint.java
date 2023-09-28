@@ -1,21 +1,21 @@
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression;
+import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
+import org.drools.model.ConstraintOperator;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
-import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression;
-import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
-import org.drools.model.ConstraintOperator;
-
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isRegexOperator;
 import static org.drools.model.PrototypeExpression.fixedValue;
 
-public enum SearchMatchesConstraint implements ConstraintOperator, ConditionFactory {
+public enum SearchMatchesConstraint implements RulebookOperator, ConditionFactory {
 
     INSTANCE;
 

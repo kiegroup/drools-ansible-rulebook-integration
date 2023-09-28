@@ -1,8 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
-import java.util.List;
-import java.util.Map;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ConditionFactory;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ExistsField;
@@ -10,6 +7,7 @@ import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemInList
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListNotContainsConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.RulebookOperator;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SearchMatchesConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SelectAttrConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SelectConstraint;
@@ -20,9 +18,11 @@ import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDef
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimedOutDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
-import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
 import org.drools.model.view.ViewItem;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.mapEntry2Expr;
@@ -183,7 +183,7 @@ public class MapCondition implements Condition {
     }
 
     private ParsedCondition parseExpression(RuleGenerationContext ruleContext, String expressionName, Map<?, ?> expression) {
-        ConstraintOperator operator = decodeOperation(expressionName);
+        RulebookOperator operator = decodeOperation(expressionName);
 
         if (operator instanceof ConditionFactory) {
             return ((ConditionFactory) operator).createParsedCondition(ruleContext, expressionName, expression);
@@ -191,25 +191,37 @@ public class MapCondition implements Condition {
 
         ConditionExpression left = map2Expr(ruleContext, expression.get("lhs"));
         ConditionExpression right = map2Expr(ruleContext, expression.get("rhs"));
+
+        if (left.isBeta()) {
+            if (right.isBeta()) {
+                throw new UnsupportedOperationException("Both operands of the expression " + expressionName + " in rule " + ruleContext.getRuleName() +
+                        " belong to a fact different than the matched one. Please move this constraint in the corresponding fact.");
+            }
+            ConditionExpression temp = left;
+            left = right;
+            right = temp;
+            operator = operator.inverse();
+        }
+
         return right.isBeta() ?
-                new BetaParsedCondition(left.getPrototypeExpression(), operator, right.getBetaVariable(), right.getPrototypeExpression()) :
-                new ParsedCondition(left.getPrototypeExpression(), operator, right.getPrototypeExpression());
+                new BetaParsedCondition(left.getPrototypeExpression(), operator.asConstraintOperator(), right.getBetaVariable(), right.getPrototypeExpression()) :
+                new ParsedCondition(left.getPrototypeExpression(), operator.asConstraintOperator(), right.getPrototypeExpression());
     }
 
-    private static ConstraintOperator decodeOperation(String expressionName) {
+    private static RulebookOperator decodeOperation(String expressionName) {
         switch (expressionName) {
             case "EqualsExpression":
-                return Index.ConstraintType.EQUAL;
+                return RulebookOperator.EQUAL;
             case "NotEqualsExpression":
-                return Index.ConstraintType.NOT_EQUAL;
+                return RulebookOperator.NOT_EQUAL;
             case "GreaterThanExpression":
-                return Index.ConstraintType.GREATER_THAN;
+                return RulebookOperator.GREATER_THAN;
             case "GreaterThanOrEqualToExpression":
-                return Index.ConstraintType.GREATER_OR_EQUAL;
+                return RulebookOperator.GREATER_OR_EQUAL;
             case "LessThanExpression":
-                return Index.ConstraintType.LESS_THAN;
+                return RulebookOperator.LESS_THAN;
             case "LessThanOrEqualToExpression":
-                return Index.ConstraintType.LESS_OR_EQUAL;
+                return RulebookOperator.LESS_OR_EQUAL;
             case ExistsField.EXPRESSION_NAME:
             case ExistsField.NEGATED_EXPRESSION_NAME:
                 return ExistsField.INSTANCE;

@@ -18,7 +18,7 @@ import static org.drools.ansible.rulebook.integration.api.domain.conditions.Cond
 import static org.drools.ansible.rulebook.integration.api.domain.constraints.Operators.toOperatorPredicate;
 import static org.drools.model.PrototypeExpression.fixedValue;
 
-public enum SelectAttrConstraint implements ConstraintOperator, ConditionFactory {
+public enum SelectAttrConstraint implements RulebookOperator, ConditionFactory {
 
     INSTANCE;
 
