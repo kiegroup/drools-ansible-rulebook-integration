@@ -3,11 +3,9 @@ package org.drools.ansible.rulebook.integration.api.domain.constraints;
 import java.util.Collection;
 import java.util.function.BiPredicate;
 
-import org.drools.model.ConstraintOperator;
-
 import static org.drools.model.util.OperatorUtils.areEqual;
 
-public enum ListContainsConstraint implements ConstraintOperator {
+public enum ListContainsConstraint implements RulebookOperator {
 
     INSTANCE;
 
@@ -28,5 +26,15 @@ public enum ListContainsConstraint implements ConstraintOperator {
     @Override
     public String toString() {
         return "LIST_CONTAINS";
+    }
+
+    @Override
+    public boolean canInverse() {
+        return true;
+    }
+
+    @Override
+    public RulebookOperator inverse() {
+        return ItemInListConstraint.INSTANCE;
     }
 }

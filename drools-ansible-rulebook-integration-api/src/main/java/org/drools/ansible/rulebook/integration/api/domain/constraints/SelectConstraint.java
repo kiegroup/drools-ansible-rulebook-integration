@@ -1,9 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.function.BiPredicate;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedCondition;
@@ -14,15 +10,18 @@ import org.drools.model.Prototype;
 import org.drools.model.PrototypeDSL;
 import org.drools.model.PrototypeVariable;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.BiPredicate;
+
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isEventOrFact;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.mapToStringValue;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toJsonValue;
 import static org.drools.ansible.rulebook.integration.api.domain.constraints.Operators.toOperatorPredicate;
 import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
 
-public enum SelectConstraint implements ConstraintOperator, ConditionFactory {
+public enum SelectConstraint implements RulebookOperator, ConditionFactory {
 
     INSTANCE;
 

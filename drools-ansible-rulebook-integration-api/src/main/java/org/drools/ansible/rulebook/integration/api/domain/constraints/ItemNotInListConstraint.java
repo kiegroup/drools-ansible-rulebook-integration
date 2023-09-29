@@ -2,11 +2,9 @@ package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
 import java.util.function.BiPredicate;
 
-import org.drools.model.ConstraintOperator;
-
 import static org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint.listContains;
 
-public enum ItemNotInListConstraint implements ConstraintOperator {
+public enum ItemNotInListConstraint implements RulebookOperator {
 
     INSTANCE;
 
@@ -20,5 +18,15 @@ public enum ItemNotInListConstraint implements ConstraintOperator {
     @Override
     public String toString() {
         return "ITEM_NOT_IN_LIST";
+    }
+
+    @Override
+    public boolean canInverse() {
+        return true;
+    }
+
+    @Override
+    public RulebookOperator inverse() {
+        return ListNotContainsConstraint.INSTANCE;
     }
 }
