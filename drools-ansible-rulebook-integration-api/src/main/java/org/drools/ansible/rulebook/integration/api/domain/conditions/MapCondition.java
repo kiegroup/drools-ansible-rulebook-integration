@@ -186,6 +186,12 @@ public class MapCondition implements Condition {
         RulebookOperator operator = decodeOperation(expressionName);
 
         if (operator instanceof ConditionFactory) {
+            if (expression.get("lhs") != null) {
+                ConditionExpression left = map2Expr(ruleContext, expression.get("lhs"));
+                if (left.isBeta()) {
+                    throwExceptionIfCannotInverse(operator, ruleContext, expressionName);
+                }
+            }
             return ((ConditionFactory) operator).createParsedCondition(ruleContext, expressionName, expression);
         }
 
@@ -197,6 +203,7 @@ public class MapCondition implements Condition {
                 throw new UnsupportedOperationException("Both operands of the expression " + expressionName + " in rule " + ruleContext.getRuleName() +
                         " belong to a fact different than the matched one. Please move this constraint in the corresponding fact.");
             }
+            throwExceptionIfCannotInverse(operator, ruleContext, expressionName);
             ConditionExpression temp = left;
             left = right;
             right = temp;
@@ -206,6 +213,15 @@ public class MapCondition implements Condition {
         return right.isBeta() ?
                 new BetaParsedCondition(left.getPrototypeExpression(), operator.asConstraintOperator(), right.getBetaVariable(), right.getPrototypeExpression()) :
                 new ParsedCondition(left.getPrototypeExpression(), operator.asConstraintOperator(), right.getPrototypeExpression());
+    }
+
+    private static void throwExceptionIfCannotInverse(RulebookOperator operator, RuleGenerationContext ruleContext, String expressionName) {
+        if (!operator.canInverse()) {
+            throw new UnsupportedOperationException("Left operands of the expression " + expressionName + " in rule " + ruleContext.getRuleName() +
+                                                            " belong to a fact different than the matched one. " +
+                                                            "Also the expression cannot be automatically inverted because " + operator + " cannot be inverted. " +
+                                                            "Please rewrite the rule to have the matched fact field as the left operand.");
+        }
     }
 
     private static RulebookOperator decodeOperation(String expressionName) {

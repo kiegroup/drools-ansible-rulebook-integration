@@ -27,4 +27,14 @@ public enum ListContainsConstraint implements RulebookOperator {
     public String toString() {
         return "LIST_CONTAINS";
     }
+
+    @Override
+    public boolean canInverse() {
+        return true;
+    }
+
+    @Override
+    public RulebookOperator inverse() {
+        return ItemInListConstraint.INSTANCE;
+    }
 }
