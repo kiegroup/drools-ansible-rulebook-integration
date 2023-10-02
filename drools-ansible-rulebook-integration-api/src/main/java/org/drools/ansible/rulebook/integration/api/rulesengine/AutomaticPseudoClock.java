@@ -42,10 +42,24 @@ public class AutomaticPseudoClock {
     }
 
     protected void advancePseudoClock() {
-        nextTick += period;
-        if (Math.abs(System.currentTimeMillis() - nextTick) > period * 2) {
-            LOG.warn("Pseudo clock is diverged, the difference is {} ms", (System.currentTimeMillis() - nextTick));
+
+        long diff = System.currentTimeMillis() - nextTick;
+        if (diff > period * 2) {
+            LOG.warn("Pseudo clock is diverged, the difference is {} ms. Going to sync with the real clock.", diff);
+            // DROOLS-7569 : Do not rely on "catch up" mechanism of ScheduledThreadPoolExecutor.scheduleAtFixedRate().
+            // This is explicit "catch up" logic.
+            // Also do not leap to the current time at once, because it may miss some rule firings.
+            for (; nextTick < System.currentTimeMillis(); nextTick += period) {
+                rulesEvaluator.scheduledAdvanceTimeToMills(nextTick);
+            }
+            return;
+        } else if (diff < 0) {
+            // This could happen when ScheduledThreadPoolExecutor piles up tasks because of the above "catch up" logic. Just ignore them.
+            return;
         }
+
+        // Normal case
+        nextTick += period;
         rulesEvaluator.scheduledAdvanceTimeToMills(nextTick);
     }
 }
