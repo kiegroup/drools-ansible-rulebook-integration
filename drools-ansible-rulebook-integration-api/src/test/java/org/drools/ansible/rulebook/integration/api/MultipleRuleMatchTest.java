@@ -16,12 +16,14 @@
 
 package org.drools.ansible.rulebook.integration.api;
 
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 public class MultipleRuleMatchTest {
 
@@ -125,6 +127,12 @@ public class MultipleRuleMatchTest {
         List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"data\": { \"i\":1 } } }").join();
         assertThat(matchedRules).hasSize(2);
         assertThat(matchedRules.stream().map(m -> m.getRule().getName())).contains("R1", "R2");
+
+        SessionStats stats = rulesExecutor.getSessionStats();
+        assertEquals(2, stats.getRulesTriggered());
+        assertEquals(1, stats.getEventsProcessed());
+        assertEquals(1, stats.getEventsMatched());
+        assertEquals(0, stats.getEventsSuppressed());
 
         rulesExecutor.dispose();
     }

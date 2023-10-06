@@ -31,7 +31,7 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
 
     private final Set<Match> matchedRules = new LinkedHashSet<>();
 
-    private final Set<FactHandle> eventsToBeDeleted = Collections.newSetFromMap(new IdentityHashMap<>());
+    private final Set<FactHandle> matchedEvents = Collections.newSetFromMap(new IdentityHashMap<>());
 
     public RegisterOnlyAgendaFilter(RulesExecutorSession rulesExecutorSession) {
         this.rulesExecutorSession = rulesExecutorSession;
@@ -55,11 +55,9 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
             matchedRules.add( matchTransformers.getOrDefault(metadata.get(RULE_TYPE_TAG), Function.identity()).apply(match) );
         }
 
-        if (!rulesExecutorSession.isMatchMultipleRules()) {
-            for (InternalFactHandle fh : fhs) {
-                if (fh.isEvent()) {
-                    eventsToBeDeleted.add(fh);
-                }
+        for (InternalFactHandle fh : fhs) {
+            if (fh.isEvent()) {
+                matchedEvents.add(fh);
             }
         }
 
@@ -67,11 +65,13 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
     }
 
     public List<Match> finalizeAndGetResults(boolean event) {
-        rulesExecutorSession.registerMatchedEvents(eventsToBeDeleted);
-        for (FactHandle toBeDeleted : eventsToBeDeleted) {
-            rulesExecutorSession.delete(toBeDeleted);
+        rulesExecutorSession.registerMatchedEvents(matchedEvents);
+        if (!rulesExecutorSession.isMatchMultipleRules()) {
+            for (FactHandle toBeDeleted : matchedEvents) {
+                rulesExecutorSession.delete(toBeDeleted);
+            }
         }
-        eventsToBeDeleted.clear();
+        matchedEvents.clear();
 
         List<Match> matches = new ArrayList<>( matchedRules );
         matchedRules.clear();
