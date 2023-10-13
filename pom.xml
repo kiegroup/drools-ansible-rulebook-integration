@@ -87,11 +87,16 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-          <groupId>org.kie</groupId>
-          <artifactId>drools-build-parent</artifactId>
-          <version>${version.drools}</version>
-          <type>pom</type>
-          <scope>import</scope>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>${version.org.antlr4}</version> <!-- this local dependency management takes precedence over the below import -->
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>drools-build-parent</artifactId>
+        <version>${version.drools}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
