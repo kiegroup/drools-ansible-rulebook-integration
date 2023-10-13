@@ -25,7 +25,6 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
-      <version>${version.org.antlr4}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
