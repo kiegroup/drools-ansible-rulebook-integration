@@ -48,7 +48,7 @@ Build locally with Maven, then copy the runtime JAR to drools_jpy:
 
 ```sh
 mvn clean install
-cp drools-ansible-rulebook-integration-runtime/target/drools-ansible-rulebook-integration-runtime-1.0.4-SNAPSHOT.jar ../drools_jpy/src/drools/jars/
+cp drools-ansible-rulebook-integration-runtime/target/drools-ansible-rulebook-integration-runtime-1.0.5-SNAPSHOT.jar ../drools_jpy/src/drools/jars/
 ```
 
 ### Step 2 (drools_jpy)
@@ -128,7 +128,7 @@ mvn clean package -Pnative
 To run the generated native executable, generated in `target/`, execute
 
 ```sh
-./target/drools-ansible-rulebook-integration-core-rest-1.0.4-SNAPSHOT-runner
+./target/drools-ansible-rulebook-integration-core-rest-1.0.5-SNAPSHOT-runner
 ```
 
 Note: This does not yet work on Windows, GraalVM and Quarkus should be rolling out support for Windows soon.
