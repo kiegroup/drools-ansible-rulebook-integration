@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesEvaluator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
@@ -62,14 +63,17 @@ public class RulesExecutor {
     }
 
     public CompletableFuture<Integer> executeFacts(String json) {
+        MemoryMonitorUtil.checkMemoryOccupation();
         return rulesEvaluator.executeFacts(asFactMap(json));
     }
 
     public CompletableFuture<List<Match>> processFacts(String json) {
+        MemoryMonitorUtil.checkMemoryOccupation();
         return rulesEvaluator.processFacts(asFactMap(json));
     }
 
     public CompletableFuture<List<Match>> processEvents(String json) {
+        MemoryMonitorUtil.checkMemoryOccupation();
         return rulesEvaluator.processEvents(asFactMap(json));
     }
 
