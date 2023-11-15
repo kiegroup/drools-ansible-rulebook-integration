@@ -15,8 +15,9 @@ public class MemoryMonitorUtil {
 
     // check memory per configured number of events are consumed
     public static final String MEMORY_CHECK_EVENT_COUNT_THRESHOLD_PROPERTY = "drools.memory.check.event.count.threshold";
-    private static final int DEFAULT_MEMORY_CHECK_EVENT_COUNT_THRESHOLD = 100;
-    private static final int MEMORY_CHECK_EVENT_COUNT_THRESHOLD;
+
+    private static int COUNTER = 0;
+    private static final int COUNTER_MASK = (1 << 6) - 1; // 63
 
     private static AtomicInteger eventCount = new AtomicInteger(0);
 
@@ -43,14 +44,10 @@ public class MemoryMonitorUtil {
     }
 
     public static void checkMemoryOccupation() {
-        // check memory every N events to avoid performance overhead
-        if (eventCount.incrementAndGet() >= MEMORY_CHECK_EVENT_COUNT_THRESHOLD) {
-            doCheckMemoryOccupation();
-            eventCount.set(0);
+        if ((COUNTER++ & COUNTER_MASK) == 0) {
+            // check memory occupation only once in 64 calls
+            return;
         }
-    }
-
-    private static void doCheckMemoryOccupation() {
         int memoryOccupationPercentage = getMemoryOccupationPercentage();
         if (memoryOccupationPercentage > MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD) {
             // give GC a chance to free some memory
