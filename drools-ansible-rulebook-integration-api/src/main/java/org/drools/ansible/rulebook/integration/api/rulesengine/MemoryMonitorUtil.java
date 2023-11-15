@@ -42,7 +42,7 @@ public class MemoryMonitorUtil {
     }
 
     public static void checkMemoryOccupation() {
-        if ((COUNTER++ & MEMORY_CHECK_EVENT_COUNT_MASK) == 0) {
+        if ((COUNTER++ & MEMORY_CHECK_EVENT_COUNT_MASK) != 0) {
             // check memory occupation only once in 64 calls
             return;
         }
