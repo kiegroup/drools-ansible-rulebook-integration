@@ -33,7 +33,7 @@ public class MemoryMonitorUtil {
         }
         
         int eventCountThreshold = Integer.getInteger(MEMORY_CHECK_EVENT_COUNT_THRESHOLD_PROPERTY, DEFAULT_MEMORY_CHECK_EVENT_COUNT_THRESHOLD); // number of events
-        MEMORY_CHECK_EVENT_COUNT_MASK = roundToPowerOfTwo(eventCountThreshold);
+        MEMORY_CHECK_EVENT_COUNT_MASK = roundToPowerOfTwo(eventCountThreshold) - 1;
         LOG.info("Memory check event count threshold set to {}", MEMORY_CHECK_EVENT_COUNT_MASK);
     }
 
