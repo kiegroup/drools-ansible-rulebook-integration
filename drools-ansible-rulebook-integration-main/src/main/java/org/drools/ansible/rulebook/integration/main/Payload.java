@@ -1,14 +1,12 @@
 package org.drools.ansible.rulebook.integration.main;
 
-import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
-import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-
-import com.fasterxml.jackson.core.JacksonException;
-
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
+import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 
 public class Payload {
 
@@ -21,6 +19,9 @@ public class Payload {
     private int eventDelay = 0;
 
     private int shutdown = 0;
+
+    // set true when matchedEvents occupies too much memory
+    private boolean discardMatchedEvents = false;
 
     private Payload(List<String> list) {
         this.list = list;
@@ -88,6 +89,11 @@ public class Payload {
         } catch (NullPointerException | NumberFormatException e) {
             /* ignore */
         }
+        try {
+            payload.discardMatchedEvents = Boolean.valueOf(sourcesArgs.get("discard_matched_events").toString());
+        } catch (NullPointerException | NumberFormatException e) {
+            /* ignore */
+        }
 
         return payload;
     }
@@ -128,7 +134,9 @@ public class Payload {
             for (int i = 0; i < payload.loopCount; i++) {
                 for (String p : payload.list) {
                     String resultJson = engine.assertEvent(sessionId, p);
-                    returnedMatches.addAll(JsonMapper.readValueAsListOfMapOfStringAndObject(resultJson));
+                    if (!payload.discardMatchedEvents) {
+                        returnedMatches.addAll(JsonMapper.readValueAsListOfMapOfStringAndObject(resultJson));
+                    }
                     sleepSeconds(payload.eventDelay);
                 }
                 sleepSeconds(payload.loopDelay);

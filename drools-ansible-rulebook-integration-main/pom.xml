@@ -74,6 +74,8 @@
             <!-- for SlownessTest -->
             <drools.delay.warning.threshold>2</drools.delay.warning.threshold>
           </systemPropertyVariables>
+<!--          <argLine>-Xmx500m -XX:+HeapDumpOnOutOfMemoryError</argLine>-->
+          <argLine>-Xmx500m</argLine>
         </configuration>
       </plugin>
     </plugins>
