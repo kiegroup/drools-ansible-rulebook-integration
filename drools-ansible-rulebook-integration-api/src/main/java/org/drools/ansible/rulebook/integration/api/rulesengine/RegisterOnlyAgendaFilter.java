@@ -43,8 +43,8 @@ public class RegisterOnlyAgendaFilter implements AgendaFilter {
         boolean validMatch = isValidMatch(fhs);
 
         if (validMatch) {
-            if (log.isInfoEnabled()) {
-                log.info(matchToString(match));
+            if (log.isDebugEnabled()) {
+                log.debug(matchToString(match));
             }
 
             Map<String, Object> metadata = match.getRule().getMetaData();
