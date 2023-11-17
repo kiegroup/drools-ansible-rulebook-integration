@@ -10,22 +10,26 @@ import org.drools.ansible.rulebook.integration.api.domain.temporal.Throttle;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeWindowDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Rule {
+
     private boolean enabled = true;
 
     private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
-	private String name;
+    private String name;
 
-	private Action action;
+    private Action action;
 
-	private RuleConfigurationOptions options;
+    private List<MapAction> actions;
 
-	private Condition condition;
+    private RuleConfigurationOptions options;
+
+    private Condition condition;
 
     public String getName() {
     	return name;
@@ -57,13 +61,31 @@ public class Rule {
         this.condition = condition;
         return condition;
     }
-    
+
+    // If "actions" are used in JSON, then getAction returns the first action in the list
     public Action getAction() {
     	return action;
     }
 
     public void setAction(MapAction action) {
-    	this.action = action;
+        this.action = action;
+
+        // If "action" is used in JSON, actions has the single action
+        this.actions = new ArrayList<>();
+        this.actions.add(action);
+    }
+
+    public void setActions(List<MapAction> actions) {
+        this.actions = actions;
+
+        // If "actions" are used in JSON, action has the first action in the list
+        if (actions != null && !actions.isEmpty()) {
+            this.action = actions.get(0);
+        }
+    }
+
+    public List<MapAction> getActions() {
+        return actions;
     }
 
     public void setGenericAction(Action action) {
