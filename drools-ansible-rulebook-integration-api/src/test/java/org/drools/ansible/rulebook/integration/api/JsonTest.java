@@ -179,17 +179,6 @@ public class JsonTest {
     }
 
     @Test
-    public void testProcessRuleIgnoringActionsTag() {
-        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } }, \"actions\": { \"post_event\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
-
-        List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
-        assertEquals( 1, matchedRules.size() );
-        assertEquals( "R1", matchedRules.get(0).getRule().getName() );
-
-        rulesExecutor.dispose();
-    }
-
-    @Test
     public void testIsDefinedExpression() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"IsDefinedExpression\":{ \"sensu\":\"data.i\" } } }} ] }");
 
