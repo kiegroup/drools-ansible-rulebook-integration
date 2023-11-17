@@ -76,6 +76,10 @@ public class RulesSet {
         return disabledRulesNumber;
     }
 
+    public List<RuleContainer> getRules() {
+        return rules;
+    }
+
     public void setRules(List<RuleContainer> rules) {
         this.rules = rules;
     }
