@@ -7,15 +7,22 @@ public class MemoryMonitorUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(MemoryMonitorUtil.class.getName());
 
-    public static final String MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD_PROPERTY = "drools.memory.occupation.percentage.threshold";
+    private static final String MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD_PROPERTY = "drools.memory.occupation.percentage.threshold";
     private static final int DEFAULT_MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD = 90;
     private static final int MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD;
 
-    // check memory per configured number of events are consumed
-    public static final String MEMORY_CHECK_EVENT_COUNT_THRESHOLD_PROPERTY = "drools.memory.check.event.count.threshold";
+    private static final String MEMORY_CHECK_EVENT_COUNT_THRESHOLD_PROPERTY = "drools.memory.check.event.count.threshold";
     private static final int DEFAULT_MEMORY_CHECK_EVENT_COUNT_THRESHOLD = 64;
+
+    private static final String MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD_PROPERTY = "drools.memory.exit.above.threshold";
+    private static final boolean MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD;
+
+
+    // check memory per configured number of events are consumed
     private static final int MEMORY_CHECK_EVENT_COUNT_MASK;
     private static int COUNTER = 0;
+
+    private static final long MAX_AVAILABLE_MEMORY = Runtime.getRuntime().maxMemory();
 
     static {
         String memoryThresholdEnvValue = System.getenv("DROOLS_MEMORY_THRESHOLD");
@@ -33,8 +40,17 @@ public class MemoryMonitorUtil {
         }
         
         int eventCountThreshold = Integer.getInteger(MEMORY_CHECK_EVENT_COUNT_THRESHOLD_PROPERTY, DEFAULT_MEMORY_CHECK_EVENT_COUNT_THRESHOLD); // number of events
-        MEMORY_CHECK_EVENT_COUNT_MASK = roundToPowerOfTwo(eventCountThreshold) - 1;
-        LOG.info("Memory check event count threshold set to {}", MEMORY_CHECK_EVENT_COUNT_MASK);
+        int roundedEventCountThreshold = roundToPowerOfTwo(eventCountThreshold);
+        MEMORY_CHECK_EVENT_COUNT_MASK = roundedEventCountThreshold - 1;
+        LOG.info("Memory check event count threshold set to {}", roundedEventCountThreshold);
+
+        String exitAboveThresholdEnvValue = System.getenv("DROOLS_EXIT_ABOVE_MEMORY_THRESHOLD");
+        if (exitAboveThresholdEnvValue != null && !exitAboveThresholdEnvValue.isEmpty()) {
+            // Environment variable takes precedence over system property
+            System.setProperty(MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD_PROPERTY, exitAboveThresholdEnvValue);
+        }
+        MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD = Boolean.getBoolean(MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD_PROPERTY);
+        LOG.info("Exit above memory occupation threshold set to {}%", MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD);
     }
 
     private MemoryMonitorUtil() {
@@ -53,14 +69,28 @@ public class MemoryMonitorUtil {
             memoryOccupationPercentage = getMemoryOccupationPercentage();
             if (memoryOccupationPercentage > MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD) {
                 LOG.error("Memory occupation is above the threshold: {}% > {}%. MaxMemory = {}, UsedMemory = {}",
-                        memoryOccupationPercentage, MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD, Runtime.getRuntime().maxMemory(), Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
-                throw new MemoryThresholdReachedException(MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD, memoryOccupationPercentage);
+                        memoryOccupationPercentage, MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD, Runtime.getRuntime().maxMemory(), getUsedMemory());
+                try {
+                    throw new MemoryThresholdReachedException(MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD, memoryOccupationPercentage);
+                } finally {
+                    if (MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD) {
+                        System.exit(1);
+                    }
+                }
             }
         }
     }
 
     private static int getMemoryOccupationPercentage() {
-        return (int) ((100 * (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())) / Runtime.getRuntime().maxMemory());
+        return (int) ((100 * getUsedMemory()) / MAX_AVAILABLE_MEMORY);
+    }
+
+    public static long getUsedMemory() {
+        return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+    }
+
+    public static long getMaxAvailableMemory() {
+        return MAX_AVAILABLE_MEMORY;
     }
 
     private static int roundToPowerOfTwo(final int value) {

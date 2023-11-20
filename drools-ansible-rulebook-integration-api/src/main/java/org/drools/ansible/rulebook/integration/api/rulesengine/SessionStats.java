@@ -103,6 +103,8 @@ public class SessionStats {
                 ", ruleSetName='" + ruleSetName + '\'' +
                 ", lastRuleFired='" + lastRuleFired + '\'' +
                 ", lastRuleFiredAt='" + lastRuleFiredAt + '\'' +
+                ", usedMemory='" + getUsedMemory() + '\'' +
+                ", maxAvailableMemory='" + getMaxAvailableMemory() + '\'' +
                 '}';
     }
 
@@ -176,6 +178,14 @@ public class SessionStats {
 
     public int getClockAdvanceCount() {
         return clockAdvanceCount;
+    }
+
+    public long getUsedMemory() {
+        return MemoryMonitorUtil.getUsedMemory();
+    }
+
+    public long getMaxAvailableMemory() {
+        return MemoryMonitorUtil.getMaxAvailableMemory();
     }
 
     public static SessionStats aggregate(SessionStats stats1, SessionStats stats2) {
