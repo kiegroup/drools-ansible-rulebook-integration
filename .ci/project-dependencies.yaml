@@ -1,6 +1,6 @@
 version: "2.1"
 dependencies:
-  - project: kiegroup/drools
+  - project: apache/incubator-kie-drools
     mapping:
       dependant:
         default:
@@ -10,7 +10,7 @@ dependencies:
 
   - project: kiegroup/drools-ansible-rulebook-integration
     dependencies:
-      - project: kiegroup/drools
+      - project: apache/incubator-kie-drools
     mapping:
       dependencies:
         default:
