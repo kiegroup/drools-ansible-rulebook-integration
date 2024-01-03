@@ -2,7 +2,7 @@ package org.drools.ansible.rulebook.integration.protoextractor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
-import org.drools.model.Prototype;
+import org.drools.model.prototype.Prototype;
 import org.junit.Test;
 
 import java.nio.file.Files;

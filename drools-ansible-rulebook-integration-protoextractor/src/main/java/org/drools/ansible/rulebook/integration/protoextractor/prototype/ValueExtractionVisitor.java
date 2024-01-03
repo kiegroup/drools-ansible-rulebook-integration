@@ -1,15 +1,15 @@
 package org.drools.ansible.rulebook.integration.protoextractor.prototype;
 
-import java.util.List;
-import java.util.Map;
-
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ASTNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.DefaultedVisitor;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.IdentifierNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.IndexAccessorNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.SquaredAccessorNode;
-import org.drools.model.Prototype;
+import org.drools.model.prototype.Prototype;
+
+import java.util.List;
+import java.util.Map;
 
 public class ValueExtractionVisitor extends DefaultedVisitor<Object> {
     private final Object original;

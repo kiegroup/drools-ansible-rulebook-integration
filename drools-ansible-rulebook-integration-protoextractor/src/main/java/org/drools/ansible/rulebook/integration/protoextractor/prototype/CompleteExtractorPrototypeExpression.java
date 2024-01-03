@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
-import org.drools.model.PrototypeExpression.EvaluableExpression;
-import org.drools.model.PrototypeFact;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.PrototypeExpression.EvaluableExpression;
+import org.drools.model.prototype.PrototypeFact;
+import org.drools.model.prototype.PrototypeVariable;
 
 public class CompleteExtractorPrototypeExpression extends ExtractorPrototypeExpression implements EvaluableExpression {
     private final PrototypeVariable protoVar;

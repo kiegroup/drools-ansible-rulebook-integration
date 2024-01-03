@@ -1,8 +1,5 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,12 +7,15 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
-import org.drools.model.PrototypeFact;
+import org.drools.model.prototype.PrototypeFact;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
+import java.util.List;
+import java.util.Map;
+
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
-import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 import static org.junit.Assert.assertEquals;
 
 public class LogicalOperatorsTest {

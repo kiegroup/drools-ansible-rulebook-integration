@@ -1,10 +1,10 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
+import org.drools.model.prototype.Prototype;
+import org.drools.model.prototype.PrototypeDSL;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.drools.model.Prototype;
-import org.drools.model.PrototypeDSL;
 
 public class PrototypeFactory {
 

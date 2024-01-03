@@ -7,19 +7,19 @@ import org.drools.ansible.rulebook.integration.protoextractor.prototype.Extracto
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.base.facttemplates.Fact;
 import org.drools.model.Index;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeFact;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
+import org.drools.model.prototype.PrototypeFact;
+import org.drools.model.prototype.PrototypeVariable;
 
 import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
-import static org.drools.model.PrototypeDSL.protoPattern;
-import static org.drools.model.PrototypeDSL.variable;
-import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
+import static org.drools.model.prototype.PrototypeDSL.protoPattern;
+import static org.drools.model.prototype.PrototypeDSL.variable;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
+import static org.drools.model.prototype.PrototypeExpression.prototypeField;
 
 public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
 

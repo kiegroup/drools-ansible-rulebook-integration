@@ -1,17 +1,17 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.drools.model.Index;
-import org.drools.model.PatternDSL;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeVariable;
-import org.drools.model.view.CombinedExprViewItem;
-import org.drools.model.view.ViewItem;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
+import org.drools.model.Index;
+import org.drools.model.PatternDSL;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
+import org.drools.model.prototype.PrototypeVariable;
+import org.drools.model.view.CombinedExprViewItem;
+import org.drools.model.view.ViewItem;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
 

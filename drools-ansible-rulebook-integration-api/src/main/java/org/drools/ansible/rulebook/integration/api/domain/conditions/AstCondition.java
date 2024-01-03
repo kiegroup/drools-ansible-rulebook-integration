@@ -7,8 +7,8 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.Index;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 

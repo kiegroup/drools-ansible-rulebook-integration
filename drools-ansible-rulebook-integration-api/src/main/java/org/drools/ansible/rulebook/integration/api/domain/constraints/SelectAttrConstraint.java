@@ -4,7 +4,7 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.ConstraintOperator;
-import org.drools.model.Prototype;
+import org.drools.model.prototype.Prototype;
 
 import java.util.Collection;
 import java.util.Map;
@@ -16,7 +16,7 @@ import static org.drools.ansible.rulebook.integration.api.domain.conditions.Cond
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.mapToStringValue;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toJsonValue;
 import static org.drools.ansible.rulebook.integration.api.domain.constraints.Operators.toOperatorPredicate;
-import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 
 public enum SelectAttrConstraint implements RulebookOperator, ConditionFactory {
 

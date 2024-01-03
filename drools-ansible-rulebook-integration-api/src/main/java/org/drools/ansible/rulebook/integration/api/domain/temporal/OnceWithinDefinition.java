@@ -5,7 +5,7 @@ import org.drools.base.facttemplates.Event;
 import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.DroolsEntryPoint;
-import org.drools.model.PrototypeDSL;
+import org.drools.model.prototype.PrototypeDSL;
 import org.drools.model.Rule;
 import org.drools.model.Variable;
 import org.drools.model.view.CombinedExprViewItem;
@@ -25,7 +25,7 @@ import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelU
 import static org.drools.model.DSL.not;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
+import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
  * Coalesce events within a time window: if the same event is sent multiple times only one of them in a given time window

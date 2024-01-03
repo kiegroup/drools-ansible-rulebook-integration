@@ -7,9 +7,9 @@ import org.drools.base.facttemplates.Event;
 import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.Index;
-import org.drools.model.Prototype;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.Prototype;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
@@ -37,9 +37,9 @@ import static org.drools.model.DSL.declarationOf;
 import static org.drools.model.DSL.not;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
-import static org.drools.model.PrototypeDSL.protoPattern;
-import static org.drools.model.PrototypeDSL.variable;
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
+import static org.drools.model.prototype.PrototypeDSL.protoPattern;
+import static org.drools.model.prototype.PrototypeDSL.variable;
+import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
  * Collects and groups events within a time window. The rule fires only once at the end of the time window with a list of

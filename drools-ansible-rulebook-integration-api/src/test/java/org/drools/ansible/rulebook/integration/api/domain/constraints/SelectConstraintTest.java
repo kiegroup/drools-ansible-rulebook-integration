@@ -16,16 +16,16 @@
 
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpression;
+import org.drools.model.prototype.PrototypeExpression;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.BiPredicate;
-
-import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
-import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpression;
-import org.drools.model.PrototypeExpression;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createEventField;

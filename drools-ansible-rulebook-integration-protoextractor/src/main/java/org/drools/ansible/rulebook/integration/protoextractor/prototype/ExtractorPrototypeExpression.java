@@ -1,19 +1,19 @@
 package org.drools.ansible.rulebook.integration.protoextractor.prototype;
 
+import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
+import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
+import org.drools.base.facttemplates.Fact;
+import org.drools.model.functions.Function1;
+import org.drools.model.prototype.Prototype;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
+import org.drools.model.prototype.PrototypeFact;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
-import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
-import org.drools.base.facttemplates.Fact;
-import org.drools.model.Prototype;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeFact;
-import org.drools.model.functions.Function1;
 
 public class ExtractorPrototypeExpression implements PrototypeExpression {
     /**

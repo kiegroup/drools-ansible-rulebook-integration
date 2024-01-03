@@ -16,22 +16,22 @@
 
 package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
 import org.drools.base.facttemplates.Event;
 import org.drools.model.Constraint;
 import org.drools.model.PatternDSL;
-import org.drools.model.PrototypeDSL;
 import org.drools.model.constraints.OrConstraints;
 import org.drools.model.constraints.SingleConstraint1;
 import org.drools.model.functions.Predicate1;
+import org.drools.model.prototype.PrototypeDSL;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createSingleMap;
 

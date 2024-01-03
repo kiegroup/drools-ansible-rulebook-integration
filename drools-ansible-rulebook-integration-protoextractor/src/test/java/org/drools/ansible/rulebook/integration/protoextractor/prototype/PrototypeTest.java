@@ -1,21 +1,20 @@
 package org.drools.ansible.rulebook.integration.protoextractor.prototype;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
+import org.drools.base.facttemplates.Fact;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeFact;
+import org.drools.model.prototype.facttemplate.FactFactory;
+import org.junit.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
-import org.drools.base.facttemplates.Fact;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeFact;
-import org.drools.modelcompiler.facttemplate.FactFactory;
-import org.junit.Test;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PrototypeTest {
 

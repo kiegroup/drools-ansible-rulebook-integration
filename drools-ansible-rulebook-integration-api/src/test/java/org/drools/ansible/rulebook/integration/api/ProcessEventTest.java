@@ -1,12 +1,12 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import org.drools.model.prototype.PrototypeFact;
+import org.junit.Test;
+import org.kie.api.runtime.rule.Match;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.drools.model.PrototypeFact;
-import org.junit.Test;
-import org.kie.api.runtime.rule.Match;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -1,8 +1,7 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
 import org.drools.model.ConstraintOperator;
-import org.drools.model.Index;
-import org.drools.model.PrototypeExpression;
+import org.drools.model.prototype.PrototypeExpression;
 
 public class BetaExpressionCondition extends ExpressionCondition {
 

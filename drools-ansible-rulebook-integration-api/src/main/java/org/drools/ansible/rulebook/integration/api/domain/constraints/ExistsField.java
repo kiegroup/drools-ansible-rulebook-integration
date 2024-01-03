@@ -2,13 +2,13 @@ package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
-import org.drools.model.Prototype;
+import org.drools.model.prototype.Prototype;
 
 import java.util.Map;
 import java.util.function.BiPredicate;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
-import static org.drools.model.PrototypeExpression.thisPrototype;
+import static org.drools.model.prototype.PrototypeExpression.thisPrototype;
 
 public enum ExistsField implements RulebookOperator, ConditionFactory {
 

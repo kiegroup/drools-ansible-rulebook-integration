@@ -8,8 +8,8 @@ import org.drools.base.facttemplates.Event;
 import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.Index;
-import org.drools.model.Prototype;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.Prototype;
+import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
@@ -33,11 +33,11 @@ import static org.drools.model.DSL.not;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.pattern;
 import static org.drools.model.PatternDSL.rule;
-import static org.drools.model.PrototypeDSL.protoPattern;
-import static org.drools.model.PrototypeDSL.variable;
-import static org.drools.model.PrototypeExpression.prototypeField;
-import static org.drools.model.PrototypeExpression.thisPrototype;
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
+import static org.drools.model.prototype.PrototypeDSL.protoPattern;
+import static org.drools.model.prototype.PrototypeDSL.variable;
+import static org.drools.model.prototype.PrototypeExpression.prototypeField;
+import static org.drools.model.prototype.PrototypeExpression.thisPrototype;
+import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
  * Only a subset of the events is matched and a timeout expires before all the conditions are satisfied

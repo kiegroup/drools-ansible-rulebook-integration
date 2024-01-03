@@ -18,8 +18,8 @@ import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeConstraint;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
 import org.drools.model.Drools;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
@@ -29,8 +29,8 @@ import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFa
 import static org.drools.model.DSL.execute;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
-import static org.drools.model.PrototypeDSL.protoPattern;
-import static org.drools.model.PrototypeDSL.variable;
+import static org.drools.model.prototype.PrototypeDSL.protoPattern;
+import static org.drools.model.prototype.PrototypeDSL.variable;
 
 public class RuleGenerationContext {
 

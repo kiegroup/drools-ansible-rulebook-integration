@@ -2,8 +2,8 @@ package org.drools.ansible.rulebook.integration.protoextractor.prototype;
 
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.PrototypeExpression;
+import org.drools.model.prototype.PrototypeVariable;
 
 public class ExtractorPrototypeExpressionUtils {
     private ExtractorPrototypeExpressionUtils() {

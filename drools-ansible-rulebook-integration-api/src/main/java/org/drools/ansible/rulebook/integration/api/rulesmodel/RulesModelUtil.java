@@ -8,8 +8,8 @@ import java.util.Map;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedFact;
+import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedEvent;
+import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedFact;
 
 public class RulesModelUtil {
     public static final String META_FIELD = "meta";
