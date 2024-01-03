@@ -1,17 +1,5 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.drools.ansible.rulebook.integration.api.RulesExecutorContainer;
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
@@ -23,6 +11,18 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
@@ -161,7 +161,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
 
     @Override
     public SessionStats getSessionStats() {
-        return rulesExecutorSession.getSessionStats();
+        return rulesExecutorSession.getSessionStats(false);
     }
 
     protected List<Match> process(Map<String, Object> factMap, boolean processEventInsertion) {

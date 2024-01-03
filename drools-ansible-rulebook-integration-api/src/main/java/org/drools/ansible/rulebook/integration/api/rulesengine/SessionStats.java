@@ -1,11 +1,13 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.drools.base.facttemplates.Fact;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SessionStats {
     private final String start;
     private final String end;
@@ -34,9 +36,9 @@ public class SessionStats {
     private final String lastRuleFired;
     private final String lastRuleFiredAt;
 
-    public SessionStats(SessionStatsCollector stats, RulesExecutorSession session) {
+    public SessionStats(SessionStatsCollector stats, RulesExecutorSession session, boolean disposing) {
         this.start = stats.getStart().toString();
-        this.end = Instant.now().toString();
+        this.end = disposing ? Instant.now().toString() : null;
         this.lastClockTime = Instant.ofEpochMilli(session.getPseudoClock().getCurrentTime()).toString();
         this.clockAdvanceCount = stats.getClockAdvanceCount();
         this.numberOfRules = session.rulesCount();
@@ -86,7 +88,7 @@ public class SessionStats {
     public String toString() {
         return "SessionStats{" +
                 "start='" + start + '\'' +
-                ", end='" + end + '\'' +
+                (end != null ? ", end='" + end + '\'' : "") +
                 ", lastClockTime='" + lastClockTime + '\'' +
                 ", clockAdvanceCount=" + clockAdvanceCount +
                 ", numberOfRules=" + numberOfRules +
@@ -202,7 +204,9 @@ public class SessionStats {
 
         return new SessionStats(
                 Instant.parse(stats1.getStart()).compareTo(Instant.parse(stats2.getStart())) < 0 ? stats1.getStart() : stats2.getStart(),
-                Instant.parse(stats1.getEnd()).compareTo(Instant.parse(stats2.getEnd())) > 0 ? stats1.getEnd() : stats2.getEnd(),
+                stats1.getEnd() == null || stats2.getEnd() == null ? // if one of the sessions is still alive the aggregate is also alive
+                        null :
+                        ( Instant.parse(stats1.getEnd()).compareTo(Instant.parse(stats2.getEnd())) > 0 ? stats1.getEnd() : stats2.getEnd() ),
                 Instant.parse(stats1.getLastClockTime()).compareTo(Instant.parse(stats2.getLastClockTime())) > 0 ? stats1.getLastClockTime() : stats2.getLastClockTime(),
                 stats1.clockAdvanceCount + stats2.clockAdvanceCount,
                 stats1.numberOfRules + stats2.numberOfRules,
