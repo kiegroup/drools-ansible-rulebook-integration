@@ -1,13 +1,13 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
-import java.time.Instant;
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public class SessionStatsCollector {
 
@@ -47,8 +47,8 @@ public class SessionStatsCollector {
         this.id = id;
     }
 
-    public SessionStats generateStats(RulesExecutorSession session) {
-        return new SessionStats(this, session);
+    public SessionStats generateStats(RulesExecutorSession session, boolean disposing) {
+        return new SessionStats(this, session, disposing);
     }
 
     public Instant getStart() {

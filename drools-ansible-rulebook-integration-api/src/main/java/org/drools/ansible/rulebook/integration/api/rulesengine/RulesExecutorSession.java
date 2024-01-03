@@ -118,13 +118,13 @@ public class RulesExecutorSession {
     }
 
     SessionStats dispose() {
-        SessionStats stats = getSessionStats();
+        SessionStats stats = getSessionStats(true);
         kieSession.dispose();
         return stats;
     }
 
-    SessionStats getSessionStats() {
-        return sessionStatsCollector.generateStats(this);
+    SessionStats getSessionStats(boolean disposing) {
+        return sessionStatsCollector.generateStats(this, disposing);
     }
 
     public void registerMatch(Match match) {

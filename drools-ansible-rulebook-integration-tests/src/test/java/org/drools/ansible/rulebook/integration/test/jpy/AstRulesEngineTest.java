@@ -32,7 +32,11 @@ public class AstRulesEngineTest {
             assertEquals(4, statsMap.get("numberOfRules"));
             assertEquals(0, statsMap.get("numberOfDisabledRules"));
             assertEquals(1, statsMap.get("rulesTriggered"));
-            engine.dispose(sessionId);
+            assertFalse(statsMap.keySet().contains("end"));
+
+            String disposeStats = engine.dispose(sessionId);
+            Map<String, Object> disposeStatsMap = JsonMapper.readValueAsMapOfStringAndObject(disposeStats);
+            assertTrue(disposeStatsMap.keySet().contains("end"));
         }
     }
 

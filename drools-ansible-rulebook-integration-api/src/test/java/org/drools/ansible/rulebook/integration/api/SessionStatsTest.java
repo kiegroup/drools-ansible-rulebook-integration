@@ -7,6 +7,8 @@ import org.kie.api.runtime.rule.Match;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class SessionStatsTest {
@@ -86,7 +88,9 @@ public class SessionStatsTest {
         assertTrue( stats.getPermanentStorageSize() > 10 );
         assertTrue( stats.getPermanentStorageSize() < 1000 );
         assertEquals( "R1", stats.getLastRuleFired() );
+        assertNull( stats.getEnd() );
 
-        rulesExecutor.dispose();
+        SessionStats disposeStats = rulesExecutor.dispose();
+        assertNotNull( disposeStats.getEnd() );
     }
 }
