@@ -1,16 +1,17 @@
 package org.drools.ansible.rulebook.integration.api.io;
 
+import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.StandardSocketOptions;
 import java.nio.charset.StandardCharsets;
-
-import org.drools.ansible.rulebook.integration.api.rulesengine.AsyncExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 
@@ -25,7 +26,8 @@ public class RuleExecutorChannel {
 
     public RuleExecutorChannel() {
         try {
-            socketChannel = new ServerSocket(0); // 0 means kernel will choose a free port
+            InetAddress bindAddr =  InetAddress.getByName("127.0.0.1");
+            socketChannel = new ServerSocket(0, 50, bindAddr); // 0 means kernel will choose a free port
             socketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
