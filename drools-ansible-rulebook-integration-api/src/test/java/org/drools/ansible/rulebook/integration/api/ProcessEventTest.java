@@ -1,7 +1,7 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import org.drools.model.prototype.PrototypeFact;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.Arrays;
@@ -120,7 +120,7 @@ public class ProcessEventTest {
 
         List<String> hosts = matchedRules.stream()
                 .flatMap( m -> m.getObjects().stream() )
-                .map( PrototypeFact.class::cast)
+                .map( PrototypeFactInstance.class::cast)
                 .filter( p -> p.has("host") )
                 .map( p -> p.get("host") )
                 .map( String.class::cast)

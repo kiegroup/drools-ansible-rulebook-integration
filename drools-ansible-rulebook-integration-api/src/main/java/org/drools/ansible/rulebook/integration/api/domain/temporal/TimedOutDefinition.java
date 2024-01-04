@@ -4,16 +4,16 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
-import org.drools.base.facttemplates.Event;
 import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.Index;
-import org.drools.model.prototype.Prototype;
-import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
+import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.view.ViewItem;
+import org.kie.api.prototype.PrototypeEvent;
+import org.kie.api.prototype.PrototypeEventInstance;
 import org.kie.api.runtime.rule.Match;
 import org.kie.api.runtime.rule.RuleContext;
 
@@ -24,7 +24,7 @@ import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAm
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeEvent;
 import static org.drools.model.DSL.accFunction;
 import static org.drools.model.DSL.accumulate;
 import static org.drools.model.DSL.after;
@@ -37,7 +37,6 @@ import static org.drools.model.prototype.PrototypeDSL.protoPattern;
 import static org.drools.model.prototype.PrototypeDSL.variable;
 import static org.drools.model.prototype.PrototypeExpression.prototypeField;
 import static org.drools.model.prototype.PrototypeExpression.thisPrototype;
-import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
  * Only a subset of the events is matched and a timeout expires before all the conditions are satisfied
@@ -160,11 +159,11 @@ public class TimedOutDefinition implements TimeConstraint {
 
     private final List<ViewItem> patterns = new ArrayList<>();
 
-    private final Prototype controlPrototype = getPrototype(SYNTHETIC_PROTOTYPE_NAME);
+    private final PrototypeEvent controlPrototype = getPrototypeEvent(SYNTHETIC_PROTOTYPE_NAME);
     private final PrototypeVariable controlVar1 = variable( controlPrototype, "c1" );
     private final PrototypeVariable controlVar2 = variable( controlPrototype, "c2" );
 
-    private final PrototypeVariable eventVar = variable(getPrototype(PrototypeFactory.DEFAULT_PROTOTYPE_NAME), "e");
+    private final PrototypeVariable eventVar = variable(getPrototypeEvent(PrototypeFactory.DEFAULT_PROTOTYPE_NAME), "e");
 
     static {
         RegisterOnlyAgendaFilter.registerMatchTransformer(KEYWORD, TimedOutDefinition::transformTimedOutMatch);
@@ -240,7 +239,7 @@ public class TimedOutDefinition implements TimeConstraint {
                             not( protoPattern(controlVar1)
                                     .expr( "rulename", Index.ConstraintType.EQUAL, name ) ),
                             on(patterns.get(i).getFirstVariable()).execute((drools, t1) -> {
-                                Event controlEvent = createMapBasedEvent( controlPrototype )
+                                PrototypeEventInstance controlEvent = controlPrototype.newInstance()
                                         .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
                                 controlEvent.set( "rulename", name );
                                 controlEvent.set( "event", t1 );
@@ -257,7 +256,7 @@ public class TimedOutDefinition implements TimeConstraint {
                         not( protoPattern(controlVar1).expr( "rulename", Index.ConstraintType.EQUAL, startTag ) ),
                         protoPattern(controlVar2).expr( p -> ((String)p.get("rulename")).startsWith(rulePrefix) ),
                         on(controlVar2).execute((drools, firstEvent) -> {
-                            Event controlEvent = createMapBasedEvent( controlPrototype )
+                            PrototypeEventInstance controlEvent = controlPrototype.newInstance()
                                     .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
                             controlEvent.set( "rulename", startTag );
                             controlEvent.set( "event", firstEvent.get("event") );
@@ -275,7 +274,7 @@ public class TimedOutDefinition implements TimeConstraint {
                                 accFunction(org.drools.core.base.accumulators.CountAccumulateFunction::new).as(resultCount)),
                         pattern(resultCount).expr(count -> count == patterns.size()),
                         on(resultCount).execute((drools, count) -> {
-                            Event controlEvent = createMapBasedEvent( controlPrototype )
+                            PrototypeEventInstance controlEvent = controlPrototype.newInstance()
                                     .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
                             controlEvent.set( "rulename", endTag );
                             drools.insert(controlEvent);

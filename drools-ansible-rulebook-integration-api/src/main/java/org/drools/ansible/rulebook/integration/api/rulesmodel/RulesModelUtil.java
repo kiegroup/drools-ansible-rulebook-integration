@@ -7,9 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
-import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedEvent;
-import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedFact;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeEvent;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeFact;
 
 public class RulesModelUtil {
     public static final String META_FIELD = "meta";
@@ -18,7 +17,8 @@ public class RulesModelUtil {
     private RulesModelUtil() { }
 
     public static Fact mapToFact(Map<String, Object> factMap, boolean event) {
-        Fact fact = event ? createMapBasedEvent( getPrototype(DEFAULT_PROTOTYPE_NAME), factMap ) : createMapBasedFact( getPrototype(DEFAULT_PROTOTYPE_NAME), factMap );
+        Fact fact = event ? (Fact) getPrototypeEvent(DEFAULT_PROTOTYPE_NAME).newInstance() : (Fact) getPrototypeFact(DEFAULT_PROTOTYPE_NAME).newInstance();
+        factMap.forEach(fact::set);
         return fact;
     }
 

@@ -154,7 +154,7 @@ public class ToPatternTestBase {
 
     protected Constraint getRootConstraint(PatternDSL.PatternDefImpl pattern) {
         PatternDSL.CombinedPatternExprItem combinedItem = (PatternDSL.CombinedPatternExprItem) pattern.getItems().get(0);
-        return combinedItem.asConstraint((PatternDSL.PatternDefImpl) PrototypeDSL.protoPattern(PrototypeDSL.variable(PrototypeDSL.prototype("Fake"))));
+        return combinedItem.asConstraint((PatternDSL.PatternDefImpl) PrototypeDSL.protoPattern(PrototypeDSL.variable(PrototypeDSL.prototypeFact("Fake"))));
     }
 
     protected Predicate1.Impl extractFirstPredicate(OrConstraints constraint) {

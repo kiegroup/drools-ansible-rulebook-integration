@@ -3,17 +3,17 @@ package org.drools.ansible.rulebook.integration.api.domain.temporal;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
-import org.drools.base.facttemplates.Event;
 import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.Index;
-import org.drools.model.prototype.Prototype;
-import org.drools.model.prototype.PrototypeDSL;
-import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.view.ViewItem;
+import org.kie.api.prototype.PrototypeEvent;
+import org.kie.api.prototype.PrototypeEventInstance;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAm
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeEvent;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.writeMetaDataOnEvent;
 import static org.drools.model.DSL.accFunction;
 import static org.drools.model.DSL.accumulate;
@@ -39,7 +39,6 @@ import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
 import static org.drools.model.prototype.PrototypeDSL.protoPattern;
 import static org.drools.model.prototype.PrototypeDSL.variable;
-import static org.drools.model.prototype.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
  * Collects and groups events within a time window. The rule fires only once at the end of the time window with a list of
@@ -110,7 +109,7 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
 
     public static final String KEYWORD = "once_after";
 
-    private final Prototype controlPrototype = getPrototype(SYNTHETIC_PROTOTYPE_NAME);
+    private final PrototypeEvent controlPrototype = getPrototypeEvent(SYNTHETIC_PROTOTYPE_NAME);
     private final PrototypeVariable controlVar1 = variable( controlPrototype, "c1" );
     private final PrototypeVariable controlVar2 = variable( controlPrototype, "c2" );
     private final Variable<List> resultsVar = declarationOf( List.class, "results" );
@@ -193,7 +192,7 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
                                 guardedPattern,
                                 not( createControlPattern() ),
                                 on(getPatternVariable()).execute((drools, event) -> {
-                                    Event controlEvent = createMapBasedEvent( controlPrototype );
+                                    PrototypeEventInstance controlEvent = controlPrototype.newInstance();
                                     for (GroupByAttribute unique : groupByAttributes) {
                                         controlEvent.set(unique.getKey(), unique.evalExtractorOnFact(event));
                                     }
@@ -213,12 +212,12 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
                                 protoPattern(controlVar1).expr( "drools_rule_name", Index.ConstraintType.EQUAL, ruleName ),
                                 not( protoPattern(controlVar2).expr( "end_once_after", Index.ConstraintType.EQUAL, ruleName ) ),
                                 on(controlVar1).execute((drools, c1) -> {
-                                    Event startControlEvent = createMapBasedEvent( controlPrototype )
+                                    PrototypeEventInstance startControlEvent = controlPrototype.newInstance()
                                             .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
                                     startControlEvent.set( "start_once_after", ruleName );
                                     drools.insert(startControlEvent);
 
-                                    Event endControlEvent = createMapBasedEvent( controlPrototype );
+                                    PrototypeEventInstance endControlEvent = controlPrototype.newInstance();
                                     endControlEvent.set( "end_once_after", ruleName );
                                     drools.insert(endControlEvent);
 

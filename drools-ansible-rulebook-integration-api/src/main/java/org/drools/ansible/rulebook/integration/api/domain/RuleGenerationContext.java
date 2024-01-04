@@ -1,5 +1,19 @@
 package org.drools.ansible.rulebook.integration.api.domain;
 
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
+import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
+import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
+import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
+import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeConstraint;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
+import org.drools.model.Drools;
+import org.drools.model.Rule;
+import org.drools.model.RuleItemBuilder;
+import org.drools.model.Variable;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeVariable;
+import org.drools.model.view.ViewItem;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,21 +25,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
-import org.drools.ansible.rulebook.integration.api.RuleConfigurationOptions;
-import org.drools.ansible.rulebook.integration.api.domain.actions.Action;
-import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
-import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeConstraint;
-import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
-import org.drools.model.Drools;
-import org.drools.model.prototype.PrototypeDSL;
-import org.drools.model.prototype.PrototypeVariable;
-import org.drools.model.Rule;
-import org.drools.model.RuleItemBuilder;
-import org.drools.model.Variable;
-import org.drools.model.view.ViewItem;
-
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeEvent;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeFact;
 import static org.drools.model.DSL.execute;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
@@ -72,8 +73,8 @@ public class RuleGenerationContext {
         this.options.addOptions(options);
     }
 
-    public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name) {
-        return patterns.computeIfAbsent(binding, b -> protoPattern(variable(getPrototype(name), b)));
+    public PrototypeDSL.PrototypePatternDef getOrCreatePattern(String binding, String name, boolean event) {
+        return patterns.computeIfAbsent(binding, b -> protoPattern(variable(event ? getPrototypeEvent(name) : getPrototypeFact(name), b)));
     }
 
     public PrototypeVariable getPatternVariable(String binding) {

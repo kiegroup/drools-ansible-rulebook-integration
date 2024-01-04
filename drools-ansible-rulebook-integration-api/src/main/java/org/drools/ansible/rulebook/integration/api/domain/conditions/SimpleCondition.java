@@ -207,7 +207,7 @@ public class SimpleCondition implements Condition {
 
     private static ViewItem singleCondition2Pattern(RuleGenerationContext ruleContext, SimpleCondition condition) {
         ParsedCondition parsedCondition = condition.parse();
-        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), DEFAULT_PROTOTYPE_NAME);
+        var pattern = ruleContext.getOrCreatePattern(condition.getPatternBinding(ruleContext), DEFAULT_PROTOTYPE_NAME, ruleContext.getTimeConstraint().isPresent());
         if (condition.beta()) {
             pattern.expr(parsedCondition.getLeft(), parsedCondition.getOperator(), ruleContext.getPatternVariable(condition.otherBinding()), parsedCondition.getRight());
         } else {

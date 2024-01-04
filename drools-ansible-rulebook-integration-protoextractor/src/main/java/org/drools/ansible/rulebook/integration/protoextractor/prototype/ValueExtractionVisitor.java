@@ -6,7 +6,7 @@ import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.IdentifierNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.IndexAccessorNode;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.SquaredAccessorNode;
-import org.drools.model.prototype.Prototype;
+import org.kie.api.prototype.Prototype;
 
 import java.util.List;
 import java.util.Map;

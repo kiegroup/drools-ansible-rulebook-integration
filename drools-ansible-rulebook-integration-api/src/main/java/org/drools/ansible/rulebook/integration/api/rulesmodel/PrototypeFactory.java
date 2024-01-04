@@ -1,7 +1,8 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
-import org.drools.model.prototype.Prototype;
 import org.drools.model.prototype.PrototypeDSL;
+import org.kie.api.prototype.PrototypeEvent;
+import org.kie.api.prototype.PrototypeFact;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +14,14 @@ public class PrototypeFactory {
 
     private PrototypeFactory() { }
 
-    private static final Map<String, Prototype> prototypes = new HashMap<>();
+    private static final Map<String, PrototypeFact> prototypeFacts = new HashMap<>();
+    private static final Map<String, PrototypeEvent> prototypeEvents = new HashMap<>();
 
-    public static Prototype getPrototype(String name) {
-        return prototypes.computeIfAbsent(name, PrototypeDSL::prototype);
+    public static PrototypeFact getPrototypeFact(String name) {
+        return prototypeFacts.computeIfAbsent(name, PrototypeDSL::prototypeFact);
+    }
+
+    public static PrototypeEvent getPrototypeEvent(String name) {
+        return prototypeEvents.computeIfAbsent(name, PrototypeDSL::prototypeEvent);
     }
 }

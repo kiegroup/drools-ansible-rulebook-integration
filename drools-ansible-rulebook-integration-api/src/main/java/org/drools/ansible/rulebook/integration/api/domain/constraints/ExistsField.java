@@ -2,7 +2,7 @@ package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
-import org.drools.model.prototype.Prototype;
+import org.kie.api.prototype.Prototype;
 
 import java.util.Map;
 import java.util.function.BiPredicate;

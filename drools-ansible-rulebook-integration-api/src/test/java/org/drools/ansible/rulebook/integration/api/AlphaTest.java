@@ -12,10 +12,10 @@ import org.drools.core.reteoo.ObjectSink;
 import org.drools.core.reteoo.ObjectTypeNode;
 import org.drools.core.reteoo.Rete;
 import org.drools.kiesession.rulebase.InternalKnowledgeBase;
-import org.drools.model.prototype.Prototype;
-import org.drools.model.prototype.facttemplate.FactFactory;
+import org.drools.model.prototype.impl.FactFactory;
 import org.junit.Test;
 import org.kie.api.definition.rule.Rule;
+import org.kie.api.prototype.PrototypeFact;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
@@ -77,7 +77,7 @@ public class AlphaTest {
         boolean asserted = false;
         assertEquals("expecting only 1 pkg.", 1, rete.getRuleBase().getPackages().length);
         InternalKnowledgePackage ipkg = rete.getRuleBase().getPackages()[0];
-        Prototype default_proto = PrototypeFactory.getPrototype(PrototypeFactory.DEFAULT_PROTOTYPE_NAME);
+        PrototypeFact default_proto = PrototypeFactory.getPrototypeFact(PrototypeFactory.DEFAULT_PROTOTYPE_NAME);
         FactTemplate factTemplate = FactFactory.prototypeToFactTemplate(default_proto, ipkg);
         EntryPointNode epn = rete.getEntryPointNodes().values().iterator().next();
         ObjectTypeNode otn = epn.getObjectTypeNodes().get(new FactTemplateObjectType(factTemplate));

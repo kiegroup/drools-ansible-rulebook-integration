@@ -7,8 +7,8 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
-import org.drools.model.prototype.PrototypeFact;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
@@ -347,7 +347,7 @@ public class LogicalOperatorsTest {
 
         Match match = matchedRules.get(0);
         assertEquals( "r1", match.getRule().getName() );
-        assertEquals( 2, ((PrototypeFact)match.getDeclarationValue("m")).get("i") );
+        assertEquals( 2, ((PrototypeFactInstance)match.getDeclarationValue("m")).get("i") );
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":14 }" ).join();
         assertEquals( 1, matchedRules.size() );
