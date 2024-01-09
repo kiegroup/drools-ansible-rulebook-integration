@@ -4,7 +4,6 @@ import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpression;
-import org.drools.base.facttemplates.Fact;
 import org.drools.model.Index;
 import org.drools.model.prototype.PrototypeDSL;
 import org.drools.model.prototype.PrototypeExpression;
@@ -94,10 +93,6 @@ public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
         }
 
         public Object evalExtractorOnFact(PrototypeFactInstance fact) {
-            return evalExtractorOnFact((Fact) fact);
-        }
-
-        public Object evalExtractorOnFact(Fact fact) {
             return ExtractorUtils.getValueFrom(extractor, fact.asMap());
         }
 

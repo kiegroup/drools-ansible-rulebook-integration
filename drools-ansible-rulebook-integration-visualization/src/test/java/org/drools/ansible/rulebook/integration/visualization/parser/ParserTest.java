@@ -1,12 +1,9 @@
 package org.drools.ansible.rulebook.integration.visualization.parser;
 
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.drools.ansible.rulebook.integration.api.RuleFormat;
+import org.drools.ansible.rulebook.integration.api.RuleNotation;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.drools.base.facttemplates.FactTemplateObjectType;
+import org.drools.base.prototype.PrototypeObjectType;
 import org.drools.impact.analysis.graph.Graph;
 import org.drools.impact.analysis.graph.Link;
 import org.drools.impact.analysis.graph.ModelToGraphConverter;
@@ -22,8 +19,10 @@ import org.drools.impact.analysis.model.right.DeleteSpecificFactAction;
 import org.drools.impact.analysis.model.right.InsertAction;
 import org.junit.Test;
 
-import org.drools.ansible.rulebook.integration.api.RuleNotation;
-import org.drools.ansible.rulebook.integration.api.RuleFormat;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -175,7 +174,7 @@ public class ParserTest {
         assertThat(rules).hasSize(4);
         Rule rule1 = rules.get(0);
         Pattern pattern1 = rule1.getLhs().getPatterns().get(0);
-        assertThat(pattern1.getPatternClass()).isEqualTo(FactTemplateObjectType.class);
+        assertThat(pattern1.getPatternClass()).isEqualTo(PrototypeObjectType.class);
         Constraint constraint1 = pattern1.getConstraints().iterator().next();
         assertThat(constraint1.getProperty()).isEqualTo("i");
         assertThat(constraint1.getValue()).isEqualTo(1);
@@ -187,7 +186,7 @@ public class ParserTest {
 
         Rule rule2 = rules.get(1);
         Pattern pattern2 = rule2.getLhs().getPatterns().get(0);
-        assertThat(pattern2.getPatternClass()).isEqualTo(FactTemplateObjectType.class);
+        assertThat(pattern2.getPatternClass()).isEqualTo(PrototypeObjectType.class);
         Constraint constraint2 = pattern2.getConstraints().iterator().next();
         assertThat(constraint2.getProperty()).isEqualTo("msg");
         assertThat(constraint2.getValue()).isEqualTo("hello world");
@@ -199,7 +198,7 @@ public class ParserTest {
 
         Rule rule3 = rules.get(2);
         Pattern pattern3 = rule3.getLhs().getPatterns().get(0);
-        assertThat(pattern3.getPatternClass()).isEqualTo(FactTemplateObjectType.class);
+        assertThat(pattern3.getPatternClass()).isEqualTo(PrototypeObjectType.class);
         Constraint constraint3 = pattern3.getConstraints().iterator().next();
         assertThat(constraint3.getProperty()).isEqualTo("status");
         assertThat(constraint3.getValue()).isEqualTo("created");
@@ -207,7 +206,7 @@ public class ParserTest {
 
         Rule rule4 = rules.get(3);
         Pattern pattern4 = rule4.getLhs().getPatterns().get(0);
-        assertThat(pattern4.getPatternClass()).isEqualTo(FactTemplateObjectType.class);
+        assertThat(pattern4.getPatternClass()).isEqualTo(PrototypeObjectType.class);
         Constraint constraint4 = pattern4.getConstraints().iterator().next();
         assertThat(constraint4.getProperty()).isEqualTo("i");
         assertThat(constraint4.getValue()).isEqualTo(2);

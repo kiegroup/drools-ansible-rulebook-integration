@@ -4,7 +4,6 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
-import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.Index;
 import org.drools.model.Rule;
@@ -14,6 +13,7 @@ import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.view.ViewItem;
 import org.kie.api.prototype.PrototypeEvent;
 import org.kie.api.prototype.PrototypeEventInstance;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 import org.kie.api.runtime.rule.RuleContext;
 
@@ -170,9 +170,9 @@ public class TimedOutDefinition implements TimeConstraint {
     }
 
     private static Match transformTimedOutMatch(Match match) {
-        Fact fact = (Fact)match.getObjects().get(0);
+        PrototypeFactInstance fact = (PrototypeFactInstance)match.getObjects().get(0);
         Object startEvent = fact.get("event");
-        fact.set("event", null);
+        fact.put("event", null);
         return new EmptyMatchDecorator(match).withBoundObject(fact.get("binding").toString(), startEvent);
     }
 
@@ -241,9 +241,9 @@ public class TimedOutDefinition implements TimeConstraint {
                             on(patterns.get(i).getFirstVariable()).execute((drools, t1) -> {
                                 PrototypeEventInstance controlEvent = controlPrototype.newInstance()
                                         .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-                                controlEvent.set( "rulename", name );
-                                controlEvent.set( "event", t1 );
-                                controlEvent.set( "binding", ((RuleContext) drools).getMatch().getDeclarationIds().get(0) );
+                                controlEvent.put( "rulename", name );
+                                controlEvent.put( "event", t1 );
+                                controlEvent.put( "binding", ((RuleContext) drools).getMatch().getDeclarationIds().get(0) );
                                 ((Drools) drools).insert(controlEvent);
                             })
                     )
@@ -258,9 +258,9 @@ public class TimedOutDefinition implements TimeConstraint {
                         on(controlVar2).execute((drools, firstEvent) -> {
                             PrototypeEventInstance controlEvent = controlPrototype.newInstance()
                                     .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-                            controlEvent.set( "rulename", startTag );
-                            controlEvent.set( "event", firstEvent.get("event") );
-                            controlEvent.set( "binding", firstEvent.get("binding") );
+                            controlEvent.put( "rulename", startTag );
+                            controlEvent.put( "event", firstEvent.get("event") );
+                            controlEvent.put( "binding", firstEvent.get("binding") );
                             drools.insert(controlEvent);
                         })
                 )
@@ -276,7 +276,7 @@ public class TimedOutDefinition implements TimeConstraint {
                         on(resultCount).execute((drools, count) -> {
                             PrototypeEventInstance controlEvent = controlPrototype.newInstance()
                                     .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-                            controlEvent.set( "rulename", endTag );
+                            controlEvent.put( "rulename", endTag );
                             drools.insert(controlEvent);
                         })
                 )

@@ -32,7 +32,7 @@ public class PrototypeTest {
         final String JSON = Files.readString(Paths.get(PrototypeTest.class.getResource("/test1.json").toURI()));
         final Map<String, Object> readValue = new ObjectMapper().readValue(JSON, new TypeReference<>() {});
         final PrototypeFactInstance mapBasedFact = prototype("test").asFact().newInstance();
-        readValue.forEach(mapBasedFact::set);
+        readValue.forEach(mapBasedFact::put);
         assertThat(mapBasedFact.get("a"))
             .as("sanity check on manually built drools Fact")
             .isNotNull()

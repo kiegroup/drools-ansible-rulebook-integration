@@ -2,8 +2,8 @@ package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.core.common.InternalFactHandle;
-import org.drools.base.facttemplates.Event;
-import org.drools.base.facttemplates.Fact;
+import org.kie.api.prototype.PrototypeEventInstance;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.rule.AgendaFilter;
@@ -11,7 +11,12 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 import org.kie.api.time.SessionPseudoClock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
@@ -62,9 +67,9 @@ public class RulesExecutorSession {
     }
 
     InternalFactHandle insert(Map<String, Object> factMap, boolean event) {
-        Fact fact = mapToFact(factMap, event);
+        PrototypeFactInstance fact = mapToFact(factMap, event);
         if (event) {
-            ((Event) fact).withExpiration(rulesSet.getEventsTtl().getAmount(), rulesSet.getEventsTtl().getTimeUnit());
+            ((PrototypeEventInstance) fact).withExpiration(rulesSet.getEventsTtl().getAmount(), rulesSet.getEventsTtl().getTimeUnit());
         }
         InternalFactHandle fh = (InternalFactHandle) kieSession.insert(fact);
         if (event) {
@@ -82,7 +87,7 @@ public class RulesExecutorSession {
                 (wmFact, retract) -> wmFact.entrySet().containsAll(retract.entrySet()) :
                 (wmFact, retract) -> areFactsEqual(wmFact, retract, keysToExclude);
 
-        Collection<FactHandle> fhs = kieSession.getFactHandles(o -> o instanceof Fact && factsComparator.test( ((Fact) o).asMap(), toBeRetracted ) );
+        Collection<FactHandle> fhs = kieSession.getFactHandles(o -> o instanceof PrototypeFactInstance && factsComparator.test( ((PrototypeFactInstance) o).asMap(), toBeRetracted ) );
         return new ArrayList<>( fhs ).stream().peek( kieSession::delete ).map( InternalFactHandle.class::cast ).collect(Collectors.toList());
     }
 

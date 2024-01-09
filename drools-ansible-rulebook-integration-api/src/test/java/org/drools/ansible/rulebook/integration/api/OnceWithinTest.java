@@ -2,8 +2,8 @@ package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
-import org.drools.base.facttemplates.Fact;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
@@ -125,7 +125,7 @@ public class OnceWithinTest {
         List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
         assertEquals(1, matchedRules.size());
 
-        Fact fact = (Fact) matchedRules.get(0).getDeclarationValue("singleton");
+        PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("singleton");
         Map map = (Map) fact.asMap();
         Map ruleEngineMeta = (Map) ((Map)map.get(RulesModelUtil.META_FIELD)).get(RulesModelUtil.RULE_ENGINE_META_FIELD);
         assertEquals( new TimeAmount(10, TimeUnit.SECONDS).toString(), ruleEngineMeta.get("once_within_time_window") );

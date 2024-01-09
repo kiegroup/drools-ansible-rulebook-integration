@@ -1,7 +1,7 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.drools.base.facttemplates.Fact;
+import org.kie.api.prototype.PrototypeFactInstance;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -48,9 +48,9 @@ public class SessionStats {
         this.eventsMatched = stats.getMatchedEvents();
         this.eventsSuppressed = this.eventsProcessed - this.eventsMatched;
 
-        Collection<Fact> facts = (Collection<Fact>) session.getObjects(Fact.class::isInstance);
+        Collection<PrototypeFactInstance> facts = (Collection<PrototypeFactInstance>) session.getObjects(PrototypeFactInstance.class::isInstance);
         this.permanentStorageCount = facts.size();
-        Stream<Fact> factStream = permanentStorageCount > Runtime.getRuntime().availableProcessors() * 2 ? facts.parallelStream() : facts.stream();
+        Stream<PrototypeFactInstance> factStream = permanentStorageCount > Runtime.getRuntime().availableProcessors() * 2 ? facts.parallelStream() : facts.stream();
         this.permanentStorageSize = factStream.mapToInt(f -> f.asMap().toString().getBytes().length).sum();
 
         this.asyncResponses = stats.getAsyncResponses();

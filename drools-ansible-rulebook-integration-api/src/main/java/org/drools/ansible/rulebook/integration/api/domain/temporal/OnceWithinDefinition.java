@@ -1,7 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.DroolsEntryPoint;
 import org.drools.model.Rule;
@@ -10,6 +9,7 @@ import org.drools.model.prototype.PrototypeDSL;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 import org.kie.api.prototype.PrototypeEventInstance;
+import org.kie.api.prototype.PrototypeFactInstance;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,11 +87,11 @@ public class OnceWithinDefinition extends OnceAbstractTimeConstraint {
     public void executeTimeConstraintConsequence(Drools drools, Object... facts) {
         PrototypeEventInstance controlEvent = getPrototypeEvent(SYNTHETIC_PROTOTYPE_NAME).newInstance()
                 .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-        Fact fact = (Fact) facts[0];
+        PrototypeFactInstance fact = (PrototypeFactInstance) facts[0];
         for (GroupByAttribute unique : groupByAttributes) {
-            controlEvent.set(unique.getKey(), unique.evalExtractorOnFact(fact));
+            controlEvent.put(unique.getKey(), unique.evalExtractorOnFact(fact));
         }
-        controlEvent.set("drools_rule_name", ruleName);
+        controlEvent.put("drools_rule_name", ruleName);
         drools.insert(controlEvent);
         drools.delete(fact);
 

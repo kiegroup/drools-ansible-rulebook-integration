@@ -19,13 +19,13 @@ package org.drools.ansible.rulebook.integration.api.toexecmodel;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
-import org.drools.base.facttemplates.Event;
 import org.drools.model.Constraint;
 import org.drools.model.PatternDSL;
 import org.drools.model.constraints.OrConstraints;
 import org.drools.model.constraints.SingleConstraint1;
 import org.drools.model.functions.Predicate1;
 import org.drools.model.prototype.PrototypeDSL;
+import org.kie.api.prototype.PrototypeEventInstance;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +38,7 @@ import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.create
 public class ToPatternTestBase {
 
     // Create an Event with single field. Multiple values is converted to a List
-    protected Event createEvent(String fieldName, Object... fieldValues) {
+    protected PrototypeEventInstance createEvent(String fieldName, Object... fieldValues) {
         Object fieldValue;
         if (fieldValues.length == 1) {
             fieldValue = fieldValues[0];
@@ -50,27 +50,27 @@ public class ToPatternTestBase {
         return createEvent(factMap);
     }
 
-    protected Event createNestedEvent(Map<String, Object> nestedFactMap) {
+    protected PrototypeEventInstance createNestedEvent(Map<String, Object> nestedFactMap) {
         Map<String, Object> factMap = new HashMap<>();
         factMap.put("nested", nestedFactMap);
         return createEvent(factMap);
     }
 
-    protected Event createIEvent(Object i) {
+    protected PrototypeEventInstance createIEvent(Object i) {
         Map<String, Object> factMap = new HashMap<>();
         factMap.put("i", i);
         return createEvent(factMap);
     }
 
-    protected Event createIJEvent(Object i, Object j) {
+    protected PrototypeEventInstance createIJEvent(Object i, Object j) {
         Map<String, Object> factMap = new HashMap<>();
         factMap.put("i", i);
         factMap.put("j", j);
         return createEvent(factMap);
     }
 
-    protected Event createEvent(Map<String, Object> factMap) {
-        return (Event) RulesModelUtil.mapToFact(factMap, true);
+    protected PrototypeEventInstance createEvent(Map<String, Object> factMap) {
+        return (PrototypeEventInstance) RulesModelUtil.mapToFact(factMap, true);
     }
 
     protected LinkedHashMap<Object, Object> createSelectExpression(LinkedHashMap<Object, Object> lhsValueMap, LinkedHashMap<Object, Object> rhsValueMap) {
