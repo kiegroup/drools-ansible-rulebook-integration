@@ -73,6 +73,15 @@ public class SessionStatsTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(json);
 
+        SessionStats beforeFiringStats = rulesExecutor.getSessionStats();
+        assertNull( beforeFiringStats.getLastRuleFiredAt() );
+        assertNull( beforeFiringStats.getLastEventReceivedAt() );
+
+        rulesExecutor.processEvents( "{ \"sensu\": { \"data\": { \"i\":42 } } }" ).join();
+        SessionStats statsAfterNonMatchingEvent = rulesExecutor.getSessionStats();
+        assertNull( statsAfterNonMatchingEvent.getLastRuleFiredAt() );
+        assertNotNull( statsAfterNonMatchingEvent.getLastEventReceivedAt() );
+
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 1, matchedRules.size() );
         assertEquals( "R1", matchedRules.get(0).getRule().getName() );

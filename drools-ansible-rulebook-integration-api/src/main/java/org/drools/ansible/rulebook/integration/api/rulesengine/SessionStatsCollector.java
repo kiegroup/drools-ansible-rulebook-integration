@@ -29,7 +29,8 @@ public class SessionStatsCollector {
     private int bytesSentOnAsync;
 
     private String lastRuleFired = "";
-    private long lastRuleFiredTime;
+    private long lastRuleFiredTime = -1;
+    private long lastEventReceivedTime = -1;
 
     private int clockAdvanceCount;
 
@@ -83,6 +84,10 @@ public class SessionStatsCollector {
         return lastRuleFiredTime;
     }
 
+    public long getLastEventReceivedTime() {
+        return lastEventReceivedTime;
+    }
+
     public int getClockAdvanceCount() {
         return clockAdvanceCount;
     }
@@ -101,7 +106,8 @@ public class SessionStatsCollector {
         matchedEvents += events.size();
     }
 
-    public void registerProcessedEvent(FactHandle fh) {
+    public void registerProcessedEvent(RulesExecutorSession session, FactHandle fh) {
+        lastEventReceivedTime = session.getPseudoClock().getCurrentTime();
         totalEvents++;
     }
 

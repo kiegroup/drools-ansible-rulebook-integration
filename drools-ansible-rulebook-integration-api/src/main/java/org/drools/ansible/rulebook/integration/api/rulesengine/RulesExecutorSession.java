@@ -68,7 +68,7 @@ public class RulesExecutorSession {
         }
         InternalFactHandle fh = (InternalFactHandle) kieSession.insert(fact);
         if (event) {
-            sessionStatsCollector.registerProcessedEvent(fh);
+            sessionStatsCollector.registerProcessedEvent(this, fh);
         }
         return fh;
     }
