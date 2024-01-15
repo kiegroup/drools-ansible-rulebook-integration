@@ -52,10 +52,6 @@ public class AstCondition implements Condition {
 
         protected abstract org.drools.model.Condition.Type getConditionType();
 
-        public List<Condition> getConditions() {
-            return conditions;
-        }
-
         @Override
         public ViewItem toPattern(RuleGenerationContext ruleContext) {
             if (conditions.size() == 1) {
@@ -278,10 +274,6 @@ public class AstCondition implements Condition {
 
         public SingleCondition<P> addSingleCondition(PrototypeExpression left, Index.ConstraintType operator, PrototypeExpression right) {
             return parent.addSingleCondition(left, operator, right);
-        }
-
-        public ParsedCondition getParsedCondition() {
-            return parsedCondition;
         }
     }
 }

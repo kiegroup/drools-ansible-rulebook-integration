@@ -18,7 +18,6 @@
     <module>drools-ansible-rulebook-integration-benchmark</module>
     <module>drools-ansible-rulebook-integration-tests</module>
     <module>drools-ansible-rulebook-integration-main</module>
-    <module>drools-ansible-rulebook-integration-visualization</module>
   </modules>
   
   <name>Drools :: Ansible Rulebook Integration</name>
@@ -47,9 +46,9 @@
       </snapshots>
     </repository>
     <repository>
-      <id>apache-public-repository-group</id>
-      <name>Apache Public Repository Group</name>
-      <url>https://repository.apache.org/content/groups/public/</url>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
       <layout>default</layout>
       <releases>
         <enabled>false</enabled>
@@ -72,9 +71,9 @@
       </snapshots>
     </pluginRepository>
     <pluginRepository>
-      <id>apache-public-repository-group</id>
-      <name>Apache Public Repository Group</name>
-      <url>https://repository.apache.org/content/groups/public/</url>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
