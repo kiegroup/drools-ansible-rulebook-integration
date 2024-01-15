@@ -50,7 +50,7 @@ public class MemoryMonitorUtil {
             System.setProperty(MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD_PROPERTY, exitAboveThresholdEnvValue);
         }
         MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD = Boolean.getBoolean(MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD_PROPERTY);
-        LOG.info("Exit above memory occupation threshold set to {}%", MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD);
+        LOG.info("Exit above memory occupation threshold set to {}", MEMORY_OCCUPATION_EXIT_ABOVE_THRESHOLD);
     }
 
     private MemoryMonitorUtil() {
