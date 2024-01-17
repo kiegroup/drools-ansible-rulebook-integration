@@ -1,9 +1,8 @@
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
-import java.util.function.BiPredicate;
-
 import org.drools.model.ConstraintOperator;
-import org.drools.model.PrototypeFact;
+
+import java.util.function.BiPredicate;
 
 @Deprecated() // TODO seems no longer in-use?
 public enum NotExistsField implements ConstraintOperator {

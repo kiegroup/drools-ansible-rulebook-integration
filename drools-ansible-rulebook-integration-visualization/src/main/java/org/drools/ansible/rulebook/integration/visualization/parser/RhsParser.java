@@ -1,15 +1,15 @@
 package org.drools.ansible.rulebook.integration.visualization.parser;
 
-import java.util.List;
-import java.util.Map;
-
 import org.drools.ansible.rulebook.integration.api.domain.actions.MapAction;
-import org.drools.base.facttemplates.FactTemplateObjectType;
+import org.drools.base.prototype.PrototypeObjectType;
 import org.drools.impact.analysis.model.right.DeleteSpecificFactAction;
 import org.drools.impact.analysis.model.right.InsertAction;
 import org.drools.impact.analysis.model.right.InsertedProperty;
 import org.drools.impact.analysis.model.right.RightHandSide;
 import org.drools.impact.analysis.model.right.SpecificProperty;
+
+import java.util.List;
+import java.util.Map;
 
 public class RhsParser {
 
@@ -39,7 +39,7 @@ public class RhsParser {
     }
 
     private static void addInsertAction(Map<String, String> propertyMap, RightHandSide rhs) {
-        InsertAction action = new InsertAction(FactTemplateObjectType.class);
+        InsertAction action = new InsertAction(PrototypeObjectType.class);
         propertyMap.entrySet().forEach(entry -> {
             InsertedProperty insertedProperty = new InsertedProperty(entry.getKey(), entry.getValue());
             action.addInsertedProperty(insertedProperty);
@@ -48,7 +48,7 @@ public class RhsParser {
     }
 
     private static void addDeleteAction(Map<String, String> propertyMap, RightHandSide rhs) {
-        DeleteSpecificFactAction action = new DeleteSpecificFactAction(FactTemplateObjectType.class);
+        DeleteSpecificFactAction action = new DeleteSpecificFactAction(PrototypeObjectType.class);
         propertyMap.entrySet().forEach(entry -> {
             SpecificProperty specificProperty = new SpecificProperty(entry.getKey(), entry.getValue());
             action.addSpecificProperty(specificProperty);

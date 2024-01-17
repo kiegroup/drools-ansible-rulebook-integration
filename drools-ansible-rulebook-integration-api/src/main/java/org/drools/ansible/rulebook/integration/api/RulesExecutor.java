@@ -4,7 +4,7 @@ import org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesEvaluator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.drools.base.facttemplates.Fact;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
@@ -90,7 +90,7 @@ public class RulesExecutor {
     }
 
     public List<Map<String, Object>> getAllFactsAsMap() {
-        return getAllFacts().stream().map(Fact.class::cast).map(Fact::asMap).collect(Collectors.toList());
+        return getAllFacts().stream().map(PrototypeFactInstance.class::cast).map(PrototypeFactInstance::asMap).collect(Collectors.toList());
     }
 
     public String getAllFactsAsJson() {

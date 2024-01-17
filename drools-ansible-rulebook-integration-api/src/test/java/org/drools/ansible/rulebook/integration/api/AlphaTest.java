@@ -2,8 +2,7 @@ package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory;
 import org.drools.base.definitions.InternalKnowledgePackage;
-import org.drools.base.facttemplates.FactTemplate;
-import org.drools.base.facttemplates.FactTemplateObjectType;
+import org.drools.base.prototype.PrototypeObjectType;
 import org.drools.base.rule.IndexableConstraint;
 import org.drools.base.util.index.ConstraintTypeOperator;
 import org.drools.core.reteoo.AlphaNode;
@@ -12,10 +11,9 @@ import org.drools.core.reteoo.ObjectSink;
 import org.drools.core.reteoo.ObjectTypeNode;
 import org.drools.core.reteoo.Rete;
 import org.drools.kiesession.rulebase.InternalKnowledgeBase;
-import org.drools.model.Prototype;
-import org.drools.modelcompiler.facttemplate.FactFactory;
 import org.junit.Test;
 import org.kie.api.definition.rule.Rule;
+import org.kie.api.prototype.PrototypeFact;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
@@ -77,10 +75,9 @@ public class AlphaTest {
         boolean asserted = false;
         assertEquals("expecting only 1 pkg.", 1, rete.getRuleBase().getPackages().length);
         InternalKnowledgePackage ipkg = rete.getRuleBase().getPackages()[0];
-        Prototype default_proto = PrototypeFactory.getPrototype(PrototypeFactory.DEFAULT_PROTOTYPE_NAME);
-        FactTemplate factTemplate = FactFactory.prototypeToFactTemplate(default_proto, ipkg);
+        PrototypeFact default_proto = PrototypeFactory.getPrototypeFact(PrototypeFactory.DEFAULT_PROTOTYPE_NAME);
         EntryPointNode epn = rete.getEntryPointNodes().values().iterator().next();
-        ObjectTypeNode otn = epn.getObjectTypeNodes().get(new FactTemplateObjectType(factTemplate));
+        ObjectTypeNode otn = epn.getObjectTypeNodes().get(new PrototypeObjectType(default_proto));
         ObjectSink[] sinks = otn.getObjectSinkPropagator().getSinks();
         for (ObjectSink objectSink : sinks) {
             AlphaNode alphaNode = (AlphaNode) objectSink;

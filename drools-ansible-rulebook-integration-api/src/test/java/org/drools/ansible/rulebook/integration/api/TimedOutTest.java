@@ -3,8 +3,8 @@ package org.drools.ansible.rulebook.integration.api;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.drools.base.facttemplates.Fact;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
 import java.io.DataInputStream;
@@ -180,7 +180,7 @@ public class TimedOutTest {
         assertEquals("r1", match.getRule().getName());
         assertEquals( 1, match.getDeclarationIds().size() );
         assertEquals( "m_1", match.getDeclarationIds().get(0) );
-        assertEquals( 1, ((Fact) match.getDeclarationValue("m_1")).get("j") );
+        assertEquals( 1, ((PrototypeFactInstance) match.getDeclarationValue("m_1")).get("j") );
 
         SessionStats stats = rulesExecutor.dispose();
         assertEquals(1, stats.getNumberOfRules());

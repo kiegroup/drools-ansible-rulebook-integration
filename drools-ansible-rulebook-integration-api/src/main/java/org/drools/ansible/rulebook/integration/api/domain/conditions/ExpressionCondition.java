@@ -1,9 +1,8 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
-import org.drools.model.ConstraintOperator;
-import org.drools.model.Index;
-import org.drools.model.PrototypeExpression;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
+import org.drools.model.ConstraintOperator;
+import org.drools.model.prototype.PrototypeExpression;
 
 public class ExpressionCondition extends SimpleCondition {
     protected final PrototypeExpression left;

@@ -1,11 +1,11 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeVariable;
+import org.drools.model.view.ViewItem;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
-import org.drools.model.view.ViewItem;
 
 import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount.parseTimeAmount;
 import static org.drools.model.DSL.after;

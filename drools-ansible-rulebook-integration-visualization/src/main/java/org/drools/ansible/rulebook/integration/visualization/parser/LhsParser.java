@@ -1,19 +1,19 @@
 package org.drools.ansible.rulebook.integration.visualization.parser;
 
-import java.util.List;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.AstCondition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.Condition;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
-import org.drools.base.facttemplates.FactTemplateObjectType;
+import org.drools.base.prototype.PrototypeObjectType;
 import org.drools.impact.analysis.model.left.Constraint;
 import org.drools.impact.analysis.model.left.LeftHandSide;
 import org.drools.impact.analysis.model.left.Pattern;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
-import org.drools.model.PrototypeExpression;
+import org.drools.model.prototype.PrototypeExpression;
+
+import java.util.List;
 
 public class LhsParser {
 
@@ -22,7 +22,7 @@ public class LhsParser {
     }
 
     public static void parse(Condition condition, LeftHandSide lhs) {
-        Pattern pattern = new Pattern(FactTemplateObjectType.class, true);
+        Pattern pattern = new Pattern(PrototypeObjectType.class, true);
         parseConditions(condition, pattern);
         lhs.addPattern(pattern);
     }

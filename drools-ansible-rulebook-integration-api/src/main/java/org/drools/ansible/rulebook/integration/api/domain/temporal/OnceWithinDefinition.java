@@ -1,15 +1,15 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.base.facttemplates.Event;
-import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.DroolsEntryPoint;
-import org.drools.model.PrototypeDSL;
 import org.drools.model.Rule;
 import org.drools.model.Variable;
+import org.drools.model.prototype.PrototypeDSL;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
+import org.kie.api.prototype.PrototypeEventInstance;
+import org.kie.api.prototype.PrototypeFactInstance;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,12 +20,11 @@ import static java.util.stream.Collectors.toList;
 import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount.parseTimeAmount;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeEvent;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.writeMetaDataOnEvent;
 import static org.drools.model.DSL.not;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
 
 /**
  * Coalesce events within a time window: if the same event is sent multiple times only one of them in a given time window
@@ -86,13 +85,13 @@ public class OnceWithinDefinition extends OnceAbstractTimeConstraint {
 
     @Override
     public void executeTimeConstraintConsequence(Drools drools, Object... facts) {
-        Event controlEvent = createMapBasedEvent( getPrototype(SYNTHETIC_PROTOTYPE_NAME) )
+        PrototypeEventInstance controlEvent = getPrototypeEvent(SYNTHETIC_PROTOTYPE_NAME).newInstance()
                 .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-        Fact fact = (Fact) facts[0];
+        PrototypeFactInstance fact = (PrototypeFactInstance) facts[0];
         for (GroupByAttribute unique : groupByAttributes) {
-            controlEvent.set(unique.getKey(), unique.evalExtractorOnFact(fact));
+            controlEvent.put(unique.getKey(), unique.evalExtractorOnFact(fact));
         }
-        controlEvent.set("drools_rule_name", ruleName);
+        controlEvent.put("drools_rule_name", ruleName);
         drools.insert(controlEvent);
         drools.delete(fact);
 

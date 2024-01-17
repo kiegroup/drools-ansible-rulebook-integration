@@ -1,16 +1,16 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceWithinDefinition;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.Index;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.DEFAULT_PROTOTYPE_NAME;
 
@@ -134,7 +134,7 @@ public class AstCondition implements Condition {
 
         protected PrototypeDSL.PrototypePatternDef getPattern(RuleGenerationContext ruleContext, String binding) {
             if (pattern == null) {
-                pattern = ruleContext.getOrCreatePattern(binding, DEFAULT_PROTOTYPE_NAME);
+                pattern = ruleContext.getOrCreatePattern(binding, DEFAULT_PROTOTYPE_NAME, ruleContext.getTimeConstraint().isPresent());
             }
             return pattern;
         }
@@ -252,7 +252,7 @@ public class AstCondition implements Condition {
             if (parent != null) {
                 parent.beforeBinding();
             }
-            this.pattern = ruleContext.getOrCreatePattern(patternBinding, DEFAULT_PROTOTYPE_NAME);
+            this.pattern = ruleContext.getOrCreatePattern(patternBinding, DEFAULT_PROTOTYPE_NAME, ruleContext.getTimeConstraint().isPresent());
             if (parent != null) {
                 parent.afterBinding();
             }

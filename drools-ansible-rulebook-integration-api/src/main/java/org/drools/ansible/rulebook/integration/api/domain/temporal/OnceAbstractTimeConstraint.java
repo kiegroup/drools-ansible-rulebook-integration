@@ -4,22 +4,19 @@ import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpression;
-import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
-import org.drools.base.facttemplates.Fact;
 import org.drools.model.Index;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeFact;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
+import org.drools.model.prototype.PrototypeVariable;
+import org.kie.api.prototype.PrototypeFactInstance;
 
 import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
-import static org.drools.model.PrototypeDSL.protoPattern;
-import static org.drools.model.PrototypeDSL.variable;
-import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeEvent;
+import static org.drools.model.prototype.PrototypeDSL.protoPattern;
+import static org.drools.model.prototype.PrototypeDSL.variable;
+import static org.drools.model.prototype.PrototypeExpression.prototypeField;
 
 public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
 
@@ -46,7 +43,7 @@ public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
     }
 
     protected PrototypeDSL.PrototypePatternDef createControlPattern() {
-        PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(getPrototype(SYNTHETIC_PROTOTYPE_NAME)));
+        PrototypeDSL.PrototypePatternDef controlPattern = protoPattern(variable(getPrototypeEvent(SYNTHETIC_PROTOTYPE_NAME)));
         for (GroupByAttribute unique : groupByAttributes) {
             controlPattern.expr( prototypeField(unique.getKey()), // intentional, the control fact has the "group by" key string as-is (not structured), so we reference it for the left part
                     Index.ConstraintType.EQUAL,
@@ -95,11 +92,7 @@ public abstract class OnceAbstractTimeConstraint implements TimeConstraint {
             return new ExtractorPrototypeExpression(extractor);
         }
 
-        public Object evalExtractorOnFact(PrototypeFact fact) {
-            return evalExtractorOnFact((Fact) fact);
-        }
-
-        public Object evalExtractorOnFact(Fact fact) {
+        public Object evalExtractorOnFact(PrototypeFactInstance fact) {
             return ExtractorUtils.getValueFrom(extractor, fact.asMap());
         }
 

@@ -3,17 +3,17 @@ package org.drools.ansible.rulebook.integration.api.domain.temporal;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
-import org.drools.base.facttemplates.Event;
-import org.drools.base.facttemplates.Fact;
 import org.drools.model.Drools;
 import org.drools.model.Index;
-import org.drools.model.Prototype;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
 import org.drools.model.Rule;
 import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.view.ViewItem;
+import org.kie.api.prototype.PrototypeEvent;
+import org.kie.api.prototype.PrototypeEventInstance;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAm
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
-import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototype;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeEvent;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.writeMetaDataOnEvent;
 import static org.drools.model.DSL.accFunction;
 import static org.drools.model.DSL.accumulate;
@@ -37,9 +37,8 @@ import static org.drools.model.DSL.declarationOf;
 import static org.drools.model.DSL.not;
 import static org.drools.model.DSL.on;
 import static org.drools.model.PatternDSL.rule;
-import static org.drools.model.PrototypeDSL.protoPattern;
-import static org.drools.model.PrototypeDSL.variable;
-import static org.drools.modelcompiler.facttemplate.FactFactory.createMapBasedEvent;
+import static org.drools.model.prototype.PrototypeDSL.protoPattern;
+import static org.drools.model.prototype.PrototypeDSL.variable;
 
 /**
  * Collects and groups events within a time window. The rule fires only once at the end of the time window with a list of
@@ -110,7 +109,7 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
 
     public static final String KEYWORD = "once_after";
 
-    private final Prototype controlPrototype = getPrototype(SYNTHETIC_PROTOTYPE_NAME);
+    private final PrototypeEvent controlPrototype = getPrototypeEvent(SYNTHETIC_PROTOTYPE_NAME);
     private final PrototypeVariable controlVar1 = variable( controlPrototype, "c1" );
     private final PrototypeVariable controlVar2 = variable( controlPrototype, "c2" );
     private final Variable<List> resultsVar = declarationOf( List.class, "results" );
@@ -121,23 +120,23 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
 
     private static Match transformOnceAfterMatch(Match match) {
         EmptyMatchDecorator rewrittenMatch = new EmptyMatchDecorator(match);
-        Collection<Fact> results = ((Collection<Fact>) match.getDeclarationValue("results"));
+        Collection<PrototypeFactInstance> results = ((Collection<PrototypeFactInstance>) match.getDeclarationValue("results"));
         if (results.size() == 1) {
             rewrittenMatch.withBoundObject("m", controlFact2Event(results.iterator().next()));
         } else {
             int i = 0;
-            for (Fact fact : results) {
+            for (PrototypeFactInstance fact : results) {
                 rewrittenMatch.withBoundObject("m_" + i++, controlFact2Event(fact));
             }
         }
         return rewrittenMatch;
     }
 
-    private static Object controlFact2Event(Fact fact) {
+    private static Object controlFact2Event(PrototypeFactInstance fact) {
         Map ruleEngineMeta = new HashMap();
         ruleEngineMeta.put("once_after_time_window", fact.get("once_after_time_window"));
         ruleEngineMeta.put("events_in_window", fact.get("events_in_window"));
-        return writeMetaDataOnEvent((Fact) fact.get("event"), ruleEngineMeta);
+        return writeMetaDataOnEvent((PrototypeFactInstance) fact.get("event"), ruleEngineMeta);
     }
 
     public OnceAfterDefinition(TimeAmount timeAmount, List<GroupByAttribute> groupByAttributes) {
@@ -193,14 +192,14 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
                                 guardedPattern,
                                 not( createControlPattern() ),
                                 on(getPatternVariable()).execute((drools, event) -> {
-                                    Event controlEvent = createMapBasedEvent( controlPrototype );
+                                    PrototypeEventInstance controlEvent = controlPrototype.newInstance();
                                     for (GroupByAttribute unique : groupByAttributes) {
-                                        controlEvent.set(unique.getKey(), unique.evalExtractorOnFact(event));
+                                        controlEvent.put(unique.getKey(), unique.evalExtractorOnFact(event));
                                     }
-                                    controlEvent.set("drools_rule_name", ruleName);
-                                    controlEvent.set( "event", event );
-                                    controlEvent.set( "once_after_time_window", timeAmount.toString() );
-                                    controlEvent.set( "events_in_window", 1 );
+                                    controlEvent.put("drools_rule_name", ruleName);
+                                    controlEvent.put( "event", event );
+                                    controlEvent.put( "once_after_time_window", timeAmount.toString() );
+                                    controlEvent.put( "events_in_window", 1 );
                                     drools.insert(controlEvent);
                                     drools.delete(event);
                                 })
@@ -213,13 +212,13 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
                                 protoPattern(controlVar1).expr( "drools_rule_name", Index.ConstraintType.EQUAL, ruleName ),
                                 not( protoPattern(controlVar2).expr( "end_once_after", Index.ConstraintType.EQUAL, ruleName ) ),
                                 on(controlVar1).execute((drools, c1) -> {
-                                    Event startControlEvent = createMapBasedEvent( controlPrototype )
+                                    PrototypeEventInstance startControlEvent = controlPrototype.newInstance()
                                             .withExpiration(timeAmount.getAmount(), timeAmount.getTimeUnit());
-                                    startControlEvent.set( "start_once_after", ruleName );
+                                    startControlEvent.put( "start_once_after", ruleName );
                                     drools.insert(startControlEvent);
 
-                                    Event endControlEvent = createMapBasedEvent( controlPrototype );
-                                    endControlEvent.set( "end_once_after", ruleName );
+                                    PrototypeEventInstance endControlEvent = controlPrototype.newInstance();
+                                    endControlEvent.put( "end_once_after", ruleName );
                                     drools.insert(endControlEvent);
 
                                     if (log.isInfoEnabled()) {
@@ -235,7 +234,7 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
                                 guardedPattern,
                                 createControlPattern(),
                                 on(getPatternVariable(), getControlVariable()).execute((drools, event, control) -> {
-                                    control.set( "events_in_window", ((int) control.get("events_in_window")) + 1 );
+                                    control.put( "events_in_window", ((int) control.get("events_in_window")) + 1 );
                                     drools.delete(event);
                                 })
                         )
