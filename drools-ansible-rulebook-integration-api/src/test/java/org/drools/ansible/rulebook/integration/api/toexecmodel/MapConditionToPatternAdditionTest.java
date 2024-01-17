@@ -16,14 +16,14 @@
 
 package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
+import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
+import org.drools.model.functions.Predicate1;
+import org.junit.Test;
+import org.kie.api.prototype.PrototypeEventInstance;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
-import org.drools.base.facttemplates.Event;
-import org.drools.model.functions.Predicate1;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createEventField;
@@ -45,13 +45,13 @@ public class MapConditionToPatternAdditionTest extends ToPatternTestBase {
         Map<String, Object> nestedFactMap1 = new HashMap<>();
         nestedFactMap1.put("i", 1);
         nestedFactMap1.put("j", 2);
-        Event event1 = createNestedEvent(nestedFactMap1);
+        PrototypeEventInstance event1 = createNestedEvent(nestedFactMap1);
         assertThat(predicate.test(event1)).isFalse();
 
         Map<String, Object> nestedFactMap2 = new HashMap<>();
         nestedFactMap2.put("i", 2);
         nestedFactMap2.put("j", 1);
-        Event event2 = createNestedEvent(nestedFactMap2);
+        PrototypeEventInstance event2 = createNestedEvent(nestedFactMap2);
         assertThat(predicate.test(event2)).isTrue();
     }
 }

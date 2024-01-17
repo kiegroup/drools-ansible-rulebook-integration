@@ -1,8 +1,5 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,12 +7,15 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
-import org.drools.model.PrototypeFact;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
+import java.util.List;
+import java.util.Map;
+
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
-import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 import static org.junit.Assert.assertEquals;
 
 public class LogicalOperatorsTest {
@@ -347,7 +347,7 @@ public class LogicalOperatorsTest {
 
         Match match = matchedRules.get(0);
         assertEquals( "r1", match.getRule().getName() );
-        assertEquals( 2, ((PrototypeFact)match.getDeclarationValue("m")).get("i") );
+        assertEquals( 2, ((PrototypeFactInstance)match.getDeclarationValue("m")).get("i") );
 
         matchedRules = rulesExecutor.processFacts( "{ \"i\":14 }" ).join();
         assertEquals( 1, matchedRules.size() );

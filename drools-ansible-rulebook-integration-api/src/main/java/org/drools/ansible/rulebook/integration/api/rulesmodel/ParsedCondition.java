@@ -4,13 +4,12 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.NegationOperator;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.ConstraintOperator;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
 import org.drools.model.view.ViewItem;
 
 import static org.drools.model.DSL.not;
-import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 
 public class ParsedCondition {
 

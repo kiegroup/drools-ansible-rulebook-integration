@@ -1,23 +1,20 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
+import org.drools.model.prototype.PrototypeVariable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpression;
-import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeVariable;
-
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isEventOrFact;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isKnownType;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toJsonValue;
-import static org.drools.model.PrototypeDSL.fieldName2PrototypeExpression;
-import static org.drools.model.PrototypeExpression.fixedValue;
-import static org.drools.model.PrototypeExpression.prototypeField;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 
 public class ConditionExpression {
 

@@ -16,13 +16,13 @@
 
 package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.drools.ansible.rulebook.integration.api.domain.conditions.SimpleCondition;
-import org.drools.base.facttemplates.Event;
 import org.drools.model.functions.Predicate1;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeEventInstance;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,15 +36,15 @@ public class SimpleConditionToPatternTest extends ToPatternTestBase {
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(simpleCondition);
 
-        Event event1 = createSensuEvent(1);
+        PrototypeEventInstance event1 = createSensuEvent(1);
         assertThat(predicate.test(event1)).isTrue();
 
-        Event event2 = createSensuEvent(2);
+        PrototypeEventInstance event2 = createSensuEvent(2);
         assertThat(predicate.test(event2)).isFalse();
     }
 
     // create an Event which has nested field "sensu.data.i"
-    private Event createSensuEvent(Integer i) {
+    private PrototypeEventInstance createSensuEvent(Integer i) {
         Map<String, Object> iMap = new HashMap<>();
         iMap.put("i", i);
         Map<String, Object> dataMap = new HashMap<>();

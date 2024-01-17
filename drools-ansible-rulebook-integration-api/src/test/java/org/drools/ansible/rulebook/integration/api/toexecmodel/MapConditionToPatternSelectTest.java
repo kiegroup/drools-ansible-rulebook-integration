@@ -16,15 +16,15 @@
 
 package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
+import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
+import org.drools.model.functions.Predicate1;
+import org.junit.Test;
+import org.kie.api.prototype.PrototypeEventInstance;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
-import org.drools.base.facttemplates.Event;
-import org.drools.model.functions.Predicate1;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createEventField;
@@ -44,13 +44,13 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createEvent("levels", 25);
+        PrototypeEventInstance event1 = createEvent("levels", 25);
         assertThat(predicate.test(event1)).isFalse();
 
-        Event event2 = createEvent("levels", 26);
+        PrototypeEventInstance event2 = createEvent("levels", 26);
         assertThat(predicate.test(event2)).isTrue();
 
-        Event event3 = createEvent("levels", 10, 25, 26);
+        PrototypeEventInstance event3 = createEvent("levels", 10, 25, 26);
         assertThat(predicate.test(event3)).isTrue();
     }
 
@@ -66,13 +66,13 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createEvent("levels", 25);
+        PrototypeEventInstance event1 = createEvent("levels", 25);
         assertThat(predicate.test(event1)).isTrue();
 
-        Event event2 = createEvent("levels", 26, 30);
+        PrototypeEventInstance event2 = createEvent("levels", 26, 30);
         assertThat(predicate.test(event2)).isFalse();
 
-        Event event3 = createEvent("levels", 10, 25, 26);
+        PrototypeEventInstance event3 = createEvent("levels", 10, 25, 26);
         assertThat(predicate.test(event3)).isTrue();
     }
 
@@ -88,10 +88,10 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createEvent("addresses", "123 Main St, Bedrock, MI", "545 Spring St, Cresskill, NJ", "435 Wall Street, New York, NY");
+        PrototypeEventInstance event1 = createEvent("addresses", "123 Main St, Bedrock, MI", "545 Spring St, Cresskill, NJ", "435 Wall Street, New York, NY");
         assertThat(predicate.test(event1)).isTrue();
 
-        Event event2 = createEvent("addresses", "545 Spring St, Cresskill, NJ", "435 Wall Street, New York, NY");
+        PrototypeEventInstance event2 = createEvent("addresses", "545 Spring St, Cresskill, NJ", "435 Wall Street, New York, NY");
         assertThat(predicate.test(event2)).isFalse();
     }
 
@@ -110,13 +110,13 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
         Map<String, Object> factMap1 = new HashMap<>();
         factMap1.put("my_int1", 3);
         factMap1.put("my_list1", Arrays.asList(1, 3, 7));
-        Event event1 = createEvent(factMap1);
+        PrototypeEventInstance event1 = createEvent(factMap1);
         assertThat(predicate.test(event1)).isTrue();
 
         Map<String, Object> factMap2 = new HashMap<>();
         factMap2.put("my_int1", 4);
         factMap2.put("my_list1", Arrays.asList(1, 3, 7));
-        Event event2 = createEvent(factMap2);
+        PrototypeEventInstance event2 = createEvent(factMap2);
         assertThat(predicate.test(event2)).isFalse();
     }
 }

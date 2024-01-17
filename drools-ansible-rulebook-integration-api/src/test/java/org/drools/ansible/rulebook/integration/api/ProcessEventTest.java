@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.drools.base.reteoo.InitialFactImpl;
-import org.drools.model.PrototypeFact;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
 import static org.junit.Assert.assertEquals;
@@ -121,7 +121,7 @@ public class ProcessEventTest {
 
         List<String> hosts = matchedRules.stream()
                 .flatMap( m -> m.getObjects().stream() )
-                .map( PrototypeFact.class::cast)
+                .map( PrototypeFactInstance.class::cast)
                 .filter( p -> p.has("host") )
                 .map( p -> p.get("host") )
                 .map( String.class::cast)

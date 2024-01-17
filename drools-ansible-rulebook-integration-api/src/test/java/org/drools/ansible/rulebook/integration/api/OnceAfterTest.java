@@ -4,8 +4,8 @@ import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
-import org.drools.base.facttemplates.Fact;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
@@ -100,7 +100,7 @@ public class OnceAfterTest {
         assertEquals("r1", matchedRules.get(0).getRule().getName());
 
         for (int i = 0; i < 3; i++) {
-            Fact fact = (Fact) matchedRules.get(0).getDeclarationValue("m_" + i);
+            PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("m_" + i);
             String host = evalAgainstFact(fact, "meta.hosts").toString();
             assertTrue( host.equals( "h1" ) || host.equals( "h2" ) );
             String level = evalAgainstFact(fact, "alert.level").toString();
@@ -120,7 +120,7 @@ public class OnceAfterTest {
             assertEquals(1, matchedRules.size());
             assertEquals("r1", matchedRules.get(0).getRule().getName());
 
-            Fact fact = (Fact) matchedRules.get(0).getDeclarationValue("m");
+            PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("m");
             String host = evalAgainstFact(fact, "meta.hosts").toString();
             assertTrue(host.equals("h1"));
             String level = evalAgainstFact(fact, "alert.level").toString();
@@ -135,7 +135,7 @@ public class OnceAfterTest {
         rulesExecutor.dispose();
     }
 
-    private static Object evalAgainstFact(Fact fact, String expr) {
+    private static Object evalAgainstFact(PrototypeFactInstance fact, String expr) {
         return ExtractorUtils.getValueFrom(ExtractorParser.parse(expr), fact.asMap());
     }
         

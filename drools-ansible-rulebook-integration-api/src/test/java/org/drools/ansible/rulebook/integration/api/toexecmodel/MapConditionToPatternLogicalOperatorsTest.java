@@ -16,14 +16,14 @@
 
 package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
-import java.util.LinkedHashMap;
-
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
-import org.drools.base.facttemplates.Event;
 import org.drools.model.Constraint;
 import org.drools.model.constraints.OrConstraints;
 import org.drools.model.functions.Predicate1;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeEventInstance;
+
+import java.util.LinkedHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createEventField;
@@ -47,13 +47,13 @@ public class MapConditionToPatternLogicalOperatorsTest extends ToPatternTestBase
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createIJEvent(1, 1);
+        PrototypeEventInstance event1 = createIJEvent(1, 1);
         assertThat(predicate.test(event1)).isFalse();
 
-        Event event2 = createIJEvent(1, 2);
+        PrototypeEventInstance event2 = createIJEvent(1, 2);
         assertThat(predicate.test(event2)).isFalse();
 
-        Event event3 = createIJEvent(2, 2);
+        PrototypeEventInstance event3 = createIJEvent(2, 2);
         assertThat(predicate.test(event3)).isTrue();
     }
 
@@ -77,15 +77,15 @@ public class MapConditionToPatternLogicalOperatorsTest extends ToPatternTestBase
         Predicate1.Impl firstPredicate = extractFirstPredicate((OrConstraints) constraint);
         Predicate1.Impl secondPredicate = extractSecondPredicate((OrConstraints) constraint);
 
-        Event event1 = createIJEvent(1, 1);
+        PrototypeEventInstance event1 = createIJEvent(1, 1);
         assertThat(firstPredicate.test(event1)).isFalse();
         assertThat(secondPredicate.test(event1)).isFalse();
 
-        Event event2 = createIJEvent(1, 2);
+        PrototypeEventInstance event2 = createIJEvent(1, 2);
         assertThat(firstPredicate.test(event2)).isFalse();
         assertThat(secondPredicate.test(event2)).isTrue();
 
-        Event event3 = createIJEvent(2, 2);
+        PrototypeEventInstance event3 = createIJEvent(2, 2);
         assertThat(firstPredicate.test(event3)).isTrue();
         assertThat(secondPredicate.test(event3)).isTrue();
     }

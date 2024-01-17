@@ -1,14 +1,14 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import java.util.List;
-
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.drools.model.PrototypeExpression.fixedValue;
+import java.util.List;
+
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 import static org.junit.Assert.assertEquals;
 
 public class AdditionTest {

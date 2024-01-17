@@ -16,13 +16,13 @@
 
 package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
-import java.math.BigDecimal;
-import java.util.LinkedHashMap;
-
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
-import org.drools.base.facttemplates.Event;
 import org.drools.model.functions.Predicate1;
 import org.junit.Test;
+import org.kie.api.prototype.PrototypeEventInstance;
+
+import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createEventField;
@@ -42,10 +42,10 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createIJEvent(1, 2);
+        PrototypeEventInstance event1 = createIJEvent(1, 2);
         assertThat(predicate.test(event1)).isFalse();
 
-        Event event2 = createIJEvent(2, 2);
+        PrototypeEventInstance event2 = createIJEvent(2, 2);
         assertThat(predicate.test(event2)).isTrue();
     }
 
@@ -61,16 +61,16 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createIEvent(0);
+        PrototypeEventInstance event1 = createIEvent(0);
         assertThat(predicate.test(event1)).isFalse();
 
-        Event event2 = createIEvent(1);
+        PrototypeEventInstance event2 = createIEvent(1);
         assertThat(predicate.test(event2)).isTrue();
 
-        Event event3 = createIEvent(new BigDecimal("1.0"));
+        PrototypeEventInstance event3 = createIEvent(new BigDecimal("1.0"));
         assertThat(predicate.test(event3)).isTrue();
 
-        Event event4 = createIEvent(new BigDecimal("1.00")); // different scale
+        PrototypeEventInstance event4 = createIEvent(new BigDecimal("1.00")); // different scale
         assertThat(predicate.test(event4)).isTrue();
     }
 
@@ -86,10 +86,10 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createIJEvent(1, 2);
+        PrototypeEventInstance event1 = createIJEvent(1, 2);
         assertThat(predicate.test(event1)).isTrue();
 
-        Event event2 = createIJEvent(2, 2);
+        PrototypeEventInstance event2 = createIJEvent(2, 2);
         assertThat(predicate.test(event2)).isFalse();
     }
 
@@ -105,13 +105,13 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createIJEvent(1, 2);
+        PrototypeEventInstance event1 = createIJEvent(1, 2);
         assertThat(predicate.test(event1)).isFalse();
 
-        Event event2 = createIJEvent(2, 2);
+        PrototypeEventInstance event2 = createIJEvent(2, 2);
         assertThat(predicate.test(event2)).isFalse();
 
-        Event event3 = createIJEvent(2, 1);
+        PrototypeEventInstance event3 = createIJEvent(2, 1);
         assertThat(predicate.test(event3)).isTrue();
     }
 
@@ -127,13 +127,13 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createIJEvent(1, 2);
+        PrototypeEventInstance event1 = createIJEvent(1, 2);
         assertThat(predicate.test(event1)).isFalse();
 
-        Event event2 = createIJEvent(2, 2);
+        PrototypeEventInstance event2 = createIJEvent(2, 2);
         assertThat(predicate.test(event2)).isTrue();
 
-        Event event3 = createIJEvent(2, 1);
+        PrototypeEventInstance event3 = createIJEvent(2, 1);
         assertThat(predicate.test(event3)).isTrue();
     }
 
@@ -149,13 +149,13 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createIJEvent(1, 2);
+        PrototypeEventInstance event1 = createIJEvent(1, 2);
         assertThat(predicate.test(event1)).isTrue();
 
-        Event event2 = createIJEvent(2, 2);
+        PrototypeEventInstance event2 = createIJEvent(2, 2);
         assertThat(predicate.test(event2)).isFalse();
 
-        Event event3 = createIJEvent(2, 1);
+        PrototypeEventInstance event3 = createIJEvent(2, 1);
         assertThat(predicate.test(event3)).isFalse();
     }
 
@@ -171,13 +171,13 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
         // toPattern and extract its predicate
         Predicate1.Impl predicate = toPatternAndGetFirstPredicate(mapCondition);
 
-        Event event1 = createIJEvent(1, 2);
+        PrototypeEventInstance event1 = createIJEvent(1, 2);
         assertThat(predicate.test(event1)).isTrue();
 
-        Event event2 = createIJEvent(2, 2);
+        PrototypeEventInstance event2 = createIJEvent(2, 2);
         assertThat(predicate.test(event2)).isTrue();
 
-        Event event3 = createIJEvent(2, 1);
+        PrototypeEventInstance event3 = createIJEvent(2, 1);
         assertThat(predicate.test(event3)).isFalse();
     }
 }

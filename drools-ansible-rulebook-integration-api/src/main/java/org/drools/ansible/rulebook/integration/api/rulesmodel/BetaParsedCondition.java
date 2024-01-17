@@ -1,9 +1,9 @@
 package org.drools.ansible.rulebook.integration.api.rulesmodel;
 
 import org.drools.model.ConstraintOperator;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
+import org.drools.model.prototype.PrototypeVariable;
 import org.drools.model.view.ViewItem;
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 
