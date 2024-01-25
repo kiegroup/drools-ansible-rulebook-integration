@@ -7,6 +7,8 @@ pre: |
   echo "BUILD_MVN_OPTS=${{ env.BUILD_MVN_OPTS }}"
   export BUILD_MVN_OPTS_CURRENT="${{ env.BUILD_MVN_OPTS_CURRENT }}"
   echo "BUILD_MVN_OPTS_CURRENT=${{ env.BUILD_MVN_OPTS_CURRENT }}"
+  export REMOVE_MODULES="./productized/remove_modules.sh ./productized/modules"
+  echo "REMOVE_MODULES=${{ env.REMOVE_MODULES }}"
 
 default:
   build-command:
@@ -21,9 +23,11 @@ build:
     build-command:
       current: |
         java -jar ${{ env.PME_CLI_PATH }} -s ${{ env.PME_MAVEN_SETTINGS_XML }} -DallowConfigFilePrecedence=true -DprojectSrcSkip=false ${{ env.PME_ALIGNMENT_PARAMS_kiegroup_drools }}
+        ${{ env.REMOVE_MODULES }}
         ${{ env.PME_BUILD_SCRIPT_kiegroup_drools }} ${{ env.BUILD_MVN_OPTS }} ${{ env.BUILD_MVN_OPTS_CURRENT }} ${{ env.DROOLS_BUILD_MVN_OPTS }}
       upstream: |
         java -jar ${{ env.PME_CLI_PATH }} -s ${{ env.PME_MAVEN_SETTINGS_XML }} -DallowConfigFilePrecedence=true -DprojectSrcSkip=false ${{ env.PME_ALIGNMENT_PARAMS_kiegroup_drools }}
+        ${{ env.REMOVE_MODULES }}
         ${{ env.PME_BUILD_SCRIPT_kiegroup_drools }} ${{ env.BUILD_MVN_OPTS }} ${{ env.BUILD_MVN_OPTS_UPSTREAM }} ${{ env.DROOLS_BUILD_MVN_OPTS_UPSTREAM }}
 
   - project: kiegroup/drools-ansible-rulebook-integration
