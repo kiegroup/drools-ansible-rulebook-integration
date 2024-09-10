@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.drools.base.reteoo.InitialFactImpl;
 import org.drools.model.PrototypeFact;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
@@ -128,6 +129,53 @@ public class ProcessEventTest {
 
         assertEquals( 2, hosts.size() );
         assertTrue( hosts.containsAll(Arrays.asList("A", "C") ));
+
+        rulesExecutor.dispose();
+    }
+
+    public static final String JSON_IS_NOT_DEFINED =
+            """
+            {
+                "rules": [
+                        {
+                            "Rule": {
+                                "name": "r1",
+                                "condition": {
+                                    "AllCondition": [
+                                        {
+                                            "IsNotDefinedExpression": {
+                                                "Event": "beta.xheaders.age"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": [
+                                    {
+                                        "Action": {
+                                            "action": "debug",
+                                            "action_args": {}
+                                        }
+                                    }
+                                ],
+                                "enabled": true
+                            }
+                        }
+                    ]
+            }
+            """;
+
+    @Test
+    public void isNotDefinedExpression() {
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_IS_NOT_DEFINED);
+
+        List<Match> matchedRules = rulesExecutor.processEvents("{\"meta\":{\"headers\":{\"token\":123}}}").join();
+        assertEquals(1, matchedRules.size());
+        assertEquals("r1", matchedRules.get(0).getRule().getName());
+        assertEquals(InitialFactImpl.class, matchedRules.get(0).getObjects().get(0).getClass());
+
+        // "isNotDefined" rule matches only once
+        matchedRules = rulesExecutor.processEvents("{\"beta\":{\"headers\":{\"age\":23}}}").join();
+        assertEquals(0, matchedRules.size());
 
         rulesExecutor.dispose();
     }
