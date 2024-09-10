@@ -168,14 +168,24 @@ public class ProcessEventTest {
     public void isNotDefinedExpression() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_IS_NOT_DEFINED);
 
+        // A rule containing only a "isNotDefined" constraint matches only the first time ...
         List<Match> matchedRules = rulesExecutor.processEvents("{\"meta\":{\"headers\":{\"token\":123}}}").join();
         assertEquals(1, matchedRules.size());
         assertEquals("r1", matchedRules.get(0).getRule().getName());
         assertEquals(InitialFactImpl.class, matchedRules.get(0).getObjects().get(0).getClass());
 
-        // "isNotDefined" rule matches only once
+        // ... and then no more, to avoid overwhelming the system with firings for each and every event not having that field
         matchedRules = rulesExecutor.processEvents("{\"beta\":{\"headers\":{\"age\":23}}}").join();
         assertEquals(0, matchedRules.size());
+
+        // ... unless an event having that field is inserted
+        matchedRules = rulesExecutor.processEvents("{\"beta\":{\"xheaders\":{\"age\":23}}}").join();
+        assertEquals(0, matchedRules.size());
+
+        // ... and then that event is explicitly removed from the system or expires
+        matchedRules = rulesExecutor.processRetractMatchingFacts("{\"beta\":{\"xheaders\":{\"age\":23}}}", false).join();
+        assertEquals(1, matchedRules.size());
+        assertEquals("r1", matchedRules.get(0).getRule().getName());
 
         rulesExecutor.dispose();
     }
