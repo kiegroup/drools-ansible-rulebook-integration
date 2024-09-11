@@ -88,6 +88,11 @@ public class SimpleCondition implements Condition {
         return Type.SINGLE;
     }
 
+    @Override
+    public boolean isSingleCondition() {
+        return getType() == Type.SINGLE;
+    }
+
     public String otherBinding() {
         throw new UnsupportedOperationException();
     }

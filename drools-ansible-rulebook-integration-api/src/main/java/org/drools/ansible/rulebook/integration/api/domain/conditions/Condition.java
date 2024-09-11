@@ -6,4 +6,5 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 
 public interface Condition {
     ViewItem toPattern(RuleGenerationContext ruleContext);
+    boolean isSingleCondition();
 }
