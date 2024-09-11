@@ -37,6 +37,11 @@ public class AstCondition implements Condition {
     }
 
     @Override
+    public boolean isSingleCondition() {
+        return rootCondition.isSingleCondition();
+    }
+
+    @Override
     public ViewItem toPattern(RuleGenerationContext ruleContext) {
         return rootCondition.toPattern(ruleContext);
     }
@@ -93,6 +98,11 @@ public class AstCondition implements Condition {
         protected org.drools.model.Condition.Type getConditionType() {
             return org.drools.model.Condition.Type.AND;
         }
+
+        @Override
+        public boolean isSingleCondition() {
+            return false;
+        }
     }
 
     public static class AnyCondition extends MultipleConditions<AnyCondition> {
@@ -114,6 +124,11 @@ public class AstCondition implements Condition {
         @Override
         protected void afterBinding() {
             ruleContext.popContext();
+        }
+
+        @Override
+        public boolean isSingleCondition() {
+            return false;
         }
     }
 
@@ -187,6 +202,11 @@ public class AstCondition implements Condition {
                     .withLhs(lhs.negate(ruleContext))
                     .withRhs(rhs.negate(ruleContext));
         }
+
+        @Override
+        public boolean isSingleCondition() {
+            return false;
+        }
     }
 
     public static class OrCondition extends CombinedPatternCondition {
@@ -220,6 +240,11 @@ public class AstCondition implements Condition {
             return new AndCondition(binding)
                     .withLhs(lhs.negate(ruleContext))
                     .withRhs(rhs.negate(ruleContext));
+        }
+
+        @Override
+        public boolean isSingleCondition() {
+            return false;
         }
     }
 
@@ -282,6 +307,11 @@ public class AstCondition implements Condition {
 
         public ParsedCondition getParsedCondition() {
             return parsedCondition;
+        }
+
+        @Override
+        public boolean isSingleCondition() {
+            return true;
         }
     }
 }
