@@ -190,6 +190,7 @@ public class ProcessEventTest {
         rulesExecutor.dispose();
     }
 
+    // condition: event.meta is defined and event.meta.headers.token is not defined
     public static final String JSON_IS_DEFINED_AND_IS_NOT_DEFINED =
             """
             {
@@ -244,6 +245,10 @@ public class ProcessEventTest {
         rulesExecutor.dispose();
     }
 
+    //  condition:
+    //    all:
+    //      - event.meta is defined
+    //      - event.meta.headers.token is not defined
     public static final String JSON_IS_DEFINED_IS_NOT_DEFINED_IN_ALL =
             """
             {
