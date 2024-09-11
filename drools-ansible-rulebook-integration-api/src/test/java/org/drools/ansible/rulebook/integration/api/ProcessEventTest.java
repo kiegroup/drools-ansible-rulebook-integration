@@ -189,4 +189,58 @@ public class ProcessEventTest {
 
         rulesExecutor.dispose();
     }
+
+    public static final String JSON_IS_DEFINED_AND_IS_NOT_DEFINED =
+            """
+            {
+                "rules": [
+                    {
+                        "Rule": {
+                            "name": "r1",
+                            "condition": {
+                                "AllCondition": [
+                                    {
+                                        "AndExpression": {
+                                            "lhs": {
+                                                "IsDefinedExpression": {
+                                                    "Event": "meta"
+                                                }
+                                            },
+                                            "rhs": {
+                                                "IsNotDefinedExpression": {
+                                                    "Event": "meta.headers.token"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "actions": [
+                                {
+                                    "Action": {
+                                        "action": "debug",
+                                        "action_args": {}
+                                    }
+                                }
+                            ],
+                            "enabled": true
+                        }
+                    }
+                ]
+            }
+            """;
+
+    @Test
+    public void isDefinedAndIsNotDefinedExpression() {
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_IS_DEFINED_AND_IS_NOT_DEFINED);
+
+        List<Match> matchedRules = rulesExecutor.processEvents("{\"meta\":{\"headers\":{\"token\":123}}}").join();
+        assertEquals(0, matchedRules.size());
+
+        matchedRules = rulesExecutor.processEvents("{\"meta\":{\"headers\":{\"age\":23}}}").join();
+        assertEquals(1, matchedRules.size());
+        assertEquals("r1", matchedRules.get(0).getRule().getName());
+
+        rulesExecutor.dispose();
+    }
 }
