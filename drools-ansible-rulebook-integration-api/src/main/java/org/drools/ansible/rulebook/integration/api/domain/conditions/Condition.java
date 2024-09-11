@@ -5,4 +5,5 @@ import org.drools.model.view.ViewItem;
 
 public interface Condition {
     ViewItem toPattern(RuleGenerationContext ruleContext);
+    boolean isSingleCondition();
 }

@@ -7,6 +7,7 @@ import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemInList
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ItemNotInListConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListContainsConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.ListNotContainsConstraint;
+import org.drools.ansible.rulebook.integration.api.domain.constraints.NegatedExistsField;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.RulebookOperator;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SearchMatchesConstraint;
 import org.drools.ansible.rulebook.integration.api.domain.constraints.SelectAttrConstraint;
@@ -46,6 +47,39 @@ public class MapCondition implements Condition {
 
     public void setMap(Map<?,?> map) {
         this.map = map;
+    }
+
+    @Override
+    public boolean isSingleCondition() {
+        return isSingleCondition(map);
+    }
+
+    private boolean isSingleCondition(Map map) {
+        if (map.size() != 1) {
+            return false;
+        }
+        Object value = map.values().iterator().next();
+        if (value instanceof Map) {
+            return isSingleCondition((Map) value);
+        }
+        if (value instanceof List) {
+            return isSingleCondition((List) value);
+        }
+        return true;
+    }
+
+    private boolean isSingleCondition(List list) {
+        if (list.size() != 1) {
+            return false;
+        }
+        Object value = list.get(0);
+        if (value instanceof Map) {
+            return isSingleCondition((Map) value);
+        }
+        if (value instanceof List) {
+            return isSingleCondition((List) value);
+        }
+        return true;
     }
 
     private String getPatternBinding(RuleGenerationContext ruleContext) {
@@ -183,7 +217,7 @@ public class MapCondition implements Condition {
     }
 
     private ParsedCondition parseExpression(RuleGenerationContext ruleContext, String expressionName, Map<?, ?> expression) {
-        RulebookOperator operator = decodeOperation(expressionName);
+        RulebookOperator operator = decodeOperation(ruleContext, expressionName);
 
         if (operator instanceof ConditionFactory) {
             if (expression.get("lhs") != null) {
@@ -224,7 +258,7 @@ public class MapCondition implements Condition {
         }
     }
 
-    private static RulebookOperator decodeOperation(String expressionName) {
+    private static RulebookOperator decodeOperation(RuleGenerationContext ruleContext, String expressionName) {
         switch (expressionName) {
             case "EqualsExpression":
                 return RulebookOperator.EQUAL;
@@ -239,8 +273,10 @@ public class MapCondition implements Condition {
             case "LessThanOrEqualToExpression":
                 return RulebookOperator.LESS_OR_EQUAL;
             case ExistsField.EXPRESSION_NAME:
-            case ExistsField.NEGATED_EXPRESSION_NAME:
                 return ExistsField.INSTANCE;
+            case ExistsField.NEGATED_EXPRESSION_NAME:
+                // IsNotDefinedExpression behaves as an existential not only when used alone
+                return ruleContext.getCondition().isSingleCondition() ? ExistsField.INSTANCE : NegatedExistsField.INSTANCE;
             case ListContainsConstraint.EXPRESSION_NAME:
                 return ListContainsConstraint.INSTANCE;
             case ListNotContainsConstraint.EXPRESSION_NAME:
