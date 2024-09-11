@@ -243,4 +243,54 @@ public class ProcessEventTest {
 
         rulesExecutor.dispose();
     }
+
+    public static final String JSON_IS_DEFINED_IS_NOT_DEFINED_IN_ALL =
+            """
+            {
+                "rules": [
+                    {
+                        "Rule": {
+                            "name": "r1",
+                            "condition": {
+                                "AllCondition": [
+                                    {
+                                        "IsDefinedExpression": {
+                                            "Event": "meta"
+                                        }
+                                    },
+                                    {
+                                        "IsNotDefinedExpression": {
+                                            "Event": "meta.headers.token"
+                                        }
+                                    }
+                                ]
+                            },
+                            "actions": [
+                                {
+                                    "Action": {
+                                        "action": "debug",
+                                        "action_args": {}
+                                    }
+                                }
+                            ],
+                            "enabled": true
+                        }
+                    }
+                ]
+            }
+            """;
+
+    @Test
+    public void isDefinedIsNotDefinedInAllExpression() {
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_IS_DEFINED_IS_NOT_DEFINED_IN_ALL);
+
+        List<Match> matchedRules = rulesExecutor.processEvents("{\"meta\":{\"headers\":{\"token\":123}}}").join();
+        assertEquals(0, matchedRules.size());
+
+        matchedRules = rulesExecutor.processEvents("{\"meta\":{\"headers\":{\"age\":23}}}").join();
+        assertEquals(1, matchedRules.size());
+        assertEquals("r1", matchedRules.get(0).getRule().getName());
+
+        rulesExecutor.dispose();
+    }
 }
