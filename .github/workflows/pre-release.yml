@@ -20,7 +20,7 @@ jobs:
       - name: Install Drools Snapshot
         uses: actions/checkout@v3
         with:
-          repository: apache/incubator-kie-drools
+          repository: kiegroup/drools
           path: drools
 
       - name: Build Drools Snapshot with Maven
