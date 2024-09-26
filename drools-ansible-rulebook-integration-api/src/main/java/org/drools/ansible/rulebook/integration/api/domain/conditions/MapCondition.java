@@ -218,6 +218,7 @@ public class MapCondition implements Condition {
 
     private ParsedCondition parseExpression(RuleGenerationContext ruleContext, String expressionName, Map<?, ?> expression) {
         RulebookOperator operator = decodeOperation(ruleContext, expressionName);
+        operator.setConditionContext(ruleContext, expression);
 
         if (operator instanceof ConditionFactory) {
             if (expression.get("lhs") != null) {
@@ -261,17 +262,17 @@ public class MapCondition implements Condition {
     private static RulebookOperator decodeOperation(RuleGenerationContext ruleContext, String expressionName) {
         switch (expressionName) {
             case "EqualsExpression":
-                return RulebookOperator.EQUAL;
+                return RulebookOperator.newEqual();
             case "NotEqualsExpression":
-                return RulebookOperator.NOT_EQUAL;
+                return RulebookOperator.newNotEqual();
             case "GreaterThanExpression":
-                return RulebookOperator.GREATER_THAN;
+                return RulebookOperator.newGreaterThan();
             case "GreaterThanOrEqualToExpression":
-                return RulebookOperator.GREATER_OR_EQUAL;
+                return RulebookOperator.newGreaterOrEqual();
             case "LessThanExpression":
-                return RulebookOperator.LESS_THAN;
+                return RulebookOperator.newLessThan();
             case "LessThanOrEqualToExpression":
-                return RulebookOperator.LESS_OR_EQUAL;
+                return RulebookOperator.newLessOrEqual();
             case ExistsField.EXPRESSION_NAME:
                 return ExistsField.INSTANCE;
             case ExistsField.NEGATED_EXPRESSION_NAME:

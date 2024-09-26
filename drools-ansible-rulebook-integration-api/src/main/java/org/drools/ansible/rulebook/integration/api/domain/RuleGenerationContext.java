@@ -39,6 +39,8 @@ public class RuleGenerationContext {
 
     private final StackedContext<String, PrototypeDSL.PrototypePatternDef> patterns = new StackedContext<>();
 
+    private String ruleSetName;
+
     private String ruleName;
 
     private int bindingsCounter = 0;
@@ -209,11 +211,20 @@ public class RuleGenerationContext {
         this.ruleName = ruleName;
     }
 
+    public String getRuleSetName() {
+        return ruleSetName;
+    }
+
+    public void setRuleSetName(String ruleSetName) {
+        this.ruleSetName = ruleSetName;
+    }
+
     List<Rule> toExecModelRules(RulesSet rulesSet, org.drools.ansible.rulebook.integration.api.domain.Rule ansibleRule, RulesExecutionController rulesExecutionController, AtomicInteger ruleCounter) {
     	updateContextFromRule(ansibleRule);
 	    if (getRuleName() == null) {
 	        setRuleName("r_" + ruleCounter.getAndIncrement());
 	    }
+        setRuleSetName(rulesSet.getName());
 	
 	    List<org.drools.model.Rule> rules = createRules(rulesExecutionController);
 	    if (hasTemporalConstraint(ansibleRule)) {
