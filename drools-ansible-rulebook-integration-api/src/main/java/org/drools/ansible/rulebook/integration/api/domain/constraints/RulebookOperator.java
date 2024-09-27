@@ -1,10 +1,11 @@
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
-import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.model.ConstraintOperator;
-
 import java.util.Map;
 import java.util.function.BiPredicate;
+
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.model.ConstraintOperator;
+import org.drools.model.Index;
 
 public interface RulebookOperator extends ConstraintOperator {
 
@@ -21,27 +22,27 @@ public interface RulebookOperator extends ConstraintOperator {
     }
 
     static RulebookOperator newEqual() {
-        return new OperatorWrapper(new RulebookConstraintOperator(RulebookConstraintOperator.RulebookConstraintOperatorType.EQUAL));
+        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.EQUAL));
     }
 
     static RulebookOperator newNotEqual() {
-        return new OperatorWrapper(new RulebookConstraintOperator(RulebookConstraintOperator.RulebookConstraintOperatorType.NOT_EQUAL));
+        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.NOT_EQUAL));
     }
 
     static RulebookOperator newGreaterThan() {
-        return new OperatorWrapper(new RulebookConstraintOperator(RulebookConstraintOperator.RulebookConstraintOperatorType.GREATER_THAN));
+        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.GREATER_THAN));
     }
 
     static RulebookOperator newGreaterOrEqual() {
-        return new OperatorWrapper(new RulebookConstraintOperator(RulebookConstraintOperator.RulebookConstraintOperatorType.GREATER_OR_EQUAL));
+        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.GREATER_OR_EQUAL));
     }
 
     static RulebookOperator newLessThan() {
-        return new OperatorWrapper(new RulebookConstraintOperator(RulebookConstraintOperator.RulebookConstraintOperatorType.LESS_THAN));
+        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.LESS_THAN));
     }
 
     static RulebookOperator newLessOrEqual() {
-        return new OperatorWrapper(new RulebookConstraintOperator(RulebookConstraintOperator.RulebookConstraintOperatorType.LESS_OR_EQUAL));
+        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.LESS_OR_EQUAL));
     }
 
     default void setConditionContext(RuleGenerationContext ruleContext, Map<?, ?> expression) {
@@ -49,7 +50,6 @@ public interface RulebookOperator extends ConstraintOperator {
             operatorWrapper.setConditionContext(ruleContext, expression);
         } else {
             // do nothing
-            return;
         }
     }
 
@@ -80,6 +80,7 @@ public interface RulebookOperator extends ConstraintOperator {
             return delegate;
         }
 
+        @Override
         public void setConditionContext(RuleGenerationContext ruleContext, Map<?, ?> expression) {
             delegate.setConditionContext(ruleContext, expression);
         }

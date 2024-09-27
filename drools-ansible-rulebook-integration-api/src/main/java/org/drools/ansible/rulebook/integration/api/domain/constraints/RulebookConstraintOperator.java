@@ -5,6 +5,7 @@ import java.util.function.BiPredicate;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.model.ConstraintOperator;
+import org.drools.model.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,23 +14,13 @@ import static org.drools.model.util.OperatorUtils.compare;
 
 public class RulebookConstraintOperator implements ConstraintOperator {
 
-    enum RulebookConstraintOperatorType {
-        EQUAL,
-        NOT_EQUAL,
-        GREATER_THAN,
-        GREATER_OR_EQUAL,
-        LESS_THAN,
-        LESS_OR_EQUAL,
-        UNKNOWN;
-    }
-
     private static final Logger LOG = LoggerFactory.getLogger(RulebookConstraintOperator.class);
 
-    private RulebookConstraintOperatorType type;
+    private Index.ConstraintType type;
     private ConditionContext conditionContext;
     private boolean typeCheckLogged = false;
 
-    public RulebookConstraintOperator(RulebookConstraintOperatorType type) {
+    public RulebookConstraintOperator(Index.ConstraintType type) {
         this.type = type;
     }
 
@@ -37,28 +28,38 @@ public class RulebookConstraintOperator implements ConstraintOperator {
         this.conditionContext = new ConditionContext(ruleContext.getRuleSetName(), ruleContext.getRuleName(), expression.toString());
     }
 
+    @Override
+    public boolean containsConstraintType() {
+        return true;
+    }
+
+    @Override
+    public Index.ConstraintType getConstraintType() {
+        return type;
+    }
+
     public RulebookConstraintOperator negate() {
         switch (this.type) {
             case EQUAL:
-                this.type = RulebookConstraintOperatorType.NOT_EQUAL;
+                this.type = Index.ConstraintType.NOT_EQUAL;
                 return this;
             case NOT_EQUAL:
-                this.type = RulebookConstraintOperatorType.EQUAL;
+                this.type = Index.ConstraintType.EQUAL;
                 return this;
             case GREATER_THAN:
-                this.type = RulebookConstraintOperatorType.LESS_OR_EQUAL;
+                this.type = Index.ConstraintType.LESS_OR_EQUAL;
                 return this;
             case GREATER_OR_EQUAL:
-                this.type = RulebookConstraintOperatorType.LESS_THAN;
+                this.type = Index.ConstraintType.LESS_THAN;
                 return this;
             case LESS_OR_EQUAL:
-                this.type = RulebookConstraintOperatorType.GREATER_THAN;
+                this.type = Index.ConstraintType.GREATER_THAN;
                 return this;
             case LESS_THAN:
-                this.type = RulebookConstraintOperatorType.GREATER_OR_EQUAL;
+                this.type = Index.ConstraintType.GREATER_OR_EQUAL;
                 return this;
         }
-        this.type = RulebookConstraintOperatorType.UNKNOWN;
+        this.type = Index.ConstraintType.UNKNOWN;
         return this;
     }
 
@@ -124,16 +125,16 @@ public class RulebookConstraintOperator implements ConstraintOperator {
     public RulebookConstraintOperator inverse() {
         switch (this.type) {
             case GREATER_THAN:
-                this.type = RulebookConstraintOperatorType.LESS_THAN;
+                this.type = Index.ConstraintType.LESS_THAN;
                 return this;
             case GREATER_OR_EQUAL:
-                this.type =  RulebookConstraintOperatorType.LESS_OR_EQUAL;
+                this.type =  Index.ConstraintType.LESS_OR_EQUAL;
                 return this;
             case LESS_THAN:
-                this.type = RulebookConstraintOperatorType.GREATER_THAN;
+                this.type = Index.ConstraintType.GREATER_THAN;
                 return this;
             case LESS_OR_EQUAL:
-                this.type = RulebookConstraintOperatorType.GREATER_OR_EQUAL;
+                this.type = Index.ConstraintType.GREATER_OR_EQUAL;
                 return this;
             default:
                 return this;
@@ -145,11 +146,11 @@ public class RulebookConstraintOperator implements ConstraintOperator {
     }
 
     public boolean isAscending() {
-        return this.type == RulebookConstraintOperatorType.GREATER_THAN || this.type == RulebookConstraintOperatorType.GREATER_OR_EQUAL;
+        return this.type == Index.ConstraintType.GREATER_THAN || this.type == Index.ConstraintType.GREATER_OR_EQUAL;
     }
 
     public boolean isDescending() {
-        return this.type == RulebookConstraintOperatorType.LESS_THAN || this.type == RulebookConstraintOperatorType.LESS_OR_EQUAL;
+        return this.type == Index.ConstraintType.LESS_THAN || this.type == Index.ConstraintType.LESS_OR_EQUAL;
     }
 
     private class ConditionContext {
@@ -175,5 +176,11 @@ public class RulebookConstraintOperator implements ConstraintOperator {
         public String getConditionExpression() {
             return conditionExpression;
         }
+    }
+
+    @Override
+    public String toString() {
+        // works for node sharing
+        return type.toString();
     }
 }
