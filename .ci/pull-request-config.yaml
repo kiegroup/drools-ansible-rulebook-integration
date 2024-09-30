@@ -3,7 +3,7 @@ version: "2.1"
 dependencies: ./project-dependencies.yaml
 
 build:
-  - project: apache/incubator-kie-drools
+  - project: kiegroup/drools
     build-command:
       current: mvn --batch-mode --update-snapshots install -Dquickly
 
