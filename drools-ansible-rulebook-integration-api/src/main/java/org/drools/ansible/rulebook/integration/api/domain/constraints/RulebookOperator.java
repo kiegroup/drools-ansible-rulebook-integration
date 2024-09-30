@@ -22,67 +22,34 @@ public interface RulebookOperator extends ConstraintOperator {
     }
 
     static RulebookOperator newEqual() {
-        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.EQUAL));
+        return new RulebookConstraintOperator(Index.ConstraintType.EQUAL);
     }
 
     static RulebookOperator newNotEqual() {
-        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.NOT_EQUAL));
+        return new RulebookConstraintOperator(Index.ConstraintType.NOT_EQUAL);
     }
 
     static RulebookOperator newGreaterThan() {
-        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.GREATER_THAN));
+        return new RulebookConstraintOperator(Index.ConstraintType.GREATER_THAN);
     }
 
     static RulebookOperator newGreaterOrEqual() {
-        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.GREATER_OR_EQUAL));
+        return new RulebookConstraintOperator(Index.ConstraintType.GREATER_OR_EQUAL);
     }
 
     static RulebookOperator newLessThan() {
-        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.LESS_THAN));
+        return new RulebookConstraintOperator(Index.ConstraintType.LESS_THAN);
     }
 
     static RulebookOperator newLessOrEqual() {
-        return new OperatorWrapper(new RulebookConstraintOperator(Index.ConstraintType.LESS_OR_EQUAL));
+        return new RulebookConstraintOperator(Index.ConstraintType.LESS_OR_EQUAL);
     }
 
     default void setConditionContext(RuleGenerationContext ruleContext, Map<?, ?> expression) {
-        if (this instanceof OperatorWrapper operatorWrapper) {
-            operatorWrapper.setConditionContext(ruleContext, expression);
+        if (this instanceof RulebookConstraintOperator rulebookConstraintOperator) {
+            rulebookConstraintOperator.setConditionContext(ruleContext, expression);
         } else {
             // do nothing
-        }
-    }
-
-    class OperatorWrapper implements RulebookOperator {
-        private final RulebookConstraintOperator delegate;
-
-        public OperatorWrapper(RulebookConstraintOperator delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public <T, V> BiPredicate<T, V> asPredicate() {
-            return delegate.asPredicate();
-        }
-
-        @Override
-        public boolean canInverse() {
-            return delegate.canInverse();
-        }
-
-        @Override
-        public RulebookOperator inverse() {
-            return new OperatorWrapper(delegate.inverse());
-        }
-
-        @Override
-        public ConstraintOperator asConstraintOperator() {
-            return delegate;
-        }
-
-        @Override
-        public void setConditionContext(RuleGenerationContext ruleContext, Map<?, ?> expression) {
-            delegate.setConditionContext(ruleContext, expression);
         }
     }
 }

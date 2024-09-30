@@ -4,15 +4,15 @@ import java.util.Map;
 import java.util.function.BiPredicate;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
-import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.drools.ansible.rulebook.integration.api.LogUtil.convertJavaClassToPythonClass;
 import static org.drools.model.util.OperatorUtils.areEqual;
 import static org.drools.model.util.OperatorUtils.compare;
 
-public class RulebookConstraintOperator implements ConstraintOperator {
+public class RulebookConstraintOperator implements RulebookOperator {
 
     private static final Logger LOG = LoggerFactory.getLogger(RulebookConstraintOperator.class);
 
@@ -29,17 +29,18 @@ public class RulebookConstraintOperator implements ConstraintOperator {
     }
 
     @Override
-    public boolean containsConstraintType() {
+    public boolean hasIndex() {
         return true;
     }
 
     @Override
-    public Index.ConstraintType getConstraintType() {
+    public Index.ConstraintType getIndexType() {
         return type;
     }
 
     public RulebookConstraintOperator negate() {
         switch (this.type) {
+            case FORALL_SELF_JOIN:
             case EQUAL:
                 this.type = Index.ConstraintType.NOT_EQUAL;
                 return this;
@@ -113,9 +114,10 @@ public class RulebookConstraintOperator implements ConstraintOperator {
             return predicate.test(t, v);
         } else {
             if (!typeCheckLogged) {
-                // TODO: rewrite the message to be python friendly
                 LOG.error("Cannot compare values of different types: {} and {}. RuleSet: {}. RuleName: {}. Condition: {}",
-                          t.getClass(), v.getClass(), conditionContext.getRuleSet(), conditionContext.getRuleName(), conditionContext.getConditionExpression());
+                          convertJavaClassToPythonClass(t.getClass()),
+                          convertJavaClassToPythonClass(v.getClass()),
+                          conditionContext.getRuleSet(), conditionContext.getRuleName(), conditionContext.getConditionExpression());
                 typeCheckLogged = true; // Log only once per constraint
             }
             return false; // Different types are never equal
