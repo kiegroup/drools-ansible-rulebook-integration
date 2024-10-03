@@ -9,4 +9,4 @@ build:
 
   - project: kiegroup/drools-ansible-rulebook-integration
     build-command:
-      current: mvn --batch-mode --update-snapshots verify
+      current: mvn -Dversion.drools=9.101.0 --batch-mode --update-snapshots verify
