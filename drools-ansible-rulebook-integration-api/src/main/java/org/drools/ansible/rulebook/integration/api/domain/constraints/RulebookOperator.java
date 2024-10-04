@@ -1,9 +1,11 @@
 package org.drools.ansible.rulebook.integration.api.domain.constraints;
 
+import java.util.Map;
+import java.util.function.BiPredicate;
+
+import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.model.ConstraintOperator;
 import org.drools.model.Index;
-
-import java.util.function.BiPredicate;
 
 public interface RulebookOperator extends ConstraintOperator {
 
@@ -19,38 +21,35 @@ public interface RulebookOperator extends ConstraintOperator {
         return this;
     }
 
-    RulebookOperator EQUAL = new OperatorWrapper(Index.ConstraintType.EQUAL);
-    RulebookOperator NOT_EQUAL = new OperatorWrapper(Index.ConstraintType.NOT_EQUAL);
-    RulebookOperator GREATER_THAN = new OperatorWrapper(Index.ConstraintType.GREATER_THAN);
-    RulebookOperator GREATER_OR_EQUAL = new OperatorWrapper(Index.ConstraintType.GREATER_OR_EQUAL);
-    RulebookOperator LESS_THAN = new OperatorWrapper(Index.ConstraintType.LESS_THAN);
-    RulebookOperator LESS_OR_EQUAL = new OperatorWrapper(Index.ConstraintType.LESS_OR_EQUAL);
+    static RulebookOperator newEqual() {
+        return new RulebookConstraintOperator(Index.ConstraintType.EQUAL);
+    }
 
-    class OperatorWrapper implements RulebookOperator {
-        private final Index.ConstraintType delegate;
+    static RulebookOperator newNotEqual() {
+        return new RulebookConstraintOperator(Index.ConstraintType.NOT_EQUAL);
+    }
 
-        public OperatorWrapper(Index.ConstraintType delegate) {
-            this.delegate = delegate;
-        }
+    static RulebookOperator newGreaterThan() {
+        return new RulebookConstraintOperator(Index.ConstraintType.GREATER_THAN);
+    }
 
-        @Override
-        public <T, V> BiPredicate<T, V> asPredicate() {
-            return delegate.asPredicate();
-        }
+    static RulebookOperator newGreaterOrEqual() {
+        return new RulebookConstraintOperator(Index.ConstraintType.GREATER_OR_EQUAL);
+    }
 
-        @Override
-        public boolean canInverse() {
-            return delegate.canInverse();
-        }
+    static RulebookOperator newLessThan() {
+        return new RulebookConstraintOperator(Index.ConstraintType.LESS_THAN);
+    }
 
-        @Override
-        public RulebookOperator inverse() {
-            return new OperatorWrapper(delegate.inverse());
-        }
+    static RulebookOperator newLessOrEqual() {
+        return new RulebookConstraintOperator(Index.ConstraintType.LESS_OR_EQUAL);
+    }
 
-        @Override
-        public ConstraintOperator asConstraintOperator() {
-            return delegate;
+    default void setConditionContext(RuleGenerationContext ruleContext, Map<?, ?> expression) {
+        if (this instanceof RulebookConstraintOperator rulebookConstraintOperator) {
+            rulebookConstraintOperator.setConditionContext(ruleContext, expression);
+        } else {
+            // do nothing
         }
     }
 }
