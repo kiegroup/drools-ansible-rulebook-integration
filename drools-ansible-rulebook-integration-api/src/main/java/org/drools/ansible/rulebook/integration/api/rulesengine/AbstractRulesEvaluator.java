@@ -253,4 +253,9 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     public KieSession asKieSession() {
         return rulesExecutorSession.asKieSession();
     }
+
+    @Override
+    public void validateRulesSetEventStructureOnce(String json) {
+        rulesExecutorSession.validateRulesSetEventStructureOnce(json);
+    }
 }

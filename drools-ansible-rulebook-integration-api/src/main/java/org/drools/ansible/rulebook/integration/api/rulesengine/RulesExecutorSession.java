@@ -36,12 +36,15 @@ public class RulesExecutorSession {
 
     private final SessionStatsCollector sessionStatsCollector;
 
+    private final RulesSetEventStructure rulesSetEventStructure;
+
     public RulesExecutorSession(RulesSet rulesSet, KieSession kieSession, RulesExecutionController rulesExecutionController, long id) {
         this.rulesSet = rulesSet;
         this.kieSession = kieSession;
         this.rulesExecutionController = rulesExecutionController;
         this.id = id;
         this.sessionStatsCollector = new SessionStatsCollector(id);
+        this.rulesSetEventStructure = new RulesSetEventStructure(rulesSet);
 
         initClock();
     }
@@ -172,5 +175,12 @@ public class RulesExecutorSession {
 
     public KieSession asKieSession() {
         return kieSession;
+    }
+
+    public void validateRulesSetEventStructureOnce(String json) {
+        if (rulesSetEventStructure.isValidated()) {
+            return;
+        }
+        rulesSetEventStructure.validate(json);
     }
 }
