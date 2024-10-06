@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.isRegexOperator;
-import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 
 public enum SearchMatchesConstraint implements RulebookOperator, ConditionFactory {
 

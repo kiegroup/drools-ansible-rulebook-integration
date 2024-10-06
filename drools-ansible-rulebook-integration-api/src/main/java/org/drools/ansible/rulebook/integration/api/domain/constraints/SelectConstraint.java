@@ -6,9 +6,9 @@ import org.drools.ansible.rulebook.integration.api.rulesmodel.BetaParsedConditio
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.ConstraintOperator;
-import org.drools.model.Prototype;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeVariable;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeVariable;
+import org.kie.api.prototype.Prototype;
 
 import java.util.Collection;
 import java.util.Map;
@@ -19,7 +19,7 @@ import static org.drools.ansible.rulebook.integration.api.domain.conditions.Cond
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.mapToStringValue;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionParseUtil.toJsonValue;
 import static org.drools.ansible.rulebook.integration.api.domain.constraints.Operators.toOperatorPredicate;
-import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 
 public enum SelectConstraint implements RulebookOperator, ConditionFactory {
 

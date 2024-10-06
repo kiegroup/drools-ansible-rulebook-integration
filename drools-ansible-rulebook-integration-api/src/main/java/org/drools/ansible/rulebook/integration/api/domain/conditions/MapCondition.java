@@ -27,7 +27,7 @@ import java.util.Map;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.mapEntry2Expr;
-import static org.drools.model.PrototypeExpression.fixedValue;
+import static org.drools.model.prototype.PrototypeExpression.fixedValue;
 
 public class MapCondition implements Condition {
 

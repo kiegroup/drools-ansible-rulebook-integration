@@ -4,10 +4,10 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.model.functions.Function1;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeVariable;
-import org.drools.model.Prototype;
-import org.drools.model.PrototypeFact;
+import org.drools.model.prototype.PrototypeExpression;
+import org.drools.model.prototype.PrototypeVariable;
+import org.kie.api.prototype.Prototype;
+import org.kie.api.prototype.PrototypeFactInstance;
 
 import java.util.Collection;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 
 import static org.drools.ansible.rulebook.integration.api.domain.conditions.ConditionExpression.map2Expr;
-import static org.drools.model.PrototypeExpression.thisPrototype;
+import static org.drools.model.prototype.PrototypeExpression.thisPrototype;
 
 public enum NegatedExistsField implements RulebookOperator, ConditionFactory {
 
@@ -49,7 +49,7 @@ public enum NegatedExistsField implements RulebookOperator, ConditionFactory {
         }
 
         @Override
-        public Function1<PrototypeFact, Object> asFunction(Prototype prototype) {
+        public Function1<PrototypeFactInstance, Object> asFunction(Prototype prototype) {
             return delegate.asFunction(prototype).andThen( result -> result == Prototype.UNDEFINED_VALUE ? ADMITTED_UNDEFINED_VALUE : result );
         }
 

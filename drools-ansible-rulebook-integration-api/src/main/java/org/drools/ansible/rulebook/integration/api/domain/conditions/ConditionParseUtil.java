@@ -1,12 +1,12 @@
 package org.drools.ansible.rulebook.integration.api.domain.conditions;
 
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
+import org.kie.api.prototype.Prototype;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
-import org.drools.model.Prototype;
 
 public class ConditionParseUtil {
 

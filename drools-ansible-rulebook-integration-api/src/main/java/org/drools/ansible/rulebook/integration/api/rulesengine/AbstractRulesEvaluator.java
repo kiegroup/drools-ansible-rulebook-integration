@@ -5,8 +5,8 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
-import org.drools.base.facttemplates.Fact;
 import org.drools.core.common.InternalFactHandle;
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
@@ -132,7 +132,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
                 () -> rulesExecutorSession.deleteAllMatchingFacts(json, allowPartialMatch, keysToExclude),
                 (fhs, matches) -> {
                     for (int i = 0; i < matches.size(); i++) {
-                        Map<String, Object> jsonFact = ((Fact) fhs.get(matches.size() == fhs.size() ? i : 0).getObject()).asMap();
+                        Map<String, Object> jsonFact = ((PrototypeFactInstance) fhs.get(matches.size() == fhs.size() ? i : 0).getObject()).asMap();
                         matches.set(i, enrichMatchWithFact(matches.get(i), jsonFact));
                     }
                 });
@@ -171,7 +171,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
                     if (log.isDebugEnabled()) {
                         for (InternalFactHandle fh : fhs) {
                             if (fh.isDisconnected()) {
-                                String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((Fact)fh.getObject()).asMap());
+                                String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((PrototypeFactInstance)fh.getObject()).asMap());
                                 log.debug((processEventInsertion ? "Event " : "Fact ") + factAsString + " didn't match any rule and has been immediately discarded");
                             }
                         }

@@ -1,19 +1,19 @@
 package org.drools.ansible.rulebook.integration.protoextractor.prototype;
 
+import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
+import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
+import org.drools.model.functions.Function1;
+import org.drools.model.prototype.PrototypeDSL;
+import org.drools.model.prototype.PrototypeExpression;
+import org.kie.api.prototype.Prototype;
+import org.kie.api.prototype.PrototypeFact;
+import org.kie.api.prototype.PrototypeFactInstance;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
-import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
-import org.drools.base.facttemplates.Fact;
-import org.drools.model.Prototype;
-import org.drools.model.PrototypeDSL;
-import org.drools.model.PrototypeExpression;
-import org.drools.model.PrototypeFact;
-import org.drools.model.functions.Function1;
 
 public class ExtractorPrototypeExpression implements PrototypeExpression {
     /**
@@ -21,7 +21,7 @@ public class ExtractorPrototypeExpression implements PrototypeExpression {
      * but having prototype definition ignored in {@link #asFunction(Prototype)} call, ought to be revised 
      * if porting this module into Drools and generalizing beyond usage in ansible-integration.
      */
-    public static final Prototype IGNORED = PrototypeDSL.prototype("IGNORED");
+    public static final PrototypeFact IGNORED = PrototypeDSL.prototypeFact("IGNORED");
     protected final ExtractorNode extractorNode;
     protected final String computedFieldName;
     protected final Collection<String> computedImpactedFields;
@@ -33,9 +33,9 @@ public class ExtractorPrototypeExpression implements PrototypeExpression {
     }
 
     @Override
-    public Function1<PrototypeFact, Object> asFunction(Prototype prototype) {
+    public Function1<PrototypeFactInstance, Object> asFunction(Prototype prototype) {
         return pf -> {
-            Map<String, Object> asMap = ((Fact) pf).asMap();
+            Map<String, Object> asMap = pf.asMap();
             Object value = ExtractorUtils.getValueFrom(extractorNode, asMap);
             return value;
         };
