@@ -24,6 +24,7 @@ public class RulebookConstraintOperator implements RulebookOperator {
         this.type = type;
     }
 
+    @Override
     public void setConditionContext(RuleGenerationContext ruleContext, Map<?, ?> expression) {
         this.conditionContext = new ConditionContext(ruleContext.getRuleSetName(), ruleContext.getRuleName(), expression.toString());
     }
@@ -64,6 +65,7 @@ public class RulebookConstraintOperator implements RulebookOperator {
         return this;
     }
 
+    @Override
     public boolean canInverse() {
         switch (this.type) {
             case EQUAL:
@@ -107,10 +109,7 @@ public class RulebookConstraintOperator implements RulebookOperator {
     }
 
     private <T, V> boolean predicateWithTypeCheck(T t, V v, BiPredicate<T, V> predicate) {
-        if (t == null
-                || v == null
-                || t instanceof Number && v instanceof Number
-                || t.getClass() == v.getClass()) {
+        if (isCompatibleType(t, v)) {
             return predicate.test(t, v);
         } else {
             if (!typeCheckLogged) {
@@ -124,6 +123,14 @@ public class RulebookConstraintOperator implements RulebookOperator {
         }
     }
 
+    public static boolean isCompatibleType(Object t, Object v) {
+        return t == null
+                || v == null
+                || t instanceof Number && v instanceof Number
+                || t.getClass() == v.getClass();
+    }
+
+    @Override
     public RulebookConstraintOperator inverse() {
         switch (this.type) {
             case GREATER_THAN:
