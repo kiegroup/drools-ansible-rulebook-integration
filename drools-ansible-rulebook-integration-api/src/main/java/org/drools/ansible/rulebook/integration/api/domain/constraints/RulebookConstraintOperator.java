@@ -24,6 +24,7 @@ public class RulebookConstraintOperator implements RulebookOperator {
         this.type = type;
     }
 
+    @Override
     public void setConditionContext(RuleGenerationContext ruleContext, Map<?, ?> expression) {
         this.conditionContext = new ConditionContext(ruleContext.getRuleSetName(), ruleContext.getRuleName(), expression.toString());
     }
@@ -64,6 +65,7 @@ public class RulebookConstraintOperator implements RulebookOperator {
         return this;
     }
 
+    @Override
     public boolean canInverse() {
         switch (this.type) {
             case EQUAL:
@@ -107,23 +109,35 @@ public class RulebookConstraintOperator implements RulebookOperator {
     }
 
     private <T, V> boolean predicateWithTypeCheck(T t, V v, BiPredicate<T, V> predicate) {
-        if (t == null
-                || v == null
-                || t instanceof Number && v instanceof Number
-                || t.getClass() == v.getClass()) {
+        if (isCompatibleType(t, v)) {
             return predicate.test(t, v);
         } else {
-            if (!typeCheckLogged) {
-                LOG.error("Cannot compare values of different types: {} and {}. RuleSet: {}. RuleName: {}. Condition: {}",
-                          convertJavaClassToPythonClass(t.getClass()),
-                          convertJavaClassToPythonClass(v.getClass()),
-                          conditionContext.getRuleSet(), conditionContext.getRuleName(), conditionContext.getConditionExpression());
-                typeCheckLogged = true; // Log only once per constraint
-            }
-            return false; // Different types are never equal
+            logTypeCheck(t, v);
+            return false; // Different types evaluation always return false even if the operator is NOT_EQUAL
         }
     }
 
+    /*
+     * Log a type check error once per constraint
+     */
+    <T, V> void logTypeCheck(T t, V v) {
+        if (!typeCheckLogged) {
+            LOG.error("Cannot compare values of different types: {} and {}. RuleSet: {}. RuleName: {}. Condition: {}",
+                      convertJavaClassToPythonClass(t.getClass()),
+                      convertJavaClassToPythonClass(v.getClass()),
+                      conditionContext.getRuleSet(), conditionContext.getRuleName(), conditionContext.getConditionExpression());
+            typeCheckLogged = true; // Log only once per constraint
+        }
+    }
+
+    public static boolean isCompatibleType(Object t, Object v) {
+        return t == null
+                || v == null
+                || t instanceof Number && v instanceof Number
+                || t.getClass() == v.getClass();
+    }
+
+    @Override
     public RulebookConstraintOperator inverse() {
         switch (this.type) {
             case GREATER_THAN:
