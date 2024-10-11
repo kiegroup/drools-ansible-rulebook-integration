@@ -113,7 +113,7 @@ public class RulebookConstraintOperator implements RulebookOperator {
             return predicate.test(t, v);
         } else {
             logTypeCheck(t, v);
-            return false; // Different types are never equal
+            return false; // Different types evaluation always return false even if the operator is NOT_EQUAL
         }
     }
 
