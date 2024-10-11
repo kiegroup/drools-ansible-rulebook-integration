@@ -16,12 +16,14 @@ public class NegationOperator implements ConstraintOperator {
 
     @Override
     public <T, V> BiPredicate<T, V> asPredicate() {
-        if (toBeNegated instanceof RulebookConstraintOperator) {
+        if (toBeNegated instanceof RulebookConstraintOperator rulebookConstraintOperator) {
             return (t, v) -> {
-                // if not compatible type, return false regardless of the result
-                // but let the operator be executed anyway so that the error message specific to the constraint is logged
-                boolean result = !toBeNegated.asPredicate().test(t, v);
-                return isCompatibleType(t, v) ? result : false;
+                // if not compatible type, return false. Use the operator to log the type check error
+                if (!isCompatibleType(t, v)) {
+                    rulebookConstraintOperator.logTypeCheck(t, v);
+                    return false;
+                }
+                return !toBeNegated.asPredicate().test(t, v);
             };
         }
         return (t, v) -> !toBeNegated.asPredicate().test(t, v);

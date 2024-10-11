@@ -112,14 +112,21 @@ public class RulebookConstraintOperator implements RulebookOperator {
         if (isCompatibleType(t, v)) {
             return predicate.test(t, v);
         } else {
-            if (!typeCheckLogged) {
-                LOG.error("Cannot compare values of different types: {} and {}. RuleSet: {}. RuleName: {}. Condition: {}",
-                          convertJavaClassToPythonClass(t.getClass()),
-                          convertJavaClassToPythonClass(v.getClass()),
-                          conditionContext.getRuleSet(), conditionContext.getRuleName(), conditionContext.getConditionExpression());
-                typeCheckLogged = true; // Log only once per constraint
-            }
+            logTypeCheck(t, v);
             return false; // Different types are never equal
+        }
+    }
+
+    /*
+     * Log a type check error once per constraint
+     */
+    <T, V> void logTypeCheck(T t, V v) {
+        if (!typeCheckLogged) {
+            LOG.error("Cannot compare values of different types: {} and {}. RuleSet: {}. RuleName: {}. Condition: {}",
+                      convertJavaClassToPythonClass(t.getClass()),
+                      convertJavaClassToPythonClass(v.getClass()),
+                      conditionContext.getRuleSet(), conditionContext.getRuleName(), conditionContext.getConditionExpression());
+            typeCheckLogged = true; // Log only once per constraint
         }
     }
 
