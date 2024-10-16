@@ -6,10 +6,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.text.similarity.LevenshteinDistance;
@@ -17,6 +17,7 @@ import org.drools.ansible.rulebook.integration.api.domain.Rule;
 import org.drools.ansible.rulebook.integration.api.domain.RuleContainer;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
+import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,21 +32,58 @@ public class RulesSetEventStructure {
 
     private static final Logger LOG = LoggerFactory.getLogger(RulesSetEventStructure.class);
 
+    public static final String EVENT_STRUCTURE_SUGGESTION_ENABLED_ENV_NAME = "DROOLS_SUGGESTION_ENABLED";
+    public static final String EVENT_STRUCTURE_SUGGESTION_ENABLED_PROPERTY = "drools.event.structure.suggestion.enabled";
+    static boolean EVENT_STRUCTURE_SUGGESTION_ENABLED; // package-private for testing
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     // key: event path split into nodes
     // value: list of rule names that use the event path
-    private Map<List<String>, List<String>> eventPathMap = new HashMap<>();
+    private final Map<EventPath, List<String>> eventPathMap = new HashMap<>();
 
-    private boolean validated = false;
+    // keep the first event json for validation
+    // will be cleared after validation
+    private String firstEventJson;
+
+    /*
+     * NO_EVENT -> FIRST_EVENT_EXECUTING -> VALIDATING (if the first event matches no rule) -> VALIDATED
+     *                                   -> NO_NEED_TO_VALIDATE (if the first event matches any rule)
+     */
+    enum State {
+        NO_EVENT,
+        FIRST_EVENT_EXECUTING,
+        VALIDATING,
+        VALIDATED,
+        NO_NEED_TO_VALIDATE
+    }
+
+    private State state = State.NO_EVENT;
 
     private String ruleSetName;
 
-    public RulesSetEventStructure(RulesSet rulesSet) {
-        analyzeRulesSet(rulesSet);
+    static {
+        String envValue = System.getenv(EVENT_STRUCTURE_SUGGESTION_ENABLED_ENV_NAME);
+        if (envValue != null && !envValue.isEmpty()) {
+            // Environment variable takes precedence over system property
+            System.setProperty(EVENT_STRUCTURE_SUGGESTION_ENABLED_PROPERTY, envValue);
+        }
+        EVENT_STRUCTURE_SUGGESTION_ENABLED = Boolean.getBoolean(EVENT_STRUCTURE_SUGGESTION_ENABLED_PROPERTY);
+    }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("eventPathMap : {}", eventPathMap);
+    public RulesSetEventStructure(RulesSet rulesSet) {
+        try {
+            if (EVENT_STRUCTURE_SUGGESTION_ENABLED) {
+                analyzeRulesSet(rulesSet);
+            }
+
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("eventPathMap : {}", eventPathMap);
+            }
+        } catch (Exception e) {
+            // catch all because this suggestion feature is not critical
+            LOG.warn("Failed to analyze the rules set conditions. You may ignore this error because this feature doesn't affect the rule execution.", e);
+            state = State.NO_NEED_TO_VALIDATE;
         }
     }
 
@@ -63,9 +101,9 @@ public class RulesSetEventStructure {
 
     private void traverseMap(Map<?, ?> map, String ruleName) {
         map.forEach((key, value) -> {
-            if ((key.equals("Event") || key.equals("Fact")) && value instanceof String stringValue) {
-                List<String> eventPathNodeList = splitEventPath(stringValue);
-                eventPathMap.compute(eventPathNodeList, (k, v) -> {
+            if (key.equals("Event") && value instanceof String stringValue) {
+                EventPath eventPath = new EventPath(splitEventPath(stringValue));
+                eventPathMap.compute(eventPath, (k, v) -> {
                     if (v == null) {
                         v = new ArrayList<>();
                     }
@@ -97,7 +135,6 @@ public class RulesSetEventStructure {
      * normalize the event path to this format.
      * person["name"] -> person.name
      * person[0] -> person[]
-     * TODO: keeping the index person[0] might be better for the future validation.
      */
     private List<String> splitEventPath(String eventPath) {
         String[] nodes = eventPath.split("\\.");
@@ -109,7 +146,13 @@ public class RulesSetEventStructure {
                 int rightBracket = node.indexOf(']');
                 String body = node.substring(0, leftBracket);
                 String key = node.substring(leftBracket + 1, rightBracket);
-                if (isQuotedString(key)) {
+
+                if (rightBracket < node.length() - 1) {
+                    // This version doesn't analyze nested array or map access. (limitation)
+                    LOG.debug("Multiple bracket pairs are not analyzed for structure suggestion. {}", node);
+                    // return the path before the unparsed bracket
+                    return pathNodeList;
+                } else if (isQuotedString(key)) {
                     // String key means it's a map access. Equivalent to property
                     key = key.substring(1, key.length() - 1);
                     pathNodeList.add(body);
@@ -120,13 +163,6 @@ public class RulesSetEventStructure {
                 } else {
                     LOG.warn("Unknown key type: {} in the node {}", key, node);
                     // return the path before the node
-                    return pathNodeList;
-                }
-
-                // TODO: handle nested bracket pairs. e.g. event.asd["x"][1][2]
-                if (rightBracket < node.length() - 1) {
-                    LOG.info("Multiple bracket pairs. {}", node);
-                    // return the path before the unparsed bracket
                     return pathNodeList;
                 }
             } else {
@@ -163,34 +199,56 @@ public class RulesSetEventStructure {
         return true;
     }
 
-    public boolean isValidated() {
-        return validated;
+    /**
+     * Store the first event json for validation if validation is required.
+     */
+    public void stashFirstEventJsonForValidation(String firstEventJson) {
+        if (EVENT_STRUCTURE_SUGGESTION_ENABLED && state == State.NO_EVENT) {
+            this.firstEventJson = firstEventJson;
+            state = State.FIRST_EVENT_EXECUTING;
+        }
+    }
+
+    /**
+     * When the first event is executed and no rule is matched, validation takes place.
+     * If the first event matches any rule, no longer need to validate.
+     * If we don't have the first event, do nothing.
+     */
+    public void validateRulesSetEventStructureIfRequired(List<Match> matches) {
+        if (EVENT_STRUCTURE_SUGGESTION_ENABLED && state == State.FIRST_EVENT_EXECUTING) {
+            if (matches.isEmpty()) {
+                validateRulesSetEventStructure();
+            } else {
+                state = State.NO_NEED_TO_VALIDATE;
+                firstEventJson = null;
+            }
+        }
     }
 
     /**
      * Validate the event path in RuleSets using the incoming event structure.
-     * Assume that the incoming event has the correct structure.
+     * Assume that the first event has the correct structure.
      */
-    public void validate(String incomingJson) {
-        validated = true;
+    private void validateRulesSetEventStructure() {
+        state = State.VALIDATING;
 
-        JsonNode jsonNode;
         try {
-            // incoming event structure
-            jsonNode = OBJECT_MAPPER.readTree(incomingJson);
-        } catch (JsonProcessingException e) {
-            LOG.debug("Failed to parse the incoming event structure." +
-                              " You may ignore this error because this feature doesn't affect the main task", e);
-            return;
-        }
+            JsonNode jsonNode = OBJECT_MAPPER.readTree(firstEventJson);
 
-        for (Map.Entry<List<String>, List<String>> eventPathEntry : eventPathMap.entrySet()) {
-            validateEventPathWithEventStructure(eventPathEntry, jsonNode);
+            for (Map.Entry<EventPath, List<String>> eventPathEntry : eventPathMap.entrySet()) {
+                validateEventPathWithEventStructure(eventPathEntry, jsonNode);
+            }
+        } catch (Exception e) {
+            // catch all because this suggestion feature is not critical
+            LOG.warn("Failed to validate the event structure. You may ignore this error because this feature doesn't affect the rule execution.", e);
+        } finally {
+            firstEventJson = null;
+            state = State.VALIDATED;
         }
     }
 
-    private void validateEventPathWithEventStructure(Map.Entry<List<String>, List<String>> eventPathEntry, JsonNode rootJsonNode) {
-        List<String> eventPathNodeList = eventPathEntry.getKey();
+    private void validateEventPathWithEventStructure(Map.Entry<EventPath, List<String>> eventPathEntry, JsonNode rootJsonNode) {
+        List<String> eventPathNodeList = eventPathEntry.getKey().getEventPathNodeList();
         List<String> ruleNames = eventPathEntry.getValue();
         JsonNode currentJsonNode = rootJsonNode;
         Set<String> nextKeyNames = nodeEntrySetToNodeNameKeySet(currentJsonNode.properties());
@@ -202,17 +260,28 @@ public class RulesSetEventStructure {
                 if (currentJsonNode.isObject()) {
                     currentJsonNode = currentJsonNode.get(trimBracket(currentPathNode));
                 } else if (currentJsonNode.isArray()) {
-                    // TODO: consider array nesting. Currently, assuming only one level of array.
-                    currentJsonNode = currentJsonNode.get(0); // TODO: wildly choose the first element. Need to search an appropriate element.
-                    currentJsonNode = currentJsonNode.get(trimBracket(currentPathNode)); // TODO: assuming the next node is an object node. Consider array node nesting.
+                    // Limitation: assuming only one level of array.
+                    currentJsonNode = currentJsonNode.get(0); // Limitation: assume that an array contains the same type values.
+                    if (currentJsonNode.isObject()) {
+                        currentJsonNode = currentJsonNode.get(trimBracket(currentPathNode));
+                    } else if (currentJsonNode.isArray()) {
+                        // Limitation: if this is an ArrayNode (= nested array), don't go deeper. No suggestion.
+                        break;
+                    } else {
+                        // reached to a leaf node
+                        break;
+                    }
                 }
 
                 // set up nextKeyNames
                 if (currentJsonNode.isObject()) {
                     nextKeyNames = nodeEntrySetToNodeNameKeySet(currentJsonNode.properties());
                 } else if (currentJsonNode.isArray()) {
-                    // TODO: consider array nesting. Currently, assuming only one level of array.
                     nextKeyNames = iteratorToSet(currentJsonNode.elements()).stream().flatMap(node -> nodeEntrySetToNodeNameKeySet(node.properties()).stream()).collect(toSet());
+                    if (nextKeyNames.isEmpty()) {
+                        // all children are leaf nodes
+                        break;
+                    }
                 } else {
                     // reached to a leaf node
                     break;
@@ -220,13 +289,13 @@ public class RulesSetEventStructure {
             } else {
                 Optional<String> candidateForTypo = suggestTypo(currentPathNode, nextKeyNames);
                 if (candidateForTypo.isPresent()) {
-                    LOG.warn("'{}' in the condition '{}' in rule set '{}' rule {} does not meet with the incoming event name {}. Did you mean '{}'?",
+                    LOG.warn("'{}' in the condition '{}' in rule set '{}' rule {} does not meet with the incoming event property {}. Did you mean '{}'?",
                              currentPathNode, concatNodeList(eventPathNodeList), ruleSetName, ruleNames, nextKeyNames, candidateForTypo.get());
                 }
 
                 Optional<String> candidateForMissingNode = suggestMissingNode(currentPathNode, currentJsonNode);
                 if (candidateForMissingNode.isPresent()) {
-                    LOG.warn("'{}' in the condition '{}' in rule set '{}' rule {} does not meet with the incoming event name {}. Did you forget to include '{}'?",
+                    LOG.warn("'{}' in the condition '{}' in rule set '{}' rule {} does not meet with the incoming event property {}. Did you forget to include '{}'?",
                              currentPathNode, concatNodeList(eventPathNodeList), ruleSetName, ruleNames, nextKeyNames, candidateForMissingNode.get());
                 }
                 break;
@@ -247,16 +316,12 @@ public class RulesSetEventStructure {
      * Convert the entry set to a set of node names. If the node is an array node, add "[]" to the node name.
      */
     private static Set<String> nodeEntrySetToNodeNameKeySet(Set<Map.Entry<String, JsonNode>> entrySet) {
-        return entrySet.stream().map(entry -> {
-            if (entry.getValue().isArray()) {
-                return entry.getKey() + "[]";
-            } else {
-                return entry.getKey();
-            }
-        }).collect(toSet());
+        return entrySet.stream()
+                .map(entry -> addBracketIfArrayNode(entry.getKey(), entry.getValue()))
+                .collect(toSet());
     }
 
-    public static Set<JsonNode> iteratorToSet(Iterator<JsonNode> iterator) {
+    private static Set<JsonNode> iteratorToSet(Iterator<JsonNode> iterator) {
         Set<JsonNode> set = new HashSet<>();
         iterator.forEachRemaining(set::add);
         return set;
@@ -272,12 +337,28 @@ public class RulesSetEventStructure {
         for (Map.Entry<String, JsonNode> nextEntry : nextEntries) {
             String nextNodeName = nextEntry.getKey();
             JsonNode nextNode = nextEntry.getValue();
-            Set<String> nextNextNodeName = nodeEntrySetToNodeNameKeySet(nextNode.properties());
+            Set<String> nextNextNodeName;
+            if (nextNode.isObject()) {
+                nextNextNodeName = nodeEntrySetToNodeNameKeySet(nextNode.properties());
+            } else if (nextNode.isArray()) {
+                nextNextNodeName = iteratorToSet(nextNode.elements()).stream().flatMap(node -> nodeEntrySetToNodeNameKeySet(node.properties()).stream()).collect(toSet());
+            } else {
+                // reached to a leaf node
+                continue;
+            }
             if (nextNextNodeName.contains(input)) {
-                return Optional.of(nextNodeName);
+                return Optional.of(addBracketIfArrayNode(nextNodeName, nextNode));
             }
         }
         return Optional.empty();
+    }
+
+    private static String addBracketIfArrayNode(String nextNodeName, JsonNode nextNode) {
+        if (nextNode.isArray()) {
+            return nextNodeName + "[]";
+        } else {
+            return nextNodeName;
+        }
     }
 
     /*
@@ -288,8 +369,8 @@ public class RulesSetEventStructure {
 
         for (String candidate : candidates) {
             int distance = levenshteinDistance.apply(input, candidate);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("The Levenshtein distance between '{}' and '{}' is: {}", input, candidate, distance);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("The Levenshtein distance between '{}' and '{}' is: {}", input, candidate, distance);
             }
             if (distance < 3) {
                 return Optional.of(candidate);
@@ -298,11 +379,46 @@ public class RulesSetEventStructure {
         return Optional.empty();
     }
 
-    private Object concatNodeList(List<String> eventPathNodeList) {
-        StringBuilder sb = new StringBuilder();
-        for (String node : eventPathNodeList) {
-            sb.append(node).append(".");
+    private String concatNodeList(List<String> eventPathNodeList) {
+        return String.join(".", eventPathNodeList);
+    }
+
+    static class EventPath {
+        private final List<String> eventPathNodeList;
+        private final int hashCode;
+
+        public EventPath(List<String> eventPathNodeList) {
+            this.eventPathNodeList = List.copyOf(eventPathNodeList); // immutable
+            this.hashCode = Objects.hash(this.eventPathNodeList);
         }
-        return sb.toString();
+
+        public List<String> getEventPathNodeList() {
+            return eventPathNodeList;
+        }
+
+        @Override
+        public String toString() {
+            return "EventPath{" +
+                    "eventPathNodeList=" + eventPathNodeList +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            EventPath that = (EventPath) o;
+            return Objects.equals(eventPathNodeList, that.eventPathNodeList);
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode;
+        }
     }
 }

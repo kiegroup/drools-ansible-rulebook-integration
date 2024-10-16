@@ -74,7 +74,7 @@ public class RulesExecutor {
 
     public CompletableFuture<List<Match>> processEvents(String json) {
         MemoryMonitorUtil.checkMemoryOccupation();
-        rulesEvaluator.validateRulesSetEventStructureOnce(json);
+        rulesEvaluator.stashFirstEventJsonForValidation(json);
         return rulesEvaluator.processEvents(asFactMap(json));
     }
 

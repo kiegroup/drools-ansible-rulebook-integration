@@ -165,18 +165,20 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     protected List<Match> process(Map<String, Object> factMap, boolean processEventInsertion) {
-        return atomicRuleEvaluation(processEventInsertion,
-                () -> insertFacts(factMap, processEventInsertion),
-                (fhs, matches) -> {
-                    if (log.isDebugEnabled()) {
-                        for (InternalFactHandle fh : fhs) {
-                            if (fh.isDisconnected()) {
-                                String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((PrototypeFactInstance)fh.getObject()).asMap());
-                                log.debug((processEventInsertion ? "Event " : "Fact ") + factAsString + " didn't match any rule and has been immediately discarded");
-                            }
-                        }
-                    }
-                });
+        List<Match> matchList = atomicRuleEvaluation(processEventInsertion,
+                                                     () -> insertFacts(factMap, processEventInsertion),
+                                                     (fhs, matches) -> {
+                                                         if (log.isDebugEnabled()) {
+                                                             for (InternalFactHandle fh : fhs) {
+                                                                 if (fh.isDisconnected()) {
+                                                                     String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((PrototypeFactInstance) fh.getObject()).asMap());
+                                                                     log.debug((processEventInsertion ? "Event " : "Fact ") + factAsString + " didn't match any rule and has been immediately discarded");
+                                                                 }
+                                                             }
+                                                         }
+                                                     });
+        rulesExecutorSession.getRulesSetEventStructure().validateRulesSetEventStructureIfRequired(matchList);
+        return matchList;
     }
 
     private List<InternalFactHandle> insertFacts(Map<String, Object> factMap, boolean event) {
@@ -255,7 +257,7 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
     }
 
     @Override
-    public void validateRulesSetEventStructureOnce(String json) {
-        rulesExecutorSession.validateRulesSetEventStructureOnce(json);
+    public void stashFirstEventJsonForValidation(String json) {
+        rulesExecutorSession.getRulesSetEventStructure().stashFirstEventJsonForValidation(json);
     }
 }

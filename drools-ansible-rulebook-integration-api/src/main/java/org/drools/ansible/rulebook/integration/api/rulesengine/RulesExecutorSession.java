@@ -177,10 +177,7 @@ public class RulesExecutorSession {
         return kieSession;
     }
 
-    public void validateRulesSetEventStructureOnce(String json) {
-        if (rulesSetEventStructure.isValidated()) {
-            return;
-        }
-        rulesSetEventStructure.validate(json);
+    public RulesSetEventStructure getRulesSetEventStructure() {
+        return rulesSetEventStructure;
     }
 }
