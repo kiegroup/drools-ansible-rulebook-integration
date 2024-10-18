@@ -44,4 +44,6 @@ public interface RulesEvaluator {
     }
 
     KieSession asKieSession();
+
+    void stashFirstEventJsonForValidation(String json);
 }

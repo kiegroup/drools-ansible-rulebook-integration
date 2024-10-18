@@ -1,5 +1,12 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesEvaluator;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession;
@@ -9,13 +16,6 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil.asFactMap;
@@ -74,6 +74,7 @@ public class RulesExecutor {
 
     public CompletableFuture<List<Match>> processEvents(String json) {
         MemoryMonitorUtil.checkMemoryOccupation();
+        rulesEvaluator.stashFirstEventJsonForValidation(json);
         return rulesEvaluator.processEvents(asFactMap(json));
     }
 
