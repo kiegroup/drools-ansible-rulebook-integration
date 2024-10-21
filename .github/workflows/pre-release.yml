@@ -1,9 +1,9 @@
-name: Java CI
+name: 1.0.x Development Build
 
 on:
   push:
     branches:
-      - "main"
+      - "1.0.x"
 
 jobs:
   build:
@@ -17,16 +17,19 @@ jobs:
           distribution: 'adopt'
 
 
-      - name: Install Drools Snapshot
+      - name: Checkout Drools 9.101.0
         uses: actions/checkout@v3
         with:
           repository: kiegroup/drools
           path: drools
+          ref: 9.101.x-prod
 
-      - name: Build Drools Snapshot with Maven
+      - name: Build Drools 9.101.0 with Maven
         run: cd drools && mvn --batch-mode --update-snapshots install -Dquickly && cd ..
 
       - uses: actions/checkout@v3
+        with:
+          ref: 1.0.x
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
       - run: mkdir staging && cp drools-ansible-rulebook-integration-runtime/target/drools*.jar staging && cp drools-ansible-rulebook-integration-main/target/drools-ansible-rulebook-integration-main-jar-with-dependencies.jar staging
@@ -34,8 +37,8 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
+          automatic_release_tag: "1.0.x-latest"
           prerelease: true
-          title: "Development Build"
+          title: "1.0.x Development Build"
           files: |
             staging/*.jar
