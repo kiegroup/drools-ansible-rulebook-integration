@@ -82,6 +82,7 @@ public class RulesSet {
 
     public void setRules(List<RuleContainer> rules) {
         this.rules = rules;
+        rules.forEach(ruleContainer -> ruleContainer.getRule().setRuleSetName(name));
     }
 
     public Rule addRule() {

@@ -224,8 +224,7 @@ public class RuleGenerationContext {
 	    if (getRuleName() == null) {
 	        setRuleName("r_" + ruleCounter.getAndIncrement());
 	    }
-        setRuleSetName(rulesSet.getName());
-	
+
 	    List<org.drools.model.Rule> rules = createRules(rulesExecutionController);
 	    if (hasTemporalConstraint(ansibleRule)) {
 	        rulesSet.withOptions(RuleConfigurationOption.EVENTS_PROCESSING);
@@ -233,14 +232,15 @@ public class RuleGenerationContext {
 	    return rules;
 	}
 
-	private void updateContextFromRule(org.drools.ansible.rulebook.integration.api.domain.Rule anisbleRule) {
-		setRuleName(anisbleRule.getName());
-		setAction(anisbleRule.getAction());
-		if (anisbleRule.getOptions() != null) {
-			addOptions(anisbleRule.getOptions().getOptions());
-		}
-		setCondition(anisbleRule.getCondition());
-	}
+    private void updateContextFromRule(org.drools.ansible.rulebook.integration.api.domain.Rule anisbleRule) {
+        setRuleSetName(anisbleRule.getRuleSetName());
+        setRuleName(anisbleRule.getName());
+        setAction(anisbleRule.getAction());
+        if (anisbleRule.getOptions() != null) {
+            addOptions(anisbleRule.getOptions().getOptions());
+        }
+        setCondition(anisbleRule.getCondition());
+    }
 
 	private static class StackedContext<K, V> {
         private final Deque<Map<K, V>> stack = new ArrayDeque<>();
