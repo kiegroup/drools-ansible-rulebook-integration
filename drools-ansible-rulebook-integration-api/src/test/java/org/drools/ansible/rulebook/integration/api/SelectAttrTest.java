@@ -539,4 +539,98 @@ public class SelectAttrTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testSelectAttrForArrayInArray() {
+
+        String JSON_ARRAY_IN_ARRAY =
+                """
+                {
+                  "rules":[
+                    {
+                      "Rule":{
+                        "name":"r1",
+                        "condition":{
+                          "AllCondition":[
+                            {
+                              "SelectAttrExpression":{
+                                "lhs":{
+                                  "Event":"incident.alerts.tags"
+                                },
+                                "rhs":{
+                                  "key":{
+                                    "String":"value"
+                                  },
+                                  "operator":{
+                                    "String":"=="
+                                  },
+                                  "value":{
+                                    "String":"DiskUsage"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "actions":[
+                          {
+                            "Action":{
+                              "action":"debug",
+                              "action_args":{
+                                "msg":"Found a match with alerts"
+                              }
+                            }
+                          }
+                        ],
+                        "enabled":true
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_ARRAY_IN_ARRAY);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( """
+                {
+                  "incident":{
+                    "id":"aaa",
+                    "active":false,
+                    "alerts":[
+                      {
+                        "id":"bbb",
+                        "tags":[
+                          {
+                            "name":"alertname",
+                            "value":"MariadbDown"
+                          },
+                          {
+                            "name":"severity",
+                            "value":"critical"
+                          }
+                        ],
+                        "status":"Ok"
+                      },
+                      {
+                        "id":"ccc",
+                        "tags":[
+                          {
+                            "name":"severity",
+                            "value":"critical"
+                          },
+                          {
+                            "name":"alertname",
+                            "value":"DiskUsage"
+                          }
+                        ],
+                        "status":"Ok"
+                      }
+                    ]
+                  }
+                }
+                """ ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }
