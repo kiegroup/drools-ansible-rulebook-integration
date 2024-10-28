@@ -1,6 +1,11 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
 
 public class LogUtil {
 
@@ -10,18 +15,26 @@ public class LogUtil {
 
     // convert java class to python class
     private static Map<Class<?>, String> convertMap = Map.of(
-            java.lang.Integer.class, "int",
-            java.lang.Boolean.class, "bool",
-            java.lang.String.class, "str",
-            java.lang.Double.class, "float",
-            java.util.List.class, "list",
-            java.util.ArrayList.class, "list",
-            java.util.Map.class, "dict",
-            java.util.LinkedHashMap.class, "dict",
-            java.util.HashMap.class, "dict"
+            Integer.class, "int",
+            Boolean.class, "bool",
+            String.class, "str",
+            Double.class, "float",
+            List.class, "list",
+            ArrayList.class, "list",
+            Map.class, "dict",
+            LinkedHashMap.class, "dict",
+            HashMap.class, "dict"
     );
 
     public static String convertJavaClassToPythonClass(Class<?> javaClass) {
-        return convertMap.getOrDefault(javaClass, javaClass.getSimpleName());
+        if (convertMap.containsKey(javaClass)) {
+            return convertMap.get(javaClass);
+        }
+        if (List.class.isAssignableFrom(javaClass)) {
+            return "list";
+        } else if (Map.class.isAssignableFrom(javaClass)) {
+            return "dict";
+        }
+        return javaClass.getSimpleName();
     }
 }

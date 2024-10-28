@@ -12,6 +12,12 @@ import org.drools.ansible.rulebook.integration.protoextractor.ast.IndexAccessorN
 import org.drools.ansible.rulebook.integration.protoextractor.ast.SquaredAccessorNode;
 import org.kie.api.prototype.Prototype;
 
+/**
+ * ValueCollectVisitor is an improved version of ValueExtractionVisitor.
+ * This visitor can handle a path expression of an array without an index (e.g. 'alerts' for 'alerts[]').
+ * In the case, this visitor evaluates all elements in the array and collects matching children.
+ * If there is no such a path expression, this works the same as ValueExtractionVisitor.
+ */
 public class ValueCollectVisitor extends DefaultedVisitor<Object> {
     private final Object original;
     private Object cur; // cur doesn't have to one Node in the event, it can be List of Nodes matching the path
