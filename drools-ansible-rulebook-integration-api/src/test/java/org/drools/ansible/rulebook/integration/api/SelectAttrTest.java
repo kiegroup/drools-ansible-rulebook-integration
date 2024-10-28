@@ -825,4 +825,130 @@ public class SelectAttrTest {
 
         rulesExecutor.dispose();
     }
+
+    @Test
+    public void testSelectAttrForArrayInArrayInArray() {
+
+        String JSON_ARRAY_IN_ARRAY =
+                """
+                {
+                  "rules":[
+                    {
+                      "Rule":{
+                        "name":"r1",
+                        "condition":{
+                          "AllCondition":[
+                            {
+                              "SelectAttrExpression":{
+                                "lhs":{
+                                  "Event":"incident.alerts.tags.messages"
+                                },
+                                "rhs":{
+                                  "key":{
+                                    "String":"value"
+                                  },
+                                  "operator":{
+                                    "String":"=="
+                                  },
+                                  "value":{
+                                    "String":"DiskUsage"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "actions":[
+                          {
+                            "Action":{
+                              "action":"debug",
+                              "action_args":{
+                                "msg":"Found a match with alerts"
+                              }
+                            }
+                          }
+                        ],
+                        "enabled":true
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_ARRAY_IN_ARRAY);
+
+        List<Match> matchedRules = rulesExecutor.processFacts( """
+                {
+                  "incident":{
+                    "id":"aaa",
+                    "active":false,
+                    "alerts":[
+                      {
+                        "id":"bbb",
+                        "tags":[
+                          {
+                            "messages":[
+                              {
+                                "name":"alertname",
+                                "value":"MariadbDown"
+                              },
+                              {
+                                "name":"severity",
+                                "value":"critical"
+                              }
+                            ]
+                          },
+                          {
+                            "messages":[
+                              {
+                                "name":"severity",
+                                "value":"low"
+                              },
+                              {
+                                "name":"notification",
+                                "value":"access"
+                              }
+                            ]
+                          }
+                        ],
+                        "status":"Ok"
+                      },
+                      {
+                        "id":"ccc",
+                        "tags":[
+                          {
+                            "messages":[
+                              {
+                                "name":"severity",
+                                "value":"critical"
+                              },
+                              {
+                                "name":"alertname",
+                                "value":"DiskUsage"
+                              }
+                            ]
+                          },
+                          {
+                            "messages":[
+                              {
+                                "name":"severity",
+                                "value":"low"
+                              },
+                              {
+                                "name":"notification",
+                                "value":"access"
+                              }
+                            ]
+                          }
+                        ],
+                        "status":"Ok"
+                      }
+                    ]
+                  }
+                }
+                """ ).join();
+        assertEquals( 1, matchedRules.size() );
+
+        rulesExecutor.dispose();
+    }
 }

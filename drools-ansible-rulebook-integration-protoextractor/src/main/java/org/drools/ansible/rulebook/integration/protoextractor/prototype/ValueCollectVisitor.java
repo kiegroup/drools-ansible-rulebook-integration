@@ -94,9 +94,10 @@ public class ValueCollectVisitor extends DefaultedVisitor<Object> {
             if (this.cur == null || this.cur == Prototype.UNDEFINED_VALUE) {
                 break;
             }
-            if (this.cur instanceof PathWrapperList) {
-                List<Object> nextNodeList = new PathWrapperList();
-                for (Object element : (List<?>) this.cur) {
+            if (this.cur instanceof PathWrapperList currentNodeList) {
+                PathWrapperList nextNodeList = new PathWrapperList();
+                // Apply extraction to all paths in the list
+                for (Object element : currentNodeList) {
                     this.cur = element;
                     Object nextNode = chunk.accept(this);
                     if (nextNode != Prototype.UNDEFINED_VALUE) {
@@ -106,24 +107,45 @@ public class ValueCollectVisitor extends DefaultedVisitor<Object> {
                 if (nextNodeList.isEmpty()) {
                     this.cur = Prototype.UNDEFINED_VALUE;
                 } else {
+                    // Flatten PathWrapperList if nested
+                    nextNodeList = flattenPathWrapperList(nextNodeList);
                     this.cur = nextNodeList;
                 }
             } else {
                 this.cur = chunk.accept(this);
             }
         }
-        if (cur instanceof List) {
-            cur = flatten((List<?>) cur);
-        }
+
+        // At this point, cur is wrapped in one PathWrapperList at most
+        cur = stripPathWrapperListIfExists(cur);
         return cur;
     }
 
-    public static List<Object> flatten(List<?> nestedList) {
-        return nestedList.stream()
-                .flatMap(element -> element instanceof List<?>
-                        ? flatten((List<?>) element).stream()
-                        : List.of(element).stream())
-                .toList();
+    private PathWrapperList flattenPathWrapperList(PathWrapperList pathWrapperList) {
+        PathWrapperList flattenedList = new PathWrapperList();
+        for (Object element : pathWrapperList) {
+            if (element instanceof PathWrapperList nestedPathWrapperList) {
+                flattenedList.addAll(nestedPathWrapperList); // nest is at most one level deep
+            } else {
+                flattenedList.add(element);
+            }
+        }
+        return flattenedList;
+    }
+
+    private static Object stripPathWrapperListIfExists(Object current) {
+        if (current instanceof PathWrapperList pathWrapperList) {
+            if (pathWrapperList.isEmpty()) {
+                return Prototype.UNDEFINED_VALUE;
+            }
+            // if the elements are lists, flatten them
+            // if not, collect them in a list
+            return pathWrapperList.stream()
+                    .flatMap(e -> e instanceof List list ? list.stream() : List.of(e).stream())
+                    .toList();
+        } else {
+            return current;
+        }
     }
 
     // This List is used to wrap the node paths when the path indicates all elements of an array
