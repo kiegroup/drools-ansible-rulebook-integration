@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.drools.ansible.rulebook.integration.protoextractor.ast.ExtractorNode;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.NormalizedFieldRepresentationVisitor;
-import org.drools.ansible.rulebook.integration.protoextractor.prototype.ValueExtractionVisitor;
+import org.drools.ansible.rulebook.integration.protoextractor.prototype.ValueCollectVisitor;
 
 public class ExtractorUtils {
     private ExtractorUtils() {
@@ -16,6 +16,6 @@ public class ExtractorUtils {
     }
 
     public static Object getValueFrom(ExtractorNode extractorNode, Object readValue) {
-        return new ValueExtractionVisitor(readValue).visit(extractorNode);
+        return new ValueCollectVisitor(readValue).visit(extractorNode);
     }
 }

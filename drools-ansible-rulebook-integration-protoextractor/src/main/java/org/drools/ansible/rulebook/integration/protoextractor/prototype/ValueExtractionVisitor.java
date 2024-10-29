@@ -11,6 +11,10 @@ import org.kie.api.prototype.Prototype;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This visitor is superseded by ValueCollectVisitor.
+ * This class will be dropped when we are sure that this is no longer needed.
+ */
 public class ValueExtractionVisitor extends DefaultedVisitor<Object> {
     private final Object original;
     private Object cur;
