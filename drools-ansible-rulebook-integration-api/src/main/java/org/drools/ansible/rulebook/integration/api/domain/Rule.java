@@ -21,6 +21,8 @@ public class Rule {
 
     private final RuleGenerationContext ruleGenerationContext = new RuleGenerationContext();
 
+    private String ruleSetName;
+
     private String name;
 
     private Action action;
@@ -30,6 +32,14 @@ public class Rule {
     private RuleConfigurationOptions options;
 
     private Condition condition;
+
+    public String getRuleSetName() {
+        return ruleSetName;
+    }
+
+    public void setRuleSetName(String ruleSetName) {
+        this.ruleSetName = ruleSetName;
+    }
 
     public String getName() {
     	return name;
