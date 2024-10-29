@@ -312,7 +312,7 @@ public class EventStructureSuggestionTest {
                                              {
                                                  "EqualsExpression": {
                                                      "lhs": {
-                                                         "Event": "commits.added[1]"
+                                                         "Event": "commit[0].added[1]"
                                                      },
                                                      "rhs": {
                                                          "String": "extensions/eda/rulebooks/100_million_events.yml"
@@ -359,7 +359,7 @@ public class EventStructureSuggestionTest {
 
         assertNumberOfRulesSetEventStructureWarnLogs(2);
         assertThat(stringPrintStream.getStringList())
-                .anyMatch(s -> s.contains("'commits' in the condition 'commits.added[]'" +
+                .anyMatch(s -> s.contains("'commit[]' in the condition 'commit[].added[]'" +
                                                   " in rule set 'ruleSet1' rule [r1]" +
                                                   " does not meet with the incoming event property" +
                                                   " [commits[], user_avatar, total_commits_count, user_email, before," +
@@ -640,6 +640,206 @@ public class EventStructureSuggestionTest {
 
         List<Match> matchedRules = rulesExecutor.processEvents(EVENT).join();
 
+        assertNumberOfRulesSetEventStructureWarnLogs(0);
+        assertEquals(0, matchedRules.size());
+
+        rulesExecutor.dispose();
+    }
+
+    public static final String JSON_WHITESPACE =
+            """
+                    {
+                        "name": "ruleSet1",
+                        "rules": [
+                             {
+                                 "Rule": {
+                                     "name": "r1",
+                                     "condition": {
+                                         "AllCondition": [
+                                             {
+                                                 "EqualsExpression": {
+                                                     "lhs": {
+                                                         "Event": " payload .alerts[0]  .lebel . job"
+                                                     },
+                                                     "rhs": {
+                                                         "String": "kube-state-metrics"
+                                                     }
+                                                 }
+                                             }
+                                         ]
+                                     },
+                                     "actions": [
+                                         {
+                                             "Action": {
+                                                 "action": "debug",
+                                                 "action_args": {}
+                                             }
+                                         }
+                                     ],
+                                     "enabled": true
+                                 }
+                             }
+                         ]
+                    }
+                    """;
+
+    @Test
+    public void whitespace() {
+        // whitespaces in the event path are trimmed, so it doesn't affect the validation
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_WHITESPACE);
+
+        List<Match> matchedRules = rulesExecutor.processEvents(EVENT).join();
+
+        assertNumberOfRulesSetEventStructureWarnLogs(1);
+        assertThat(stringPrintStream.getStringList())
+                .anyMatch(s -> s.contains("'lebel' in the condition 'payload.alerts[].lebel.job'" +
+                                                  " in rule set 'ruleSet1' rule [r1]" +
+                                                  " does not meet with the incoming event property [labels]." +
+                                                  " Did you mean 'labels'?"));
+        assertEquals(0, matchedRules.size());
+
+        rulesExecutor.dispose();
+    }
+
+    public static final String EVENTS =
+            """
+                {
+                  "events": [
+                    {
+                      "payload":{
+                        "alerts":[
+                          {
+                            "labels":{
+                              "job":"kube-state-metrics"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "payload":{
+                        "alerts":[
+                          {
+                            "labels":{
+                              "job":"node-exporter"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+                    """;
+
+    @Test
+    public void events() {
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_TYPO);
+
+        // "events" is the root node of multiple events, so the first event is used for the validation
+        List<Match> matchedRules = rulesExecutor.processEvents(EVENTS).join();
+
+        assertNumberOfRulesSetEventStructureWarnLogs(1);
+        assertThat(stringPrintStream.getStringList())
+                .anyMatch(s -> s.contains("'lebel' in the condition 'payload.alerts[].lebel.job'" +
+                                                  " in rule set 'ruleSet1' rule [r1]" +
+                                                  " does not meet with the incoming event property [labels]." +
+                                                  " Did you mean 'labels'?"));
+        assertEquals(0, matchedRules.size());
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    public void arrayWithoutBracket() {
+        String JSON_ARRAY_IN_ARRAY =
+                """
+                {
+                  "rules":[
+                    {
+                      "Rule":{
+                        "name":"r1",
+                        "condition":{
+                          "AllCondition":[
+                            {
+                              "SelectAttrExpression":{
+                                "lhs":{
+                                  "Event":"incident.alerts.tags"
+                                },
+                                "rhs":{
+                                  "key":{
+                                    "String":"value"
+                                  },
+                                  "operator":{
+                                    "String":"=="
+                                  },
+                                  "value":{
+                                    "String":"XXXX"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "actions":[
+                          {
+                            "Action":{
+                              "action":"debug",
+                              "action_args":{
+                                "msg":"Found a match with alerts"
+                              }
+                            }
+                          }
+                        ],
+                        "enabled":true
+                      }
+                    }
+                  ]
+                }
+                """;
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_ARRAY_IN_ARRAY);
+
+        List<Match> matchedRules = rulesExecutor.processEvents( """
+                {
+                  "incident":{
+                    "id":"aaa",
+                    "active":false,
+                    "alerts":[
+                      {
+                        "id":"bbb",
+                        "tags":[
+                          {
+                            "name":"alertname",
+                            "value":"MariadbDown"
+                          },
+                          {
+                            "name":"severity",
+                            "value":"critical"
+                          }
+                        ],
+                        "status":"Ok"
+                      },
+                      {
+                        "id":"ccc",
+                        "tags":[
+                          {
+                            "name":"severity",
+                            "value":"critical"
+                          },
+                          {
+                            "name":"alertname",
+                            "value":"DiskUsage"
+                          }
+                        ],
+                        "status":"Ok"
+                      }
+                    ]
+                  }
+                }
+                """ ).join();
+
+        // "alerts" and "tags" without brackets are accepted. No warning. See DROOLS-7639
         assertNumberOfRulesSetEventStructureWarnLogs(0);
         assertEquals(0, matchedRules.size());
 
