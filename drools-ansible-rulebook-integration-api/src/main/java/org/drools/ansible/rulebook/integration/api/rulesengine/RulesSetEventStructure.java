@@ -140,6 +140,7 @@ public class RulesSetEventStructure {
         String[] nodes = eventPath.split("\\.");
         List<String> pathNodeList = new ArrayList<>();
         for (String node : nodes) {
+            node = node.trim();
             // handle bracket notation
             int leftBracket = node.indexOf('[');
             if (leftBracket > 0) {
@@ -235,6 +236,8 @@ public class RulesSetEventStructure {
         try {
             JsonNode jsonNode = OBJECT_MAPPER.readTree(firstEventJson);
 
+            jsonNode = takeOneChildIfEventList(jsonNode);
+
             for (Map.Entry<EventPath, List<String>> eventPathEntry : eventPathMap.entrySet()) {
                 validateEventPathWithEventStructure(eventPathEntry, jsonNode);
             }
@@ -245,6 +248,16 @@ public class RulesSetEventStructure {
             firstEventJson = null;
             state = State.VALIDATED;
         }
+    }
+
+    private JsonNode takeOneChildIfEventList(JsonNode jsonNode) {
+        if (jsonNode.isObject() && jsonNode.size() == 1) {
+            JsonNode events = jsonNode.get("events");
+            if (events != null && events.isArray() && !events.isEmpty()) {
+                return events.get(0);
+            }
+        }
+        return jsonNode;
     }
 
     private void validateEventPathWithEventStructure(Map.Entry<EventPath, List<String>> eventPathEntry, JsonNode rootJsonNode) {
@@ -368,6 +381,10 @@ public class RulesSetEventStructure {
         LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
 
         for (String candidate : candidates) {
+            if (isArrayWithoutBracket(input, candidate)) {
+                // array without bracket is an acceptable syntax: DROOLS-7639
+                return Optional.empty();
+            }
             int distance = levenshteinDistance.apply(input, candidate);
             if (LOG.isTraceEnabled()) {
                 LOG.trace("The Levenshtein distance between '{}' and '{}' is: {}", input, candidate, distance);
@@ -377,6 +394,10 @@ public class RulesSetEventStructure {
             }
         }
         return Optional.empty();
+    }
+
+    private boolean isArrayWithoutBracket(String input, String candidate) {
+        return candidate.endsWith("[]") && input.equals(candidate.substring(0, candidate.length() - 2));
     }
 
     private String concatNodeList(List<String> eventPathNodeList) {
