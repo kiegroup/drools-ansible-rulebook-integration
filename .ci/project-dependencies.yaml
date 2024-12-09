@@ -5,7 +5,7 @@ dependencies:
       dependant:
         default:
           # whenever drools branch changes, please update .ci/jenkins/Jenkinsfile.prod.nightly as well if needed
-          - source: 9.101.x-prod
+          - source: 9.102.x-prod
             target: 1.0.x
 
   - project: kiegroup/drools-ansible-rulebook-integration
@@ -15,4 +15,4 @@ dependencies:
       dependencies:
         default:
           - source: 1.0.x
-            target: 9.101.x-prod
+            target: 9.102.x-prod
