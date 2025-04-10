@@ -5,7 +5,9 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.api.io.Response;
 import org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel;
+import org.drools.core.common.DefaultEventHandle;
 import org.drools.core.common.InternalFactHandle;
+import org.drools.core.common.ReteEvaluator;
 import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
@@ -168,9 +170,12 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         List<Match> matchList = atomicRuleEvaluation(processEventInsertion,
                                                      () -> insertFacts(factMap, processEventInsertion),
                                                      (fhs, matches) -> {
-                                                         if (log.isDebugEnabled()) {
-                                                             for (InternalFactHandle fh : fhs) {
-                                                                 if (fh.isDisconnected()) {
+                                                         for (InternalFactHandle fh : fhs) {
+                                                             if (fh.isDisconnected()) {
+                                                                 if (fh instanceof DefaultEventHandle eventHandle) {
+                                                                     eventHandle.unscheduleAllJobs((ReteEvaluator) rulesExecutorSession.asKieSession());
+                                                                 }
+                                                                 if (log.isDebugEnabled()) {
                                                                      String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((PrototypeFactInstance) fh.getObject()).asMap());
                                                                      log.debug((processEventInsertion ? "Event " : "Fact ") + factAsString + " didn't match any rule and has been immediately discarded");
                                                                  }
