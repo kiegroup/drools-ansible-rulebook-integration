@@ -63,17 +63,17 @@ public class RulesExecutor {
     }
 
     public CompletableFuture<Integer> executeFacts(String json) {
-        MemoryMonitorUtil.checkMemoryOccupation();
+        MemoryMonitorUtil.checkMemoryOccupation(rulesEvaluator.getSessionStatsCollector());
         return rulesEvaluator.executeFacts(asFactMap(json));
     }
 
     public CompletableFuture<List<Match>> processFacts(String json) {
-        MemoryMonitorUtil.checkMemoryOccupation();
+        MemoryMonitorUtil.checkMemoryOccupation(rulesEvaluator.getSessionStatsCollector());
         return rulesEvaluator.processFacts(asFactMap(json));
     }
 
     public CompletableFuture<List<Match>> processEvents(String json) {
-        MemoryMonitorUtil.checkMemoryOccupation();
+        MemoryMonitorUtil.checkMemoryOccupation(rulesEvaluator.getSessionStatsCollector());
         rulesEvaluator.stashFirstEventJsonForValidation(json);
         return rulesEvaluator.processEvents(asFactMap(json));
     }
