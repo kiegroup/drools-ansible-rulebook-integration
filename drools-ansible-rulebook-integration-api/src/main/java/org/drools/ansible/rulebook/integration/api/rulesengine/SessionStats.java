@@ -116,7 +116,7 @@ public class SessionStats {
                 ", lastRuleFired='" + lastRuleFired + '\'' +
                 ", lastRuleFiredAt='" + lastRuleFiredAt + '\'' +
                 ", lastEventReceivedAt='" + lastEventReceivedAt + '\'' +
-                ", baseLevelMemory=" + baseLevelMemory +
+                ", baseLevelMemory='" + baseLevelMemory + '\'' +
                 ", usedMemory='" + getUsedMemory() + '\'' +
                 ", peakMemory='" + getPeakMemory() + '\'' +
                 ", maxAvailableMemory='" + getMaxAvailableMemory() + '\'' +
