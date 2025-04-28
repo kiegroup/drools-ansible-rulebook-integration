@@ -35,6 +35,7 @@ public class SessionStatsCollector {
     private int clockAdvanceCount;
 
     private long baseLevelMemory;
+    private long peakMemory = -1;
 
     static {
         String envValue = System.getenv("DROOLS_LOG_DELAY");
@@ -95,6 +96,14 @@ public class SessionStatsCollector {
 
     public long getBaseLevelMemory() {
         return baseLevelMemory;
+    }
+
+    public long getPeakMemory() {
+        return peakMemory;
+    }
+
+    public void updatePeakMemory(long usedMemory) {
+        peakMemory = Math.max(peakMemory, usedMemory);
     }
 
     public void registerMatch(RulesExecutorSession session, Match match) {

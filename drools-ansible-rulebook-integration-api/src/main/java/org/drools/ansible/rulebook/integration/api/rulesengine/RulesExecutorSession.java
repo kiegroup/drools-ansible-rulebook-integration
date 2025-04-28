@@ -70,6 +70,10 @@ public class RulesExecutorSession {
         return kieSession.getObjects(filter);
     }
 
+    SessionStatsCollector getSessionStatsCollector() {
+        return sessionStatsCollector;
+    }
+
     InternalFactHandle insert(Map<String, Object> factMap, boolean event) {
         PrototypeFactInstance fact = mapToFact(factMap, event);
         if (event) {
