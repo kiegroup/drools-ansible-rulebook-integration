@@ -7,6 +7,7 @@ import org.kie.api.runtime.rule.Match;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -101,5 +102,47 @@ public class SessionStatsTest {
 
         SessionStats disposeStats = rulesExecutor.dispose();
         assertNotNull( disposeStats.getEnd() );
+    }
+
+    @Test
+    public void baseLevelMemory() {
+        String rule =
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "name": "R1",
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": 1
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                }
+                """;
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(rule);
+
+        SessionStats beforeFiringStats = rulesExecutor.getSessionStats();
+
+        long baseLevelMemory = beforeFiringStats.getBaseLevelMemory();
+        assertNotEquals(-1, baseLevelMemory);
+
+        rulesExecutor.processEvents("{ \"i\": 1 }").join();
+        SessionStats statsAfterProcessEvent = rulesExecutor.getSessionStats();
+
+        assertEquals(baseLevelMemory, statsAfterProcessEvent.getBaseLevelMemory());
     }
 }
