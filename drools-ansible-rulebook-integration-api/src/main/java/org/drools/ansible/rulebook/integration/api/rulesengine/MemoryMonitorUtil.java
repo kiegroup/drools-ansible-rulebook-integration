@@ -57,12 +57,12 @@ public class MemoryMonitorUtil {
         // do not instantiate
     }
 
-    public static void checkMemoryOccupation() {
+    public static void checkMemoryOccupation(SessionStatsCollector sessionStatsCollector) {
         if ((COUNTER++ & MEMORY_CHECK_EVENT_COUNT_MASK) != 0) {
             // check memory occupation only once in 64 calls
             return;
         }
-        int memoryOccupationPercentage = getMemoryOccupationPercentage();
+        int memoryOccupationPercentage = getMemoryOccupationPercentageAndUpdatePeakMemory(sessionStatsCollector);
         if (memoryOccupationPercentage > MEMORY_OCCUPATION_PERCENTAGE_THRESHOLD) {
             // give GC a chance to free some memory
             System.gc(); // NOSONAR
@@ -79,6 +79,13 @@ public class MemoryMonitorUtil {
                 }
             }
         }
+    }
+
+    // Not calling getMemoryOccupationPercentage to reduce the number of calls to getUsedMemory()
+    private static int getMemoryOccupationPercentageAndUpdatePeakMemory(SessionStatsCollector sessionStatsCollector) {
+        long usedMemory = getUsedMemory();
+        sessionStatsCollector.updatePeakMemory(usedMemory);
+        return (int) ((100 * usedMemory) / MAX_AVAILABLE_MEMORY);
     }
 
     private static int getMemoryOccupationPercentage() {

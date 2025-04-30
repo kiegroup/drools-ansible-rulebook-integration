@@ -46,6 +46,7 @@ public class RulesExecutorSession {
         this.sessionStatsCollector = new SessionStatsCollector(id);
         this.rulesSetEventStructure = new RulesSetEventStructure(rulesSet);
 
+        this.sessionStatsCollector.registerBaseLevelMemory(); // initial used memory after kbase/ksession creation
         initClock();
     }
 
@@ -67,6 +68,10 @@ public class RulesExecutorSession {
 
     Collection<? extends Object> getObjects(ObjectFilter filter) {
         return kieSession.getObjects(filter);
+    }
+
+    SessionStatsCollector getSessionStatsCollector() {
+        return sessionStatsCollector;
     }
 
     InternalFactHandle insert(Map<String, Object> factMap, boolean event) {

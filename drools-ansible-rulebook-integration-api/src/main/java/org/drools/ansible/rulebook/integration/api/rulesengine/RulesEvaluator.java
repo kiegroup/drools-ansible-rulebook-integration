@@ -39,6 +39,8 @@ public interface RulesEvaluator {
 
     SessionStats dispose();
 
+    SessionStatsCollector getSessionStatsCollector();
+
     static RulesEvaluator createRulesEvaluator( RulesExecutorSession rulesExecutorSession, boolean async ) {
         return async ? new AsyncRulesEvaluator(rulesExecutorSession) : new SyncRulesEvaluator(rulesExecutorSession);
     }

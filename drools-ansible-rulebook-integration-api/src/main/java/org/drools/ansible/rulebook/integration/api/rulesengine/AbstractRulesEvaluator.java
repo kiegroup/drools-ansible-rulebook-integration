@@ -166,6 +166,11 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
         return rulesExecutorSession.getSessionStats(false);
     }
 
+    @Override
+    public SessionStatsCollector getSessionStatsCollector() {
+        return rulesExecutorSession.getSessionStatsCollector();
+    }
+
     protected List<Match> process(Map<String, Object> factMap, boolean processEventInsertion) {
         List<Match> matchList = atomicRuleEvaluation(processEventInsertion,
                                                      () -> insertFacts(factMap, processEventInsertion),

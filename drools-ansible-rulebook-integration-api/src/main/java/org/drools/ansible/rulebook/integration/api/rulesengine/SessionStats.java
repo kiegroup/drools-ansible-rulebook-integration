@@ -37,6 +37,9 @@ public class SessionStats {
     private final String lastRuleFiredAt;
     private final String lastEventReceivedAt;
 
+    private final long baseLevelMemory;
+    private final long peakMemory;
+
     public SessionStats(SessionStatsCollector stats, RulesExecutorSession session, boolean disposing) {
         this.start = stats.getStart().toString();
         this.end = disposing ? Instant.now().toString() : null;
@@ -61,11 +64,13 @@ public class SessionStats {
         this.lastRuleFired = stats.getLastRuleFired();
         this.lastRuleFiredAt = stats.getLastRuleFiredTime() < 0 ? null : Instant.ofEpochMilli(stats.getLastRuleFiredTime()).toString();
         this.lastEventReceivedAt = stats.getLastEventReceivedTime() < 0 ? null : Instant.ofEpochMilli(stats.getLastEventReceivedTime()).toString();
+        this.baseLevelMemory = stats.getBaseLevelMemory();
+        this.peakMemory = stats.getPeakMemory();
     }
 
     public SessionStats(String start, String end, String lastClockTime, int clockAdvanceCount, int numberOfRules, int numberOfDisabledRules, int rulesTriggered, int eventsProcessed,
                         int eventsMatched, int eventsSuppressed, int permanentStorageCount, int permanentStorageSize, int asyncResponses, int bytesSentOnAsync,
-                        long sessionId, String ruleSetName, String lastRuleFired, String lastRuleFiredAt, String lastEventReceivedAt) {
+                        long sessionId, String ruleSetName, String lastRuleFired, String lastRuleFiredAt, String lastEventReceivedAt, long baseLevelMemory, long peakMemory) {
         this.start = start;
         this.end = end;
         this.lastClockTime = lastClockTime;
@@ -85,6 +90,8 @@ public class SessionStats {
         this.lastRuleFired = lastRuleFired;
         this.lastRuleFiredAt = lastRuleFiredAt;
         this.lastEventReceivedAt = lastEventReceivedAt;
+        this.baseLevelMemory = baseLevelMemory;
+        this.peakMemory = peakMemory;
     }
 
     @Override
@@ -109,7 +116,9 @@ public class SessionStats {
                 ", lastRuleFired='" + lastRuleFired + '\'' +
                 ", lastRuleFiredAt='" + lastRuleFiredAt + '\'' +
                 ", lastEventReceivedAt='" + lastEventReceivedAt + '\'' +
+                ", baseLevelMemory='" + baseLevelMemory + '\'' +
                 ", usedMemory='" + getUsedMemory() + '\'' +
+                ", peakMemory='" + getPeakMemory() + '\'' +
                 ", maxAvailableMemory='" + getMaxAvailableMemory() + '\'' +
                 '}';
     }
@@ -198,6 +207,15 @@ public class SessionStats {
         return MemoryMonitorUtil.getMaxAvailableMemory();
     }
 
+    public long getBaseLevelMemory() {
+        return baseLevelMemory;
+    }
+
+    public long getPeakMemory() {
+        // a little verbose but it is more accurate because peakMemory is not updated in all cases
+        return Math.max(peakMemory, MemoryMonitorUtil.getUsedMemory());
+    }
+
     public static SessionStats aggregate(SessionStats stats1, SessionStats stats2) {
         String lastRuleFired = null;
         String lastRuleFiredAt = null;
@@ -231,7 +249,9 @@ public class SessionStats {
                 stats1.getRuleSetName().equals(stats2.getRuleSetName()) ? stats1.getRuleSetName() : "",
                 lastRuleFired,
                 lastRuleFiredAt,
-                isInstant1Last(stats1.getLastEventReceivedAt(), stats2.getLastEventReceivedAt()) ? stats1.getLastEventReceivedAt() : stats2.getLastEventReceivedAt()
+                isInstant1Last(stats1.getLastEventReceivedAt(), stats2.getLastEventReceivedAt()) ? stats1.getLastEventReceivedAt() : stats2.getLastEventReceivedAt(),
+                Math.max(stats1.baseLevelMemory, stats2.baseLevelMemory),
+                Math.max(stats1.getPeakMemory(), stats2.getPeakMemory())
         );
     }
 

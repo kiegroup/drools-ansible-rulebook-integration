@@ -1,12 +1,14 @@
 package org.drools.ansible.rulebook.integration.api;
 
+import java.util.List;
+
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.junit.Test;
 import org.kie.api.runtime.rule.Match;
 
-import java.util.List;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -101,5 +103,87 @@ public class SessionStatsTest {
 
         SessionStats disposeStats = rulesExecutor.dispose();
         assertNotNull( disposeStats.getEnd() );
+    }
+
+    @Test
+    public void baseLevelMemory() {
+        String rule =
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "name": "R1",
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": 1
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                }
+                """;
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(rule);
+
+        SessionStats beforeFiringStats = rulesExecutor.getSessionStats();
+
+        long baseLevelMemory = beforeFiringStats.getBaseLevelMemory();
+        assertNotEquals(-1, baseLevelMemory);
+
+        rulesExecutor.processEvents("{ \"i\": 1 }").join();
+        SessionStats statsAfterProcessEvent = rulesExecutor.getSessionStats();
+
+        assertEquals(baseLevelMemory, statsAfterProcessEvent.getBaseLevelMemory());
+    }
+
+    @Test
+    public void peakMemory() {
+        String rule =
+                """
+                {
+                    "rules": [
+                            {
+                                "Rule": {
+                                    "name": "R1",
+                                    "condition": {
+                                        "AllCondition": [
+                                            {
+                                                "EqualsExpression": {
+                                                    "lhs": {
+                                                        "Event": "i"
+                                                    },
+                                                    "rhs": {
+                                                        "Integer": 1
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                }
+                """;
+
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(rule);
+        SessionStats beforeFiringStats = rulesExecutor.getSessionStats();
+        assertThat(beforeFiringStats.getPeakMemory()).isGreaterThan(0L);
+
+        for (int i = 0; i < 100; i++) {
+            rulesExecutor.processEvents("{ \"i\": 1 }").join();
+        }
+        SessionStats statsAfterProcessEvent = rulesExecutor.getSessionStats();
+        assertThat(statsAfterProcessEvent.getPeakMemory()).isGreaterThan(0L);
     }
 }

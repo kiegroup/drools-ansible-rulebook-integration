@@ -34,6 +34,8 @@ public class SessionStatsCollector {
 
     private int clockAdvanceCount;
 
+    private long baseLevelMemory;
+    private long peakMemory = -1;
 
     static {
         String envValue = System.getenv("DROOLS_LOG_DELAY");
@@ -92,6 +94,18 @@ public class SessionStatsCollector {
         return clockAdvanceCount;
     }
 
+    public long getBaseLevelMemory() {
+        return baseLevelMemory;
+    }
+
+    public long getPeakMemory() {
+        return peakMemory;
+    }
+
+    public void updatePeakMemory(long usedMemory) {
+        peakMemory = Math.max(peakMemory, usedMemory);
+    }
+
     public void registerMatch(RulesExecutorSession session, Match match) {
         rulesTriggered++;
         lastRuleFired = match.getRule().getName();
@@ -118,5 +132,10 @@ public class SessionStatsCollector {
 
     public void registerClockAdvance(long amount, TimeUnit unit) {
         clockAdvanceCount++;
+    }
+
+    public void registerBaseLevelMemory() {
+        System.gc(); // NOSONAR
+        this.baseLevelMemory = MemoryMonitorUtil.getUsedMemory();
     }
 }
