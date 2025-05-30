@@ -2,15 +2,15 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ImplicitBindingTest {
 
     @Test
-    public void testAllCondition() {
+    void testAllCondition() {
         String JSON1 =
                 """
                   {
@@ -80,7 +80,7 @@ public class ImplicitBindingTest {
     }
 
     @Test
-    public void testAnyCondition() {
+    void testAnyCondition() {
         String JSON1 =
                 """
                 {
@@ -135,7 +135,7 @@ public class ImplicitBindingTest {
     }
 
     @Test
-    public void testAnyConditionWithPartialBinding() {
+    void testAnyConditionWithPartialBinding() {
         String JSON1 =
                 """
                 {
@@ -199,7 +199,7 @@ public class ImplicitBindingTest {
     }
 
     @Test
-    public void testWithOr() {
+    void testWithOr() {
         String JSON1 =
                 """
                 {

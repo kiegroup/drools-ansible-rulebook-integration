@@ -9,15 +9,15 @@ import org.drools.core.reteoo.AlphaNode;
 import org.drools.core.reteoo.ObjectSink;
 import org.drools.kiesession.rulebase.InternalKnowledgeBase;
 import org.drools.modelcompiler.constraints.LambdaConstraint;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.rule.Match;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TypeMismatchTest {
 
@@ -25,17 +25,17 @@ public class TypeMismatchTest {
     static PrintStream originalOut = System.out;
     static StringPrintStream stringPrintStream = new StringPrintStream(System.out);
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         System.setOut(stringPrintStream);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         System.setOut(originalOut);
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         stringPrintStream.getStringList().clear();
     }
@@ -106,7 +106,7 @@ public class TypeMismatchTest {
                     """;
 
     @Test
-    public void mapAndString() {
+    void mapAndString() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_MAP_STRING);
 
         // incoming event.meta.headers is a map, not a string
@@ -171,7 +171,7 @@ public class TypeMismatchTest {
                     """;
 
     @Test
-    public void stringAndInteger() {
+    void stringAndInteger() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_STRING_INTEGER);
 
         // incoming event.i is a String, not an Integer
@@ -188,7 +188,7 @@ public class TypeMismatchTest {
     }
 
     @Test
-    public void typeMismatchWithNodeSharing() {
+    void typeMismatchWithNodeSharing() {
         String json =
                 """
                         {
@@ -417,7 +417,7 @@ public class TypeMismatchTest {
                     """;
 
     @Test
-    public void alphaIndex() {
+    void alphaIndex() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_ALPHA_INDEX);
 
         // incoming event.meta.headers is a map, not a string
@@ -477,7 +477,7 @@ public class TypeMismatchTest {
                     """;
 
     @Test
-    public void betaIndex() {
+    void betaIndex() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_BETA_INDEX);
 
         // incoming event.meta.headers is a map, not a string
@@ -531,7 +531,7 @@ public class TypeMismatchTest {
                     """;
 
     @Test
-    public void negation() {
+    void negation() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_NEGATE);
 
         // incoming event.meta.headers is a map, not a string
@@ -597,7 +597,7 @@ public class TypeMismatchTest {
                     """;
 
     @Test
-    public void any() {
+    void any() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_ANY);
 
         rulesExecutor.processEvents("{ \"i\": \"AAA\"}").join();

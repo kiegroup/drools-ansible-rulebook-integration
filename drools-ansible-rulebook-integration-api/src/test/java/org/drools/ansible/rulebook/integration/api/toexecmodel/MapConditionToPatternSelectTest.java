@@ -18,7 +18,7 @@ package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
 import org.drools.model.functions.Predicate1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeEventInstance;
 
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.create
 public class MapConditionToPatternSelectTest extends ToPatternTestBase {
 
     @Test
-    public void selectExpression() throws Exception {
+    void selectExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("levels");
         LinkedHashMap<Object, Object> rhsValueMap = createRhsWithOperatorAndValue("String", ">", "Integer", 25);
@@ -55,7 +55,7 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
     }
 
     @Test
-    public void selectNotExpression() throws Exception {
+    void selectNotExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("levels");
         LinkedHashMap<Object, Object> rhsValueMap = createRhsWithOperatorAndValue("String", ">", "Integer", 25);
@@ -77,7 +77,7 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
     }
 
     @Test
-    public void selectExpressionWithRegex() throws Exception {
+    void selectExpressionWithRegex() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("addresses");
         LinkedHashMap<Object, Object> rhsValueMap = createRhsWithOperatorAndValue("String", "regex", "String", "Main St");
@@ -96,7 +96,7 @@ public class MapConditionToPatternSelectTest extends ToPatternTestBase {
     }
 
     @Test
-    public void selectExpressionOnField() throws Exception {
+    void selectExpressionOnField() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("my_list1");
         LinkedHashMap<Object, Object> rhsValueMap = createRhsWithOperatorAndValue("String", "==", "Event", "my_int1");

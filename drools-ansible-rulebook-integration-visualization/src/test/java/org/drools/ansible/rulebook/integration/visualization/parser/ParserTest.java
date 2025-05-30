@@ -17,8 +17,8 @@ import org.drools.impact.analysis.model.left.Pattern;
 import org.drools.impact.analysis.model.right.ConsequenceAction;
 import org.drools.impact.analysis.model.right.DeleteSpecificFactAction;
 import org.drools.impact.analysis.model.right.InsertAction;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore("Analyzer depends on Index.ConstraintType. Temporarily ignore this test.")
+@Disabled("Analyzer depends on Index.ConstraintType. Temporarily ignore this test.")
 public class ParserTest {
 
     private String JSON =
@@ -168,7 +168,7 @@ public class ParserTest {
                     """;
 
     @Test
-    public void parse4RulesWithPostEventSetFactRetractFact() {
+    void parse4RulesWithPostEventSetFactRetractFact() {
         RulesSet rulesSet = RuleNotation.CoreNotation.INSTANCE.toRulesSet(RuleFormat.JSON, JSON);
         AnalysisModel analysisModel = RulesSetParser.parse(rulesSet);
 

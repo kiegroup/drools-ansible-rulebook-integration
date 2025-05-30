@@ -2,15 +2,15 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringMatchTest {
 
     @Test
-    public void testMatch() {
+    void testMatch() {
         String json =
                 """
                 {
@@ -80,7 +80,7 @@ public class StringMatchTest {
     }
 
     @Test
-    public void testNotMatch() {
+    void testNotMatch() {
         String json =
                 """
                 {
@@ -149,7 +149,7 @@ public class StringMatchTest {
     }
 
     @Test
-    public void testMultiline() {
+    void testMultiline() {
         String json =
                 """
                 {
@@ -396,7 +396,7 @@ public class StringMatchTest {
     }
 
     @Test
-    public void testSearchPatternInEvent() {
+    void testSearchPatternInEvent() {
         String json =
                 """
                 {
@@ -453,7 +453,7 @@ public class StringMatchTest {
     }
 
     @Test
-    public void testMatchPatternInEvent() {
+    void testMatchPatternInEvent() {
         String json =
                 """
                 {

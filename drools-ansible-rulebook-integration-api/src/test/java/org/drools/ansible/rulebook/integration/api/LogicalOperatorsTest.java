@@ -7,7 +7,7 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
 import static org.drools.model.prototype.PrototypeExpression.fixedValue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LogicalOperatorsTest {
 
@@ -124,7 +124,7 @@ public class LogicalOperatorsTest {
             """;
 
     @Test
-    public void testReadJson() throws JsonProcessingException {
+    void testReadJson() throws JsonProcessingException {
         System.out.println(JSON1);
         ObjectMapper mapper = createMapper(new JsonFactory());
         RulesSet rulesSet = mapper.readValue(JSON1, RulesSet.class);
@@ -134,7 +134,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testProcessRules() {
+    void testProcessRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
@@ -157,7 +157,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testMultipleConditionOnSameFact() {
+    void testMultipleConditionOnSameFact() {
         String JSON2 =
                 """
                 {
@@ -230,7 +230,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testOr() {
+    void testOr() {
         String json =
                 """
                 {
@@ -286,7 +286,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testNegate() {
+    void testNegate() {
         String json =
                 """
                 {
@@ -356,7 +356,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testAny() {
+    void testAny() {
         RulesSet rulesSet = new RulesSet();
         rulesSet.addRule().withCondition().any()
                 .addSingleCondition(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("i"), Index.ConstraintType.EQUAL, fixedValue(0)).withPatternBinding("event")
@@ -367,7 +367,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testAnyWithJson() {
+    void testAnyWithJson() {
         String JSON4 =
                 """
                 {
@@ -450,7 +450,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testOrWithNestedAnd() {
+    void testOrWithNestedAnd() {
         String JSON =
                 """
                 {
@@ -542,7 +542,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testPreventSelfJoin() {
+    void testPreventSelfJoin() {
         String json =
                 """
                 {
@@ -593,7 +593,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testComparisonWithDifferentNumericTypes() {
+    void testComparisonWithDifferentNumericTypes() {
         String json =
                 """
                 {
@@ -653,7 +653,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testEqualityWithDifferentNumericTypes() {
+    void testEqualityWithDifferentNumericTypes() {
         String json =
                 """
                 {
@@ -716,7 +716,7 @@ public class LogicalOperatorsTest {
     }
 
     @Test
-    public void testOrWithAnd() {
+    void testOrWithAnd() {
         String json =
                 """
         {

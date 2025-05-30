@@ -3,15 +3,15 @@ package org.drools.ansible.rulebook.integration.api;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TimeWindowTest {
 
     @Test
-    public void testTimeWindowInCondition() {
+    void testTimeWindowInCondition() {
         String json =
                 """
                 {
@@ -63,7 +63,7 @@ public class TimeWindowTest {
     }
 
     @Test
-    public void testTimeWindowInRule() {
+    void testTimeWindowInRule() {
         String json =
                 """
                 {

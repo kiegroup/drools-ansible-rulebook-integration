@@ -3,18 +3,18 @@ package org.drools.ansible.rulebook.integration.api;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpressionUtils;
 import org.drools.model.Index;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
 import static org.drools.model.prototype.PrototypeExpression.fixedValue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AdditionTest {
 
     @Test
-    public void testExecuteRules() {
+    void testExecuteRules() {
         String json =
                 """
                 {
@@ -69,7 +69,7 @@ public class AdditionTest {
     }
 
     @Test
-    public void testExecuteRulesSet() {
+    void testExecuteRulesSet() {
         RulesSet rulesSet = new RulesSet();
         rulesSet.addRule().withCondition().all()
                 .addSingleCondition(ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("nested.i"), Index.ConstraintType.EQUAL, ExtractorPrototypeExpressionUtils.prototypeFieldExtractor("nested.j").add(fixedValue(1)));
@@ -87,7 +87,7 @@ public class AdditionTest {
     }
 
     @Test
-    public void testAdditionOnDifferentEvents() {
+    void testAdditionOnDifferentEvents() {
         String json =
                 """
                 {

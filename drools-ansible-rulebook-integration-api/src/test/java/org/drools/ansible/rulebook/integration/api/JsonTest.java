@@ -6,11 +6,11 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JsonTest {
 
@@ -110,7 +110,7 @@ public class JsonTest {
             """;
 
     @Test
-    public void testReadJson() throws JsonProcessingException {
+    void testReadJson() throws JsonProcessingException {
         System.out.println(JSON1);
 
         ObjectMapper mapper = createMapper(new JsonFactory());
@@ -119,7 +119,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testExecuteRules() {
+    void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
         int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 2, executedRules );
@@ -127,7 +127,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testProcessRules() {
+    void testProcessRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
@@ -146,7 +146,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testProcessRuleWithoutAction() {
+    void testProcessRuleWithoutAction() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } } }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
@@ -157,7 +157,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testProcessNumericString() {
+    void testProcessNumericString() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"String\":\"1\" } } } }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":\"1\" } } }" ).join();
@@ -168,7 +168,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testProcessRuleWithUnknownAction() {
+    void testProcessRuleWithUnknownAction() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"EqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } }, \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
@@ -179,7 +179,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testIsDefinedExpression() {
+    void testIsDefinedExpression() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"IsDefinedExpression\":{ \"sensu\":\"data.i\" } } }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
@@ -190,7 +190,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testIsDefinedExpressionOnMap() {
+    void testIsDefinedExpressionOnMap() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"IsDefinedExpression\":{ \"event\":\"payload\" } } }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{\"payload\": {\"key1\": \"value1\", \"key2\": \"value2\"}}" ).join();
@@ -201,7 +201,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testProcessNoteEqualsWithNull() {
+    void testProcessNoteEqualsWithNull() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"NotEqualsExpression\":{ \"lhs\":{ \"sensu\":\"data.i\" }, \"rhs\":{ \"Integer\":1 } } } }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"j\":1 } } }" ).join();
@@ -217,7 +217,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testProcessRuleWithFloat() {
+    void testProcessRuleWithFloat() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\":{ \"LessThanExpression\":{ \"lhs\":{ \"Event\": \"i\" }, \"rhs\":{ \"Float\": 200.89 } } } }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"i\": 200.9 }" ).join();

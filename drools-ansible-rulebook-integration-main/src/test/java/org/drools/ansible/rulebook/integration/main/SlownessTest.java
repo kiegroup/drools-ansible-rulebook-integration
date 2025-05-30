@@ -7,9 +7,9 @@ import java.util.Map;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SlowAutomaticPseudoClock;
 import org.drools.ansible.rulebook.integration.main.Main.ExecuteResult;
 import org.drools.ansible.rulebook.integration.main.utils.StringPrintStream;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.SessionStatsCollector.DELAY_WARNING_THRESHOLD_PROPERTY;
@@ -20,18 +20,18 @@ public class SlownessTest {
 
     static StringPrintStream stringPrintStream = new StringPrintStream(System.out);
 
-    @BeforeClass
+    @BeforeAll
     static public void beforeClass() throws Exception {
         System.setOut(stringPrintStream);
     }
 
-    @AfterClass
+    @AfterAll
     static public void afterClass() {
         System.setOut(originalOut);
     }
 
     @Test
-    public void testOnceAfter() {
+    void testOnceAfter() {
         try {
             // <drools.delay.warning.threshold>2</drools.delay.warning.threshold> configured in pom.xml.
             // But explicitly set it here in case of running the test from IDE.

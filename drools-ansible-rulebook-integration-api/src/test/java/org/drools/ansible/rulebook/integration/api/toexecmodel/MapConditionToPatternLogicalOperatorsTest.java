@@ -20,7 +20,7 @@ import org.drools.ansible.rulebook.integration.api.domain.conditions.MapConditio
 import org.drools.model.Constraint;
 import org.drools.model.constraints.OrConstraints;
 import org.drools.model.functions.Predicate1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeEventInstance;
 
 import java.util.LinkedHashMap;
@@ -32,7 +32,7 @@ import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.create
 public class MapConditionToPatternLogicalOperatorsTest extends ToPatternTestBase {
 
     @Test
-    public void andExpression() throws Exception {
+    void andExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap1 = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap1 = createSingleMap("Integer", "2");
@@ -58,7 +58,7 @@ public class MapConditionToPatternLogicalOperatorsTest extends ToPatternTestBase
     }
 
     @Test
-    public void orExpression() throws Exception {
+    void orExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap1 = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap1 = createSingleMap("Integer", "2");

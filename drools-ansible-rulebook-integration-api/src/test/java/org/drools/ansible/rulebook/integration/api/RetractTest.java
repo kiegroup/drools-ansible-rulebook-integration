@@ -1,16 +1,16 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RetractTest {
 
     @Test
-    public void testExecuteRules() {
+    void testExecuteRules() {
         String JSON1 =
                 """
                 {
@@ -114,7 +114,7 @@ public class RetractTest {
     }
 
     @Test
-    public void testRetract() {
+    void testRetract() {
         String JSON1 =
                 """
                 {
@@ -157,7 +157,7 @@ public class RetractTest {
     }
 
     @Test
-    public void testRetractMatchingFacts() {
+    void testRetractMatchingFacts() {
         String JSON1 =
                 """
                 {
@@ -200,7 +200,7 @@ public class RetractTest {
     }
 
     @Test
-    public void testRetractMatchingFactsIgnoringKeys() {
+    void testRetractMatchingFactsIgnoringKeys() {
         String JSON1 =
                 """
                 {

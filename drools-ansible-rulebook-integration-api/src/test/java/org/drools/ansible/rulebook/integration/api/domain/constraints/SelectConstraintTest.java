@@ -20,7 +20,7 @@ import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.ParsedCondition;
 import org.drools.ansible.rulebook.integration.protoextractor.prototype.ExtractorPrototypeExpression;
 import org.drools.model.prototype.PrototypeExpression;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -35,7 +35,7 @@ import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.create
 public class SelectConstraintTest {
 
     @Test
-    public void createParsedConditionWithSelectExpression() {
+    void createParsedConditionWithSelectExpression() {
         LinkedHashMap<Object, Object> map = createLhsRhsMap(
                 createEventField("levels"),
                 createRhsWithOperatorAndValue("String", ">", "Integer", 25)
@@ -58,7 +58,7 @@ public class SelectConstraintTest {
     }
 
     @Test
-    public void createParsedConditionWithSelectNotExpression() {
+    void createParsedConditionWithSelectNotExpression() {
         LinkedHashMap<Object, Object> map = createLhsRhsMap(
                 createEventField("levels"),
                 createRhsWithOperatorAndValue("String", ">", "Integer", 25)

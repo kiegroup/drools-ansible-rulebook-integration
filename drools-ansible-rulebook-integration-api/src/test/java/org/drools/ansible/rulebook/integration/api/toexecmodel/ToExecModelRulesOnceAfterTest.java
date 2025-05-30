@@ -28,7 +28,7 @@ import org.drools.ansible.rulebook.integration.api.domain.conditions.MapConditio
 import org.drools.ansible.rulebook.integration.api.domain.temporal.OnceAfterDefinition;
 import org.drools.ansible.rulebook.integration.api.domain.temporal.Throttle;
 import org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutionController;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
@@ -40,7 +40,7 @@ import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.getRul
 public class ToExecModelRulesOnceAfterTest extends ToPatternTestBase {
 
     @Test
-    public void onceAfter() throws Exception {
+    void onceAfter() throws Exception {
         // Rule
         Rule rule = new Rule();
         rule.setName("r1");

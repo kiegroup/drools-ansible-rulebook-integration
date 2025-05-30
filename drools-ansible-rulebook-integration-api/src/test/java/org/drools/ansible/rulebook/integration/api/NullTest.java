@@ -2,15 +2,15 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NullTest {
 
     @Test
-    public void test() {
+    void test() {
         String json =
                 """
                 {
@@ -75,7 +75,7 @@ public class NullTest {
     }
 
     @Test
-    public void testWithSelectAttr() {
+    void testWithSelectAttr() {
         String json =
                 """
                 {

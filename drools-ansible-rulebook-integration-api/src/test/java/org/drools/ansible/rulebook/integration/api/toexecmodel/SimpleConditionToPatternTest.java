@@ -18,7 +18,7 @@ package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
 import org.drools.ansible.rulebook.integration.api.domain.conditions.SimpleCondition;
 import org.drools.model.functions.Predicate1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeEventInstance;
 
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SimpleConditionToPatternTest extends ToPatternTestBase {
 
     @Test
-    public void simpleConditionLogicalOperator() throws Exception {
+    void simpleConditionLogicalOperator() throws Exception {
         // Create SimpleCondition
         SimpleCondition simpleCondition = new SimpleCondition("sensu.data.i == 1");
 

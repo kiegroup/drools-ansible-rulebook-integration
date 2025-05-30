@@ -3,7 +3,7 @@ package org.drools.ansible.rulebook.integration.api;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
@@ -16,14 +16,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.drools.ansible.rulebook.integration.api.RulesExecutorFactory.DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TimedOutTest {
 
     @Test
-    public void timedOutTest() {
+    void timedOutTest() {
         String json =
                 """
                 {
@@ -127,7 +127,7 @@ public class TimedOutTest {
     }
 
     @Test
-    public void testSimpleTimedOut() {
+    void testSimpleTimedOut() {
         String json =
                 """
                 {
@@ -190,9 +190,9 @@ public class TimedOutTest {
         assertEquals(0, stats.getEventsSuppressed());
         assertEquals(0, stats.getPermanentStorageCount());
     }
-    
+
     @Test
-    public void testTimedOutWithAutomaticClockAdvance() throws IOException {
+    void testTimedOutWithAutomaticClockAdvance() throws IOException {
         String json =
                 """
                 {
@@ -260,7 +260,7 @@ public class TimedOutTest {
 
             // fires after at least 2 seconds
             long elapsed = (System.nanoTime() - assertTime) / 1_000_000;
-            assertTrue("rule fired after " + elapsed + " milliseconds", elapsed >= 1_900);
+            assertTrue(elapsed >= 1_900, "rule fired after " + elapsed + " milliseconds");
 
             byte[] bytes = bufferedInputStream.readNBytes(l);
             String r = new String(bytes, StandardCharsets.UTF_8);
