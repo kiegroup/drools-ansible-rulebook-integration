@@ -4,7 +4,7 @@ import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
@@ -13,13 +13,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OnceAfterTest {
 
     @Test
-    public void testOnceAfterWithOr() {
+    void testOnceAfterWithOr() {
         String json =
                 """
                 {\
@@ -138,9 +138,9 @@ public class OnceAfterTest {
     private static Object evalAgainstFact(PrototypeFactInstance fact, String expr) {
         return ExtractorUtils.getValueFrom(ExtractorParser.parse(expr), fact.asMap());
     }
-        
+
     @Test
-    public void test57_once_after_multiple() {
+    void test57_once_after_multiple() {
         final String RULES = """
                 {
                 "rules": [

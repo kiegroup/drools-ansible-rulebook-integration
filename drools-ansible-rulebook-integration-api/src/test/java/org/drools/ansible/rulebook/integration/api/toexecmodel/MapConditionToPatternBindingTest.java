@@ -23,7 +23,7 @@ import org.drools.ansible.rulebook.integration.api.domain.conditions.MapConditio
 import org.drools.model.PatternDSL;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.createEventField;
@@ -32,7 +32,7 @@ import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.create
 public class MapConditionToPatternBindingTest extends ToPatternTestBase {
 
     @Test
-    public void assignmentExpression() throws Exception {
+    void assignmentExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("abc");
         LinkedHashMap<Object, Object> equalsExpression = createEqualsExpression(createSingleMap("Event", "i"), createSingleMap("Integer", 1));
@@ -49,7 +49,7 @@ public class MapConditionToPatternBindingTest extends ToPatternTestBase {
     }
 
     @Test
-    public void defaultBinding_oneCondition() {
+    void defaultBinding_oneCondition() {
         // Create MapCondition
         LinkedHashMap<Object, Object> equalsExpression = createEqualsExpression(createSingleMap("Event", "i"), createSingleMap("Integer", 1));
         LinkedHashMap<Object, Object> rootMap = createAllCondition(equalsExpression);
@@ -64,7 +64,7 @@ public class MapConditionToPatternBindingTest extends ToPatternTestBase {
     }
 
     @Test
-    public void defaultBinding_multipleConditions() {
+    void defaultBinding_multipleConditions() {
         // Create MapCondition
         LinkedHashMap<Object, Object> equalsExpression1 = createEqualsExpression(createSingleMap("Event", "i"), createSingleMap("Integer", 1));
         LinkedHashMap<Object, Object> equalsExpression2 = createEqualsExpression(createSingleMap("Event", "i"), createSingleMap("Integer", 2));

@@ -3,7 +3,7 @@ package org.drools.ansible.rulebook.integration.protoextractor.prototype;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
 
 import java.nio.file.Files;
@@ -17,7 +17,7 @@ import static org.kie.api.prototype.PrototypeBuilder.prototype;
 public class PrototypeTest {
 
     @Test
-    public void testBasic() throws Exception {
+    void testBasic() throws Exception {
         final String expression = "a.b[\"c\"].d[\"e/asd\"]['f'].g.h";
 
         ExtractorPrototypeExpression expr = new ExtractorPrototypeExpression(ExtractorParser.parse(expression));
