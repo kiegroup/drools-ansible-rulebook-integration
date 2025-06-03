@@ -1,17 +1,17 @@
 package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SingleActivationForEventTest {
 
     @Test
-    public void test() {
+    void test() {
         String json =
                 """
                 {

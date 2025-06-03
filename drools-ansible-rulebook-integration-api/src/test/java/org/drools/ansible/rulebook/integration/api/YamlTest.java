@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class YamlTest {
 
@@ -43,14 +43,14 @@ public class YamlTest {
 
 
     @Test
-    public void testReadSimpleYaml() throws JsonProcessingException {
+    void testReadSimpleYaml() throws JsonProcessingException {
         ObjectMapper mapper = createMapper(new YAMLFactory());
         RulesSet rulesSet = mapper.readValue(YAML1, RulesSet.class);
         System.out.println(rulesSet);
     }
 
     @Test
-    public void testExecuteRules() {
+    void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromYaml(YAML1);
         int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 2, executedRules );
@@ -122,7 +122,7 @@ public class YamlTest {
             """;
 
     @Test
-    public void testReadYaml() throws JsonProcessingException {
+    void testReadYaml() throws JsonProcessingException {
         ObjectMapper mapper = createMapper(new YAMLFactory());
         RulesSet rulesSet = mapper.readValue(YAML2, RulesSet.class);
         System.out.println(rulesSet);

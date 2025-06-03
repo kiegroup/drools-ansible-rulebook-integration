@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  * The goal of this test was to demonstrate identical behaviour
@@ -20,7 +20,7 @@ import org.junit.Test;
 public class JSONParsingWithJacksonTest {
 
     @Test
-    public void testAccessArrayField() {
+    void testAccessArrayField() {
         assertThat(JsonMapper.readValueExtractFieldAsList("{\"results\": [1,2,3]}", "results"))
             .isNotNull()
             .isInstanceOf(List.class);

@@ -1,7 +1,7 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class MemoryLeakTest {
     public static final String JSON1 =
@@ -33,9 +33,9 @@ public class MemoryLeakTest {
             }
             """;
 
-    @Ignore("This test is to check for memory leaks. It should be run manually and not as part of the build.")
+    @Disabled("This test is to check for memory leaks. It should be run manually and not as part of the build.")
     @Test
-    public void testMemoryLeakWithUnmatchEvents() {
+    void testMemoryLeakWithUnmatchEvents() {
         // If you set a short time for default_events_ttl, you can observe expiring jobs
 
         System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "INFO");

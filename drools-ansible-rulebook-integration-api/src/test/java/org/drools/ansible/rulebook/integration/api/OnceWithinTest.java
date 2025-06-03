@@ -2,20 +2,20 @@ package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
 
 public class OnceWithinTest {
 
     @Test
-    public void testOnceWithinInCondition() {
+    void testOnceWithinInCondition() {
         String json =
                 """
                 {
@@ -68,7 +68,7 @@ public class OnceWithinTest {
     }
 
     @Test
-    public void testOnceWithinInRule() {
+    void testOnceWithinInRule() {
         String json =
                 """
                 {
@@ -152,7 +152,7 @@ public class OnceWithinTest {
     }
 
     @Test
-    public void testOnceWithinWithOr() {
+    void testOnceWithinWithOr() {
         String json =
                 """
                 {
@@ -235,7 +235,7 @@ public class OnceWithinTest {
     }
 
     @Test
-    public void testOnceWithinWithAnd() {
+    void testOnceWithinWithAnd() {
         String json =
                 """
                 {
@@ -310,7 +310,7 @@ public class OnceWithinTest {
     }
 
     @Test
-    public void testRepeatedOnceWithin() {
+    void testRepeatedOnceWithin() {
         String json =
                 """
                 {

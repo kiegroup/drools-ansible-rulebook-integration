@@ -5,13 +5,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SimpleJsonTest {
 
@@ -71,14 +71,14 @@ public class SimpleJsonTest {
             """;
 
     @Test
-    public void testReadJson() throws JsonProcessingException {
+    void testReadJson() throws JsonProcessingException {
         ObjectMapper mapper = createMapper(new JsonFactory());
         RulesSet rulesSet = mapper.readValue(JSON1, RulesSet.class);
         System.out.println(rulesSet);
     }
 
     @Test
-    public void testExecuteRules() {
+    void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
         int executedRules = rulesExecutor.executeFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
         assertEquals( 2, executedRules );
@@ -86,7 +86,7 @@ public class SimpleJsonTest {
     }
 
     @Test
-    public void testProcessRules() {
+    void testProcessRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
@@ -105,7 +105,7 @@ public class SimpleJsonTest {
     }
 
     @Test
-    public void testProcessRuleWithoutAction() {
+    void testProcessRuleWithoutAction() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\" }} ] }");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();
@@ -116,7 +116,7 @@ public class SimpleJsonTest {
     }
 
     @Test
-    public void testProcessRuleWithUnknownAction() {
+    void testProcessRuleWithUnknownAction() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson("{ \"rules\": [ {\"Rule\": { \"name\": \"R1\", \"condition\": \"sensu.data.i == 1\", \"action\": { \"unknown\": { \"ruleset\": \"Test rules4\", \"fact\": { \"j\": 1 } } } }} ] }\n");
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();

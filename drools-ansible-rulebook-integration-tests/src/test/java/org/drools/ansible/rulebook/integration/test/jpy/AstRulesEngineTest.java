@@ -3,7 +3,8 @@ package org.drools.ansible.rulebook.integration.test.jpy;
 import org.drools.ansible.rulebook.integration.api.JsonTest;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -13,12 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class AstRulesEngineTest {
     @Test
-    public void testJpyApi() {
+    void testJpyApi() {
         String rules = JsonTest.JSON1;
         AstRulesEngine engine = new AstRulesEngine();
         long sessionId = 0;
@@ -41,7 +42,7 @@ public class AstRulesEngineTest {
     }
 
     @Test
-    public void testBrokenApi() throws IOException {
+    void testBrokenApi() throws IOException {
         try (AstRulesEngine engine = new AstRulesEngine();
              InputStream s = getClass().getClassLoader().getResourceAsStream("broken.json")) {
             String rules = new String(s.readAllBytes());
@@ -50,7 +51,7 @@ public class AstRulesEngineTest {
     }
 
     @Test
-    public void testRetractFactFullMatch() throws IOException {
+    void testRetractFactFullMatch() throws IOException {
         try (AstRulesEngine engine = new AstRulesEngine();
              InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
             String rules = new String(s.readAllBytes());
@@ -76,7 +77,7 @@ public class AstRulesEngineTest {
     }
 
     @Test
-    public void testRetractMatchingFacts() throws IOException {
+    void testRetractMatchingFacts() throws IOException {
         try (AstRulesEngine engine = new AstRulesEngine();
              InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {
             String rules = new String(s.readAllBytes());
@@ -96,7 +97,7 @@ public class AstRulesEngineTest {
     }
 
     @Test
-    public void testTimedOut() throws IOException {
+    void testTimedOut() throws IOException {
         try (AstRulesEngine engine = new AstRulesEngine();
              InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
             String rules = new String(s.readAllBytes());
@@ -113,7 +114,7 @@ public class AstRulesEngineTest {
                 long elapsed = (System.nanoTime() - assertTime) / 1_000_000;
 
                 // fires after at least 2 seconds
-                assertTrue("rule fired after " + elapsed + " milliseconds", elapsed >= 1_900);
+                assertTrue(elapsed >= 1_900, "rule fired after " + elapsed + " milliseconds");
 
                 byte[] bytes = bufferedInputStream.readNBytes(l);
                 String r = new String(bytes, StandardCharsets.UTF_8);
@@ -127,7 +128,7 @@ public class AstRulesEngineTest {
     }
 
     @Test
-    public void testTimedOutWithAdvance() throws IOException {
+    void testTimedOutWithAdvance() throws IOException {
         try (AstRulesEngine engine = new AstRulesEngine();
              InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
             int port = engine.port();
@@ -154,8 +155,9 @@ public class AstRulesEngineTest {
         }
     }
 
-    @Test(timeout = 5000L)
-    public void testThrowExceptionOnUnboundSocket() throws IOException {
+    @Test
+    @Timeout(5000L)
+    void testThrowExceptionOnUnboundSocket() throws IOException {
         try (AstRulesEngine engine = new AstRulesEngine();
              InputStream s = getClass().getClassLoader().getResourceAsStream("timed_out.json")) {
             int port = engine.port();
@@ -172,7 +174,7 @@ public class AstRulesEngineTest {
     }
 
     @Test
-    public void testAssertEvent() throws IOException {
+    void testAssertEvent() throws IOException {
         String rules = """
                 {
                    "rules":[

@@ -18,7 +18,7 @@ package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
 import org.drools.model.functions.Predicate1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeEventInstance;
 
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.create
 public class MapConditionToPatternAdditionTest extends ToPatternTestBase {
 
     @Test
-    public void additionExpression() throws Exception {
+    void additionExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("nested.i");
         LinkedHashMap<Object, Object> rhsValueMap = createAdditionExpression("Event", "nested.j", "Integer", 1);

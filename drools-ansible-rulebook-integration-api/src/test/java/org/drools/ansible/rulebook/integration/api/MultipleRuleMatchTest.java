@@ -17,13 +17,13 @@
 package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MultipleRuleMatchTest {
 
@@ -74,7 +74,7 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void executeFacts_shouldMatchMultipleRules() {
+    void executeFacts_shouldMatchMultipleRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(getJson(false));
         int executedRules = rulesExecutor.executeFacts("{ \"sensu\": { \"data\": { \"i\":1 } } }").join();
         assertThat(executedRules).isEqualTo(2);
@@ -83,7 +83,7 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void processFacts_shouldMatchMultipleRules() {
+    void processFacts_shouldMatchMultipleRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(getJson(false));
         List<Match> matchedRules = rulesExecutor.processFacts("{ \"sensu\": { \"data\": { \"i\":1 } } }").join();
         assertThat(matchedRules).hasSize(2);
@@ -93,7 +93,7 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void processEvents_shouldMatchOneRules() {
+    void processEvents_shouldMatchOneRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(getJson(false));
         List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"data\": { \"i\":1 } } }").join();
         assertThat(matchedRules).hasSize(1);
@@ -103,7 +103,7 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void executeFactsWithMatchMultipleRules_shouldMatchMultipleRules() {
+    void executeFactsWithMatchMultipleRules_shouldMatchMultipleRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(getJson(true));
         int executedRules = rulesExecutor.executeFacts("{ \"sensu\": { \"data\": { \"i\":1 } } }").join();
         assertThat(executedRules).isEqualTo(2);
@@ -112,7 +112,7 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void processFactsWithMatchMultipleRules_shouldMatchMultipleRules() {
+    void processFactsWithMatchMultipleRules_shouldMatchMultipleRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(getJson(true));
         List<Match> matchedRules = rulesExecutor.processFacts("{ \"sensu\": { \"data\": { \"i\":1 } } }").join();
         assertThat(matchedRules).hasSize(2);
@@ -122,7 +122,7 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void processEventsWithMatchMultipleRules_shouldMatchMultipleRules() {
+    void processEventsWithMatchMultipleRules_shouldMatchMultipleRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(getJson(true));
         List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"data\": { \"i\":1 } } }").join();
         assertThat(matchedRules).hasSize(2);
@@ -138,22 +138,22 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void retainLeftPartialMatchesWithMatchMultipleRules() {
+    void retainLeftPartialMatchesWithMatchMultipleRules() {
         checkPartialMatchesWithMatchMultipleRules(true, true);
     }
 
     @Test
-    public void discardLeftPartialMatchesWithMatchMultipleRules() {
+    void discardLeftPartialMatchesWithMatchMultipleRules() {
         checkPartialMatchesWithMatchMultipleRules(false, true);
     }
 
     @Test
-    public void retainRightPartialMatchesWithMatchMultipleRules() {
+    void retainRightPartialMatchesWithMatchMultipleRules() {
         checkPartialMatchesWithMatchMultipleRules(true, false);
     }
 
     @Test
-    public void discardRightPartialMatchesWithMatchMultipleRules() {
+    void discardRightPartialMatchesWithMatchMultipleRules() {
         checkPartialMatchesWithMatchMultipleRules(false, false);
     }
 
@@ -256,22 +256,22 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void retainLeftPartialMatchesWithMatchMultipleRulesWithPeer() {
+    void retainLeftPartialMatchesWithMatchMultipleRulesWithPeer() {
         checkPartialMatchesWithMatchMultipleRulesWithPeer(true, true);
     }
 
     @Test
-    public void discardLeftPartialMatchesWithMatchMultipleRulesWithPeer() {
+    void discardLeftPartialMatchesWithMatchMultipleRulesWithPeer() {
         checkPartialMatchesWithMatchMultipleRulesWithPeer(false, true);
     }
 
     @Test
-    public void retainRightPartialMatchesWithMatchMultipleRulesWithPeer() {
+    void retainRightPartialMatchesWithMatchMultipleRulesWithPeer() {
         checkPartialMatchesWithMatchMultipleRulesWithPeer(true, false);
     }
 
     @Test
-    public void discardRightPartialMatchesWithMatchMultipleRulesWithPeer() {
+    void discardRightPartialMatchesWithMatchMultipleRulesWithPeer() {
         checkPartialMatchesWithMatchMultipleRulesWithPeer(false, false);
     }
 
@@ -437,7 +437,7 @@ public class MultipleRuleMatchTest {
     }
 
     @Test
-    public void retainPartialMatchesWithMatchMultipleRulesWithMultiplePeers() {
+    void retainPartialMatchesWithMatchMultipleRulesWithMultiplePeers() {
         String rules =
                 "{\n" +
                         "   \"match_multiple_rules\": true,\n" +

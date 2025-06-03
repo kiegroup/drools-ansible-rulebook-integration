@@ -3,7 +3,7 @@ package org.drools.ansible.rulebook.integration.test.jpy;
 import org.drools.ansible.rulebook.integration.api.JsonTest;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AsyncAstRulesEngine;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -12,13 +12,11 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AsyncAstRulesEngineTest {
     @Test
-    public void testJpyApi() throws Exception {
+    void testJpyApi() throws Exception {
 
         String rules = JsonTest.JSON1;
 
@@ -44,7 +42,7 @@ public class AsyncAstRulesEngineTest {
     }
 
     @Test
-    public void testBrokenApi() throws IOException {
+    void testBrokenApi() throws IOException {
         AsyncAstRulesEngine engine = new AsyncAstRulesEngine();
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("broken.json")) {
             String rules = new String(s.readAllBytes());
@@ -55,7 +53,7 @@ public class AsyncAstRulesEngineTest {
     }
 
     @Test
-    public void testRetractFact() throws IOException {
+    void testRetractFact() throws IOException {
         AsyncAstRulesEngine engine = new AsyncAstRulesEngine();
         int port = engine.port();
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json");
@@ -95,7 +93,7 @@ public class AsyncAstRulesEngineTest {
     }
 
     @Test
-    public void testGetFacts() throws IOException {
+    void testGetFacts() throws IOException {
 
         AsyncAstRulesEngine engine = new AsyncAstRulesEngine();
         int port = engine.port();
@@ -128,7 +126,7 @@ public class AsyncAstRulesEngineTest {
     }
 
     @Test
-    public void testShutdown() throws Exception{
+    void testShutdown() throws Exception{
         AsyncAstRulesEngine engine = new AsyncAstRulesEngine();
 
         try (InputStream s = getClass().getClassLoader().getResourceAsStream("retract_fact.json")) {

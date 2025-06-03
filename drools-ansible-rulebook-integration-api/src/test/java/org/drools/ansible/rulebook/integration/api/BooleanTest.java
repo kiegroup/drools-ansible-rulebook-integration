@@ -2,15 +2,15 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BooleanTest {
 
     @Test
-    public void testProcessRuleWithBoolean() {
+    void testProcessRuleWithBoolean() {
         String json =
                 """
                 {
@@ -48,7 +48,7 @@ public class BooleanTest {
     }
 
     @Test
-    public void testProcessRuleWithImplicitBoolean() {
+    void testProcessRuleWithImplicitBoolean() {
         String json =
                 """
                 {
@@ -82,7 +82,7 @@ public class BooleanTest {
     }
 
     @Test
-    public void testProcessRuleWithImplicitNegateBoolean() {
+    void testProcessRuleWithImplicitNegateBoolean() {
         String json =
                 """
                 {
@@ -116,7 +116,7 @@ public class BooleanTest {
     }
 
     @Test
-    public void testProcessRuleWithLiteralBoolean() {
+    void testProcessRuleWithLiteralBoolean() {
         String json =
                 """
                 {
