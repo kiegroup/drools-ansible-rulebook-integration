@@ -18,7 +18,7 @@ package org.drools.ansible.rulebook.integration.api.toexecmodel;
 
 import org.drools.ansible.rulebook.integration.api.domain.conditions.MapCondition;
 import org.drools.model.functions.Predicate1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeEventInstance;
 
 import java.math.BigDecimal;
@@ -31,7 +31,7 @@ import static org.drools.ansible.rulebook.integration.api.utils.TestUtils.create
 public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestBase {
 
     @Test
-    public void equalsExpression() throws Exception {
+    void equalsExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap = createEventField("j");
@@ -50,7 +50,7 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
     }
 
     @Test
-    public void equalsExpression_BigDecimalDifferentScale() throws Exception {
+    void equalsExpression_BigDecimalDifferentScale() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap = createSingleMap("Integer", 1.0); // actually, this will be BigDecimal("1.0")
@@ -75,7 +75,7 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
     }
 
     @Test
-    public void notEqualsExpression() throws Exception {
+    void notEqualsExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap = createEventField("j");
@@ -94,7 +94,7 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
     }
 
     @Test
-    public void greaterThanExpression() throws Exception {
+    void greaterThanExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap = createEventField("j");
@@ -116,7 +116,7 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
     }
 
     @Test
-    public void greaterThanOrEqualToExpression() throws Exception {
+    void greaterThanOrEqualToExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap = createEventField("j");
@@ -138,7 +138,7 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
     }
 
     @Test
-    public void lessThanExpression() throws Exception {
+    void lessThanExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap = createEventField("j");
@@ -160,7 +160,7 @@ public class MapConditionToPatternRelationalOperatorsTest extends ToPatternTestB
     }
 
     @Test
-    public void lessThanOrEqualToExpression() throws Exception {
+    void lessThanOrEqualToExpression() throws Exception {
         // Create MapCondition
         LinkedHashMap<Object, Object> lhsValueMap = createEventField("i");
         LinkedHashMap<Object, Object> rhsValueMap = createEventField("j");

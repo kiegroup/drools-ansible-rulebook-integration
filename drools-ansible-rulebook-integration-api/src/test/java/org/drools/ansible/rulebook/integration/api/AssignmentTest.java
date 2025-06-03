@@ -1,17 +1,17 @@
 package org.drools.ansible.rulebook.integration.api;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AssignmentTest {
 
     @Test
-    public void testAssignmentReferenceEqualsExpressionRHS() {
+    void testAssignmentReferenceEqualsExpressionRHS() {
         String JSON =
                 """
                         {
@@ -75,7 +75,7 @@ public class AssignmentTest {
     }
 
     @Test
-    public void testAssignmentReferenceEqualsExpressionLHS() {
+    void testAssignmentReferenceEqualsExpressionLHS() {
         String JSON =
                 """
                         {
@@ -139,7 +139,7 @@ public class AssignmentTest {
     }
 
     @Test
-    public void testAssignmentReferenceItemInListExpressionLHS() {
+    void testAssignmentReferenceItemInListExpressionLHS() {
         String JSON =
                 """
                         {
@@ -203,7 +203,7 @@ public class AssignmentTest {
     }
 
     @Test
-    public void testAssignmentReferenceListContainsItemExpressionRHS() {
+    void testAssignmentReferenceListContainsItemExpressionRHS() {
         String JSON =
                 """
                         {
@@ -267,7 +267,7 @@ public class AssignmentTest {
     }
 
     @Test
-    public void testAssignmentReferenceListContainsItemExpressionLHS() {
+    void testAssignmentReferenceListContainsItemExpressionLHS() {
         String JSON =
                 """
                         {
@@ -331,7 +331,7 @@ public class AssignmentTest {
     }
 
     @Test
-    public void testAssignmentReferenceListNotContainsItemExpressionLHS() {
+    void testAssignmentReferenceListNotContainsItemExpressionLHS() {
         String JSON =
                 """
                         {
@@ -395,7 +395,7 @@ public class AssignmentTest {
     }
 
     @Test
-    public void testAssignmentReferenceSelectExpressionLHS_shouldThrowException() {
+    void testAssignmentReferenceSelectExpressionLHS_shouldThrowException() {
         String JSON =
                 """
                 {

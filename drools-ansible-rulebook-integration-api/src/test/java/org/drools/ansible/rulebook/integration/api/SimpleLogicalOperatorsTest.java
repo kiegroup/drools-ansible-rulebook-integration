@@ -11,11 +11,11 @@ import org.drools.ansible.rulebook.integration.api.domain.Rule;
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.api.domain.conditions.SimpleCondition;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.drools.ansible.rulebook.integration.api.ObjectMapperFactory.createMapper;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SimpleLogicalOperatorsTest {
 
@@ -61,7 +61,7 @@ public class SimpleLogicalOperatorsTest {
 
 
     @Test
-    public void testWriteJson() throws JsonProcessingException {
+    void testWriteJson() throws JsonProcessingException {
         Rule rule = new Rule();
         SimpleCondition c1 = new SimpleCondition();
         c1.setAll(Arrays.asList(new SimpleCondition("sensu.data.i == 3"), new SimpleCondition("j == 2")));
@@ -77,7 +77,7 @@ public class SimpleLogicalOperatorsTest {
     }
 
     @Test
-    public void testReadJson() throws JsonProcessingException {
+    void testReadJson() throws JsonProcessingException {
         System.out.println(JSON1);
         ObjectMapper mapper = createMapper(new JsonFactory());
         RulesSet rulesSet = mapper.readValue(JSON1, RulesSet.class);
@@ -87,7 +87,7 @@ public class SimpleLogicalOperatorsTest {
     }
 
     @Test
-    public void testProcessRules() {
+    void testProcessRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{ \"sensu\": { \"data\": { \"i\":1 } } }" ).join();

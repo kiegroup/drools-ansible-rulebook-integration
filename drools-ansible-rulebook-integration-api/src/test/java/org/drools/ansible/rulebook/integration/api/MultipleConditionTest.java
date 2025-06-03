@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleMatch;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MultipleConditionTest {
 
@@ -86,7 +86,7 @@ public class MultipleConditionTest {
             """;
 
     @Test
-    public void testReadJson() {
+    void testReadJson() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"events\": [ { \"i\":0 }, { \"i\":1 }, { \"i\":2 } ] }" ).join();

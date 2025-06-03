@@ -11,20 +11,20 @@ import org.drools.core.reteoo.ObjectSink;
 import org.drools.core.reteoo.ObjectTypeNode;
 import org.drools.core.reteoo.Rete;
 import org.drools.kiesession.rulebase.InternalKnowledgeBase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.definition.rule.Rule;
 import org.kie.api.prototype.PrototypeFact;
 import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AlphaTest {
 
     @Test
-    public void testEqualsWithFixedValue() {
+    void testEqualsWithFixedValue() {
         String json =
                 """
                 {
@@ -73,7 +73,7 @@ public class AlphaTest {
 
     private void assertConstraintType(Rete rete, String ruleName, ConstraintTypeOperator expectedType) {
         boolean asserted = false;
-        assertEquals("expecting only 1 pkg.", 1, rete.getRuleBase().getPackages().length);
+        assertEquals(1, rete.getRuleBase().getPackages().length, "expecting only 1 pkg.");
         InternalKnowledgePackage ipkg = rete.getRuleBase().getPackages()[0];
         PrototypeFact default_proto = PrototypeFactory.getPrototypeFact(PrototypeFactory.DEFAULT_PROTOTYPE_NAME);
         EntryPointNode epn = rete.getEntryPointNodes().values().iterator().next();
@@ -81,7 +81,7 @@ public class AlphaTest {
         ObjectSink[] sinks = otn.getObjectSinkPropagator().getSinks();
         for (ObjectSink objectSink : sinks) {
             AlphaNode alphaNode = (AlphaNode) objectSink;
-            assertEquals("expecting that one rule has one AlphaNode.", 1, alphaNode.getAssociatedRules().length);
+            assertEquals(1, alphaNode.getAssociatedRules().length, "expecting that one rule has one AlphaNode.");
             Rule rule = alphaNode.getAssociatedRules()[0];
             if (rule.getName().equals(ruleName)) {
                 IndexableConstraint constraint = (IndexableConstraint) alphaNode.getConstraint();
@@ -93,7 +93,7 @@ public class AlphaTest {
     }
 
     @Test
-    public void testEqualsOn2Fields() {
+    void testEqualsOn2Fields() {
         String json =
                 """
                 {
@@ -138,7 +138,7 @@ public class AlphaTest {
     }
 
     @Test
-    public void testGreaterOn2Fields() {
+    void testGreaterOn2Fields() {
         String json =
                 """
                 {
@@ -183,7 +183,7 @@ public class AlphaTest {
     }
 
     @Test
-    public void testListContainsField() {
+    void testListContainsField() {
 
         String JSON1 =
                 """
@@ -242,7 +242,7 @@ public class AlphaTest {
     }
 
     @Test
-    public void testEqualsWithNonAlphaField() {
+    void testEqualsWithNonAlphaField() {
         String json =
                 """
                 {
@@ -290,7 +290,7 @@ public class AlphaTest {
     }
 
     @Test
-    public void testEqualsWithNonAlphaRoot() {
+    void testEqualsWithNonAlphaRoot() {
         String json =
                 """
                 {

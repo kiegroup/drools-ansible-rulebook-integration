@@ -2,16 +2,16 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ArrayAccessWithoutIndexTest {
 
     @Test
-    public void testSelectAttrForArrayInArray() {
+    void testSelectAttrForArrayInArray() {
 
         String JSON_ARRAY_IN_ARRAY =
                 """
@@ -105,7 +105,7 @@ public class ArrayAccessWithoutIndexTest {
     }
 
     @Test
-    public void testSelectAttrForArrayInMapInArray() {
+    void testSelectAttrForArrayInMapInArray() {
 
         String JSON_ARRAY_IN_MAP_IN_ARRAY =
                 """
@@ -203,7 +203,7 @@ public class ArrayAccessWithoutIndexTest {
     }
 
     @Test
-    public void testSelectAttrForArrayInArrayWithIndex() {
+    void testSelectAttrForArrayInArrayWithIndex() {
 
         String JSON_ARRAY_IN_ARRAY_WITH_INDEX =
                 """
@@ -297,7 +297,7 @@ public class ArrayAccessWithoutIndexTest {
     }
 
     @Test
-    public void testSelectAttrForArrayInArrayInArray() {
+    void testSelectAttrForArrayInArrayInArray() {
 
         String JSON_ARRAY_IN_ARRAY_IN_ARRAY =
                 """
@@ -422,9 +422,9 @@ public class ArrayAccessWithoutIndexTest {
         rulesExecutor.dispose();
     }
 
-    @Ignore("At the moment, non-index-array ('alerts') does not support two-dimensional arrays.")
+    @Disabled("At the moment, non-index-array ('alerts') does not support two-dimensional arrays.")
     @Test
-    public void testSelectAttrForTwoDimensionArray() {
+    void testSelectAttrForTwoDimensionArray() {
 
         String JSON_TWO_DIMENSION_ARRAY =
                 """
@@ -511,7 +511,7 @@ public class ArrayAccessWithoutIndexTest {
     }
 
     @Test
-    public void testListContainsForArrayInArray() {
+    void testListContainsForArrayInArray() {
 
         String JSON_ARRAY_IN_ARRAY =
                 """
@@ -585,7 +585,7 @@ public class ArrayAccessWithoutIndexTest {
     }
 
     @Test
-    public void testSelectForArrayInArray() {
+    void testSelectForArrayInArray() {
 
         String JSON_ARRAY_IN_ARRAY =
                 """
@@ -661,7 +661,7 @@ public class ArrayAccessWithoutIndexTest {
     }
 
     @Test
-    public void testSimpleOperatorWithArrayCollectAsLeafNode_shouldFail() {
+    void testSimpleOperatorWithArrayCollectAsLeafNode_shouldFail() {
         String JSON_ARRAY_IN_ARRAY =
                 """
                 {
@@ -717,7 +717,7 @@ public class ArrayAccessWithoutIndexTest {
     }
 
     @Test
-    public void testSimpleOperatorWithArrayCollectAsIntermediateNode_shouldFail() {
+    void testSimpleOperatorWithArrayCollectAsIntermediateNode_shouldFail() {
         String JSON_ARRAY_IN_ARRAY =
                 """
                 {

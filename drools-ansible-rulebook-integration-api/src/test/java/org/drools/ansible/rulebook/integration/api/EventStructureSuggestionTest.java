@@ -7,16 +7,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RuleEngineTestUtils.disableEventStructureSuggestion;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RuleEngineTestUtils.enableEventStructureSuggestion;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EventStructureSuggestionTest {
 
@@ -24,19 +24,19 @@ public class EventStructureSuggestionTest {
     static PrintStream originalOut = System.out;
     static StringPrintStream stringPrintStream = new StringPrintStream(System.out);
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         enableEventStructureSuggestion();
         System.setOut(stringPrintStream);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         disableEventStructureSuggestion();
         System.setOut(originalOut);
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         stringPrintStream.getStringList().clear();
     }
@@ -95,7 +95,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void validEventPath() {
+    void validEventPath() {
         // The rule is valid, so no suggestion is logged
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_VALID);
 
@@ -149,7 +149,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void missingFirstNode() {
+    void missingFirstNode() {
         // The rule condition misses the "payload" node
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_MISSING_FIRST_NODE);
 
@@ -205,7 +205,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void typo() {
+    void typo() {
         // The rule has a typo labels -> lebel
         // 2 characters difference can be detected at most
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_TYPO);
@@ -271,7 +271,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void githubEvent() throws IOException {
+    void githubEvent() throws IOException {
         // A rule condition misses the "hook" node
         // and another condition has a typo "repository" -> "repositry"
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_GITHUB);
@@ -347,7 +347,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void gitlabEvent() throws IOException {
+    void gitlabEvent() throws IOException {
         // A rule condition has a typo "commits[]" -> "commits" (forgetting [] access is the same as typo)
         // and another condition misses the "commits[]" node
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_GITLAB);
@@ -456,7 +456,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void sameTypos() {
+    void sameTypos() {
         // The rules have the same typo on 3 conditions
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_TYPO_MULTI);
 
@@ -521,7 +521,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void typoButMatch_shouldNotLogWarn() {
+    void typoButMatch_shouldNotLogWarn() {
         // One condition has a typo labels -> lebel
         // , but the other condition matches, so the rule matches
         // Validation doesn't take place
@@ -551,7 +551,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void typoButMatchThenNoMatch_shouldNotLogWarn() {
+    void typoButMatchThenNoMatch_shouldNotLogWarn() {
         // One condition has a typo labels -> lebel
         // , but the other condition matches, so the rule matches
         // Validation doesn't take place
@@ -573,7 +573,7 @@ public class EventStructureSuggestionTest {
     }
 
     @Test
-    public void factThenEvent() {
+    void factThenEvent() {
         // One condition has a typo
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_TYPO);
 
@@ -633,7 +633,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void nestedArray() {
+    void nestedArray() {
         // The rule condition has a nested array "alerts[0][0]"
         // Validation doesn't analyze nested arrays (limitation) and its children, so no waring is logged
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_NESTED_ARRAY);
@@ -684,7 +684,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void whitespace() {
+    void whitespace() {
         // whitespaces in the event path are trimmed, so it doesn't affect the validation
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_WHITESPACE);
 
@@ -732,7 +732,7 @@ public class EventStructureSuggestionTest {
                     """;
 
     @Test
-    public void events() {
+    void events() {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_TYPO);
 
@@ -751,7 +751,7 @@ public class EventStructureSuggestionTest {
     }
 
     @Test
-    public void arrayWithoutBracket() {
+    void arrayWithoutBracket() {
         String JSON_ARRAY_IN_ARRAY =
                 """
                 {

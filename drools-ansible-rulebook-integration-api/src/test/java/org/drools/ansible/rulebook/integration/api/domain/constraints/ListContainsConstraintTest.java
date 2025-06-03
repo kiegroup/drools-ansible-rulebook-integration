@@ -20,42 +20,42 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ListContainsConstraintTest {
 
     @Test
-    public void integerListAgainstBigDecimal() {
+    void integerListAgainstBigDecimal() {
         List<Integer> list = Arrays.asList(1, 2, 3);
         boolean result = ListContainsConstraint.INSTANCE.asPredicate().test(list, new BigDecimal("1.0"));
         assertThat(result).isTrue();
     }
 
     @Test
-    public void doubleListAgainstBigDecimal() {
+    void doubleListAgainstBigDecimal() {
         List<Double> list = Arrays.asList(1.0, 2.0, 3.0);
         boolean result = ListContainsConstraint.INSTANCE.asPredicate().test(list, new BigDecimal("1.0"));
         assertThat(result).isTrue();
     }
 
     @Test
-    public void bigDecimalListAgainstInteger() {
+    void bigDecimalListAgainstInteger() {
         List<BigDecimal> list = Arrays.asList(new BigDecimal("1.0"), new BigDecimal("2.0"), new BigDecimal("3.0"));
         boolean result = ListContainsConstraint.INSTANCE.asPredicate().test(list, 1);
         assertThat(result).isTrue();
     }
 
     @Test
-    public void bigDecimalListWithDifferentScaleAgainstBigDecimal() {
+    void bigDecimalListWithDifferentScaleAgainstBigDecimal() {
         List<BigDecimal> list = Arrays.asList(new BigDecimal("1"), new BigDecimal("1.00"));
         boolean result = ListContainsConstraint.INSTANCE.asPredicate().test(list, new BigDecimal("1.0"));
         assertThat(result).isTrue();
     }
 
     @Test
-    public void bigDecimalListWithDifferentScaleAgainstInteger() {
+    void bigDecimalListWithDifferentScaleAgainstInteger() {
         List<BigDecimal> list = Arrays.asList(new BigDecimal("1"), new BigDecimal("1.00"));
         boolean result = ListContainsConstraint.INSTANCE.asPredicate().test(list, 1);
         assertThat(result).isTrue();

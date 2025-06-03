@@ -2,10 +2,10 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ArrayAccessTest {
     public static final String JSON1 =
@@ -37,7 +37,7 @@ public class ArrayAccessTest {
             """;
 
     @Test
-    public void testArrayAccess() {
+    void testArrayAccess() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processFacts( "{\"host\": \"A\", \"os\": {\"array\": [\"abc\"]}}" ).join();
@@ -79,7 +79,7 @@ public class ArrayAccessTest {
             """;
 
     @Test
-    public void testNestedArrayAccess() {
+    void testNestedArrayAccess() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
         List<Match> matchedRules = rulesExecutor.processFacts( """

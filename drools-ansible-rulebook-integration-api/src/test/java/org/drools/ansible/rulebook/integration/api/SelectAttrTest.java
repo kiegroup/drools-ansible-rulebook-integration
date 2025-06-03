@@ -2,15 +2,15 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SelectAttrTest {
 
     @Test
-    public void testSelectAttr() {
+    void testSelectAttr() {
 
         String JSON1 =
                 """
@@ -78,7 +78,7 @@ public class SelectAttrTest {
     }
 
     @Test
-    public void testNegateSelectAttr() {
+    void testNegateSelectAttr() {
 
         String JSON1 =
                 """
@@ -152,7 +152,7 @@ public class SelectAttrTest {
     }
 
     @Test
-    public void testSelectAttrOnSingleItem() {
+    void testSelectAttrOnSingleItem() {
 
         String JSON1 =
                 """
@@ -212,7 +212,7 @@ public class SelectAttrTest {
     }
 
     @Test
-    public void testNegateSelectAttrOnSingleItem() {
+    void testNegateSelectAttrOnSingleItem() {
 
         String JSON1 =
                 """
@@ -275,7 +275,7 @@ public class SelectAttrTest {
     }
 
     @Test
-    public void testSelectAttrWithIn() {
+    void testSelectAttrWithIn() {
 
         String JSON1 =
                 """
@@ -348,7 +348,7 @@ public class SelectAttrTest {
     }
 
     @Test
-    public void testSelectAttrNegated() {
+    void testSelectAttrNegated() {
 
         String JSON1 =
                 """
@@ -414,7 +414,7 @@ public class SelectAttrTest {
     }
 
     @Test
-    public void testSelectAttrIncompatibleTypes() {
+    void testSelectAttrIncompatibleTypes() {
 
         String JSON1 =
                 """
@@ -473,7 +473,7 @@ public class SelectAttrTest {
     }
 
     @Test
-    public void testSelectAttrWithScientificNotation() {
+    void testSelectAttrWithScientificNotation() {
 
         String JSON1 =
                 """

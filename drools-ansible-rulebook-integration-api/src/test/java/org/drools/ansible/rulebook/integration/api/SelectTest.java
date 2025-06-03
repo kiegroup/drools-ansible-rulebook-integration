@@ -2,15 +2,15 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SelectTest {
 
     @Test
-    public void testSelect() {
+    void testSelect() {
 
         String JSON1 =
                 """
@@ -67,7 +67,7 @@ public class SelectTest {
     }
 
     @Test
-    public void testSelectOnSingleItem() {
+    void testSelectOnSingleItem() {
 
         String JSON1 =
                 """
@@ -124,7 +124,7 @@ public class SelectTest {
     }
 
     @Test
-    public void testNegatedSelect() {
+    void testNegatedSelect() {
 
         String JSON1 =
                 """
@@ -184,7 +184,7 @@ public class SelectTest {
     }
 
     @Test
-    public void testSelectWithRegEx() {
+    void testSelectWithRegEx() {
 
         String JSON1 =
                 """
@@ -276,7 +276,7 @@ public class SelectTest {
     }
 
     @Test
-    public void testSelectWithFloat() {
+    void testSelectWithFloat() {
         String JSON1 =
                 """
                 {
@@ -335,7 +335,7 @@ public class SelectTest {
     }
 
     @Test
-    public void testSelectOnNull() {
+    void testSelectOnNull() {
         String JSON1 =
                 """
                 {
@@ -389,7 +389,7 @@ public class SelectTest {
     }
 
     @Test
-    public void testSelectOnField() {
+    void testSelectOnField() {
         String JSON1 =
                 """
                 {
@@ -444,7 +444,7 @@ public class SelectTest {
 
 
     @Test
-    public void testSelectWithJoinCondition() {
+    void testSelectWithJoinCondition() {
 
         String JSON1 =
                 """

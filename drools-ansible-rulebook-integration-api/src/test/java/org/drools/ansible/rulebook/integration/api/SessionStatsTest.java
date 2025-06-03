@@ -3,20 +3,20 @@ package org.drools.ansible.rulebook.integration.api;
 import java.util.List;
 
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SessionStatsTest {
 
     @Test
-    public void testWithDisabledRule() {
+    void testWithDisabledRule() {
         String json =
                 """
                 {
@@ -106,7 +106,7 @@ public class SessionStatsTest {
     }
 
     @Test
-    public void baseLevelMemory() {
+    void baseLevelMemory() {
         String rule =
                 """
                 {
@@ -148,7 +148,7 @@ public class SessionStatsTest {
     }
 
     @Test
-    public void peakMemory() {
+    void peakMemory() {
         String rule =
                 """
                 {

@@ -2,15 +2,15 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ListContainsTest {
 
     @Test
-    public void testListContainsInt() {
+    void testListContainsInt() {
 
         String JSON1 =
                 """
@@ -66,7 +66,7 @@ public class ListContainsTest {
     }
 
     @Test
-    public void testListNotContainsString() {
+    void testListNotContainsString() {
 
         String JSON1 =
                 """
@@ -115,7 +115,7 @@ public class ListContainsTest {
     }
 
     @Test
-    public void testIntInList() {
+    void testIntInList() {
 
         String JSON1 =
                 """
@@ -172,7 +172,7 @@ public class ListContainsTest {
     }
 
     @Test
-    public void testIntNotInList() {
+    void testIntNotInList() {
 
         String JSON1 =
                 """
@@ -229,7 +229,7 @@ public class ListContainsTest {
     }
 
     @Test
-    public void testListContainsWithScientificNotation() {
+    void testListContainsWithScientificNotation() {
 
         String JSON1 =
                 """
@@ -282,7 +282,7 @@ public class ListContainsTest {
     }
 
     @Test
-    public void testListContainsWithJoinCondition() {
+    void testListContainsWithJoinCondition() {
 
         String JSON1 =
                 """

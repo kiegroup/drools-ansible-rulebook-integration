@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.drools.base.reteoo.InitialFactImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcessEventTest {
 
@@ -58,7 +58,7 @@ public class ProcessEventTest {
             """;
 
     @Test
-    public void testExecuteRules() {
+    void testExecuteRules() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON1);
 
         List<Match> matchedRules = rulesExecutor.processEvents( "{ \"i\": 1 }" ).join();
@@ -107,7 +107,7 @@ public class ProcessEventTest {
             """;
 
     @Test
-    public void testEventShouldProduceMultipleMatchesForSameRule() {
+    void testEventShouldProduceMultipleMatchesForSameRule() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON2);
 
         rulesExecutor.processFacts( "{ \"host\": \"A\", \"os\": \"linux\" }" );
@@ -165,7 +165,7 @@ public class ProcessEventTest {
             """;
 
     @Test
-    public void isNotDefinedExpression() {
+    void isNotDefinedExpression() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_IS_NOT_DEFINED);
 
         // A rule containing only a "isNotDefined" constraint matches only the first time ...
@@ -231,7 +231,7 @@ public class ProcessEventTest {
             """;
 
     @Test
-    public void isDefinedAndIsNotDefinedExpression() {
+    void isDefinedAndIsNotDefinedExpression() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_IS_DEFINED_AND_IS_NOT_DEFINED);
 
         List<Match> matchedRules = rulesExecutor.processEvents("{\"meta\":{\"headers\":{\"token\":123}}}").join();
@@ -281,7 +281,7 @@ public class ProcessEventTest {
             """;
 
     @Test
-    public void isDefinedIsNotDefinedInAllExpression() {
+    void isDefinedIsNotDefinedInAllExpression() {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_IS_DEFINED_IS_NOT_DEFINED_IN_ALL);
 
         List<Match> matchedRules = rulesExecutor.processEvents("{\"meta\":{\"headers\":{\"token\":123}}}").join();
