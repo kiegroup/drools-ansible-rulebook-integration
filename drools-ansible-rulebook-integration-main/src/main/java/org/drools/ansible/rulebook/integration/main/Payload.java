@@ -43,9 +43,13 @@ public class Payload {
         } catch (NullPointerException | NumberFormatException e) { /* ignore */ }
 
         try {
+            List<String> payloadJsonCache = new ArrayList<>(); // reuse the same String instances to avoid memory consumption on the client side
+            for (Object p : (List) sourcesArgs.get("payload")) {
+                payloadJsonCache.add(JsonMapper.toJson(p));
+            }
             for (int i = 0; i < repeatCount; i++) {
-                for (Object p : (List) sourcesArgs.get("payload")) {
-                    payloadList.add(JsonMapper.toJson(p));
+                for (String payloadJson : payloadJsonCache) {
+                    payloadList.add(payloadJson);
                 }
             }
         } catch (UncheckedIOException e) { /* ignore */ }
