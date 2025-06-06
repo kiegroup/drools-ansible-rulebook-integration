@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.drools.ansible.rulebook.integration.api.RuleFormat;
@@ -31,7 +32,8 @@ public class Main {
     
     private static final boolean EXECUTE_PAYLOAD_ASYNC = true;
 
-    private static final String DEFAULT_JSON = "56_once_after.json";
+//    private static final String DEFAULT_JSON = "56_once_after.json";
+private static final String DEFAULT_JSON = "24kb_10k_events.json";
 
     private static final int THREADS_NR = 1; // run with 1 thread by default
 
@@ -41,9 +43,21 @@ public class Main {
 
     private static boolean foundError = false;
 
+    private static AtomicLong usedMemory = new AtomicLong();
+    private static AtomicLong timeTaken = new AtomicLong();
+
     public static void main(String[] args) throws InterruptedException {
         String jsonFile = args.length > 0 ? args[0] : DEFAULT_JSON;
         parallelExecute(jsonFile);
+
+        // for test script convenience, print the information about the execution to STDERR
+        StringBuilder sb = new StringBuilder();
+        sb.append(jsonFile)
+                .append(", ")
+                .append(usedMemory.get()) // bytes
+                .append(", ")
+                .append(timeTaken.get()); // milliseconds
+        System.err.println(sb.toString());
     }
 
     private static void parallelExecute(String jsonFile) throws InterruptedException {
@@ -84,6 +98,18 @@ public class Main {
 
             long duration = Duration.between(start, Instant.now()).toMillis();
 
+            payload = null; // allow GC to collect the payload object because it can be large
+            timeTaken.set(duration);
+            System.gc();
+            try {
+                Thread.sleep(1000); // this sleep gives relatively stable gc results
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.gc();
+            // Need to check usedMemory before disposing the engine
+            usedMemory.set(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+
             return new ExecuteResult(returnedMatches, duration);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -102,7 +128,7 @@ public class Main {
         } else {
             List<Map> returnedMatches = payload.execute(engine, id);
             LOGGER.info("Returned matches: " + returnedMatches.size());
-            returnedMatches.forEach(map -> LOGGER.info("  " + map.entrySet()));
+            //returnedMatches.forEach(map -> LOGGER.info("  " + map.entrySet()));
 
             if (EXPECTED_MATCHES >= 0 && returnedMatches.size() != EXPECTED_MATCHES) {
                 LOGGER.error("Unexpected number of matches, expected = " + EXPECTED_MATCHES + " actual = " + returnedMatches.size());
