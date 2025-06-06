@@ -2,6 +2,7 @@ package org.drools.ansible.rulebook.integration.api;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.kie.api.runtime.rule.Match;
@@ -42,6 +43,8 @@ public class MemoryLeakTest {
 
     public static final String EVENT_24KB_UNMATCH = "{\"i\":5,\"data\":\"" + "A".repeat(24 * 1024) + "\"}";
 
+    @Disabled("disabled by default as this could be unstable." +
+            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     void testMemoryLeakWithUnmatchEvents() {
@@ -108,6 +111,8 @@ public class MemoryLeakTest {
 
     public static final String EVENT_24KB = "{\"i\":1,\"data\":\"" + "A".repeat(24 * 1024) + "\"}";
 
+    @Disabled("disabled by default as this could be unstable." +
+            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     public void testMemoryLeakWithMatchingEvents() {
