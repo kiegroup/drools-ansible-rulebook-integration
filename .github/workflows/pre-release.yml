@@ -17,14 +17,14 @@ jobs:
           distribution: 'adopt'
 
 
-      - name: Checkout Drools 9.103.0
+      - name: Checkout Drools 9.103.1
         uses: actions/checkout@v3
         with:
           repository: kiegroup/drools
           path: drools
-          ref: 9.103.x-prod
+          ref: 9.103.x-prod-ansible
 
-      - name: Build Drools 9.103.0 with Maven
+      - name: Build Drools 9.103.1 with Maven
         run: cd drools && mvn --batch-mode --update-snapshots install -Dquickly && cd ..
 
       - uses: actions/checkout@v3
