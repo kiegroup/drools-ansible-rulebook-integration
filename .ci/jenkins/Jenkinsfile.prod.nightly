@@ -29,7 +29,7 @@ pipeline{
           script {
             // Fetch versions from pom if not provided
             env.PRODUCT_VERSION = "${PRODUCT_VERSION ?: parseVersionFromPom('kiegroup/drools-ansible-rulebook-integration')}"
-            env.DROOLS_PRODUCT_VERSION = "${DROOLS_PRODUCT_VERSION ?: parseVersionFromPom('kiegroup/drools', '9.103.x-prod')}"
+            env.DROOLS_PRODUCT_VERSION = "${DROOLS_PRODUCT_VERSION ?: parseVersionFromPom('kiegroup/drools', '9.103.x-prod-ansible')}"
           }
 
           sh 'printenv'
