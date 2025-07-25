@@ -67,16 +67,16 @@ public class AccumulateWithinTest {
 
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
 
-        // First event - no fire
-        List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
+        // First event with sequence=1 - no fire
+        List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 1 }").join();
         assertEquals(0, matchedRules.size());
 
-        // Second event - no fire
-        matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
+        // Second event with sequence=2 - no fire
+        matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 2 }").join();
         assertEquals(0, matchedRules.size());
 
-        // Third event - threshold met, should fire
-        matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
+        // Third event with sequence=3 - threshold met, should fire
+        matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 3 }").join();
         assertEquals(1, matchedRules.size());
 
         // Verify metadata
@@ -85,6 +85,9 @@ public class AccumulateWithinTest {
         Map ruleEngineMeta = (Map) ((Map)map.get(RulesModelUtil.META_FIELD)).get(RulesModelUtil.RULE_ENGINE_META_FIELD);
         assertEquals(new TimeAmount(10, TimeUnit.MINUTES).toString(), ruleEngineMeta.get("accumulate_within_time_window"));
         assertEquals(3, ruleEngineMeta.get("threshold"));
+
+        // Verify that the returned event is the last one (sequence=3)
+        assertEquals(3, fact.asMap().get("sequence"));
 
         // Fourth event - starts new accumulation window, no fire
         matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
