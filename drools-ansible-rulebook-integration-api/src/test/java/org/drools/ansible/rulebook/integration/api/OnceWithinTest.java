@@ -1,6 +1,7 @@
 package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
 import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
@@ -148,8 +149,16 @@ public class OnceWithinTest {
         matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
         assertEquals(1, matchedRules.size());
 
-        // verify SessionStats
+        // Verify session stats
+        SessionStats stats = rulesExecutor.getSessionStats();
+        assertEquals(3, stats.getEventsMatched());
+        assertEquals(5, stats.getEventsProcessed());
+        assertEquals(2, stats.getEventsSuppressed());
+        assertEquals(2, stats.getPermanentStorageCount()); // 2 control events still exist
 
+        rulesExecutor.advanceTime(20, TimeUnit.SECONDS);
+        stats = rulesExecutor.getSessionStats();
+        assertEquals(0, stats.getPermanentStorageCount()); // all control events expired
 
         rulesExecutor.dispose();
     }

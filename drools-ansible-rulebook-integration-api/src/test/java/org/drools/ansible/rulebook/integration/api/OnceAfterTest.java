@@ -1,6 +1,7 @@
 package org.drools.ansible.rulebook.integration.api;
 
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorParser;
 import org.drools.ansible.rulebook.integration.protoextractor.ExtractorUtils;
@@ -98,6 +99,13 @@ public class OnceAfterTest {
         matchedRules = rulesExecutor.advanceTime(5, TimeUnit.SECONDS).join();
         assertEquals(1, matchedRules.size());
         assertEquals("r1", matchedRules.get(0).getRule().getName());
+
+        // Verify session stats
+        SessionStats stats = rulesExecutor.getSessionStats();
+        assertEquals(1, stats.getEventsMatched());
+        assertEquals(4, stats.getEventsProcessed());
+        assertEquals(3, stats.getEventsSuppressed());
+        assertEquals(0, stats.getPermanentStorageCount());
 
         for (int i = 0; i < 3; i++) {
             PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("m_" + i);
