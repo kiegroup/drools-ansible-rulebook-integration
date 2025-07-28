@@ -56,6 +56,7 @@ import static org.drools.model.PatternDSL.rule;
  *                     drools_rule_name == "R", current_count >= 3 )
  * then
  *   // original consequence
+ *   delete singleton; // delete the triggering event
  *   delete control event
  *
  * rule R_first_event when
