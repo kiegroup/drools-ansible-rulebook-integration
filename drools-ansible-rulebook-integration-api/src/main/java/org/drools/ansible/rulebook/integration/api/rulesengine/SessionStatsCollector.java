@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.api.rulesengine;
 
+import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
@@ -8,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+
+import static org.drools.ansible.rulebook.integration.api.domain.temporal.TimeConstraint.COUNT_AS_MATCHED_EVENT;
+import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 
 public class SessionStatsCollector {
 
@@ -117,7 +121,24 @@ public class SessionStatsCollector {
     }
 
     public void registerMatchedEvents(Collection<FactHandle> events) {
-        matchedEvents += events.size();
+        long count = events.stream()
+                .filter(this::isCountedAsMatchedEvent)
+                .count();
+        matchedEvents += (int) count;
+    }
+
+    private boolean isCountedAsMatchedEvent(FactHandle fh) {
+        Object obj = fh.getObject();
+        if (!(obj instanceof PrototypeFactInstance prototypeFactInstance)) {
+            // (Usually, not a case) Not a PrototypeFactInstance, so we count it as a matched event
+            return true;
+        }
+        if (!SYNTHETIC_PROTOTYPE_NAME.equals(prototypeFactInstance.getPrototype().getName())) {
+            // Not a synthetic event, so we count it as a matched event
+            return true;
+        }
+        // Unless a specific flag is set, we do not count a synthetic event as a matched event
+        return Boolean.TRUE.equals(prototypeFactInstance.get(COUNT_AS_MATCHED_EVENT));
     }
 
     public void registerProcessedEvent(RulesExecutorSession session, FactHandle fh) {

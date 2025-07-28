@@ -23,13 +23,18 @@ public class Payload {
     // set true when matchedEvents occupies too much memory
     private boolean discardMatchedEvents = false;
 
+    private static final List<String> SUPPORTED_SOURCE_NAMES = List.of(
+            "generic",
+            "ansible.eda.generic"
+    );
+
     private Payload(List<String> list) {
         this.list = list;
     }
 
     static Payload parsePayload(Map ruleSet) {
         Map eventsource = (Map) ((Map) ((List) ruleSet.get("sources")).get(0)).get("EventSource");
-        if (!eventsource.get("source_name").equals("generic")) {
+        if (!SUPPORTED_SOURCE_NAMES.contains((String) eventsource.get("source_name"))) {
             // this class currently mimics behaviour of: https://github.com/ansible/event-driven-ansible/blob/main/extensions/eda/plugins/event_source/generic.py
             // as such we should fail if the provided AST file (json variant) does not contain a `generic` EDA source as the sources[0].
             throw new IllegalArgumentException("Was expecting EventSource to be of type generic, found instead: "+eventsource);

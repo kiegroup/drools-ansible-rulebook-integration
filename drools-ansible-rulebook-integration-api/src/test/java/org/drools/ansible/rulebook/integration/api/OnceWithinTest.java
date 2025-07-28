@@ -148,6 +148,9 @@ public class OnceWithinTest {
         matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
         assertEquals(1, matchedRules.size());
 
+        // verify SessionStats
+
+
         rulesExecutor.dispose();
     }
 

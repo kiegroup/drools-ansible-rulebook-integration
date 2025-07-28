@@ -1,0 +1,83 @@
+[
+    {
+        "RuleSet": {
+            "name": "Test accumulate within",
+            "hosts": [
+                "localhost"
+            ],
+            "sources": [
+                {
+                    "EventSource": {
+                        "name": "Test",
+                        "source_name": "ansible.eda.generic",
+                        "source_args": {
+                            "payload": [
+                                {
+                                    "name": "alert1",
+                                    "level": "error",
+                                    "code": 205
+                                },
+                                {
+                                    "name": "alert2",
+                                    "level": "warning",
+                                    "code": 207
+                                },
+                                {
+                                    "name": "alert3",
+                                    "level": "error",
+                                    "code": 205
+                                },
+                                {
+                                    "name": "alert11",
+                                    "level": "error",
+                                    "code": 205
+                                }
+                            ],
+                            "event_delay": 1,
+                            "loop_delay": 1
+                        },
+                        "source_filters": []
+                    }
+                }
+            ],
+            "rules": [
+                {
+                    "Rule": {
+                        "name": "Throttle with threshold",
+                        "condition": {
+                            "AllCondition": [
+                                {
+                                    "EqualsExpression": {
+                                        "lhs": {
+                                            "Event": "level"
+                                        },
+                                        "rhs": {
+                                            "String": "error"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "Action": {
+                                    "action": "debug",
+                                    "action_args": {}
+                                }
+                            }
+                        ],
+                        "enabled": true,
+                        "throttle": {
+                            "group_by_attributes": [
+                                "event.level",
+                                "event.code"
+                            ],
+                            "accumulate_within": "5 minutes",
+                            "threshold": 3
+                        }
+                    }
+                }
+            ]
+        }
+    }
+]

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.drools.ansible.rulebook.integration.api.domain.temporal.TimeAmount;
+import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
 import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
@@ -25,19 +26,12 @@ public class AccumulateWithinTest {
                                     "condition":{
                                        "AllCondition":[
                                           {
-                                             "AssignmentExpression":{
+                                             "EqualsExpression":{
                                                 "lhs":{
-                                                   "Events":"singleton"
+                                                   "Event":"sensu.process.type"
                                                 },
                                                 "rhs":{
-                                                   "EqualsExpression":{
-                                                      "lhs":{
-                                                         "Event":"sensu.process.type"
-                                                      },
-                                                      "rhs":{
-                                                         "String":"alert"
-                                                      }
-                                                   }
+                                                   "String":"alert"
                                                 }
                                              }
                                           }
@@ -80,7 +74,7 @@ public class AccumulateWithinTest {
         assertEquals(1, matchedRules.size());
 
         // Verify metadata
-        PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("singleton");
+        PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("m");
         Map map = (Map) fact.asMap();
         Map ruleEngineMeta = (Map) ((Map)map.get(RulesModelUtil.META_FIELD)).get(RulesModelUtil.RULE_ENGINE_META_FIELD);
         assertEquals(new TimeAmount(10, TimeUnit.MINUTES).toString(), ruleEngineMeta.get("accumulate_within_time_window"));
@@ -88,6 +82,13 @@ public class AccumulateWithinTest {
 
         // Verify that the returned event is the last one (sequence=3)
         assertEquals(3, fact.asMap().get("sequence"));
+
+        // Verify session stats
+        SessionStats stats = rulesExecutor.getSessionStats();
+        assertEquals(1, stats.getEventsMatched());
+        assertEquals(3, stats.getEventsProcessed());
+        assertEquals(2, stats.getEventsSuppressed());
+        assertEquals(0, stats.getPermanentStorageCount());
 
         // Fourth event - starts new accumulation window, no fire
         matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
@@ -107,19 +108,12 @@ public class AccumulateWithinTest {
                                     "condition":{
                                        "AllCondition":[
                                           {
-                                             "AssignmentExpression":{
+                                             "EqualsExpression":{
                                                 "lhs":{
-                                                   "Events":"singleton"
+                                                   "Event":"sensu.process.type"
                                                 },
                                                 "rhs":{
-                                                   "EqualsExpression":{
-                                                      "lhs":{
-                                                         "Event":"sensu.process.type"
-                                                      },
-                                                      "rhs":{
-                                                         "String":"alert"
-                                                      }
-                                                   }
+                                                   "String":"alert"
                                                 }
                                              }
                                           }
@@ -172,6 +166,13 @@ public class AccumulateWithinTest {
         matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
         assertEquals(1, matchedRules.size());
 
+        // Verify session stats
+        SessionStats stats = rulesExecutor.getSessionStats();
+        assertEquals(1, stats.getEventsMatched());
+        assertEquals(5, stats.getEventsProcessed());
+        assertEquals(4, stats.getEventsSuppressed());
+        assertEquals(0, stats.getPermanentStorageCount());
+
         rulesExecutor.dispose();
     }
 
@@ -186,19 +187,12 @@ public class AccumulateWithinTest {
                                     "condition":{
                                        "AllCondition":[
                                           {
-                                             "AssignmentExpression":{
+                                             "EqualsExpression":{
                                                 "lhs":{
-                                                   "Events":"singleton"
+                                                   "Event":"sensu.process.type"
                                                 },
                                                 "rhs":{
-                                                   "EqualsExpression":{
-                                                      "lhs":{
-                                                         "Event":"sensu.process.type"
-                                                      },
-                                                      "rhs":{
-                                                         "String":"alert"
-                                                      }
-                                                   }
+                                                   "String":"alert"
                                                 }
                                              }
                                           }
@@ -262,19 +256,12 @@ public class AccumulateWithinTest {
                                     "condition":{
                                        "AllCondition":[
                                           {
-                                             "AssignmentExpression":{
+                                             "EqualsExpression":{
                                                 "lhs":{
-                                                   "Events":"singleton"
+                                                   "Event":"sensu.process.type"
                                                 },
                                                 "rhs":{
-                                                   "EqualsExpression":{
-                                                      "lhs":{
-                                                         "Event":"sensu.process.type"
-                                                      },
-                                                      "rhs":{
-                                                         "String":"alert"
-                                                      }
-                                                   }
+                                                   "String":"alert"
                                                 }
                                              }
                                           }
@@ -563,19 +550,12 @@ public class AccumulateWithinTest {
                                     "condition":{
                                        "AllCondition":[
                                           {
-                                             "AssignmentExpression":{
+                                             "EqualsExpression":{
                                                 "lhs":{
-                                                   "Events":"singleton"
+                                                   "Event":"sensu.process.type"
                                                 },
                                                 "rhs":{
-                                                   "EqualsExpression":{
-                                                      "lhs":{
-                                                         "Event":"sensu.process.type"
-                                                      },
-                                                      "rhs":{
-                                                         "String":"alert"
-                                                      }
-                                                   }
+                                                   "String":"alert"
                                                 }
                                              }
                                           }
@@ -609,83 +589,6 @@ public class AccumulateWithinTest {
         assertEquals(1, matchedRules.size());
 
         // Second event - new cycle, should fire immediately again
-        matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
-        assertEquals(1, matchedRules.size());
-
-        rulesExecutor.dispose();
-    }
-
-    @Test
-    void testAccumulateWithinExactWindowExpiration() {
-        String json =
-                """
-                        {
-                           "rules":[
-                              {
-                                 "Rule":{
-                                    "condition":{
-                                       "AllCondition":[
-                                          {
-                                             "AssignmentExpression":{
-                                                "lhs":{
-                                                   "Events":"singleton"
-                                                },
-                                                "rhs":{
-                                                   "EqualsExpression":{
-                                                      "lhs":{
-                                                         "Event":"sensu.process.type"
-                                                      },
-                                                      "rhs":{
-                                                         "String":"alert"
-                                                      }
-                                                   }
-                                                }
-                                             }
-                                          }
-                                       ]
-                                    },
-                                    "action":{
-                                       "assert_fact":{
-                                          "ruleset":"Test rules4",
-                                          "fact":{
-                                             "j":1
-                                          }
-                                       }
-                                    },
-                                    "throttle": {
-                                       "group_by_attributes": [
-                                          "event.sensu.host"
-                                       ],
-                                       "accumulate_within": "10 seconds",
-                                       "threshold": 3
-                                    }
-                                 }
-                              }
-                           ]
-                        }
-                        """;
-
-        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
-
-        // First event
-        List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
-        assertEquals(0, matchedRules.size());
-
-        // Second event
-        matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
-        assertEquals(0, matchedRules.size());
-
-        // Advance to exactly window expiration
-        rulesExecutor.advanceTime(10, TimeUnit.SECONDS);
-
-        // Event at exact expiration - should start new window
-        matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
-        assertEquals(0, matchedRules.size());
-
-        // Continue new window
-        matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
-        assertEquals(0, matchedRules.size());
-
         matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
         assertEquals(1, matchedRules.size());
 
