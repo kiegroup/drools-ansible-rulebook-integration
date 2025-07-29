@@ -261,6 +261,9 @@ public class TimedOutDefinition implements TimeConstraint {
                             controlEvent.put( "rulename", startTag );
                             controlEvent.put( "event", firstEvent.get("event") );
                             controlEvent.put( "binding", firstEvent.get("binding") );
+                            // This control event fires the main rule, so is counted as a matched event in SessionStatsCollector.registerMatchedEvents
+                            // Users may think that the main rule is matched with the first event (but the all conditions are not satisfied), which is bound by transformTimedOutMatch method
+                            controlEvent.put( COUNT_AS_MATCHED_EVENT, true );
                             drools.insert(controlEvent);
                         })
                 )
