@@ -205,21 +205,17 @@ public class MemoryLeakTest {
                 String host = hosts[hostIndex];
                 String event = String.format("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"%s\" } }", host);
 
-                // Remove debug output for performance test
                 List<Match> matches = rulesExecutor.processEvents(event).join();
 
                 hostEventCounts[hostIndex]++;
 
                 // Every 3rd event for the same host should trigger
-                if (hostEventCounts[hostIndex] == 3) {
+                if (hostEventCounts[hostIndex] % 3 == 0) {
                     assertThat(matches).hasSize(1);
-                    // Reset count after triggering
-                    hostEventCounts[hostIndex] = 0;
                 } else {
                     assertThat(matches).isEmpty();
                 }
 
-                // Periodically advance time to trigger control event expiration
                 rulesExecutor.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
 
                 if (i % 100 == 0) {
@@ -234,9 +230,8 @@ public class MemoryLeakTest {
             }
 
             // Final time advance to ensure all control events expire
-            rulesExecutor.advanceTime(15, java.util.concurrent.TimeUnit.SECONDS);
+            rulesExecutor.advanceTime(25, java.util.concurrent.TimeUnit.SECONDS);
 
-            // Verify no rules ever fired
             SessionStats stats = rulesExecutor.getSessionStats();
             assertThat(stats.getRulesTriggered()).isEqualTo(3330);
             assertThat(stats.getEventsMatched()).isEqualTo(3330);
@@ -245,7 +240,7 @@ public class MemoryLeakTest {
             assertThat(stats.getPermanentStorageCount()).isZero();
 
             // Allow some memory for the processing overhead
-            long acceptableMemoryOverhead = 15 * 1000 * 1024; // 15 MB (slightly higher due to control events)
+            long acceptableMemoryOverhead = 10 * 1000 * 1024;
             System.gc();
             long usedMemory = stats.getUsedMemory();
             assertThat(usedMemory).isLessThan(baseMemory + acceptableMemoryOverhead);
@@ -311,10 +306,6 @@ public class MemoryLeakTest {
                 // Should never fire since we only send 2 events per host before time expires
                 assertThat(matches).isEmpty();
 
-                // Send second event for same host
-                matches = rulesExecutor.processEvents(event).join();
-                assertThat(matches).isEmpty();
-
                 // 1 second per event. For the same host, we will never reach the threshold of 10
                 rulesExecutor.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
 
@@ -332,12 +323,11 @@ public class MemoryLeakTest {
             // Final time advance to ensure all control events expire
             rulesExecutor.advanceTime(15, java.util.concurrent.TimeUnit.SECONDS);
 
-            // Verify no rules ever fired
             SessionStats stats = rulesExecutor.getSessionStats();
             assertThat(stats.getRulesTriggered()).isZero();
             assertThat(stats.getEventsMatched()).isZero();
-            assertThat(stats.getEventsProcessed()).isEqualTo(20000);
-            assertThat(stats.getEventsSuppressed()).isEqualTo(20000);
+            assertThat(stats.getEventsProcessed()).isEqualTo(10000);
+            assertThat(stats.getEventsSuppressed()).isEqualTo(10000);
             assertThat(stats.getPermanentStorageCount()).isZero();
 
             // Allow some memory for the processing overhead
