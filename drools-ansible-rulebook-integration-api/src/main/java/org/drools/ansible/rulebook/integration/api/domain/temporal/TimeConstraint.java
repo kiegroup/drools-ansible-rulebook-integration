@@ -16,6 +16,8 @@ public interface TimeConstraint {
 
     String GROUP_BY_ATTRIBUTES = "group_by_attributes";
 
+    String COUNT_AS_MATCHED_EVENT = "count_as_matched_event";
+
     boolean requiresAsyncExecution();
 
     ViewItem processTimeConstraint(String ruleName, ViewItem pattern);

@@ -219,6 +219,9 @@ public class OnceAfterDefinition extends OnceAbstractTimeConstraint {
 
                                     PrototypeEventInstance endControlEvent = controlPrototype.newInstance();
                                     endControlEvent.put( "end_once_after", ruleName );
+                                    // This control event fires the main rule, so is counted as a matched event in SessionStatsCollector.registerMatchedEvents
+                                    // Users may think that the main rule is matched with the first event (suppressing other events in the time window). All events are bound by transformTimedOutMatch method
+                                    endControlEvent.put( COUNT_AS_MATCHED_EVENT, true );
                                     drools.insert(endControlEvent);
 
                                     if (log.isInfoEnabled()) {
