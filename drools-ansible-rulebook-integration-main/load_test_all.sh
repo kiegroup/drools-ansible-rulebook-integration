@@ -37,3 +37,14 @@ for file in "${files[@]}"; do
 done
 
 echo "All runs complete. See result_all.txt for any STDERR output (testfile, usedMemory, timeTaken)."
+
+# Run MemoryLeakAnalyzer to check for memory leaks
+echo ""
+echo "Analyzing results for memory leaks..."
+java -cp "target/classes" org.drools.ansible.rulebook.integration.main.MemoryLeakAnalyzer result_all.txt
+
+# Capture the exit code
+ANALYZER_EXIT_CODE=$?
+
+# Exit with the same code as the analyzer
+exit $ANALYZER_EXIT_CODE
