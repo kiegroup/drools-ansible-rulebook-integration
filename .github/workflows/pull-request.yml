@@ -14,7 +14,6 @@ on:
 
 jobs:
   drools-ansible:
-    if: false
     concurrency:
       group: pr-drools_ansible_${{ matrix.os }}_${{ matrix.java-version }}_${{ matrix.maven-version }}_${{ github.head_ref }}
       cancel-in-progress: true
@@ -61,8 +60,7 @@ jobs:
           java-version: '17'
           maven-version: '3.9.3'
 
-      # Run MemoryLeakTest
-      - name: Build Chain
+      - name: Build Chain running MemoryLeakTest
         uses: kiegroup/kie-ci/.ci/actions/build-chain@main
         env:
           BUILD_MVN_OPTS_CURRENT: '-Pmemoryleak-tests'
@@ -72,7 +70,6 @@ jobs:
 
       - name: Run load tests and analyze memory leaks
         run: |
-          pwd
           cd kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-main
           chmod +x load_test_all.sh
           ./load_test_all.sh

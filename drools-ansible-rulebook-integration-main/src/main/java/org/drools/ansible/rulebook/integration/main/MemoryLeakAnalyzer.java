@@ -56,11 +56,11 @@ public class MemoryLeakAnalyzer {
         MemoryLeakAnalyzer analyzer = new MemoryLeakAnalyzer();
 
         try {
-            List<TestResult> results = analyzer.parseResultFile(resultFile);
-            boolean hasMemoryLeak = analyzer.analyzeResults(results);
+            ParseResult parseResult = analyzer.parseResultFile(resultFile);
+            boolean hasMemoryLeak = analyzer.analyzeResults(parseResult.results);
 
-            if (hasMemoryLeak) {
-                System.err.println("\n❌ MEMORY LEAK DETECTED!");
+            if (hasMemoryLeak || parseResult.exceptionFound) {
+                System.err.println("\n❌ MEMORY LEAK DETECTED OR EXCEPTION FOUND!");
                 System.exit(1);
             } else {
                 System.out.println("\n✅ No memory leak detected.");
@@ -73,8 +73,9 @@ public class MemoryLeakAnalyzer {
         }
     }
 
-    private List<TestResult> parseResultFile(String filename) throws IOException {
+    private ParseResult parseResultFile(String filename) throws IOException {
         List<TestResult> results = new ArrayList<>();
+        boolean exceptionFound = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -84,21 +85,36 @@ public class MemoryLeakAnalyzer {
                     continue;
                 }
 
-                String[] parts = line.split(",");
-                if (parts.length != 3) {
-                    System.err.println("Skipping invalid line: " + line);
-                    continue;
+                // Check if this line contains an exception
+                if (line.contains("Exception") || line.contains("exception")) {
+                    exceptionFound = true;
                 }
 
-                String testName = parts[0].trim();
-                long memoryUsage = Long.parseLong(parts[1].trim());
-                long duration = Long.parseLong(parts[2].trim());
+                // Try to parse as a result line
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    try {
+                        String testName = parts[0].trim();
+                        long memoryUsage = Long.parseLong(parts[1].trim());
+                        long duration = Long.parseLong(parts[2].trim());
 
-                results.add(new TestResult(testName, memoryUsage, duration));
+                        results.add(new TestResult(testName, memoryUsage, duration));
+                    } catch (NumberFormatException e) {
+                        // Not a valid result line, skip it
+                    }
+                }
             }
         }
 
-        return results;
+        if (exceptionFound) {
+            System.err.println("\n⚠️  EXCEPTION FOUND IN RESULTS (potentially caused by a memory leak)");
+        }
+
+        if (results.isEmpty()) {
+            throw new IOException("No valid test results found in file. Please check the result file format.");
+        }
+
+        return new ParseResult(results, exceptionFound);
     }
 
     private boolean analyzeResults(List<TestResult> results) {
@@ -167,8 +183,11 @@ public class MemoryLeakAnalyzer {
                               formatEventCount(prevEvents), formatEventCount(currEvents));
             System.out.printf("    Memory increase: %,d bytes", currentIncrease);
 
-            // Check if increase is abnormally high
-            if (Math.abs(currentIncrease) > ABSOLUTE_INCREASE_THRESHOLD) {
+            // Special handling for failed tests (0 memory usage typically means the test failed)
+            if (curr.memoryUsage == 0) {
+                System.out.printf(" ⚠️  TEST FAILED (likely due to memory threshold)!%n");
+                hasLeak = true;
+            } else if (Math.abs(currentIncrease) > ABSOLUTE_INCREASE_THRESHOLD) {
                 System.out.printf(" ⚠️  LARGE INCREASE!%n");
                 hasLeak = true;
             } else if (previousIncrease != null && currentIncrease > 0 && previousIncrease > 0) {
@@ -250,6 +269,16 @@ public class MemoryLeakAnalyzer {
             this.testName = testName;
             this.memoryUsage = memoryUsage;
             this.duration = duration;
+        }
+    }
+
+    private static class ParseResult {
+        final List<TestResult> results;
+        final boolean exceptionFound;
+
+        ParseResult(List<TestResult> results, boolean exceptionFound) {
+            this.results = results;
+            this.exceptionFound = exceptionFound;
         }
     }
 }
