@@ -61,6 +61,7 @@ public class MemoryLeakAnalyzer {
 
             if (hasMemoryLeak || parseResult.exceptionFound) {
                 System.err.println("\n❌ MEMORY LEAK DETECTED OR EXCEPTION FOUND!");
+                System.err.println("  Review the result file for details.\n");
                 System.exit(1);
             } else {
                 System.out.println("\n✅ No memory leak detected.");
@@ -107,7 +108,7 @@ public class MemoryLeakAnalyzer {
         }
 
         if (exceptionFound) {
-            System.err.println("\n⚠️  EXCEPTION FOUND IN RESULTS (potentially caused by a memory leak)");
+            System.err.println("\n⚠️  EXCEPTION FOUND IN RESULTS (potentially caused by a memory leak)\n");
         }
 
         if (results.isEmpty()) {
