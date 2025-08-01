@@ -45,3 +45,39 @@ jobs:
           definition-file: https://raw.githubusercontent.com/${GROUP:kiegroup}/drools-ansible-rulebook-integration/${BRANCH:main}/.ci/pull-request-config.yaml
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
           github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  memory-leak-test:
+    name: Memory Leak Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Clean Disk Space
+        uses: kiegroup/kie-ci/.ci/actions/ubuntu-disk-space@main
+
+      - name: Java and Maven Setup
+        uses: kiegroup/kie-ci/.ci/actions/maven@main
+        with:
+          java-version: '17'
+          maven-version: '3.9.3'
+
+      - name: Build Chain running MemoryLeakTest
+        uses: kiegroup/kie-ci/.ci/actions/build-chain@main
+        env:
+          BUILD_MVN_OPTS_CURRENT: '-Pmemoryleak-tests'
+        with:
+          definition-file: https://raw.githubusercontent.com/${GROUP:kiegroup}/drools-ansible-rulebook-integration/${BRANCH:main}/.ci/pull-request-config.yaml
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Run load tests and analyze memory leaks
+        run: |
+          cd kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-main
+          chmod +x load_test_all.sh
+          ./load_test_all.sh
+
+      - name: Upload load test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: memory-leak-test-results
+          path: kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-main/result_all.txt
+          retention-days: 30
