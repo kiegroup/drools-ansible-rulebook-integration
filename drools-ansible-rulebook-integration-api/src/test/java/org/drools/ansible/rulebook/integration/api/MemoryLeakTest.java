@@ -4,14 +4,26 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.drools.ansible.rulebook.integration.api.rulesengine.SessionStats;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.kie.api.runtime.rule.Match;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Memory leak tests - run with Maven profile:
+ * mvn test -Pmemoryleak-tests
+ * 
+ * These tests are excluded from the default test run to avoid instability
+ * and excessive logging. The memoryleak-tests profile sets the appropriate
+ * log level and runs only these tests.
+ */
 public class MemoryLeakTest {
+
+    static {
+        // Set the log level to WARN to avoid excessive logging during tests, when running on IDE
+        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "WARN");
+    }
 
     public static final String JSON_TTL =
             """
@@ -42,23 +54,21 @@ public class MemoryLeakTest {
                     }
                     """;
 
-    @Disabled("disabled by default as this could be unstable." +
-            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     void testMemoryLeakWithUnmatchEvents() {
         // If you set a short time for default_events_ttl, you can observe expiring jobs
 
-        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "INFO");
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_TTL);
         System.gc();
         long baseMemory = rulesExecutor.getSessionStats().getUsedMemory();
+        System.out.println("BaseMemory = " + baseMemory);
         try {
             for (int i = 0; i < 100000; i++) {
                 List<Match> matches = rulesExecutor.processEvents("{\"i\":5}").join();// not match
                 assertThat(matches).isEmpty();
 
-                if (i % 2000 == 0) {
+                if (i % 5000 == 0) {
                     System.gc();
                     System.out.println("  UsedMemory = " + rulesExecutor.getSessionStats().getUsedMemory());
                     try {
@@ -107,21 +117,19 @@ public class MemoryLeakTest {
                     }
                     """;
 
-    @Disabled("disabled by default as this could be unstable." +
-            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     public void testMemoryLeakWithMatchingEvents() {
-        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "INFO");
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(JSON_PLAIN);
         System.gc();
         long baseMemory = rulesExecutor.getSessionStats().getUsedMemory();
+        System.out.println("BaseMemory = " + baseMemory);
         try {
             for (int i = 0; i < 100000; i++) {
                 List<Match> matches = rulesExecutor.processEvents("{\"i\":1}").join();
                 assertThat(matches).hasSize(1);
 
-                if (i % 2000 == 0) {
+                if (i % 5000 == 0) {
                     System.gc();
                     System.out.println("  usedMemory = " + rulesExecutor.getSessionStats().getUsedMemory());
                     try {
@@ -179,15 +187,13 @@ public class MemoryLeakTest {
                     }
                     """;
 
-    @Disabled("disabled by default as this could be unstable." +
-            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     public void testMemoryLeakWithAccumulateWithin() {
-        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "INFO");
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON_ACCUMULATE_WITHIN);
         System.gc();
         long baseMemory = rulesExecutor.getSessionStats().getUsedMemory();
+        System.out.println("BaseMemory = " + baseMemory);
         try {
             // Test with multiple hosts to create different control events
             String[] hosts = {"host1", "host2", "host3", "host4", "host5"};
@@ -213,7 +219,7 @@ public class MemoryLeakTest {
 
                 rulesExecutor.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
 
-                if (i % 2000 == 0) {
+                if (i % 5000 == 0) {
                     System.gc();
                     System.out.println("  UsedMemory = " + rulesExecutor.getSessionStats().getUsedMemory());
                     try {
@@ -279,15 +285,13 @@ public class MemoryLeakTest {
                     }
                     """;
 
-    @Disabled("disabled by default as this could be unstable." +
-            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     public void testMemoryLeakWithAccumulateWithinBelowThreshold() {
-        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "INFO");
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON_ACCUMULATE_WITHIN_NO_THRESHOLD);
         System.gc();
         long baseMemory = rulesExecutor.getSessionStats().getUsedMemory();
+        System.out.println("BaseMemory = " + baseMemory);
         try {
             // Test with multiple hosts, but never reach threshold
             String[] hosts = {"host1", "host2", "host3", "host4", "host5"};
@@ -304,7 +308,7 @@ public class MemoryLeakTest {
                 // 1 second per event. For the same host, we will never reach the threshold of 10
                 rulesExecutor.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
 
-                if (i % 2000 == 0) {
+                if (i % 5000 == 0) {
                     System.gc();
                     System.out.println("  UsedMemory = " + rulesExecutor.getSessionStats().getUsedMemory());
                     try {
@@ -369,15 +373,13 @@ public class MemoryLeakTest {
                     }
                     """;
 
-    @Disabled("disabled by default as this could be unstable." +
-            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     public void testMemoryLeakWithOnceWithin() {
-        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "INFO");
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON_ONCE_WITHIN);
         System.gc();
         long baseMemory = rulesExecutor.getSessionStats().getUsedMemory();
+        System.out.println("BaseMemory = " + baseMemory);
         try {
             // Test with multiple hosts to create different control events
             String[] hosts = {"host1", "host2", "host3", "host4", "host5"};
@@ -403,7 +405,7 @@ public class MemoryLeakTest {
 
                 rulesExecutor.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
 
-                if (i % 2000 == 0) {
+                if (i % 5000 == 0) {
                     System.gc();
                     System.out.println("  UsedMemory = " + rulesExecutor.getSessionStats().getUsedMemory());
                     try {
@@ -469,15 +471,13 @@ public class MemoryLeakTest {
                     }
                     """;
 
-    @Disabled("disabled by default as this could be unstable." +
-            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     public void testMemoryLeakWithOnceAfter() {
-        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "WARN");
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON_ONCE_AFTER);
         System.gc();
         long baseMemory = rulesExecutor.getSessionStats().getUsedMemory();
+        System.out.println("BaseMemory = " + baseMemory);
         try {
             // Test with multiple hosts to create different control events
             String[] hosts = {"host1", "host2", "host3", "host4", "host5"};
@@ -502,7 +502,7 @@ public class MemoryLeakTest {
                 assertThat(matches).hasSize(1);
                 assertThat(matches.get(0).getObjects()).hasSize(5);
 
-                if (i % 2000 == 0) {
+                if (i % 5000 == 0) {
                     System.gc();
                     System.out.println("  UsedMemory = " + rulesExecutor.getSessionStats().getUsedMemory());
                     try {
@@ -572,15 +572,13 @@ public class MemoryLeakTest {
                     }
                     """;
 
-    @Disabled("disabled by default as this could be unstable." +
-            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     public void testMemoryLeakWithTimedOut() {
-        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "WARN");
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON_TIMED_OUT);
         System.gc();
         long baseMemory = rulesExecutor.getSessionStats().getUsedMemory();
+        System.out.println("BaseMemory = " + baseMemory);
         try {
             for (int i = 0; i < 100000; i++) {
 
@@ -613,7 +611,7 @@ public class MemoryLeakTest {
 
                 // Advance time by 3 seconds (less than 5 second timeout)
 
-                if (i % 2000 == 0) {
+                if (i % 5000 == 0) {
                     System.gc();
                     System.out.println("  UsedMemory = " + rulesExecutor.getSessionStats().getUsedMemory());
                     try {
@@ -694,15 +692,13 @@ public class MemoryLeakTest {
                     }
                     """;
 
-    @Disabled("disabled by default as this could be unstable." +
-            " Also this test may flood the logs with DEBUG messages (SimpleLogger cannot change the log level dynamically)")
     @Test
     @Timeout(120)
     public void testMemoryLeakWithTimeWindow() {
-        System.setProperty("org.slf4j.simpleLogger.log.org.drools.ansible.rulebook.integration", "INFO");
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), JSON_TIME_WINDOW);
         System.gc();
         long baseMemory = rulesExecutor.getSessionStats().getUsedMemory();
+        System.out.println("BaseMemory = " + baseMemory);
         try {
             for (int i = 0; i < 100000; i++) {
 
@@ -729,7 +725,7 @@ public class MemoryLeakTest {
                 matches = rulesExecutor.processEvents(event).join();
                 assertThat(matches).hasSize(1);
 
-                if (i % 2000 == 0) {
+                if (i % 5000 == 0) {
                     System.gc();
                     System.out.println("  UsedMemory = " + rulesExecutor.getSessionStats().getUsedMemory());
                     try {
