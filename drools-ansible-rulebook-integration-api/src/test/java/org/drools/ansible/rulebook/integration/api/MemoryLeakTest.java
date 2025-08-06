@@ -84,6 +84,7 @@ public class MemoryLeakTest {
             System.gc();
             long usedMemory = rulesExecutor.getSessionStats().getUsedMemory();
             assertThat(usedMemory).isLessThan(baseMemory + acceptableMemoryOverhead);
+            assertThat(usedMemory).isGreaterThan(baseMemory + acceptableMemoryOverhead); // intentional failure to debug GHA
         } finally {
             rulesExecutor.dispose();
         }
