@@ -60,13 +60,16 @@ jobs:
           java-version: '17'
           maven-version: '3.9.3'
 
-      - name: Build Chain running MemoryLeakTest
+      - name: Build Chain
         uses: kiegroup/kie-ci/.ci/actions/build-chain@main
-        env:
-          BUILD_MVN_OPTS_CURRENT: '-Pmemoryleak-tests'
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP:kiegroup}/drools-ansible-rulebook-integration/${BRANCH:main}/.ci/pull-request-config.yaml
           github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Run MemoryLeakTest
+        run: |
+          cd kiegroup_drools-ansible-rulebook-integration
+          mvn test -Pmemoryleak-tests
 
       - name: Run load tests and analyze memory leaks
         run: |
