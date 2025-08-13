@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.prototype.PrototypeFactInstance;
 import org.kie.api.runtime.rule.Match;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AccumulateWithinTest {
@@ -73,6 +74,9 @@ public class AccumulateWithinTest {
         matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 3 }").join();
         assertEquals(1, matchedRules.size());
 
+        // Verify that there is no unexpected event in the returned match
+        assertThat(matchedRules.get(0).getDeclarationIds()).containsExactly("m");
+
         // Verify metadata
         PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("m");
         Map map = (Map) fact.asMap();
@@ -93,6 +97,76 @@ public class AccumulateWithinTest {
         // Fourth event - starts new accumulation window, no fire
         matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
         assertEquals(0, matchedRules.size());
+
+        rulesExecutor.dispose();
+    }
+
+    @Test
+    void testAccumulateWithinThresholdMet_assignment() {
+        String json =
+                """
+                        {
+                           "rules":[
+                              {
+                                 "Rule":{
+                                    "condition":{
+                                       "AllCondition":[
+                                          {
+                                             "AssignmentExpression":{
+                                                "lhs":{
+                                                   "Events":"singleton"
+                                                },
+                                                "rhs":{
+                                                   "EqualsExpression":{
+                                                      "lhs":{
+                                                         "Event":"sensu.process.type"
+                                                      },
+                                                      "rhs":{
+                                                         "String":"alert"
+                                                      }
+                                                   }
+                                                }
+                                             }
+                                          }
+                                       ]
+                                    },
+                                    "action":{
+                                       "assert_fact":{
+                                          "ruleset":"Test rules4",
+                                          "fact":{
+                                             "j":1
+                                          }
+                                       }
+                                    },
+                                    "throttle": {
+                                       "group_by_attributes": [
+                                          "event.sensu.host",
+                                          "event.sensu.process.type"
+                                       ],
+                                       "accumulate_within": "10 minutes",
+                                       "threshold": 3
+                                    }
+                                 }
+                              }
+                           ]
+                        }
+                        """;
+        // This test focuses on that the returned match contains the expected declaration id
+        RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
+        rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 1 }").join();
+        rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 2 }").join();
+        List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 3 }").join();
+
+        // Verify that there is no unexpected event in the returned match
+        assertThat(matchedRules.get(0).getDeclarationIds()).containsExactly("singleton");
+
+        // Verify metadata
+        PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("singleton");
+        Map map = fact.asMap();
+        Map ruleEngineMeta = (Map) ((Map) map.get(RulesModelUtil.META_FIELD)).get(RulesModelUtil.RULE_ENGINE_META_FIELD);
+        assertEquals(new TimeAmount(10, TimeUnit.MINUTES).toString(), ruleEngineMeta.get("accumulate_within_time_window"));
+        assertEquals(3, ruleEngineMeta.get("threshold"));
+        assertEquals(3, fact.asMap().get("sequence"));
 
         rulesExecutor.dispose();
     }

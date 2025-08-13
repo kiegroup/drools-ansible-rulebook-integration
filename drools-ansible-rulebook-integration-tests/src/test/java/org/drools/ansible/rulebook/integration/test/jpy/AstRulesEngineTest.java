@@ -1,11 +1,5 @@
 package org.drools.ansible.rulebook.integration.test.jpy;
 
-import org.drools.ansible.rulebook.integration.api.JsonTest;
-import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
-import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +8,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.drools.ansible.rulebook.integration.api.JsonTest;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
+import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class AstRulesEngineTest {
@@ -332,6 +338,89 @@ public class AstRulesEngineTest {
 
             List<Map<String, Object>> v = JsonMapper.readValueAsListOfMapOfStringAndObject(result);
             assertEquals(((Map) ((Map) v.get(0).get("Create Snapshot")).get("m")).get("type"), "MODIFIED");
+        }
+    }
+
+    @Test
+    void testAccumulateWithinThresholdMet() {
+        String rules = """
+                {
+                   "rules":[
+                      {
+                         "Rule":{
+                            "name":"Test accumulate_within",
+                            "condition":{
+                               "AllCondition":[
+                                  {
+                                     "EqualsExpression":{
+                                        "lhs":{
+                                           "Event":"sensu.process.type"
+                                        },
+                                        "rhs":{
+                                           "String":"alert"
+                                        }
+                                     }
+                                  }
+                               ]
+                            },
+                            "action":{
+                               "assert_fact":{
+                                  "ruleset":"Test rules4",
+                                  "fact":{
+                                     "j":1
+                                  }
+                               }
+                            },
+                            "throttle": {
+                               "group_by_attributes": [
+                                  "event.sensu.host",
+                                  "event.sensu.process.type"
+                               ],
+                               "accumulate_within": "10 minutes",
+                               "threshold": 3
+                            }
+                         }
+                      }
+                   ]
+                }
+                """;
+
+        try (AstRulesEngine engine = new AstRulesEngine()) {
+            long sessionId = engine.createRuleset(rules);
+
+            // First event with sequence=1 - no fire
+            String result1 = engine.assertEvent(sessionId, "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 1 }");
+            assertEquals("[]", result1);
+
+            // Second event with sequence=2 - no fire
+            String result2 = engine.assertEvent(sessionId, "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 2 }");
+            assertEquals("[]", result2);
+
+            // Third event with sequence=3 - threshold met, should fire
+            String result3 = engine.assertEvent(sessionId, "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 3 }");
+            List<Map<String, Object>> matchedRules = JsonMapper.readValueAsListOfMapOfStringAndObject(result3);
+            assertEquals(1, matchedRules.size());
+
+            // Verify that the returned event is the last one (sequence=3)
+            Map<String, Object> ruleMatch = matchedRules.get(0);
+            Map<String, Object> innerMatch = (Map<String, Object>) ruleMatch.get("Test accumulate_within");
+            assertThat(innerMatch).containsOnlyKeys("m"); // returned match should not contain control events
+            Map<String, Object> eventData = (Map<String, Object>) innerMatch.get("m");
+            assertEquals(3, eventData.get("sequence"));
+
+            // Verify session stats
+            String sessionStats = engine.sessionStats(sessionId);
+            Map<String, Object> statsMap = JsonMapper.readValueAsMapOfStringAndObject(sessionStats);
+            assertEquals(1, statsMap.get("eventsMatched"));
+            assertEquals(3, statsMap.get("eventsProcessed"));
+            assertEquals(2, statsMap.get("eventsSuppressed"));
+            assertEquals(0, statsMap.get("permanentStorageCount"));
+
+            // Fourth event - starts new accumulation window, no fire
+            String result4 = engine.assertFact(sessionId, "{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" }, \"sequence\": 4 }");
+            assertEquals("[]", result4);
+
+            engine.dispose(sessionId);
         }
     }
 }
