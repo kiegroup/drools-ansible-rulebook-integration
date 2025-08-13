@@ -107,6 +107,9 @@ public class OnceAfterTest {
         assertEquals(3, stats.getEventsSuppressed());
         assertEquals(0, stats.getPermanentStorageCount());
 
+        // Verify that there is no unexpected event in the returned match
+        assertThat(matchedRules.get(0).getDeclarationIds()).containsExactlyInAnyOrder("m_0", "m_1", "m_2");
+
         for (int i = 0; i < 3; i++) {
             PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("m_" + i);
             String host = evalAgainstFact(fact, "meta.hosts").toString();
