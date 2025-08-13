@@ -9,6 +9,7 @@ import org.kie.api.runtime.rule.Match;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -125,6 +126,9 @@ public class OnceWithinTest {
         RulesExecutor rulesExecutor = RulesExecutorFactory.createFromJson(RuleNotation.CoreNotation.INSTANCE.withOptions(RuleConfigurationOption.USE_PSEUDO_CLOCK), json);
         List<Match> matchedRules = rulesExecutor.processEvents("{ \"sensu\": { \"process\": { \"type\":\"alert\" }, \"host\":\"h1\" } }").join();
         assertEquals(1, matchedRules.size());
+
+        // Verify that there is no unexpected event in the returned match
+        assertThat(matchedRules.get(0).getDeclarationIds()).containsExactly("singleton");
 
         PrototypeFactInstance fact = (PrototypeFactInstance) matchedRules.get(0).getDeclarationValue("singleton");
         Map map = (Map) fact.asMap();

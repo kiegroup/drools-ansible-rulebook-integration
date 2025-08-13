@@ -1,22 +1,28 @@
 package org.drools.ansible.rulebook.integration.api.domain.temporal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.api.domain.RuleGenerationContext;
+import org.drools.ansible.rulebook.integration.api.rulesengine.EmptyMatchDecorator;
+import org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter;
 import org.drools.model.Drools;
 import org.drools.model.Rule;
+import org.drools.model.RuleItemBuilder;
 import org.drools.model.Variable;
 import org.drools.model.prototype.PrototypeDSL;
 import org.drools.model.view.CombinedExprViewItem;
 import org.drools.model.view.ViewItem;
 import org.kie.api.prototype.PrototypeEventInstance;
 import org.kie.api.prototype.PrototypeFactInstance;
+import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.RULE_TYPE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesengine.RegisterOnlyAgendaFilter.SYNTHETIC_RULE_TAG;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.SYNTHETIC_PROTOTYPE_NAME;
 import static org.drools.ansible.rulebook.integration.api.rulesmodel.PrototypeFactory.getPrototypeEvent;
@@ -83,6 +89,24 @@ public class AccumulateWithinDefinition extends OnceAbstractTimeConstraint {
 
     private final int threshold;
 
+    static {
+        RegisterOnlyAgendaFilter.registerMatchTransformer(KEYWORD, AccumulateWithinDefinition::transformAccumulateWithinMatch);
+    }
+
+    private static Match transformAccumulateWithinMatch(Match match) {
+        EmptyMatchDecorator rewrittenMatch = new EmptyMatchDecorator(match);
+
+        // exclude control facts
+        for (String declarationId : match.getDeclarationIds()) {
+            Object value = match.getDeclarationValue(declarationId);
+            if (value instanceof PrototypeFactInstance prototypeFactInstance
+                    && !SYNTHETIC_PROTOTYPE_NAME.equals(prototypeFactInstance.getPrototype().getName())) {
+                rewrittenMatch.withBoundObject(declarationId, value);
+            }
+        }
+        return rewrittenMatch;
+    }
+
     public AccumulateWithinDefinition(TimeAmount timeAmount, int threshold, List<GroupByAttribute> groupByAttributes) {
         super(timeAmount, groupByAttributes);
         this.threshold = threshold;
@@ -110,6 +134,13 @@ public class AccumulateWithinDefinition extends OnceAbstractTimeConstraint {
                 .expr("current_count", ConstraintType.GREATER_OR_EQUAL, threshold);
         return new CombinedExprViewItem(org.drools.model.Condition.Type.AND,
                                         new ViewItem[]{guardedPattern, thresholdMetPattern});
+    }
+
+    @Override
+    public Rule buildTimedRule(String ruleName, RuleItemBuilder pattern, RuleItemBuilder consequence) {
+        return rule(ruleName)
+                .metadata(RULE_TYPE_TAG, KEYWORD)
+                .build(pattern, consequence);
     }
 
     @Override
