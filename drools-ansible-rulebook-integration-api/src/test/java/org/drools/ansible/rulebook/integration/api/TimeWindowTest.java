@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TimeWindowTest {
@@ -133,6 +134,9 @@ public class TimeWindowTest {
 
         matchedRules = rulesExecutor.processEvents( "{ \"sensu\": { \"process\": { \"status\":\"stopped\" } } }" ).join();
         assertEquals( 1, matchedRules.size() );
+
+        // Verify that there is no unexpected event in the returned match
+        assertThat(matchedRules.get(0).getDeclarationIds()).containsExactlyInAnyOrder("m_0", "m_1", "m_2");
 
         rulesExecutor.dispose();
     }
