@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.drools.ansible.rulebook.integration.ha.tests.TestUtils.createMatchingEvent;
 
 /**
@@ -103,5 +104,25 @@ class HAStateManagerActionTest extends HAStateManagerTestBase {
         assertThat(pending).hasSize(2);
         assertThat(pending.stream().map(MatchingEvent::getMeUuid))
                 .containsExactlyInAnyOrder(meUuid1, meUuid2);
+    }
+
+    @Test
+    void testNonLeaderActionMutationsFailFast() {
+        stateManager.enableLeader();
+
+        MatchingEvent me = createMatchingEvent(HA_UUID, "testRuleset", "testRule",
+                                               Map.of("fact", "value"));
+        String meUuid = stateManager.addMatchingEvent(me);
+        stateManager.addActionInfo(meUuid, 0, "{\"status\":4}");
+
+        stateManager.disableLeader();
+
+        assertThatThrownBy(() -> stateManager.updateActionInfo(meUuid, 0, "{\"status\":3}"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot update action info - not leader");
+
+        assertThatThrownBy(() -> stateManager.deleteActionInfo(meUuid))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot delete action info - not leader");
     }
 }

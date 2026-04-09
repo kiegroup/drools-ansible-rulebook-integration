@@ -572,8 +572,7 @@ public class H2StateManager extends AbstractHAStateManager {
     @Override
     public void updateActionInfo(String matchingUuid, int index, String action) {
         if (!isLeader) {
-            logger.debug("Not leader - skipping action update");
-            return;
+            throw new IllegalStateException("Cannot update action info - not leader");
         }
 
         String sql = "UPDATE " + ACTION_INFO + " SET action_data = ? WHERE me_uuid = ? AND index = ?";
@@ -649,8 +648,7 @@ public class H2StateManager extends AbstractHAStateManager {
     @Override
     public void deleteActionInfo(String matchingUuid) {
         if (!isLeader) {
-            logger.debug("Not leader - skipping action deletion");
-            return;
+            throw new IllegalStateException("Cannot delete action info - not leader");
         }
 
         executeInTransaction("Failed to delete actions", conn -> {
