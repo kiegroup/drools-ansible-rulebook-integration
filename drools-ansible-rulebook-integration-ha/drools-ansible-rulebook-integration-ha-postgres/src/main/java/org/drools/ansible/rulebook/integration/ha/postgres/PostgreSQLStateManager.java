@@ -512,12 +512,7 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
     }
 
     private void validateForPersist(SessionState sessionState) {
-        if (!isLeader) {
-            throw new IllegalStateException("Cannot persist SessionState - not leader");
-        }
-        if (sessionState.getRuleSetName() == null) {
-            throw new IllegalArgumentException("SessionState.ruleSetName must be set");
-        }
+        validateSessionStateForPersist(sessionState, isLeader);
     }
 
     private void prepareHAStatsForPersist() {
@@ -573,11 +568,7 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
 
             ps.setString(7, sessionState.getCurrentStateSHA());
 
-            if (sessionState.getCreatedTime() > 0) {
-                ps.setTimestamp(8, new Timestamp(sessionState.getCreatedTime()));
-            } else {
-                ps.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
-            }
+            ps.setTimestamp(8, new Timestamp(sessionState.getCreatedTime()));
 
             ps.setString(9, sessionState.getLeaderId());
 

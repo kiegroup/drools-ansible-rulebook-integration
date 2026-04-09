@@ -1,5 +1,8 @@
 package org.drools.ansible.rulebook.integration.ha.tests;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 import static org.drools.ansible.rulebook.integration.ha.tests.TestUtils.createEvent;
 
@@ -510,6 +514,26 @@ class HAIntegrationRulesetUpdateTest extends AbstractHATestBase {
                 .isEmpty();
     }
 
+    @Test
+    void testSchemaRejectsNullPersistedRulebookHash() throws Exception {
+        engine1 = new AstRulesEngine();
+        engine1.initializeHA(HA_UUID, "worker-1", dbParamsJson, dbHAConfigJson);
+        sessionId1 = engine1.createRuleset(RULE_SET_V1_MULTI, RuleConfigurationOption.FULLY_MANUAL_PSEUDOCLOCK);
+
+        consumer1 = new HAIntegrationTestBase.AsyncConsumer("consumer1");
+        consumer1.startConsuming(engine1.port());
+
+        engine1.enableLeader();
+
+        String tempEvent = createEvent("{\"temperature\": 35}");
+        String result1 = engine1.assertEvent(sessionId1, tempEvent);
+        List<Map<String, Object>> matchList1 = JsonMapper.readValueAsListOfMapOfStringAndObject(result1);
+        assertThat(matchList1).isEmpty();
+
+        assertThatThrownBy(this::setPersistedRulebookHashToNull)
+                .isInstanceOf(Exception.class);
+    }
+
     /**
      * Verifies that stale partial events from an old ruleset are cleared after recovery
      * when overwrite_if_rulebook_changes=false.
@@ -589,5 +613,29 @@ class HAIntegrationRulesetUpdateTest extends AbstractHATestBase {
         HAStateManager manager = HAStateManagerFactory.create(TEST_DB_TYPE);
         manager.initializeHA(HA_UUID, "FOR_ASSERTION", dbParams, dbHAConfig);
         return manager;
+    }
+
+    private void setPersistedRulebookHashToNull() throws Exception {
+        String jdbcUrl;
+        String user;
+        String password;
+        if ("postgres".equalsIgnoreCase((String) dbParams.get("db_type"))) {
+            jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s",
+                    dbParams.get("host"), dbParams.get("port"), dbParams.get("database"));
+            user = (String) dbParams.get("user");
+            password = (String) dbParams.get("password");
+        } else {
+            jdbcUrl = "jdbc:h2:file:" + dbParams.get("db_file_path") + ";MODE=PostgreSQL";
+            user = "sa";
+            password = "";
+        }
+
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, user, password);
+             PreparedStatement ps = conn.prepareStatement(
+                     "UPDATE drools_ansible_session_state SET rulebook_hash = NULL WHERE ha_uuid = ? AND rule_set_name = ?")) {
+            ps.setString(1, HA_UUID);
+            ps.setString(2, "Test Ruleset");
+            ps.executeUpdate();
+        }
     }
 }

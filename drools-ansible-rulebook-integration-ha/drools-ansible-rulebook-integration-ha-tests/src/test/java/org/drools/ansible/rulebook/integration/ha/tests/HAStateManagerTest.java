@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManager;
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory;
+import org.drools.ansible.rulebook.integration.ha.api.HAUtils;
 import org.drools.ansible.rulebook.integration.ha.model.HAStats;
 import org.drools.ansible.rulebook.integration.ha.model.MatchingEvent;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
@@ -99,6 +100,11 @@ class HAStateManagerTest extends HAStateManagerTestBase {
         SessionState sessionState = new SessionState();
         sessionState.setHaUuid(haUuid);
         sessionState.setRuleSetName(RULE_SET_NAME);
+        sessionState.setRulebookHash("rulebook-hash-test");
+        long now = System.currentTimeMillis();
+        sessionState.setCreatedTime(now);
+        sessionState.setPersistedTime(now);
+        sessionState.setCurrentStateSHA(HAUtils.calculateStateSHA(sessionState));
         stateManager.persistSessionState(sessionState);
 
         MatchingEvent me = createMatchingEvent(haUuid, "test", "rule", Map.of("test", "data"));

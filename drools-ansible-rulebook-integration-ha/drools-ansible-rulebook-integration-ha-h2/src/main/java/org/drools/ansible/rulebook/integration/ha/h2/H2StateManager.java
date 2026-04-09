@@ -346,12 +346,7 @@ public class H2StateManager extends AbstractHAStateManager {
     }
 
     private void validateForPersist(SessionState sessionState) {
-        if (!isLeader) {
-            throw new IllegalStateException("Cannot persist SessionState - not leader");
-        }
-        if (sessionState.getRuleSetName() == null) {
-            throw new IllegalArgumentException("SessionState.ruleSetName must be set");
-        }
+        validateSessionStateForPersist(sessionState, isLeader);
     }
 
     private void prepareHAStatsForPersist() {
@@ -402,12 +397,7 @@ public class H2StateManager extends AbstractHAStateManager {
             ps.setString(8, sessionState.getHaUuid());
             ps.setString(9, sessionState.getRuleSetName());
 
-            // Fallback created_time for first insert
-            if (sessionState.getCreatedTime() > 0) {
-                ps.setTimestamp(10, new Timestamp(sessionState.getCreatedTime()));
-            } else {
-                ps.setTimestamp(10, new Timestamp(System.currentTimeMillis()));
-            }
+            ps.setTimestamp(10, new Timestamp(sessionState.getCreatedTime()));
 
             ps.setString(11, sessionState.getLeaderId());
 

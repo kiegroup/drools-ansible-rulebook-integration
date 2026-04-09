@@ -82,9 +82,13 @@ class HAStateManagerEncryptionTest extends HAStateManagerTestBase {
         SessionState state = new SessionState();
         state.setHaUuid(haUuid);
         state.setRuleSetName(RULE_SET_NAME);
+        state.setRulebookHash("rulebook-hash-encryption");
         state.setPartialEvents(List.of(
                 new EventRecord("{\"temperature\": 35}", System.currentTimeMillis(), EventRecord.RecordType.EVENT)));
-        state.setCreatedTime(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        state.setCreatedTime(now);
+        state.setPersistedTime(now);
+        state.setCurrentStateSHA(HAUtils.calculateStateSHA(state));
 
         stateManager.persistSessionState(state);
 
@@ -155,9 +159,13 @@ class HAStateManagerEncryptionTest extends HAStateManagerTestBase {
         SessionState state = new SessionState();
         state.setHaUuid(haUuid);
         state.setRuleSetName(RULE_SET_NAME);
+        state.setRulebookHash("rulebook-hash-encryption");
         state.setPartialEvents(List.of(
                 new EventRecord("{\"data\": \"secret\"}", System.currentTimeMillis(), EventRecord.RecordType.EVENT)));
-        state.setCreatedTime(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        state.setCreatedTime(now);
+        state.setPersistedTime(now);
+        state.setCurrentStateSHA(HAUtils.calculateStateSHA(state));
         stateManager.persistSessionState(state);
         stateManager.shutdown();
 
@@ -213,9 +221,13 @@ class HAStateManagerEncryptionTest extends HAStateManagerTestBase {
         SessionState state = new SessionState();
         state.setHaUuid(haUuid);
         state.setRuleSetName(RULE_SET_NAME);
+        state.setRulebookHash("rulebook-hash-encryption");
         state.setPartialEvents(List.of(
                 new EventRecord("{\"temp\": 25}", System.currentTimeMillis(), EventRecord.RecordType.EVENT)));
-        state.setCreatedTime(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        state.setCreatedTime(now);
+        state.setPersistedTime(now);
+        state.setCurrentStateSHA(HAUtils.calculateStateSHA(state));
         stateManager.persistSessionState(state);
 
         SessionState loaded = stateManager.getPersistedSessionState(RULE_SET_NAME);
@@ -231,9 +243,13 @@ class HAStateManagerEncryptionTest extends HAStateManagerTestBase {
         SessionState state = new SessionState();
         state.setHaUuid(haUuid);
         state.setRuleSetName(RULE_SET_NAME);
+        state.setRulebookHash("rulebook-hash-encryption");
         state.setPartialEvents(List.of(
                 new EventRecord("{\"old\": \"data\"}", System.currentTimeMillis(), EventRecord.RecordType.EVENT)));
-        state.setCreatedTime(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        state.setCreatedTime(now);
+        state.setPersistedTime(now);
+        state.setCurrentStateSHA(HAUtils.calculateStateSHA(state));
         stateManager.persistSessionState(state);
         stateManager.shutdown();
 
@@ -271,9 +287,12 @@ class HAStateManagerEncryptionTest extends HAStateManagerTestBase {
         SessionState state = new SessionState();
         state.setHaUuid(haUuid);
         state.setRuleSetName(RULE_SET_NAME);
+        state.setRulebookHash("rulebook-hash-encryption");
         state.setPartialEvents(List.of(
                 new EventRecord("{\"i\": 1}", System.currentTimeMillis(), EventRecord.RecordType.EVENT)));
-        state.setCreatedTime(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        state.setCreatedTime(now);
+        state.setPersistedTime(now);
 
         // Calculate SHA on plaintext (as the real code does)
         String sha = HAUtils.calculateStateSHA(state);

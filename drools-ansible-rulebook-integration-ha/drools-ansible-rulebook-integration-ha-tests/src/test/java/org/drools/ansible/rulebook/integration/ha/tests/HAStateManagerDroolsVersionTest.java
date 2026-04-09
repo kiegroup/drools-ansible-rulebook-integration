@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManager;
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory;
+import org.drools.ansible.rulebook.integration.ha.api.HAUtils;
 import org.drools.ansible.rulebook.integration.ha.model.HAStats;
 import org.drools.ansible.rulebook.integration.ha.model.MatchingEvent;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
@@ -56,6 +57,7 @@ class HAStateManagerDroolsVersionTest extends HAStateManagerTestBase {
         long now = System.currentTimeMillis();
         sessionState.setCreatedTime(now);
         sessionState.setPersistedTime(now);
+        sessionState.setCurrentStateSHA(HAUtils.calculateStateSHA(sessionState));
 
         stateManager.persistSessionState(sessionState);
 
@@ -121,6 +123,7 @@ class HAStateManagerDroolsVersionTest extends HAStateManagerTestBase {
 
         // Pre-populate metadata with a custom key
         sessionState.getMetadata().put("custom_key", "custom_value");
+        sessionState.setCurrentStateSHA(HAUtils.calculateStateSHA(sessionState));
 
         stateManager.persistSessionState(sessionState);
 

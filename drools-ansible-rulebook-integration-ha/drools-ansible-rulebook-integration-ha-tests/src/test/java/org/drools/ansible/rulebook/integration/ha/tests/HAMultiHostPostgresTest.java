@@ -3,6 +3,7 @@ package org.drools.ansible.rulebook.integration.ha.tests;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManager;
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory;
+import org.drools.ansible.rulebook.integration.ha.api.HAUtils;
 import org.drools.ansible.rulebook.integration.ha.model.MatchingEvent;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
 import org.junit.jupiter.api.AfterEach;
@@ -150,7 +152,7 @@ class HAMultiHostPostgresTest {
         boolean originalUseParent = pgLogger.getUseParentHandlers();
         pgLogger.setLevel(Level.ALL);
         pgLogger.setUseParentHandlers(false); // prevent duplicate output to console
-        List<String> logMessages = new ArrayList<>();
+        List<String> logMessages = Collections.synchronizedList(new ArrayList<>());
         Handler captureHandler = new Handler() {
             @Override public void publish(LogRecord record) {
                 logMessages.add(record.getMessage());
@@ -166,14 +168,19 @@ class HAMultiHostPostgresTest {
             initAndVerifyRoundTrip(params);
 
             // Verify pgjdbc tried two hosts: logged "Trying to establish" twice
-            long tryCount = logMessages.stream()
+            List<String> logSnapshot;
+            synchronized (logMessages) {
+                logSnapshot = new ArrayList<>(logMessages);
+            }
+
+            long tryCount = logSnapshot.stream()
                     .filter(msg -> msg.contains("Trying to establish"))
                     .count();
             assertThat(tryCount).as("pgjdbc should attempt connection to both hosts")
                     .isGreaterThanOrEqualTo(2);
 
             // Verify pgjdbc logged a ConnectException for the unreachable first host
-            assertThat(logMessages.stream().anyMatch(msg -> msg.contains("ConnectException")))
+            assertThat(logSnapshot.stream().anyMatch(msg -> msg.contains("ConnectException")))
                     .as("pgjdbc should log ConnectException for the unreachable host")
                     .isTrue();
         } finally {
@@ -240,7 +247,10 @@ class HAMultiHostPostgresTest {
         ss.setRuleSetName("multihost-ruleset");
         ss.setRulebookHash("abc123");
         ss.setLeaderId(WORKER_NAME);
-        ss.setCurrentStateSHA("sha-000");
+        long now = System.currentTimeMillis();
+        ss.setCreatedTime(now);
+        ss.setPersistedTime(now);
+        ss.setCurrentStateSHA(HAUtils.calculateStateSHA(ss));
         stateManager.persistSessionState(ss);
 
         // Read it back

@@ -1,5 +1,8 @@
 package org.drools.ansible.rulebook.integration.ha.tests;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.Match;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.drools.ansible.rulebook.integration.ha.api.HAUtils.calculateStateSHA;
 
 /**
@@ -124,6 +128,7 @@ class HAStateManagerSessionTest extends HAStateManagerTestBase {
         sessionState.setPartialEvents(partialEvents);
         sessionState.setPersistedTime(persistedTime);
         sessionState.setCreatedTime(createdTime);
+        sessionState.setCurrentStateSHA(calculateStateSHA(sessionState));
 
         stateManager.persistSessionState(sessionState);
 
@@ -272,6 +277,105 @@ class HAStateManagerSessionTest extends HAStateManagerTestBase {
     }
 
     @Test
+    void testPersistSessionStateRejectsMissingSha() {
+        stateManager.enableLeader();
+
+        SessionState sessionState = new SessionState();
+        sessionState.setHaUuid(HA_UUID);
+        sessionState.setRuleSetName(RULE_SET_NAME);
+        sessionState.setLeaderId(LEADER_ID);
+        sessionState.setRulebookHash("rulebook-sha-001");
+        sessionState.setPartialEvents(List.of());
+
+        long now = System.currentTimeMillis();
+        sessionState.setCreatedTime(now);
+        sessionState.setPersistedTime(now);
+
+        assertThatThrownBy(() -> stateManager.persistSessionState(sessionState))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("currentStateSHA");
+    }
+
+    @Test
+    void testPersistSessionStateRejectsMissingRulebookHash() {
+        stateManager.enableLeader();
+
+        SessionState sessionState = new SessionState();
+        sessionState.setHaUuid(HA_UUID);
+        sessionState.setRuleSetName(RULE_SET_NAME);
+        sessionState.setLeaderId(LEADER_ID);
+        sessionState.setPartialEvents(List.of());
+
+        long now = System.currentTimeMillis();
+        sessionState.setCreatedTime(now);
+        sessionState.setPersistedTime(now);
+        sessionState.setCurrentStateSHA(calculateStateSHA(sessionState));
+
+        assertThatThrownBy(() -> stateManager.persistSessionState(sessionState))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("rulebookHash");
+    }
+
+    @Test
+    void testPersistSessionStateRejectsNonPositiveCreatedTime() {
+        stateManager.enableLeader();
+
+        SessionState sessionState = new SessionState();
+        sessionState.setHaUuid(HA_UUID);
+        sessionState.setRuleSetName(RULE_SET_NAME);
+        sessionState.setLeaderId(LEADER_ID);
+        sessionState.setRulebookHash("rulebook-sha-001");
+        sessionState.setPartialEvents(List.of());
+        sessionState.setCreatedTime(0L);
+        sessionState.setPersistedTime(System.currentTimeMillis());
+        sessionState.setCurrentStateSHA(calculateStateSHA(sessionState));
+
+        assertThatThrownBy(() -> stateManager.persistSessionState(sessionState))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("createdTime");
+    }
+
+    @Test
+    void testVerifySessionStateFailsFastOnTamperedSha() throws Exception {
+        stateManager.enableLeader();
+
+        SessionState sessionState = new SessionState();
+        sessionState.setHaUuid(HA_UUID);
+        sessionState.setRuleSetName(RULE_SET_NAME);
+        sessionState.setLeaderId(LEADER_ID);
+        sessionState.setRulebookHash("rulebook-sha-001");
+        sessionState.setPartialEvents(List.of());
+        long now = System.currentTimeMillis();
+        sessionState.setCreatedTime(now);
+        sessionState.setPersistedTime(now);
+        sessionState.setCurrentStateSHA(calculateStateSHA(sessionState));
+        stateManager.persistSessionState(sessionState);
+
+        tamperSessionStateSha(HA_UUID, RULE_SET_NAME, "0000000000000000000000000000000000000000000000000000000000000000");
+
+        SessionState tampered = stateManager.getPersistedSessionState(RULE_SET_NAME);
+        assertThatThrownBy(() -> stateManager.verifySessionState(tampered))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("SessionState integrity check failed");
+    }
+
+    @Test
+    void testVerifySessionStateFailsFastOnMissingSha() {
+        SessionState sessionState = new SessionState();
+        sessionState.setHaUuid(HA_UUID);
+        sessionState.setRuleSetName(RULE_SET_NAME);
+        sessionState.setLeaderId(LEADER_ID);
+        sessionState.setRulebookHash("rulebook-sha-001");
+        long now = System.currentTimeMillis();
+        sessionState.setCreatedTime(now);
+        sessionState.setPersistedTime(now);
+
+        assertThatThrownBy(() -> stateManager.verifySessionState(sessionState))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("missing SHA");
+    }
+
+    @Test
     void testMultipleRuleSetsPersistIndependently() {
         stateManager.enableLeader();
 
@@ -301,5 +405,30 @@ class HAStateManagerSessionTest extends HAStateManagerTestBase {
         assertThat(retrievedB.getRuleSetName()).isEqualTo("rulesetB");
         // SHA should match the calculated value from rulesetB
         assertThat(retrievedB.getCurrentStateSHA()).isEqualTo(calculateStateSHA(rulesetB));
+    }
+
+    private void tamperSessionStateSha(String haUuid, String ruleSetName, String sha) throws Exception {
+        String jdbcUrl;
+        String user;
+        String password;
+        if ("postgres".equalsIgnoreCase((String) dbParams.get("db_type"))) {
+            jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s",
+                    dbParams.get("host"), dbParams.get("port"), dbParams.get("database"));
+            user = (String) dbParams.get("user");
+            password = (String) dbParams.get("password");
+        } else {
+            jdbcUrl = "jdbc:h2:file:" + dbParams.get("db_file_path") + ";MODE=PostgreSQL";
+            user = "sa";
+            password = "";
+        }
+
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, user, password);
+             PreparedStatement ps = conn.prepareStatement(
+                     "UPDATE drools_ansible_session_state SET current_state_sha = ? WHERE ha_uuid = ? AND rule_set_name = ?")) {
+            ps.setString(1, sha);
+            ps.setString(2, haUuid);
+            ps.setString(3, ruleSetName);
+            ps.executeUpdate();
+        }
     }
 }
