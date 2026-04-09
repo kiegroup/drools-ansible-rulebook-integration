@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
@@ -154,7 +155,6 @@ public abstract class AbstractHAStateManager implements HAStateManager {
         if (currentStateSHA == null || currentStateSHA.isEmpty()) {
             throw new IllegalArgumentException("SessionState.currentStateSHA must be set");
         }
-
         String recalculatedSHA = HAUtils.calculateStateSHA(sessionState);
         if (!currentStateSHA.equals(recalculatedSHA)) {
             throw new IllegalArgumentException(
@@ -349,8 +349,11 @@ public abstract class AbstractHAStateManager implements HAStateManager {
 
             long expiredAgo = currentTimeAtNewNode - latestExpiry;
 
-            LOG.warn("all+timeout window expired during outage for rule '{}' (matched_patterns={}/{}, window={}ms, expired {}ms ago, matched_events={})",
-                    ruleName, matchedPatternIndices.size(), totalPatterns, windowMs, expiredAgo, matchedEvents);
+            LOG.warn("all+timeout window expired during outage for rule '{}' (matched_patterns={}/{}, window={}ms, expired {}ms ago, matched_event_count={}, matched_event_summaries={})",
+                    ruleName, matchedPatternIndices.size(), totalPatterns, windowMs, expiredAgo, matchedEvents.size(),
+                    summarizeEventObjects(matchedEvents));
+            LOG.debug("  --- payload details for rule '{}' (matched_events={})",
+                    ruleName, matchedEvents);
         }
     }
 
@@ -393,8 +396,11 @@ public abstract class AbstractHAStateManager implements HAStateManager {
                         matchRuleName, lateness, gracePeriodMs);
                 eligibleMatches.add(match);
             } else {
-                LOG.warn("Dropping expired recovery match for rule '{}' (expired {}ms ago, grace={}ms), events={}",
-                        matchRuleName, lateness, gracePeriodMs, match.getObjects());
+                List<Object> matchObjects = new ArrayList<>(match.getObjects());
+                LOG.warn("Dropping expired recovery match for rule '{}' (expired {}ms ago, grace={}ms, event_count={}, event_summaries={})",
+                        matchRuleName, lateness, gracePeriodMs, matchObjects.size(), summarizeEventObjects(matchObjects));
+                LOG.debug("  --- payload details for rule '{}' (events={})",
+                        matchRuleName, matchObjects);
             }
         }
 
@@ -434,6 +440,38 @@ public abstract class AbstractHAStateManager implements HAStateManager {
             LOG.debug("Failed to extract rule name from control event: {}", e.getMessage());
         }
         return null;
+    }
+
+    private static List<String> summarizeEventObjects(List<?> events) {
+        List<String> summaries = new ArrayList<>(events.size());
+        for (Object event : events) {
+            summaries.add(summarizeEventObject(event));
+        }
+        return summaries;
+    }
+
+    private static String summarizeEventObject(Object event) {
+        return "type=" + eventType(event) + ", uuid=" + eventUuid(event).orElse("unknown");
+    }
+
+    private static Optional<String> eventUuid(Object event) {
+        if (event instanceof PrototypeFactInstance prototypeFact) {
+            return HAUtils.getEventUuid(HAUtils.flattenPrototypeFact(prototypeFact));
+        }
+        if (event instanceof Map<?, ?> map) {
+            return HAUtils.getEventUuid((Map<String, Object>) map);
+        }
+        return Optional.empty();
+    }
+
+    private static String eventType(Object event) {
+        if (event instanceof PrototypeFactInstance prototypeFact) {
+            return prototypeFact.getPrototype().getName();
+        }
+        if (event instanceof Map<?, ?>) {
+            return "Map";
+        }
+        return event == null ? "null" : event.getClass().getSimpleName();
     }
 
     @Override
