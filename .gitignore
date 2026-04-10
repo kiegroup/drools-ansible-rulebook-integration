@@ -17,3 +17,5 @@ dependency-reduced-pom.xml
 !.ci
 
 .antlr
+
+tmp/
