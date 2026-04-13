@@ -160,6 +160,9 @@ public class SessionState {
         contentMap.put("haUuid", haUuid);
         contentMap.put("ruleSetName", ruleSetName);
         contentMap.put("rulebookHash", rulebookHash);
+        // Keep partialEvents as typed EventRecord objects. Do not parse eventJson into
+        // Map<String, Object> or re-serialize it here; JSON numeric type drift or map
+        // ordering changes could otherwise create false SHA mismatches after recovery.
         contentMap.put("partialEvents", partialEvents);
         contentMap.put("processedEventIds", processedEventIds);
         contentMap.put("createdTime", createdTime);
