@@ -102,6 +102,24 @@ run_java() {
   echo "" >> "$LOG"
 }
 
+# Helper: count rows in a PG table. Returns "ERR" on failure.
+pg_count() {
+  local table="$1"
+  docker exec "$PG_CONTAINER" psql -U retentiontest -d retentiontest -tAc "SELECT COUNT(*) FROM $table" 2>/dev/null || echo "ERR"
+}
+
+# Helper: max length (bytes) of the partial_matching_events TEXT column in SESSION_STATE.
+pg_blob_size() {
+  docker exec "$PG_CONTAINER" psql -U retentiontest -d retentiontest -tAc \
+    "SELECT COALESCE(MAX(length(partial_matching_events)), 0) FROM drools_ansible_session_state" 2>/dev/null || echo "ERR"
+}
+
+# Helper: truncate all HA tables so each HA-PG run starts clean.
+pg_truncate() {
+  docker exec "$PG_CONTAINER" psql -U retentiontest -d retentiontest -c \
+    "TRUNCATE drools_ansible_session_state, drools_ansible_matching_event, drools_ansible_action_info, drools_ansible_ha_stats" >/dev/null 2>&1 || true
+}
+
 # Helper: extract metrics from stderr
 parse_metrics() {
   local stderr_output="$1"
@@ -122,8 +140,9 @@ parse_metrics() {
   echo "=== Event Retention Memory Analysis ==="
   echo "Event payload: ~24KB JSON each (2-condition join, all retained as partial matches)"
   echo ""
-  printf "%-10s %-8s %14s %9s %14s\n" "Mode" "Events" "Memory(bytes)" "Time(ms)" "Per-Event(KB)"
-  printf "%s\n" "$(head -c 60 < /dev/zero | tr '\0' '-')"
+  printf "%-10s %-8s %14s %9s %14s %10s %14s\n" \
+    "Mode" "Events" "Memory(bytes)" "Time(ms)" "Per-Event(KB)" "MATCHING" "BlobSize(B)"
+  printf "%s\n" "$(head -c 88 < /dev/zero | tr '\0' '-')"
 } | tee "$OUT"
 
 # Associative arrays to store results for delta calculation
@@ -139,8 +158,13 @@ for run_mode in noHA HA-PG; do
 
     if [ "$run_mode" = "noHA" ]; then
       run_java "$file ($run_mode)" "$file"
+      matching_rows="-"
+      blob_size="-"
     else
+      pg_truncate
       run_java "$file ($run_mode)" "$file" --ha-db-params "$PG_PARAMS"
+      matching_rows=$(pg_count "drools_ansible_matching_event")
+      blob_size=$(pg_blob_size)
     fi
 
     parse_metrics "$_run_stderr" "$file"
@@ -153,7 +177,8 @@ for run_mode in noHA HA-PG; do
       per_event=$(awk "BEGIN { printf \"%.1f\", $mem / $count / 1024 }")
     fi
 
-    printf "%-10s %-8s %14s %9s %14s\n" "$run_mode" "$size" "$mem" "$time" "$per_event" | tee -a "$OUT"
+    printf "%-10s %-8s %14s %9s %14s %10s %14s\n" \
+      "$run_mode" "$size" "$mem" "$time" "$per_event" "$matching_rows" "$blob_size" | tee -a "$OUT"
 
     # Store for delta calculation
     MEM_RESULTS["${run_mode}_${idx}"]="$mem"
