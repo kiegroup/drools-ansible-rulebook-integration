@@ -1,8 +1,8 @@
 package org.drools.ansible.rulebook.integration.ha.examples;
 
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.drools.ansible.rulebook.integration.ha.tests.HAIntegrationTestBase;
-import org.drools.ansible.rulebook.integration.ha.tests.TestUtils;
+import org.drools.ansible.rulebook.integration.ha.tests.integration.HAIntegrationTestBase;
+import org.drools.ansible.rulebook.integration.ha.tests.support.TestUtils;
 
 /**
  * Node-2 recovers from the H2 file after Node-1 crashes.

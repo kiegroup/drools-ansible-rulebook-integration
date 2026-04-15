@@ -29,7 +29,7 @@ public abstract class AbstractHAStateManager implements HAStateManager {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractHAStateManager.class);
 
     protected static final String DROOLS_VERSION_KEY = "drools_version";
-    public static final String DROOLS_VERSION = "ha-poc-0.0.8";
+    public static final String DROOLS_VERSION = "2.0.0";
 
     private final Map<String, SessionState> sessionStateMap = new HashMap<>();
 
