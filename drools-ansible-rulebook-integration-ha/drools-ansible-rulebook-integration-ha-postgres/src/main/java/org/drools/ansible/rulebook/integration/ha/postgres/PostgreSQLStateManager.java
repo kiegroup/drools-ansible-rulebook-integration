@@ -22,10 +22,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager;
+import org.drools.ansible.rulebook.integration.ha.api.HAUtils;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
 import org.drools.ansible.rulebook.integration.ha.model.HAStats;
 import org.drools.ansible.rulebook.integration.ha.model.MatchingEvent;
 import org.drools.ansible.rulebook.integration.ha.model.EventRecord;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordChange;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +36,11 @@ import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValu
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValue;
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.ACTION_INFO;
+import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.EVENT_RECORD;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.HA_STATS;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.MATCHING_EVENT;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.SESSION_STATE;
+import static org.drools.ansible.rulebook.integration.ha.api.HAUtils.calculateEventRecordSHA;
 
 /**
  * PostgreSQL implementation of HAStateManager with production-ready persistence
@@ -339,13 +344,26 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
                 sessionState.setRuleSetName(rs.getString("rule_set_name"));
                 sessionState.setRulebookHash(rs.getString("rulebook_hash"));
 
-                String partialEventsJson = decryptIfEnabled(rs.getString("partial_matching_events"));
-                if (partialEventsJson != null) {
-                    try {
-                        List<EventRecord> partialEvents = OBJECT_MAPPER.readValue(partialEventsJson, EVENT_RECORD_LIST_TYPE);
-                        sessionState.setPartialEvents(partialEvents);
-                    } catch (Exception e) {
-                        logger.error("Failed to deserialize partial events", e);
+                List<EventRecordEntry> eventRecordEntries = getPersistedEventRecords(ruleSetName);
+                if (!eventRecordEntries.isEmpty()) {
+                    sessionState.setPartialEvents(eventRecordEntries.stream()
+                                                          .map(EventRecordEntry::getRecord)
+                                                          .toList());
+                    sessionState.setEventRecordsManifestSHA(HAUtils.calculateEventRecordsManifestSHA(eventRecordEntries));
+                } else {
+                    String encryptedPartialEvents = rs.getString("partial_matching_events");
+                    if (encryptedPartialEvents != null) {
+                        String partialEventsJson = decryptIfEnabled(encryptedPartialEvents);
+                        try {
+                            List<EventRecord> partialEvents = OBJECT_MAPPER.readValue(partialEventsJson, EVENT_RECORD_LIST_TYPE);
+                            sessionState.setPartialEvents(partialEvents);
+                        } catch (Exception e) {
+                            logger.error("Failed to deserialize partial events", e);
+                        }
+                        sessionState.setEventRecordsManifestSHA(null);
+                    } else {
+                        sessionState.setPartialEvents(new ArrayList<>());
+                        sessionState.setEventRecordsManifestSHA(HAUtils.calculateEventRecordsManifestSHA(List.of()));
                     }
                 }
 
@@ -401,6 +419,57 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
     }
 
     @Override
+    public void persistEventRecordChanges(String ruleSetName, List<EventRecordChange> eventRecordChanges) {
+        if (!isLeader) {
+            throw new IllegalStateException("Cannot persist EventRecord changes - not leader");
+        }
+        if (eventRecordChanges == null || eventRecordChanges.isEmpty()) {
+            return;
+        }
+
+        List<PreparedEventRecordChange> preparedChanges = prepareEventRecordChanges(eventRecordChanges);
+
+        executeInTransaction("Failed to persist EventRecord changes to PostgreSQL", conn -> {
+            applyEventRecordChanges(conn, ruleSetName, preparedChanges);
+        });
+    }
+
+    @Override
+    public List<EventRecordEntry> getPersistedEventRecords(String ruleSetName) {
+        String sql = "SELECT record_identifier, inserted_at, record_sequence, record_type, event_json, expiration_duration, event_record_sha"
+                + " FROM " + EVENT_RECORD
+                + " WHERE ha_uuid = ? AND rule_set_name = ?"
+                + " ORDER BY record_sequence, record_identifier";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, haUuid);
+            ps.setString(2, ruleSetName);
+
+            List<EventRecordEntry> entries = new ArrayList<>();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    EventRecordEntry entry = readEventRecordEntry(rs);
+                    String persistedSha = rs.getString("event_record_sha");
+                    String calculatedSha = calculateEventRecordSHA(entry);
+                    if (!persistedSha.equals(calculatedSha)) {
+                        throw new IllegalStateException("EventRecord SHA mismatch for ruleSetName=" + ruleSetName
+                                                                + ", recordIdentifier=" + entry.getRecordIdentifier());
+                    }
+                    entries.add(entry);
+                }
+            }
+            return entries;
+        } catch (SQLException e) {
+            logger.error("Failed to get EventRecord rows from PostgreSQL", e);
+            throw new RuntimeException("Failed to get EventRecord rows from PostgreSQL", e);
+        }
+    }
+
+    private record PreparedEventRecordChange(EventRecordChange change, String encryptedEventJson, String eventRecordSha) {
+    }
+
+    @Override
     public void persistSessionStateAndStats(SessionState sessionState) {
         validateForPersist(sessionState);
 
@@ -438,10 +507,7 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
         prepareHAStatsForPersist();
 
         // Pre-compute encrypted data outside the transaction to minimize lock duration
-        String encryptedPartialEvents = null;
-        if (sessionState.getPartialEvents() != null) {
-            encryptedPartialEvents = encryptIfEnabled(toJson(sessionState.getPartialEvents()));
-        }
+        String encryptedPartialEvents = prepareSessionPartialEventsForPersist(sessionState);
 
         List<String> encryptedEventDataList = new ArrayList<>();
         List<UUID> meUuids = new ArrayList<>();
@@ -467,6 +533,87 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
                      matchingEvents.size(), haUuid);
     }
 
+    @Override
+    public void persistSessionStateStatsEventRecordsAndMatchingEvents(SessionState sessionState,
+                                                                      List<EventRecordChange> eventRecordChanges,
+                                                                      List<MatchingEvent> matchingEvents) {
+        validateForPersist(sessionState);
+
+        if (haStats == null) {
+            persistSessionStateEventRecordsAndMatchingEvents(sessionState, eventRecordChanges, matchingEvents);
+            return;
+        }
+
+        ensureVersionInMetadata(sessionState.getMetadata());
+        prepareHAStatsForPersist();
+
+        List<PreparedEventRecordChange> preparedEventRecordChanges = prepareEventRecordChanges(eventRecordChanges);
+        List<String> encryptedEventDataList = new ArrayList<>();
+        List<UUID> meUuids = new ArrayList<>();
+        if (matchingEvents != null && !matchingEvents.isEmpty()) {
+            for (MatchingEvent me : matchingEvents) {
+                ensureVersionInMetadata(me.getMetadata());
+                encryptedEventDataList.add(encryptIfEnabled(me.getEventData()));
+                meUuids.add(UUID.fromString(me.getMeUuid()));
+            }
+        }
+
+        executeInTransaction("Failed to persist SessionState, HAStats, EventRecord changes, and matching events to PostgreSQL", conn -> {
+            doSessionStateUpsert(conn, sessionState, null);
+            doHAStatsUpsert(conn);
+            applyEventRecordChanges(conn, sessionState.getRuleSetName(), preparedEventRecordChanges);
+
+            if (matchingEvents != null) {
+                for (int i = 0; i < matchingEvents.size(); i++) {
+                    doMatchingEventInsert(conn, matchingEvents.get(i), meUuids.get(i), encryptedEventDataList.get(i));
+                }
+            }
+        });
+
+        logger.debug("Persisted SessionState, HAStats, {} EventRecord changes, and {} matching events to PostgreSQL in single transaction for haUuid: {}",
+                     eventRecordChanges != null ? eventRecordChanges.size() : 0,
+                     matchingEvents != null ? matchingEvents.size() : 0,
+                     haUuid);
+    }
+
+    @Override
+    public void persistSessionStateStatsEventRecordEntriesAndMatchingEvents(SessionState sessionState,
+                                                                            List<EventRecordEntry> eventRecordEntries,
+                                                                            List<MatchingEvent> matchingEvents) {
+        validateForPersist(sessionState);
+
+        if (haStats == null) {
+            persistSessionStateEventRecordEntriesAndMatchingEvents(sessionState, eventRecordEntries, matchingEvents);
+            return;
+        }
+
+        ensureVersionInMetadata(sessionState.getMetadata());
+        prepareHAStatsForPersist();
+
+        List<PreparedEventRecordEntry> preparedEventRecordEntries = prepareEventRecordEntries(eventRecordEntries);
+        List<String> encryptedEventDataList = new ArrayList<>();
+        List<UUID> meUuids = new ArrayList<>();
+        if (matchingEvents != null && !matchingEvents.isEmpty()) {
+            for (MatchingEvent me : matchingEvents) {
+                ensureVersionInMetadata(me.getMetadata());
+                encryptedEventDataList.add(encryptIfEnabled(me.getEventData()));
+                meUuids.add(UUID.fromString(me.getMeUuid()));
+            }
+        }
+
+        executeInTransaction("Failed to persist SessionState, HAStats, EventRecord snapshot, and matching events to PostgreSQL", conn -> {
+            doSessionStateUpsert(conn, sessionState, null);
+            doHAStatsUpsert(conn);
+            replaceEventRecordEntries(conn, sessionState.getRuleSetName(), preparedEventRecordEntries);
+
+            if (matchingEvents != null) {
+                for (int i = 0; i < matchingEvents.size(); i++) {
+                    doMatchingEventInsert(conn, matchingEvents.get(i), meUuids.get(i), encryptedEventDataList.get(i));
+                }
+            }
+        });
+    }
+
     private void validateForPersist(SessionState sessionState) {
         validateSessionStateForPersist(sessionState, isLeader);
     }
@@ -479,11 +626,17 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
     }
 
     private void doSessionStateUpsert(Connection conn, SessionState sessionState) throws SQLException {
-        String encryptedPartialEvents = null;
-        if (sessionState.getPartialEvents() != null) {
-            encryptedPartialEvents = encryptIfEnabled(toJson(sessionState.getPartialEvents()));
+        doSessionStateUpsert(conn, sessionState, prepareSessionPartialEventsForPersist(sessionState));
+    }
+
+    private String prepareSessionPartialEventsForPersist(SessionState sessionState) {
+        if (sessionState.getEventRecordsManifestSHA() != null) {
+            return null;
         }
-        doSessionStateUpsert(conn, sessionState, encryptedPartialEvents);
+        if (sessionState.getPartialEvents() != null) {
+            return encryptIfEnabled(toJson(sessionState.getPartialEvents()));
+        }
+        return null;
     }
 
     private void doSessionStateUpsert(Connection conn, SessionState sessionState, String encryptedPartialEvents) throws SQLException {
@@ -535,6 +688,120 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
 
             ps.executeUpdate();
         }
+    }
+
+    private void doEventRecordUpsert(Connection conn, String ruleSetName, EventRecordEntry entry,
+                                     String encryptedEventJson, String eventRecordSha) throws SQLException {
+        EventRecord record = entry.getRecord();
+        String sql = "INSERT INTO " + EVENT_RECORD
+                + " (ha_uuid, rule_set_name, record_identifier, inserted_at, record_sequence, record_type,"
+                + " event_json, expiration_duration, event_record_sha, metadata, properties, settings, ext)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '{}'::jsonb, '{}'::jsonb, '{}'::jsonb, '{}'::jsonb)"
+                + " ON CONFLICT (ha_uuid, rule_set_name, record_identifier) DO UPDATE SET"
+                + " inserted_at = EXCLUDED.inserted_at,"
+                + " record_sequence = EXCLUDED.record_sequence,"
+                + " record_type = EXCLUDED.record_type,"
+                + " event_json = EXCLUDED.event_json,"
+                + " expiration_duration = EXCLUDED.expiration_duration,"
+                + " event_record_sha = EXCLUDED.event_record_sha,"
+                + " metadata = EXCLUDED.metadata,"
+                + " properties = EXCLUDED.properties,"
+                + " settings = EXCLUDED.settings,"
+                + " ext = EXCLUDED.ext";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, haUuid);
+            ps.setString(2, ruleSetName);
+            ps.setString(3, entry.getRecordIdentifier());
+            ps.setLong(4, record.getInsertedAt());
+            ps.setLong(5, entry.getRecordSequence());
+            ps.setString(6, record.getRecordType().name());
+            ps.setString(7, encryptedEventJson);
+            if (record.getExpirationDuration() == null) {
+                ps.setObject(8, null);
+            } else {
+                ps.setLong(8, record.getExpirationDuration());
+            }
+            ps.setString(9, eventRecordSha);
+            ps.executeUpdate();
+        }
+    }
+
+    private void doEventRecordDelete(Connection conn, String ruleSetName, String recordIdentifier) throws SQLException {
+        String sql = "DELETE FROM " + EVENT_RECORD + " WHERE ha_uuid = ? AND rule_set_name = ? AND record_identifier = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, haUuid);
+            ps.setString(2, ruleSetName);
+            ps.setString(3, recordIdentifier);
+            ps.executeUpdate();
+        }
+    }
+
+    private EventRecordEntry readEventRecordEntry(ResultSet rs) throws SQLException {
+        String recordIdentifier = rs.getString("record_identifier");
+        long insertedAt = rs.getLong("inserted_at");
+        long recordSequence = rs.getLong("record_sequence");
+        EventRecord.RecordType recordType = EventRecord.RecordType.valueOf(rs.getString("record_type"));
+        String eventJson = decryptIfEnabled(rs.getString("event_json"));
+        long expirationDurationValue = rs.getLong("expiration_duration");
+        Long expirationDuration = rs.wasNull() ? null : expirationDurationValue;
+        return new EventRecordEntry(recordIdentifier, recordSequence, new EventRecord(eventJson, insertedAt, recordType, expirationDuration),
+                                    rs.getString("event_record_sha"));
+    }
+
+    private List<PreparedEventRecordChange> prepareEventRecordChanges(List<EventRecordChange> eventRecordChanges) {
+        List<PreparedEventRecordChange> preparedChanges = new ArrayList<>();
+        if (eventRecordChanges == null || eventRecordChanges.isEmpty()) {
+            return preparedChanges;
+        }
+        for (EventRecordChange change : eventRecordChanges) {
+            if (change.getType() == EventRecordChange.Type.UPSERT) {
+                EventRecordEntry entry = change.getEntry();
+                String eventRecordSHA = entry.getEventRecordSHA() != null ? entry.getEventRecordSHA() : calculateEventRecordSHA(entry);
+                preparedChanges.add(new PreparedEventRecordChange(change, encryptIfEnabled(entry.getRecord().getEventJson()), eventRecordSHA));
+            } else {
+                preparedChanges.add(new PreparedEventRecordChange(change, null, null));
+            }
+        }
+        return preparedChanges;
+    }
+
+    private List<PreparedEventRecordEntry> prepareEventRecordEntries(List<EventRecordEntry> eventRecordEntries) {
+        List<PreparedEventRecordEntry> preparedEntries = new ArrayList<>();
+        if (eventRecordEntries == null || eventRecordEntries.isEmpty()) {
+            return preparedEntries;
+        }
+        for (EventRecordEntry entry : eventRecordEntries) {
+            String eventRecordSHA = entry.getEventRecordSHA() != null ? entry.getEventRecordSHA() : calculateEventRecordSHA(entry);
+            preparedEntries.add(new PreparedEventRecordEntry(entry, encryptIfEnabled(entry.getRecord().getEventJson()), eventRecordSHA));
+        }
+        return preparedEntries;
+    }
+
+    private void applyEventRecordChanges(Connection conn, String ruleSetName, List<PreparedEventRecordChange> preparedChanges) throws SQLException {
+        for (PreparedEventRecordChange preparedChange : preparedChanges) {
+            if (preparedChange.change().getType() == EventRecordChange.Type.UPSERT) {
+                doEventRecordUpsert(conn, ruleSetName, preparedChange.change().getEntry(), preparedChange.encryptedEventJson(), preparedChange.eventRecordSha());
+            } else {
+                doEventRecordDelete(conn, ruleSetName, preparedChange.change().getRecordIdentifier());
+            }
+        }
+    }
+
+    private void replaceEventRecordEntries(Connection conn, String ruleSetName, List<PreparedEventRecordEntry> preparedEntries) throws SQLException {
+        String deleteEventRecords = "DELETE FROM " + EVENT_RECORD + " WHERE ha_uuid = ? AND rule_set_name = ?";
+        try (PreparedStatement ps = conn.prepareStatement(deleteEventRecords)) {
+            ps.setString(1, haUuid);
+            ps.setString(2, ruleSetName);
+            ps.executeUpdate();
+        }
+
+        for (PreparedEventRecordEntry preparedEntry : preparedEntries) {
+            doEventRecordUpsert(conn, ruleSetName, preparedEntry.entry(), preparedEntry.encryptedEventJson(), preparedEntry.eventRecordSha());
+        }
+    }
+
+    private record PreparedEventRecordEntry(EventRecordEntry entry, String encryptedEventJson, String eventRecordSha) {
     }
 
     // ── MatchingEvent operations ────────────────────────────────────────
@@ -809,8 +1076,15 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
         }
 
         executeInTransaction("Failed to delete SessionState from PostgreSQL", conn -> {
-            String sql = "DELETE FROM " + SESSION_STATE + " WHERE ha_uuid = ? AND rule_set_name = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            String deleteEventRecords = "DELETE FROM " + EVENT_RECORD + " WHERE ha_uuid = ? AND rule_set_name = ?";
+            try (PreparedStatement ps = conn.prepareStatement(deleteEventRecords)) {
+                ps.setString(1, haUuid);
+                ps.setString(2, ruleSetName);
+                ps.executeUpdate();
+            }
+
+            String deleteSessionState = "DELETE FROM " + SESSION_STATE + " WHERE ha_uuid = ? AND rule_set_name = ?";
+            try (PreparedStatement ps = conn.prepareStatement(deleteSessionState)) {
                 ps.setString(1, haUuid);
                 ps.setString(2, ruleSetName);
                 ps.executeUpdate();
@@ -854,7 +1128,81 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
     }
 
     @Override
+    public void persistSessionStateEventRecordsAndMatchingEvents(SessionState sessionState,
+                                                                 List<EventRecordChange> eventRecordChanges,
+                                                                 List<MatchingEvent> matchingEvents) {
+        validateForPersist(sessionState);
+        ensureVersionInMetadata(sessionState.getMetadata());
+
+        List<PreparedEventRecordChange> preparedEventRecordChanges = prepareEventRecordChanges(eventRecordChanges);
+        List<UUID> meUuids = new ArrayList<>();
+        List<String> encryptedEventDataList = new ArrayList<>();
+        if (matchingEvents != null) {
+            for (MatchingEvent me : matchingEvents) {
+                UUID meUuid = UUID.randomUUID();
+                meUuids.add(meUuid);
+                me.setMeUuid(meUuid.toString());
+                if (me.getCreatedAt() == 0L) {
+                    me.setCreatedAt(System.currentTimeMillis());
+                }
+                ensureVersionInMetadata(me.getMetadata());
+                encryptedEventDataList.add(encryptIfEnabled(me.getEventData()));
+            }
+        }
+
+        executeInTransaction("Failed to persist SessionState, EventRecord changes, and matching events in PostgreSQL", conn -> {
+            doSessionStateUpsert(conn, sessionState, null);
+            applyEventRecordChanges(conn, sessionState.getRuleSetName(), preparedEventRecordChanges);
+            if (matchingEvents != null) {
+                for (int i = 0; i < matchingEvents.size(); i++) {
+                    doMatchingEventInsert(conn, matchingEvents.get(i), meUuids.get(i), encryptedEventDataList.get(i));
+                }
+            }
+        });
+
+        logger.debug("Persisted SessionState, {} EventRecord changes, and {} matching events in single transaction for haUuid: {}",
+                     eventRecordChanges != null ? eventRecordChanges.size() : 0,
+                     matchingEvents != null ? matchingEvents.size() : 0,
+                     haUuid);
+    }
+
+    @Override
+    public void persistSessionStateEventRecordEntriesAndMatchingEvents(SessionState sessionState,
+                                                                       List<EventRecordEntry> eventRecordEntries,
+                                                                       List<MatchingEvent> matchingEvents) {
+        validateForPersist(sessionState);
+        ensureVersionInMetadata(sessionState.getMetadata());
+
+        List<PreparedEventRecordEntry> preparedEventRecordEntries = prepareEventRecordEntries(eventRecordEntries);
+        List<UUID> meUuids = new ArrayList<>();
+        List<String> encryptedEventDataList = new ArrayList<>();
+        if (matchingEvents != null) {
+            for (MatchingEvent me : matchingEvents) {
+                UUID meUuid = UUID.randomUUID();
+                meUuids.add(meUuid);
+                me.setMeUuid(meUuid.toString());
+                if (me.getCreatedAt() == 0L) {
+                    me.setCreatedAt(System.currentTimeMillis());
+                }
+                ensureVersionInMetadata(me.getMetadata());
+                encryptedEventDataList.add(encryptIfEnabled(me.getEventData()));
+            }
+        }
+
+        executeInTransaction("Failed to persist SessionState, EventRecord snapshot, and matching events in PostgreSQL", conn -> {
+            doSessionStateUpsert(conn, sessionState, null);
+            replaceEventRecordEntries(conn, sessionState.getRuleSetName(), preparedEventRecordEntries);
+            if (matchingEvents != null) {
+                for (int i = 0; i < matchingEvents.size(); i++) {
+                    doMatchingEventInsert(conn, matchingEvents.get(i), meUuids.get(i), encryptedEventDataList.get(i));
+                }
+            }
+        });
+    }
+
+    @Override
     public void persistLeaderStartup(List<SessionState> sessionStatesToPersist,
+                                     Map<String, List<EventRecordEntry>> eventRecordEntriesByRuleSet,
                                      List<String> rulesetNamesToDelete,
                                      List<MatchingEvent> matchingEvents) {
         // Pre-transaction: validate, encrypt, assign UUIDs
@@ -886,9 +1234,16 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
 
             // 2. Delete old session states (hash-mismatch rulesets)
             if (rulesetNamesToDelete != null) {
-                String deleteSql = "DELETE FROM " + SESSION_STATE + " WHERE ha_uuid = ? AND rule_set_name = ?";
                 for (String rulesetName : rulesetNamesToDelete) {
-                    try (PreparedStatement ps = conn.prepareStatement(deleteSql)) {
+                    String deleteEventRecords = "DELETE FROM " + EVENT_RECORD + " WHERE ha_uuid = ? AND rule_set_name = ?";
+                    try (PreparedStatement ps = conn.prepareStatement(deleteEventRecords)) {
+                        ps.setString(1, haUuid);
+                        ps.setString(2, rulesetName);
+                        ps.executeUpdate();
+                    }
+
+                    String deleteSessionState = "DELETE FROM " + SESSION_STATE + " WHERE ha_uuid = ? AND rule_set_name = ?";
+                    try (PreparedStatement ps = conn.prepareStatement(deleteSessionState)) {
                         ps.setString(1, haUuid);
                         ps.setString(2, rulesetName);
                         ps.executeUpdate();
@@ -899,6 +1254,12 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
             // 3. Upsert all refreshed session states
             for (SessionState ss : sessionStatesToPersist) {
                 doSessionStateUpsert(conn, ss);
+                boolean hasSnapshot = eventRecordEntriesByRuleSet != null && eventRecordEntriesByRuleSet.containsKey(ss.getRuleSetName());
+                if (ss.getEventRecordsManifestSHA() != null || hasSnapshot) {
+                    List<PreparedEventRecordEntry> preparedEventRecordEntries = prepareEventRecordEntries(
+                            hasSnapshot ? eventRecordEntriesByRuleSet.get(ss.getRuleSetName()) : null);
+                    replaceEventRecordEntries(conn, ss.getRuleSetName(), preparedEventRecordEntries);
+                }
             }
 
             // 4. Insert all recovery matching events

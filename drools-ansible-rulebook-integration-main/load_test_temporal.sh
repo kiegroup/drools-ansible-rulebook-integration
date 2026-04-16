@@ -8,7 +8,7 @@
 # test, so MATCHING_EVENT rows accumulate.
 # Single-node, PostgreSQL only (no failover phase).
 # Reports load time, memory, and final DB row counts for
-# SESSION_STATE / MATCHING_EVENT / ACTION_INFO.
+# SESSION_STATE / EVENT_RECORD / MATCHING_EVENT / ACTION_INFO.
 #
 # Requires Docker for PostgreSQL.
 
@@ -136,10 +136,15 @@ pg_count() {
   echo "$count"
 }
 
+pg_blob_size() {
+  docker exec "$PG_CONTAINER" psql -U temporaltest -d temporaltest -tAc \
+    "SELECT COALESCE(MAX(length(partial_matching_events)), 0) FROM drools_ansible_session_state" 2>/dev/null || echo "ERR"
+}
+
 # 4) Header
 header=$(printf "=== Temporal Operator Load Test (once_within, size=%s) ===" "$size")
-table_header=$(printf "\n%-30s %14s %9s %10s %10s %10s" "File" "Memory(bytes)" "Time(ms)" "SESSION" "MATCHING" "ACTION")
-separator=$(printf "%s" "$(head -c 95 < /dev/zero | tr '\0' '-')")
+table_header=$(printf "\n%-30s %14s %9s %10s %10s %10s %10s %14s" "File" "Memory(bytes)" "Time(ms)" "SESSION" "EVENT_REC" "MATCHING" "ACTION" "BlobSize(B)")
+separator=$(printf "%s" "$(head -c 120 < /dev/zero | tr '\0' '-')")
 
 {
   echo "$header"
@@ -157,13 +162,15 @@ load_mem="$_mem"; load_time="$_time"
 
 # 6) Query final DB row counts
 session_rows=$(pg_count "drools_ansible_session_state")
+event_record_rows=$(pg_count "drools_ansible_event_record")
 matching_rows=$(pg_count "drools_ansible_matching_event")
 action_rows=$(pg_count "drools_ansible_action_info")
+blob_size=$(pg_blob_size)
 
 # 7) Print results
 {
-  printf "%-30s %14s %9s %10s %10s %10s\n" \
-    "$test_file" "$load_mem" "$load_time" "$session_rows" "$matching_rows" "$action_rows"
+  printf "%-30s %14s %9s %10s %10s %10s %10s %14s\n" \
+    "$test_file" "$load_mem" "$load_time" "$session_rows" "$event_record_rows" "$matching_rows" "$action_rows" "$blob_size"
   echo ""
 } | tee -a "$out"
 

@@ -84,6 +84,37 @@ class HAIntegrationEncryptionTest extends AbstractHATestBase {
             }
             """;
 
+    private static final String PARTIAL_EVENT_RULE_SET = """
+            {
+                "name": "Encryption Partial Event Ruleset",
+                "sources": {"EventSource": "test"},
+                "rules": [
+                    {"Rule": {
+                        "name": "temp_and_humidity_alert",
+                        "condition": {
+                            "AllCondition": [
+                                {
+                                    "GreaterThanExpression": {
+                                        "lhs": {"Event": "temperature"},
+                                        "rhs": {"Integer": 30}
+                                    }
+                                },
+                                {
+                                    "GreaterThanExpression": {
+                                        "lhs": {"Event": "humidity"},
+                                        "rhs": {"Integer": 70}
+                                    }
+                                }
+                            ]
+                        },
+                        "action": {
+                            "run_playbook": [{"name": "alert.yml"}]
+                        }
+                    }}
+                ]
+            }
+            """;
+
     private AstRulesEngine rulesEngine1;
     private AstRulesEngine rulesEngine2;
     private long sessionId1;
@@ -151,7 +182,11 @@ class HAIntegrationEncryptionTest extends AbstractHATestBase {
 
         String rawPartialEvents = TestUtils.queryRawColumn(dbParams,
                 "SELECT partial_matching_events FROM drools_ansible_session_state WHERE ha_uuid = ?", HA_UUID);
-        assertThat(rawPartialEvents).startsWith("$ENCRYPTED$");
+        assertThat(rawPartialEvents).isNull();
+
+        String eventRecordRowCount = TestUtils.queryRawColumn(dbParams,
+                "SELECT COUNT(*) FROM drools_ansible_event_record WHERE ha_uuid = ?", HA_UUID);
+        assertThat(eventRecordRowCount).isEqualTo("0");
 
         // Verify matching event is persisted and readable with encryption
         HAStateManager assertionManager = createEncryptedStateManager();
@@ -196,6 +231,48 @@ class HAIntegrationEncryptionTest extends AbstractHATestBase {
         List<Map<String, Object>> resultList = (List<Map<String, Object>>) asyncResultMap.get("result");
         assertThat(resultList).isNotEmpty();
         assertThat(resultList.get(0)).containsEntry("matching_uuid", meUuid);
+    }
+
+    @Test
+    void encryptedEventRecordRowPersistAndRecovery() {
+        AstRulesEngine partialEngine = new AstRulesEngine();
+        HAIntegrationTestBase.AsyncConsumer partialConsumer = new HAIntegrationTestBase.AsyncConsumer("consumer-partial");
+        partialConsumer.startConsuming(partialEngine.port());
+
+        try {
+            partialEngine.initializeHA(HA_UUID, "worker-partial", dbParamsJson, encryptedConfigJson);
+            long partialSessionId = partialEngine.createRuleset(PARTIAL_EVENT_RULE_SET, RuleConfigurationOption.FULLY_MANUAL_PSEUDOCLOCK);
+            partialEngine.enableLeader();
+
+            String result = partialEngine.assertEvent(partialSessionId, createEvent("{\"temperature\": 45, \"host\": \"server-01\"}"));
+            List<Map<String, Object>> matchList = readValueAsListOfMapOfStringAndObject(result);
+            assertThat(matchList).isEmpty();
+
+            String rawEventJson = TestUtils.queryRawColumn(dbParams,
+                    "SELECT event_json FROM drools_ansible_event_record WHERE ha_uuid = ?", HA_UUID);
+            assertThat(rawEventJson).startsWith("$ENCRYPTED$");
+            assertThat(rawEventJson).doesNotContain("server-01");
+            assertThat(rawEventJson).doesNotContain("temperature");
+
+            HAStateManager assertionManager = createEncryptedStateManager();
+            try {
+                var entries = assertionManager.getPersistedEventRecords("Encryption Partial Event Ruleset");
+                assertThat(entries).hasSize(1);
+                assertThat(entries.get(0).getRecord().getEventJson()).contains("\"temperature\": 45");
+                assertThat(entries.get(0).getRecord().getEventJson()).contains("\"host\": \"server-01\"");
+            } finally {
+                assertionManager.shutdown();
+            }
+
+            partialEngine.disableLeader();
+            partialEngine.dispose(partialSessionId);
+            partialEngine.close();
+        } finally {
+            partialConsumer.stop();
+            if (partialEngine != null) {
+                partialEngine.close();
+            }
+        }
     }
 
     @Test
@@ -312,16 +389,15 @@ class HAIntegrationEncryptionTest extends AbstractHATestBase {
         String nonMatchingEvent = createEvent("{\"temperature\": 10}");
         rulesEngine1.assertEvent(sessionId1, nonMatchingEvent);
 
-        // Verify session state is now re-encrypted with the new primary key:
-        // query the latest version from DB and decrypt directly with only the rotated key (no secondary)
+        // This ruleset has no retained partial events, so the session row should
+        // stay on the row-backed shape without reviving the legacy blob.
         String reEncryptedData = TestUtils.queryRawColumn(dbParams,
                 "SELECT partial_matching_events FROM drools_ansible_session_state WHERE ha_uuid = ?", HA_UUID);
-        assertThat(reEncryptedData).startsWith("$ENCRYPTED$");
+        assertThat(reEncryptedData).isNull();
 
-        HAEncryption rotatedOnlyEncryption = new HAEncryption(NEW_ENCRYPTION_KEY, null);
-        HAEncryption.DecryptResult decryptResult = rotatedOnlyEncryption.decrypt(reEncryptedData);
-        assertThat(decryptResult.usedSecondaryKey()).isFalse();
-        assertThat(decryptResult.plaintext()).isNotNull();
+        String eventRecordRowCount = TestUtils.queryRawColumn(dbParams,
+                "SELECT COUNT(*) FROM drools_ansible_event_record WHERE ha_uuid = ?", HA_UUID);
+        assertThat(eventRecordRowCount).isEqualTo("0");
     }
 
     @Test

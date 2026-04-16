@@ -31,6 +31,8 @@ import org.drools.ansible.rulebook.integration.ha.api.HASessionContext;
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManager;
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory;
 import org.drools.ansible.rulebook.integration.ha.model.EventRecord;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordChange;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordEntry;
 import org.drools.ansible.rulebook.integration.ha.model.HAStats;
 import org.drools.ansible.rulebook.integration.ha.model.MatchingEvent;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
@@ -42,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.readValueAsMapOfStringAndObject;
 import static org.drools.ansible.rulebook.integration.api.io.JsonMapper.toJson;
+import static org.drools.ansible.rulebook.integration.ha.api.HAUtils.calculateEventRecordsManifestSHA;
 import static org.drools.ansible.rulebook.integration.ha.api.HAUtils.calculateStateSHA;
 import static org.drools.ansible.rulebook.integration.ha.api.HAUtils.populateHAMatchResponse;
 import static org.drools.ansible.rulebook.integration.ha.api.HAUtils.sha256;
@@ -198,7 +201,8 @@ public class AstRulesEngine implements Closeable {
             HAStats haStats = haStateManager.getHAStats();
             haStats.incrementEventsProcessed();
             updateGlobalSessionStats(haStats);
-            haStateManager.persistSessionStateStatsAndMatchingEvents(sessionState, matchingEvents);
+            List<EventRecordChange> eventRecordChanges = rulesExecutor.getHaSessionContext().drainEventRecordChanges();
+            haStateManager.persistSessionStateStatsEventRecordsAndMatchingEvents(sessionState, eventRecordChanges, matchingEvents);
         }
 
         return haMatches;
@@ -214,6 +218,7 @@ public class AstRulesEngine implements Closeable {
 
         // Update partial events from memory
         sessionState.setPartialEvents(new ArrayList<>(recordsInMemory.values()));
+        sessionState.setEventRecordsManifestSHA(calculateEventRecordsManifestSHA(haSessionContext.snapshotEventRecordEntries()));
 
         // Update processed event IDs from memory
         sessionState.setProcessedEventIds(haSessionContext.getProcessedEventIds());
@@ -462,6 +467,7 @@ public class AstRulesEngine implements Closeable {
 
         // Phase 2: Recover all sessions in-memory, collect persistence intents
         List<SessionState> statesToPersist = new ArrayList<>();
+        Map<String, List<EventRecordEntry>> eventRecordEntriesByRuleSet = new HashMap<>();
         List<String> rulesetsToDelete = new ArrayList<>();
         List<MatchingEvent> allRecoveryMatches = new ArrayList<>();
 
@@ -474,12 +480,15 @@ public class AstRulesEngine implements Closeable {
                 if (result.sessionState() != null) {
                     statesToPersist.add(result.sessionState());
                 }
+                if (result.eventRecordEntries() != null) {
+                    eventRecordEntriesByRuleSet.put(result.sessionState().getRuleSetName(), result.eventRecordEntries());
+                }
                 allRecoveryMatches.addAll(result.recoveryMatches());
             }
         }
 
         // Phase 3: ONE persist call — single transaction
-        haStateManager.persistLeaderStartup(statesToPersist, rulesetsToDelete, allRecoveryMatches);
+        haStateManager.persistLeaderStartup(statesToPersist, eventRecordEntriesByRuleSet, rulesetsToDelete, allRecoveryMatches);
         for (MatchingEvent me : allRecoveryMatches) {
             logger.info("Persisted grace-period recovery match for rule '{}' as MatchingEvent {}", me.getRuleName(), me.getMeUuid());
         }
@@ -495,6 +504,7 @@ public class AstRulesEngine implements Closeable {
      */
     private record SessionRecoveryResult(
         SessionState sessionState,
+        List<EventRecordEntry> eventRecordEntries,
         List<MatchingEvent> recoveryMatches,
         String deleteRulesetName
     ) {}
@@ -530,7 +540,7 @@ public class AstRulesEngine implements Closeable {
             logger.info("Ruleset updated for {} - will delete old session state and persist fresh state as leader", rulesetName);
             SessionState freshState = haStateManager.getInMemorySessionState(rulesetName);
             // Return delete intent + optional fresh state to persist
-            return new SessionRecoveryResult(freshState, List.of(), rulesetName);
+            return new SessionRecoveryResult(freshState, null, List.of(), rulesetName);
         }
 
         RulesExecutor recoveredRulesExecutor = haStateManager.recoverSession(((HARulesExecutor) executor).getRulesetString(), persistedSessionState, executor.asKieSession().getSessionClock().getCurrentTime());
@@ -553,11 +563,12 @@ public class AstRulesEngine implements Closeable {
         // Update in-memory state from recovered executor (refreshes partialEvents from WM)
         haStateManager.registerSessionState(rulesetName, persistedSessionState);
         updateInMemorySessionState((HARulesExecutor) recoveredRulesExecutor, persistedSessionState);
+        List<EventRecordEntry> eventRecordEntries = ((HARulesExecutor) recoveredRulesExecutor).getHaSessionContext().snapshotEventRecordEntries();
 
         logger.info("Recovered session {} from persisted SessionState", rulesetName);
 
         // Return persistence intents — no DB writes yet
-        return new SessionRecoveryResult(persistedSessionState, recoveryMatches, null);
+        return new SessionRecoveryResult(persistedSessionState, eventRecordEntries, recoveryMatches, null);
     }
 
     private RulesExecutor createHARulesExecutorWithSessionState(RulesSet rulesSet, String rulesetString) {
@@ -593,7 +604,8 @@ public class AstRulesEngine implements Closeable {
                     updateInMemorySessionState((HARulesExecutor) recoveredExecutor, persistedSessionState);
 
                     // Persist refreshed state + recovery matches in single transaction
-                    haStateManager.persistSessionStateAndMatchingEvents(persistedSessionState, recoveryMatches);
+                    List<EventRecordEntry> eventRecordEntries = ((HARulesExecutor) recoveredExecutor).getHaSessionContext().snapshotEventRecordEntries();
+                    haStateManager.persistSessionStateEventRecordEntriesAndMatchingEvents(persistedSessionState, eventRecordEntries, recoveryMatches);
                     for (MatchingEvent me : recoveryMatches) {
                         logger.info("Persisted grace-period recovery match for rule '{}' as MatchingEvent {}", me.getRuleName(), me.getMeUuid());
                     }
@@ -620,6 +632,7 @@ public class AstRulesEngine implements Closeable {
         sessionState.setPersistedTime(currentTime);
         sessionState.setRulebookHash(rulebookHash);
         sessionState.setLeaderId(haStateManager.getLeaderId());
+        sessionState.setEventRecordsManifestSHA(calculateEventRecordsManifestSHA(List.of()));
 
         // Calculate initial SHA from complete state
         sessionState.setCurrentStateSHA(calculateStateSHA(sessionState));

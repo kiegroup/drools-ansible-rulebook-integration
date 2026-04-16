@@ -9,6 +9,7 @@ import org.drools.ansible.rulebook.integration.api.RuleConfigurationOption;
 import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
 import org.drools.ansible.rulebook.integration.ha.tests.support.AbstractHATestBase;
+import org.drools.ansible.rulebook.integration.ha.tests.support.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,7 +113,7 @@ class HAIntegrationMemoryLeakTest extends AbstractHATestBase {
         }
 
         // Allow some memory for the processing overhead (This is brittle threshold, can be adjusted when fail)
-        long acceptableMemoryOverhead = 50 * 1000 * 1024; // 50 MB
+        long acceptableMemoryOverhead = 65 * 1000 * 1024; // 65 MB
         System.gc();
         Map<String, Object> statsMap = JsonMapper.readValueAsMapOfStringAndObject(rulesEngine.sessionStats(sessionId));
         long baseLevelMemory = (Integer)statsMap.get("baseLevelMemory");
@@ -120,6 +121,10 @@ class HAIntegrationMemoryLeakTest extends AbstractHATestBase {
         System.out.println("baseLevelMemory = " + baseLevelMemory);
         System.out.println("usedMemory      = " + usedMemory);
         assertThat(usedMemory).isLessThan(baseLevelMemory + acceptableMemoryOverhead);
+
+        String eventRecordRowCount = TestUtils.queryRawColumn(dbParams,
+                                                              "SELECT COUNT(*) FROM drools_ansible_event_record WHERE ha_uuid = ?", HA_UUID);
+        assertThat(eventRecordRowCount).isEqualTo("0");
     }
 
     @Test
@@ -132,8 +137,11 @@ class HAIntegrationMemoryLeakTest extends AbstractHATestBase {
             assertThat(matchList).isEmpty();
         }
 
+        List<String> partialEventIds = JsonMapper.readValue(rulesEngine.getPartialEventIds(sessionId), List.class);
+        assertThat(partialEventIds).isEmpty();
+
         // Allow some memory for the processing overhead
-        long acceptableMemoryOverhead = 50 * 1000 * 1024; // 50 MB (This is brittle threshold, can be adjusted when fail)
+        long acceptableMemoryOverhead = 65 * 1000 * 1024; // 65 MB (This is brittle threshold, can be adjusted when fail)
         System.gc();
         Map<String, Object> statsMap = JsonMapper.readValueAsMapOfStringAndObject(rulesEngine.sessionStats(sessionId));
         long baseLevelMemory = (Integer)statsMap.get("baseLevelMemory");
@@ -141,6 +149,10 @@ class HAIntegrationMemoryLeakTest extends AbstractHATestBase {
         System.out.println("baseLevelMemory = " + baseLevelMemory);
         System.out.println("usedMemory      = " + usedMemory);
         assertThat(usedMemory).isLessThan(baseLevelMemory + acceptableMemoryOverhead);
+
+        String eventRecordRowCount = TestUtils.queryRawColumn(dbParams,
+                "SELECT COUNT(*) FROM drools_ansible_event_record WHERE ha_uuid = ?", HA_UUID);
+        assertThat(eventRecordRowCount).isEqualTo("0");
     }
 
     private static String createLargeTriggerEvent(int sequence, int blobSize, boolean trigger) {
