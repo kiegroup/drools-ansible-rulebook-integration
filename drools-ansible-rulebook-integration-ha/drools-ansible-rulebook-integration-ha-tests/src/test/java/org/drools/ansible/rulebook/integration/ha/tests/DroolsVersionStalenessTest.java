@@ -29,11 +29,11 @@ class DroolsVersionStalenessTest {
     void droolsVersionIsNotBehindLatestGitTag() throws Exception {
         String latestTag = getLatestVersionTag();
         assumeTrue(latestTag != null,
-                "Skipping: no version-like git tags found (shallow clone or tags not fetched)");
+                   "Skipping: no version-like git tags found (shallow clone or tags not fetched)");
 
         assertThat(compareVersions(AbstractHAStateManager.DROOLS_VERSION, latestTag))
                 .as("DROOLS_VERSION is stale! Latest git tag is '%s' but code has '%s'. "
-                    + "Update AbstractHAStateManager.DROOLS_VERSION to be >= the latest tag.",
+                            + "Update AbstractHAStateManager.DROOLS_VERSION to be >= the latest tag.",
                     latestTag, AbstractHAStateManager.DROOLS_VERSION)
                 .isGreaterThanOrEqualTo(0);
     }

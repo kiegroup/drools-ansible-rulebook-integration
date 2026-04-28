@@ -136,10 +136,20 @@ parse_metrics() {
   fi
 }
 
+pg_count() {
+  local table="$1"
+  docker exec "$PG_CONTAINER" psql -U failovertest -d failovertest -tAc "SELECT COUNT(*) FROM $table" 2>/dev/null || echo "ERR"
+}
+
+pg_blob_size() {
+  docker exec "$PG_CONTAINER" psql -U failovertest -d failovertest -tAc \
+    "SELECT COALESCE(MAX(length(partial_matching_events)), 0) FROM drools_ansible_session_state" 2>/dev/null || echo "ERR"
+}
+
 # 7) Header
 header=$(printf "=== Failover Recovery Load Test (size=%s) ===" "$size")
-table_header=$(printf "\n%-36s %-14s %14s %9s" "File" "Phase" "Memory(bytes)" "Time(ms)")
-separator=$(printf "%s" "$(head -c 75 < /dev/zero | tr '\0' '-')")
+table_header=$(printf "\n%-36s %-14s %14s %9s %10s %14s" "File" "Phase" "Memory(bytes)" "Time(ms)" "EVENT_REC" "BlobSize(B)")
+separator=$(printf "%s" "$(head -c 102 < /dev/zero | tr '\0' '-')")
 
 {
   echo "$header"
@@ -155,6 +165,8 @@ run_java "$test_file (node1-load)" "$test_file" \
   --ha-uuid "$HA_UUID"
 parse_metrics "$_run_stderr" "$test_file"
 load_mem="$_mem"; load_time="$_time"
+load_event_record_rows=$(pg_count "drools_ansible_event_record")
+load_blob_size=$(pg_blob_size)
 
 # 9) Phase 2: Failover recovery (Node2)
 echo "Phase 2: Failover recovery ($test_file)..."
@@ -164,6 +176,8 @@ run_java "$test_file (node2-recovery)" "$test_file" \
   --failover-recovery
 parse_metrics "$_run_stderr" "$test_file"
 recovery_mem="$_mem"; recovery_time="$_time"
+recovery_event_record_rows=$(pg_count "drools_ansible_event_record")
+recovery_blob_size=$(pg_blob_size)
 
 # 10) Calculate ratio
 ratio="N/A"
@@ -173,9 +187,9 @@ fi
 
 # 11) Print results
 {
-  printf "%-36s %-14s %14s %9s\n" "$test_file" "Load(PG)" "$load_mem" "$load_time"
-  printf "%-36s %-14s %14s %9s\n" "$test_file" "Recovery(PG)" "$recovery_mem" "$recovery_time"
-  printf "%-36s %-14s %14s %8s%%\n" "" "Ratio" "" "$ratio"
+  printf "%-36s %-14s %14s %9s %10s %14s\n" "$test_file" "Load(PG)" "$load_mem" "$load_time" "$load_event_record_rows" "$load_blob_size"
+  printf "%-36s %-14s %14s %9s %10s %14s\n" "$test_file" "Recovery(PG)" "$recovery_mem" "$recovery_time" "$recovery_event_record_rows" "$recovery_blob_size"
+  printf "%-36s %-14s %14s %8s%% %10s %14s\n" "" "Ratio" "" "$ratio" "" ""
   echo ""
 } | tee -a "$out"
 

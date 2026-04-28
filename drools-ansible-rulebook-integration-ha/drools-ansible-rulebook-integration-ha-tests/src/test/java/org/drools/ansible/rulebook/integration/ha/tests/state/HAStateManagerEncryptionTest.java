@@ -15,6 +15,8 @@ import org.drools.ansible.rulebook.integration.ha.api.HAStateManager;
 import org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory;
 import org.drools.ansible.rulebook.integration.ha.api.HAUtils;
 import org.drools.ansible.rulebook.integration.ha.model.EventRecord;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordChange;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordEntry;
 import org.drools.ansible.rulebook.integration.ha.model.MatchingEvent;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
 import org.junit.jupiter.api.AfterEach;
@@ -127,6 +129,30 @@ class HAStateManagerEncryptionTest extends HAStateManagerTestBase {
         assertThat(loaded.get(0).getMeUuid()).isEqualTo(meUuid);
         assertThat(loaded.get(0).getEventData()).contains("temperature");
         assertThat(loaded.get(0).getEventData()).contains("server-01");
+    }
+
+    @Test
+    void persistAndLoadEventRecordRowWithEncryption() {
+        String key = generateBase64Key();
+        stateManager = createManager(configWithEncryption(key, null));
+
+        EventRecord eventRecord = new EventRecord("{\"temperature\": 35, \"host\": \"server-01\"}",
+                                                  System.currentTimeMillis(),
+                                                  EventRecord.RecordType.EVENT);
+        EventRecordEntry entry = new EventRecordEntry("event-1", 0L, eventRecord);
+
+        stateManager.persistEventRecordChanges(RULE_SET_NAME, List.of(EventRecordChange.upsert(entry)));
+
+        String rawEventJson = TestUtils.queryRawColumn(dbParams,
+                "SELECT event_json FROM drools_ansible_event_record WHERE ha_uuid = ?", haUuid);
+        assertThat(rawEventJson).startsWith("$ENCRYPTED$");
+        assertThat(rawEventJson).doesNotContain("server-01");
+        assertThat(rawEventJson).doesNotContain("temperature");
+
+        List<EventRecordEntry> loaded = stateManager.getPersistedEventRecords(RULE_SET_NAME);
+        assertThat(loaded).hasSize(1);
+        assertThat(loaded.get(0).getRecord().getEventJson()).contains("\"temperature\": 35");
+        assertThat(loaded.get(0).getRecord().getEventJson()).contains("\"host\": \"server-01\"");
     }
 
     @Test

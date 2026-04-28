@@ -6,7 +6,7 @@
 # Uses failover_XX_events.json (2-condition join rule, only condition 1 satisfied).
 # All events stay in working memory as partial matches — never matched, never discarded.
 #
-# Runs 100, 500, 1k events in both noHA and HA(PG) modes.
+# Runs 100, 500, 1k, 5k, 10k events in both noHA and HA(PG) modes.
 # Reports memory and per-event memory estimate for each.
 # Requires Docker for PostgreSQL.
 
@@ -20,13 +20,15 @@ if [ ! -f "$JAR" ]; then
   exit 1
 fi
 
-SIZES=(100 500 1k)
-FILES=("failover_100_events.json" "failover_500_events.json" "failover_1k_events.json")
-COUNTS=(100 500 1000)
+SIZES=(100 500 1k 5k 10k)
+FILES=()
+COUNTS=(100 500 1000 5000 10000)
 
 OUT="result_retention.txt"
 LOG="out_retention.log"
 > "$LOG"
+
+TMP_INPUT_DIR=$(mktemp -d)
 
 # Docker PostgreSQL setup
 PG_CONTAINER=""
@@ -82,22 +84,57 @@ cleanup_postgres() {
     docker stop "$PG_CONTAINER" >/dev/null 2>&1 || true
     PG_CONTAINER=""
   fi
+  if [ -n "${TMP_INPUT_DIR:-}" ] && [ -d "$TMP_INPUT_DIR" ]; then
+    rm -rf "$TMP_INPUT_DIR"
+  fi
 }
 
 trap cleanup_postgres EXIT
 
 setup_postgres
 
-# Helper: run java, capture stderr for metrics
+generate_failover_input() {
+  local size="$1"
+  local count="$2"
+
+  case "$size" in
+    100|500|1k)
+      echo "failover_${size}_events.json"
+      return
+      ;;
+  esac
+
+  local template="src/main/resources/failover_1k_events.json"
+  local generated="$TMP_INPUT_DIR/failover_${size}_events.json"
+
+  sed \
+    -e "s/\"name\": \"failover 1k events\"/\"name\": \"failover ${count} events\"/" \
+    -e '0,/"repeat_count": 1000/s//"repeat_count": '"$count"'/' \
+    "$template" > "$generated"
+
+  echo "$generated"
+}
+
+for idx in "${!SIZES[@]}"; do
+  FILES+=("$(generate_failover_input "${SIZES[$idx]}" "${COUNTS[$idx]}")")
+done
+
+# Helper: run java, capture stdout/stderr for metrics
 run_java() {
   local label="$1"; shift
+  local tmpstdout
   local tmpstderr
+  tmpstdout=$(mktemp)
   tmpstderr=$(mktemp)
   echo "=== $label ===" >> "$LOG"
   java -Xmx1g -Dorg.slf4j.simpleLogger.logFile=System.out \
-       -jar "$JAR" "$@" >> "$LOG" 2>"$tmpstderr" || true
+       -jar "$JAR" "$@" >"$tmpstdout" 2>"$tmpstderr" || true
+  cat "$tmpstdout" >> "$LOG"
   cat "$tmpstderr" >> "$LOG"
-  _run_stderr=$(cat "$tmpstderr")
+  _run_output=$(cat "$tmpstdout")
+  _run_output+=$'\n'
+  _run_output+=$(cat "$tmpstderr")
+  rm -f "$tmpstdout"
   rm -f "$tmpstderr"
   echo "" >> "$LOG"
 }
@@ -117,21 +154,47 @@ pg_blob_size() {
 # Helper: truncate all HA tables so each HA-PG run starts clean.
 pg_truncate() {
   docker exec "$PG_CONTAINER" psql -U retentiontest -d retentiontest -c \
-    "TRUNCATE drools_ansible_session_state, drools_ansible_matching_event, drools_ansible_action_info, drools_ansible_ha_stats" >/dev/null 2>&1 || true
+    "TRUNCATE drools_ansible_session_state, drools_ansible_event_record, drools_ansible_matching_event, drools_ansible_action_info, drools_ansible_ha_stats" >/dev/null 2>&1 || true
 }
 
-# Helper: extract metrics from stderr
+# Helper: extract metrics from command output.
+# Prefer the CSV summary line because it is emitted after the GC/sleep/GC block
+# that the load test uses for its retention measurement. Fall back to the
+# structured log lines only if the CSV summary is missing or invalid.
 parse_metrics() {
-  local stderr_output="$1"
+  local run_output="$1"
   local filename="$2"
   local metrics_line
-  metrics_line=$(echo "$stderr_output" | grep "^${filename}" | tail -1)
-  if [ -z "$metrics_line" ]; then
-    _mem="FAILED"
-    _time="FAILED"
-  else
+  local stats_line
+  local time_line
+
+  metrics_line=$(printf "%s\n" "$run_output" | grep -F "${filename}" | grep -F "," | tail -1 || true)
+  if [ -n "$metrics_line" ]; then
     _mem=$(echo "$metrics_line" | cut -d',' -f2 | tr -d ' ')
     _time=$(echo "$metrics_line" | cut -d',' -f3 | tr -d ' ')
+  else
+    _mem=""
+    _time=""
+  fi
+
+  if [ -z "$_mem" ] || [ -z "$_time" ] || { [ "$_mem" = "0" ] && [ "$_time" = "0" ]; }; then
+    stats_line=$(printf "%s\n" "$run_output" | grep '"usedMemory":' | tail -1 || true)
+    time_line=$(printf "%s\n" "$run_output" | grep -E 'Executed in [0-9]+ msecs|\*\*\* End measuring execution time , duration = [0-9]+ ms' | tail -1 || true)
+
+    if [ -n "$stats_line" ]; then
+      _mem=$(printf "%s\n" "$stats_line" | sed -n 's/.*"usedMemory":\([0-9][0-9]*\).*/\1/p')
+    fi
+    if [ -n "$time_line" ]; then
+      _time=$(printf "%s\n" "$time_line" | sed -n 's/.*duration = \([0-9][0-9]*\) ms.*/\1/p')
+      if [ -z "$_time" ]; then
+        _time=$(printf "%s\n" "$time_line" | sed -n 's/.*Executed in \([0-9][0-9]*\) msecs.*/\1/p')
+      fi
+    fi
+  fi
+
+  if [ -z "$_mem" ] || [ -z "$_time" ]; then
+    _mem="FAILED"
+    _time="FAILED"
   fi
 }
 
@@ -140,16 +203,16 @@ parse_metrics() {
   echo "=== Event Retention Memory Analysis ==="
   echo "Event payload: ~24KB JSON each (2-condition join, all retained as partial matches)"
   echo ""
-  printf "%-10s %-8s %14s %9s %14s %10s %14s\n" \
-    "Mode" "Events" "Memory(bytes)" "Time(ms)" "Per-Event(KB)" "MATCHING" "BlobSize(B)"
-  printf "%s\n" "$(head -c 88 < /dev/zero | tr '\0' '-')"
+  printf "%-10s %-8s %14s %9s %14s %10s %10s %14s\n" \
+    "Mode" "Events" "Memory(bytes)" "Time(ms)" "Per-Event(KB)" "EVENT_REC" "MATCHING" "BlobSize(B)"
+  printf "%s\n" "$(head -c 100 < /dev/zero | tr '\0' '-')"
 } | tee "$OUT"
 
 # Associative arrays to store results for delta calculation
 declare -A MEM_RESULTS
 
 for run_mode in noHA HA-PG; do
-  for idx in 0 1 2; do
+  for idx in "${!FILES[@]}"; do
     file="${FILES[$idx]}"
     count="${COUNTS[$idx]}"
     size="${SIZES[$idx]}"
@@ -158,16 +221,18 @@ for run_mode in noHA HA-PG; do
 
     if [ "$run_mode" = "noHA" ]; then
       run_java "$file ($run_mode)" "$file"
+      event_record_rows="-"
       matching_rows="-"
       blob_size="-"
     else
       pg_truncate
       run_java "$file ($run_mode)" "$file" --ha-db-params "$PG_PARAMS"
+      event_record_rows=$(pg_count "drools_ansible_event_record")
       matching_rows=$(pg_count "drools_ansible_matching_event")
       blob_size=$(pg_blob_size)
     fi
 
-    parse_metrics "$_run_stderr" "$file"
+    parse_metrics "$_run_output" "$file"
     mem="$_mem"
     time="$_time"
 
@@ -177,8 +242,8 @@ for run_mode in noHA HA-PG; do
       per_event=$(awk "BEGIN { printf \"%.1f\", $mem / $count / 1024 }")
     fi
 
-    printf "%-10s %-8s %14s %9s %14s %10s %14s\n" \
-      "$run_mode" "$size" "$mem" "$time" "$per_event" "$matching_rows" "$blob_size" | tee -a "$OUT"
+    printf "%-10s %-8s %14s %9s %14s %10s %10s %14s\n" \
+      "$run_mode" "$size" "$mem" "$time" "$per_event" "$event_record_rows" "$matching_rows" "$blob_size" | tee -a "$OUT"
 
     # Store for delta calculation
     MEM_RESULTS["${run_mode}_${idx}"]="$mem"
@@ -194,7 +259,11 @@ done
   printf "%s\n" "$(head -c 54 < /dev/zero | tr '\0' '-')"
 
   for run_mode in noHA HA-PG; do
-    for pair in "0:1:100-500:400" "1:2:500-1k:500"; do
+    for pair in \
+      "0:1:100-500:400" \
+      "1:2:500-1k:500" \
+      "2:3:1k-5k:4000" \
+      "3:4:5k-10k:5000"; do
       IFS=':' read -r from_idx to_idx label delta_count <<< "$pair"
       from_mem="${MEM_RESULTS["${run_mode}_${from_idx}"]}"
       to_mem="${MEM_RESULTS["${run_mode}_${to_idx}"]}"
@@ -215,7 +284,12 @@ done
   printf "%-12s %14s %14s\n" "Range" "Delta(bytes)" "Per-Event(KB)"
   printf "%s\n" "$(head -c 42 < /dev/zero | tr '\0' '-')"
 
-  for pair in "0:100:100" "1:500:500" "2:1k:1000"; do
+  for pair in \
+    "0:100:100" \
+    "1:500:500" \
+    "2:1k:1000" \
+    "3:5k:5000" \
+    "4:10k:10000"; do
     IFS=':' read -r idx label count <<< "$pair"
     noha_mem="${MEM_RESULTS["noHA_${idx}"]}"
     ha_mem="${MEM_RESULTS["HA-PG_${idx}"]}"
