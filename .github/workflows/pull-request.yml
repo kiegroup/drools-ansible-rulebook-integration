@@ -81,16 +81,30 @@ jobs:
           cd kiegroup_drools-ansible-rulebook-integration
           mvn test -Pmemoryleak-tests
 
-      - name: Run load tests and analyze memory leaks
+      - name: Build load test module
         run: |
-          cd kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-main
-          chmod +x load_test_all.sh
-          ./load_test_all.sh
+          cd kiegroup_drools-ansible-rulebook-integration
+          mvn --batch-mode --update-snapshots -pl drools-ansible-rulebook-integration-load-tests -am package -DskipTests
+
+      - name: Run HA PostgreSQL load tests
+        run: |
+          cd kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-load-tests
+          chmod +x \
+            load_test_match_unmatch_noHA_HA-PG.sh \
+            load_test_retention_noHA_HA-PG.sh \
+            load_test_temporal_HA-PG.sh \
+            load_test_failover_HA-PG.sh
+          ./load_test_match_unmatch_noHA_HA-PG.sh
+          ./load_test_retention_noHA_HA-PG.sh
+          ./load_test_temporal_HA-PG.sh
+          ./load_test_failover_HA-PG.sh
 
       - name: Upload load test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: memory-leak-test-results
-          path: kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-main/result_all.txt
+          path: |
+            kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-load-tests/result_*.txt
+            kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-load-tests/out_*.log
           retention-days: 30
