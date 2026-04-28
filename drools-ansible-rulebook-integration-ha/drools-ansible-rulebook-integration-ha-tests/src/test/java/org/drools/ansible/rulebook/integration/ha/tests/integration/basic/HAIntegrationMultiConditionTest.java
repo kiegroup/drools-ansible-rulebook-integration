@@ -7,6 +7,8 @@ import org.drools.ansible.rulebook.integration.ha.tests.integration.HAIntegratio
 import java.util.List;
 import java.util.Map;
 
+import org.drools.ansible.rulebook.integration.ha.api.HAStateManager;
+import org.drools.ansible.rulebook.integration.ha.model.SessionState;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,6 +83,30 @@ class HAIntegrationMultiConditionTest extends HAIntegrationTestBase {
 
         // Should be empty since rule requires both i=1 AND j=2
         assertThat(readValueAsListOfMapOfStringAndObject(result1)).isEmpty();
+
+        String eventRecordRows = TestUtils.queryRawColumn(dbParams,
+                                                          "SELECT COUNT(*) FROM drools_ansible_event_record "
+                                                                  + "WHERE ha_uuid = ? AND rule_set_name = 'Multi Condition Ruleset'",
+                                                          HA_UUID);
+        assertThat(eventRecordRows).isEqualTo("1");
+
+        String legacyPartialEventsBlob = TestUtils.queryRawColumn(dbParams,
+                                                                  "SELECT COALESCE(partial_matching_events, '__NULL__') "
+                                                                          + "FROM drools_ansible_session_state "
+                                                                          + "WHERE ha_uuid = ? AND rule_set_name = 'Multi Condition Ruleset'",
+                                                                  HA_UUID);
+        assertThat(legacyPartialEventsBlob).isEqualTo("__NULL__");
+
+        HAStateManager haManagerForAssertion = createHAStateManagerForAssertion();
+        try {
+            SessionState persistedState = haManagerForAssertion.getPersistedSessionState(getRuleSetNameValue());
+            assertThat(persistedState.getPartialEvents()).hasSize(1);
+            assertThat(persistedState.getPartialEvents().get(0).getEventJson()).contains("\"i\":1");
+            assertThat(persistedState.getEventRecordsManifestSHA()).isNotNull();
+            assertThat(haManagerForAssertion.verifySessionState(persistedState)).isTrue();
+        } finally {
+            haManagerForAssertion.shutdown();
+        }
 
         String haStatsJson = rulesEngine1.getHAStats();
         Map<String, Object> haStats = readValueAsMapOfStringAndObject(haStatsJson);

@@ -30,6 +30,13 @@ public class SessionState {
     // For integrity checks
     private String currentStateSHA;      // SHA256 of current state
 
+    /*
+     * Transient row-backed retained-event manifest. This is not stored as a
+     * separate DB column; it is folded into currentStateSHA when retained
+     * EventRecords are persisted in drools_ansible_event_record rows.
+     */
+    private String eventRecordsManifestSHA;
+
     // Extensibility columns for future use without schema migration
     private Map<String, Object> metadata = new HashMap<>();
     private Map<String, Object> properties = new HashMap<>();
@@ -112,6 +119,13 @@ public class SessionState {
         this.currentStateSHA = currentStateSHA;
     }
 
+    public String getEventRecordsManifestSHA() {
+        return eventRecordsManifestSHA;
+    }
+
+    public void setEventRecordsManifestSHA(String eventRecordsManifestSHA) {
+        this.eventRecordsManifestSHA = eventRecordsManifestSHA;
+    }
 
     public Map<String, Object> getMetadata() {
         return metadata;
@@ -160,10 +174,15 @@ public class SessionState {
         contentMap.put("haUuid", haUuid);
         contentMap.put("ruleSetName", ruleSetName);
         contentMap.put("rulebookHash", rulebookHash);
-        // Keep partialEvents as typed EventRecord objects. Do not parse eventJson into
-        // Map<String, Object> or re-serialize it here; JSON numeric type drift or map
-        // ordering changes could otherwise create false SHA mismatches after recovery.
-        contentMap.put("partialEvents", partialEvents);
+        if (eventRecordsManifestSHA != null) {
+            contentMap.put("eventRecordsManifestSHA", eventRecordsManifestSHA);
+        } else {
+            // Legacy blob-backed state keeps partialEvents as typed EventRecord objects.
+            // Do not parse eventJson into Map<String, Object> or re-serialize it here;
+            // JSON numeric type drift or map ordering changes could otherwise create
+            // false SHA mismatches after recovery.
+            contentMap.put("partialEvents", partialEvents);
+        }
         contentMap.put("processedEventIds", processedEventIds);
         contentMap.put("createdTime", createdTime);
         contentMap.put("persistedTime", persistedTime);

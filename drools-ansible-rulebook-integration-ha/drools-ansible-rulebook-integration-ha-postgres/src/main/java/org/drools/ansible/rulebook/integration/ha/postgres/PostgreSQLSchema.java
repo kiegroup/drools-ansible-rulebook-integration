@@ -1,8 +1,10 @@
 package org.drools.ansible.rulebook.integration.ha.postgres;
 
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.ACTION_INFO;
+import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.EVENT_RECORD;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.HA_STATS;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.IDX_ACTION_INFO_ME;
+import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.IDX_EVENT_RECORD_ORDER;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.IDX_MATCHING_EVENT_HA_UUID;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.MATCHING_EVENT;
 import static org.drools.ansible.rulebook.integration.ha.api.HATableNames.SESSION_STATE;
@@ -61,6 +63,30 @@ public class PostgreSQLSchema {
                         + "UNIQUE(ha_uuid, rule_set_name)"
                         + ")";
                 stmt.execute(createSessionStateTable);
+
+                String createEventRecordTable =
+                        "CREATE TABLE IF NOT EXISTS " + EVENT_RECORD + " ("
+                        + "ha_uuid VARCHAR(255) NOT NULL, "
+                        + "rule_set_name VARCHAR(255) NOT NULL, "
+                        + "record_identifier VARCHAR(255) NOT NULL, "
+                        + "inserted_at BIGINT NOT NULL, "
+                        + "record_sequence BIGINT NOT NULL, "
+                        + "record_type VARCHAR(64) NOT NULL, "
+                        + "event_json TEXT, "
+                        + "expiration_duration BIGINT, "
+                        + "event_record_sha VARCHAR(64) NOT NULL, "
+                        + "metadata JSONB DEFAULT '{}'::jsonb, "
+                        + "properties JSONB DEFAULT '{}'::jsonb, "
+                        + "settings JSONB DEFAULT '{}'::jsonb, "
+                        + "ext JSONB DEFAULT '{}'::jsonb, "
+                        + "PRIMARY KEY (ha_uuid, rule_set_name, record_identifier)"
+                        + ")";
+                stmt.execute(createEventRecordTable);
+
+                String createEventRecordOrderIndex =
+                        "CREATE INDEX IF NOT EXISTS " + IDX_EVENT_RECORD_ORDER
+                        + " ON " + EVENT_RECORD + "(ha_uuid, rule_set_name, inserted_at, record_sequence, record_identifier)";
+                stmt.execute(createEventRecordOrderIndex);
 
                 // Create MatchingEvent table
                 // PostgreSQL differences from H2:
@@ -164,6 +190,25 @@ public class PostgreSQLSchema {
                     }
                 }
 
+                stmt.execute("CREATE TABLE IF NOT EXISTS " + EVENT_RECORD + " ("
+                        + "ha_uuid VARCHAR(255) NOT NULL, "
+                        + "rule_set_name VARCHAR(255) NOT NULL, "
+                        + "record_identifier VARCHAR(255) NOT NULL, "
+                        + "inserted_at BIGINT NOT NULL, "
+                        + "record_sequence BIGINT NOT NULL, "
+                        + "record_type VARCHAR(64) NOT NULL, "
+                        + "event_json TEXT, "
+                        + "expiration_duration BIGINT, "
+                        + "event_record_sha VARCHAR(64) NOT NULL, "
+                        + "metadata JSONB DEFAULT '{}'::jsonb, "
+                        + "properties JSONB DEFAULT '{}'::jsonb, "
+                        + "settings JSONB DEFAULT '{}'::jsonb, "
+                        + "ext JSONB DEFAULT '{}'::jsonb, "
+                        + "PRIMARY KEY (ha_uuid, rule_set_name, record_identifier)"
+                        + ")");
+                stmt.execute("CREATE INDEX IF NOT EXISTS " + IDX_EVENT_RECORD_ORDER
+                        + " ON " + EVENT_RECORD + "(ha_uuid, rule_set_name, inserted_at, record_sequence, record_identifier)");
+
                 // Migration: drop version column and update UNIQUE constraint
                 // Step 1: Drop old constraint (PG naming convention: table_col1_col2_..._key)
                 stmt.execute("ALTER TABLE " + SESSION_STATE + " DROP CONSTRAINT IF EXISTS " + SESSION_STATE + "_ha_uuid_rule_set_name_version_key");
@@ -193,6 +238,7 @@ public class PostgreSQLSchema {
                 // Drop in reverse order due to foreign keys
                 stmt.execute("DROP TABLE IF EXISTS " + ACTION_INFO + " CASCADE");
                 stmt.execute("DROP TABLE IF EXISTS " + MATCHING_EVENT + " CASCADE");
+                stmt.execute("DROP TABLE IF EXISTS " + EVENT_RECORD + " CASCADE");
                 stmt.execute("DROP TABLE IF EXISTS " + SESSION_STATE + " CASCADE");
                 stmt.execute("DROP TABLE IF EXISTS " + HA_STATS + " CASCADE");
 
