@@ -100,6 +100,25 @@ class HAIntegrationLegacyPartialEventsMigrationTest extends AbstractHATestBase {
         cleanupDatabase();
     }
 
+    /**
+     * Verifies legacy-to-current SessionState SHA behavior during partial event storage migration.
+     *
+     * Old versions persisted retained partial matches only in
+     * drools_ansible_session_state.partial_matching_events and computed current_state_sha from that legacy shape.
+     * In that mode SessionState.eventRecordsManifestSHA is null, so SessionState.toHashableContent() includes
+     * the typed partialEvents list directly. When current code starts against such data, startup does not create
+     * drools_ansible_event_record rows eagerly. Instead getPersistedSessionState() detects that no row-backed
+     * EventRecords exist yet, loads partial_matching_events, keeps eventRecordsManifestSHA null, and therefore
+     * recalculates the SHA using the same legacy hashable content. That is why there is no SHA mismatch at startup.
+     *
+     * Migration happens on the next row-aware persist after an event is processed. At that point the runtime builds
+     * EventRecord rows from the in-memory tracked records, computes eventRecordsManifestSHA from the sorted
+     * {recordIdentifier, recordSequence, eventRecordSHA} manifest, recomputes current_state_sha from the new
+     * manifest-backed SessionState shape, persists both values, and clears partial_matching_events. Verification
+     * still passes after migration because the stored SHA and recalculated SHA have both switched to the same
+     * manifest-backed representation. A mismatch would require an unsupported half-migrated state where
+     * drools_ansible_event_record rows exist but current_state_sha is still the old blob-based value.
+     */
     @Test
     void legacyPartialMatchingEventsMigratesToEventRecordRowsAfterStartupAndNextEvent() throws Exception {
         long now = System.currentTimeMillis();
