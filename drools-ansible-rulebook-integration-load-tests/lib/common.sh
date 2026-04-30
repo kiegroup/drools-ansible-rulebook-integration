@@ -104,6 +104,13 @@ pg_blob_size() {
     "SELECT COALESCE(MAX(length(partial_matching_events)), 0) FROM drools_ansible_session_state" 2>/dev/null || echo "ERR"
 }
 
+pg_log_event_record_count() {
+  local label="$1"
+  local count
+  count=$(pg_count drools_ansible_event_record)
+  echo "EVENT_RECORD_COUNT [$label]: $count"
+}
+
 # ---- jvm_* -----------------------------------------------------------------
 
 # jvm_run <label> <args...>
