@@ -32,6 +32,7 @@ public class HASessionContext {
     private final Map<String, String> eventRecordShaIndex = new HashMap<>();
 
     private final List<EventRecordChange> pendingEventRecordChanges = new ArrayList<>();
+    private final LinkedHashSet<String> newlyTrackedIdentifiers = new LinkedHashSet<>();
 
     private long nextRecordSequence = 0L;
 
@@ -61,6 +62,7 @@ public class HASessionContext {
         String eventRecordSHA = HAUtils.calculateEventRecordSHA(entry);
         eventRecordShaIndex.put(identifier, eventRecordSHA);
         pendingEventRecordChanges.add(EventRecordChange.upsert(new EventRecordEntry(identifier, recordSequence, eventRecord, eventRecordSHA)));
+        newlyTrackedIdentifiers.add(identifier);
         if (factHandleId != null) {
             factHandleIndex.put(factHandleId, identifier);
         }
@@ -74,7 +76,11 @@ public class HASessionContext {
             removeFactHandleIndexForIdentifier(identifier);
             recordSequenceIndex.remove(identifier);
             eventRecordShaIndex.remove(identifier);
-            pendingEventRecordChanges.add(EventRecordChange.delete(identifier));
+            if (newlyTrackedIdentifiers.remove(identifier)) {
+                pendingEventRecordChanges.removeIf(change -> identifier.equals(change.getRecordIdentifier()));
+            } else {
+                pendingEventRecordChanges.add(EventRecordChange.delete(identifier));
+            }
         }
     }
 
@@ -184,7 +190,18 @@ public class HASessionContext {
     public List<EventRecordChange> drainEventRecordChanges() {
         List<EventRecordChange> changes = new ArrayList<>(pendingEventRecordChanges);
         pendingEventRecordChanges.clear();
+        newlyTrackedIdentifiers.clear();
         return changes;
+    }
+
+    /**
+     * Snapshot-based persistence paths do not consume row-level deltas.
+     * After a full snapshot has been persisted successfully, clear any pending
+     * transient delta bookkeeping so future removals emit real DELETEs.
+     */
+    public void markEventRecordSnapshotPersisted() {
+        pendingEventRecordChanges.clear();
+        newlyTrackedIdentifiers.clear();
     }
 
     public List<EventRecordEntry> snapshotEventRecordEntries() {

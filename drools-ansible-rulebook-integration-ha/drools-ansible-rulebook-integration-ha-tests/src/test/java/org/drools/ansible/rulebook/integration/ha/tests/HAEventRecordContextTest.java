@@ -84,4 +84,32 @@ class HAEventRecordContextTest {
         assertThat(manifest).isEqualTo(reversedManifest);
         assertThat(manifest).isNotEqualTo(changedPayloadManifest);
     }
+
+    @Test
+    void suppressesTransientInsertDeleteWithinSamePersistenceCycle() {
+        HASessionContext context = new HASessionContext();
+        EventRecord event = new EventRecord("{\"i\":1}", 1_000L, EventRecord.RecordType.EVENT);
+
+        context.addTrackedRecord("event-1", event, 10L);
+        context.removeTrackedRecordByFactHandle(10L);
+
+        assertThat(context.drainEventRecordChanges()).isEmpty();
+        assertThat(context.snapshotEventRecordEntries()).isEmpty();
+    }
+
+    @Test
+    void emitsDeleteAfterSnapshotPersistenceBoundary() {
+        HASessionContext context = new HASessionContext();
+        EventRecord event = new EventRecord("{\"i\":1}", 1_000L, EventRecord.RecordType.EVENT);
+
+        context.addTrackedRecord("event-1", event, 10L);
+        context.markEventRecordSnapshotPersisted();
+        context.removeTrackedRecordByFactHandle(10L);
+
+        List<EventRecordChange> deleteChanges = context.drainEventRecordChanges();
+
+        assertThat(deleteChanges).hasSize(1);
+        assertThat(deleteChanges.get(0).getType()).isEqualTo(EventRecordChange.Type.DELETE);
+        assertThat(deleteChanges.get(0).getRecordIdentifier()).isEqualTo("event-1");
+    }
 }
