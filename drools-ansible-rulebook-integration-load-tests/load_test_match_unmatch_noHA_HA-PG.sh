@@ -39,6 +39,7 @@ for size in "${SIZES[@]}"; do
         label="$file (HA-PG)"
         echo "Running $label..."
         jvm_run "$label" "$file" --ha-db-params "$PG_PARAMS"
+        pg_log_event_record_count "$label" | tee -a "$LOG"
       fi
       append_metric_line "$OUT" "$_run_stderr" "$file" "$label"
     done

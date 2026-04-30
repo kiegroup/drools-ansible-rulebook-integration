@@ -202,6 +202,12 @@ public class AstRulesEngine implements Closeable {
             haStats.incrementEventsProcessed();
             updateGlobalSessionStats(haStats);
             List<EventRecordChange> eventRecordChanges = rulesExecutor.getHaSessionContext().drainEventRecordChanges();
+            logger.debug("HA persist diagnostics: ruleset={}, trackedRecords={}, eventRecordEntries={}, eventRecordChanges={}, matchingEvents={}",
+                    rulesetName,
+                    rulesExecutor.getHaSessionContext().getTrackedRecords().size(),
+                    sessionState.getPartialEvents() != null ? sessionState.getPartialEvents().size() : 0,
+                    eventRecordChanges.size(),
+                    matchingEvents.size());
             haStateManager.persistSessionStateStatsEventRecordsAndMatchingEvents(sessionState, eventRecordChanges, matchingEvents);
         }
 
@@ -215,10 +221,15 @@ public class AstRulesEngine implements Closeable {
     private void updateInMemorySessionState(HARulesExecutor rulesExecutor, SessionState sessionState) {
         HASessionContext haSessionContext = rulesExecutor.getHaSessionContext();
         LinkedHashMap<String, EventRecord> recordsInMemory = haSessionContext.getTrackedRecords();
+        List<EventRecordEntry> eventRecordEntries = haSessionContext.snapshotEventRecordEntries();
 
         // Update partial events from memory
         sessionState.setPartialEvents(new ArrayList<>(recordsInMemory.values()));
-        sessionState.setEventRecordsManifestSHA(calculateEventRecordsManifestSHA(haSessionContext.snapshotEventRecordEntries()));
+        sessionState.setEventRecordsManifestSHA(calculateEventRecordsManifestSHA(eventRecordEntries));
+        logger.debug("HA state snapshot: ruleset={}, trackedRecords={}, eventRecordEntries={}",
+                sessionState.getRuleSetName(),
+                recordsInMemory.size(),
+                eventRecordEntries.size());
 
         // Update processed event IDs from memory
         sessionState.setProcessedEventIds(haSessionContext.getProcessedEventIds());
@@ -470,6 +481,7 @@ public class AstRulesEngine implements Closeable {
         Map<String, List<EventRecordEntry>> eventRecordEntriesByRuleSet = new HashMap<>();
         List<String> rulesetsToDelete = new ArrayList<>();
         List<MatchingEvent> allRecoveryMatches = new ArrayList<>();
+        List<HARulesExecutor> recoveredExecutorsWithSnapshotPersist = new ArrayList<>();
 
         for (RulesExecutor executor : rulesExecutorContainer.getAllExecutors()) {
             SessionRecoveryResult result = restoreSessionInMemory(executor);
@@ -483,12 +495,18 @@ public class AstRulesEngine implements Closeable {
                 if (result.eventRecordEntries() != null) {
                     eventRecordEntriesByRuleSet.put(result.sessionState().getRuleSetName(), result.eventRecordEntries());
                 }
+                if (result.recoveredExecutorWithSnapshotPersist() != null) {
+                    recoveredExecutorsWithSnapshotPersist.add(result.recoveredExecutorWithSnapshotPersist());
+                }
                 allRecoveryMatches.addAll(result.recoveryMatches());
             }
         }
 
         // Phase 3: ONE persist call — single transaction
         haStateManager.persistLeaderStartup(statesToPersist, eventRecordEntriesByRuleSet, rulesetsToDelete, allRecoveryMatches);
+        for (HARulesExecutor recoveredExecutor : recoveredExecutorsWithSnapshotPersist) {
+            recoveredExecutor.getHaSessionContext().markEventRecordSnapshotPersisted();
+        }
         for (MatchingEvent me : allRecoveryMatches) {
             logger.info("Persisted grace-period recovery match for rule '{}' as MatchingEvent {}", me.getRuleName(), me.getMeUuid());
         }
@@ -506,7 +524,8 @@ public class AstRulesEngine implements Closeable {
         SessionState sessionState,
         List<EventRecordEntry> eventRecordEntries,
         List<MatchingEvent> recoveryMatches,
-        String deleteRulesetName
+        String deleteRulesetName,
+        HARulesExecutor recoveredExecutorWithSnapshotPersist
     ) {}
 
     /**
@@ -540,7 +559,7 @@ public class AstRulesEngine implements Closeable {
             logger.info("Ruleset updated for {} - will delete old session state and persist fresh state as leader", rulesetName);
             SessionState freshState = haStateManager.getInMemorySessionState(rulesetName);
             // Return delete intent + optional fresh state to persist
-            return new SessionRecoveryResult(freshState, null, List.of(), rulesetName);
+            return new SessionRecoveryResult(freshState, null, List.of(), rulesetName, null);
         }
 
         RulesExecutor recoveredRulesExecutor = haStateManager.recoverSession(((HARulesExecutor) executor).getRulesetString(), persistedSessionState, executor.asKieSession().getSessionClock().getCurrentTime());
@@ -568,7 +587,8 @@ public class AstRulesEngine implements Closeable {
         logger.info("Recovered session {} from persisted SessionState", rulesetName);
 
         // Return persistence intents — no DB writes yet
-        return new SessionRecoveryResult(persistedSessionState, eventRecordEntries, recoveryMatches, null);
+        return new SessionRecoveryResult(persistedSessionState, eventRecordEntries, recoveryMatches, null,
+                (HARulesExecutor) recoveredRulesExecutor);
     }
 
     private RulesExecutor createHARulesExecutorWithSessionState(RulesSet rulesSet, String rulesetString) {
@@ -606,6 +626,7 @@ public class AstRulesEngine implements Closeable {
                     // Persist refreshed state + recovery matches in single transaction
                     List<EventRecordEntry> eventRecordEntries = ((HARulesExecutor) recoveredExecutor).getHaSessionContext().snapshotEventRecordEntries();
                     haStateManager.persistSessionStateEventRecordEntriesAndMatchingEvents(persistedSessionState, eventRecordEntries, recoveryMatches);
+                    ((HARulesExecutor) recoveredExecutor).getHaSessionContext().markEventRecordSnapshotPersisted();
                     for (MatchingEvent me : recoveryMatches) {
                         logger.info("Persisted grace-period recovery match for rule '{}' as MatchingEvent {}", me.getRuleName(), me.getMeUuid());
                     }
