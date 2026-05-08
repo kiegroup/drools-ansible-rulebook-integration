@@ -179,8 +179,7 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
 
         if (sslkey != null && !sslkey.isEmpty()) {
             SslKeyFormat format = detectSslKeyFormat(sslkey);
-            logger.info("SSL key format detected: {} for {}", format, redactPathForInfoLog(sslkey));
-            logger.debug("  --- sslkey path: {}", sslkey);
+            logger.info("SSL key format detected: {} for {}", format, sslkey);
 
             switch (format) {
                 case PKCS12:
@@ -468,7 +467,12 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
     }
 
     private void validateForPersist(SessionState sessionState) {
-        validateSessionStateForPersist(sessionState, isLeader);
+        if (!isLeader) {
+            throw new IllegalStateException("Cannot persist SessionState - not leader");
+        }
+        if (sessionState.getRuleSetName() == null) {
+            throw new IllegalArgumentException("SessionState.ruleSetName must be set");
+        }
     }
 
     private void prepareHAStatsForPersist() {
@@ -524,7 +528,11 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
 
             ps.setString(7, sessionState.getCurrentStateSHA());
 
-            ps.setTimestamp(8, new Timestamp(sessionState.getCreatedTime()));
+            if (sessionState.getCreatedTime() > 0) {
+                ps.setTimestamp(8, new Timestamp(sessionState.getCreatedTime()));
+            } else {
+                ps.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
+            }
 
             ps.setString(9, sessionState.getLeaderId());
 
@@ -1258,13 +1266,5 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
             logger.warn("Unable to parse action status from JSON", e);
         }
         return null;
-    }
-
-    private static String redactPathForInfoLog(String path) {
-        if (path == null || path.isEmpty()) {
-            return "unknown";
-        }
-        Path fileName = Path.of(path).getFileName();
-        return fileName != null ? fileName.toString() : path;
     }
 }

@@ -188,7 +188,6 @@ public abstract class AbstractRulesEvaluator implements RulesEvaluator {
                                                              if (fh.isDisconnected()) {
                                                                  if (fh instanceof DefaultEventHandle eventHandle) {
                                                                      eventHandle.unscheduleAllJobs((ReteEvaluator) rulesExecutorSession.asKieSession());
-                                                                     rulesExecutorSession.purgeCancelledJobsIfSupported(fh);
                                                                  }
                                                                  if (log.isDebugEnabled()) {
                                                                      String factAsString = fhs.size() == 1 ? JsonMapper.toJson(factMap) : JsonMapper.toJson(((PrototypeFactInstance) fh.getObject()).asMap());

@@ -346,7 +346,12 @@ public class H2StateManager extends AbstractHAStateManager {
     }
 
     private void validateForPersist(SessionState sessionState) {
-        validateSessionStateForPersist(sessionState, isLeader);
+        if (!isLeader) {
+            throw new IllegalStateException("Cannot persist SessionState - not leader");
+        }
+        if (sessionState.getRuleSetName() == null) {
+            throw new IllegalArgumentException("SessionState.ruleSetName must be set");
+        }
     }
 
     private void prepareHAStatsForPersist() {
@@ -397,7 +402,12 @@ public class H2StateManager extends AbstractHAStateManager {
             ps.setString(8, sessionState.getHaUuid());
             ps.setString(9, sessionState.getRuleSetName());
 
-            ps.setTimestamp(10, new Timestamp(sessionState.getCreatedTime()));
+            // Fallback created_time for first insert
+            if (sessionState.getCreatedTime() > 0) {
+                ps.setTimestamp(10, new Timestamp(sessionState.getCreatedTime()));
+            } else {
+                ps.setTimestamp(10, new Timestamp(System.currentTimeMillis()));
+            }
 
             ps.setString(11, sessionState.getLeaderId());
 
@@ -572,7 +582,8 @@ public class H2StateManager extends AbstractHAStateManager {
     @Override
     public void updateActionInfo(String matchingUuid, int index, String action) {
         if (!isLeader) {
-            throw new IllegalStateException("Cannot update action info - not leader");
+            logger.debug("Not leader - skipping action update");
+            return;
         }
 
         String sql = "UPDATE " + ACTION_INFO + " SET action_data = ? WHERE me_uuid = ? AND index = ?";
@@ -648,7 +659,8 @@ public class H2StateManager extends AbstractHAStateManager {
     @Override
     public void deleteActionInfo(String matchingUuid) {
         if (!isLeader) {
-            throw new IllegalStateException("Cannot delete action info - not leader");
+            logger.debug("Not leader - skipping action deletion");
+            return;
         }
 
         executeInTransaction("Failed to delete actions", conn -> {

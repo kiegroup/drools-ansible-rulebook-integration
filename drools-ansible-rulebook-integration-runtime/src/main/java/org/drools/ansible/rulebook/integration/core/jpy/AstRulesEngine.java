@@ -370,11 +370,8 @@ public class AstRulesEngine implements Closeable {
 
     private boolean rulebookHashMismatch(String rulesetName, String localHash, SessionState persistedState) {
         String persistedHash = persistedState.getRulebookHash();
-        if (persistedHash == null || persistedHash.isEmpty()) {
-            throw new IllegalStateException("Persisted SessionState is missing rulebookHash for " + rulesetName);
-        }
-        if (localHash == null || localHash.isEmpty()) {
-            throw new IllegalStateException("Local rulebookHash is missing for " + rulesetName);
+        if (persistedHash == null || localHash == null) {
+            return false;
         }
         if (!persistedHash.equals(localHash)) {
             if (overwriteIfRulebookChanges) {
@@ -522,7 +519,9 @@ public class AstRulesEngine implements Closeable {
         }
 
         // Verify integrity
-        haStateManager.verifySessionState(persistedSessionState);
+        if (!haStateManager.verifySessionState(persistedSessionState)) {
+            logger.error("Continuing with potentially corrupted SessionState for {}", rulesetName);
+        }
 
         // Check if ruleset has been updated
         String localHash = sha256(((HARulesExecutor) executor).getRulesetString());
