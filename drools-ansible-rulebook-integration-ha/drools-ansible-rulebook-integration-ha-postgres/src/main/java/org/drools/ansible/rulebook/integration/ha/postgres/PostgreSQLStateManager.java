@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariPool;
 import org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
 import org.drools.ansible.rulebook.integration.ha.model.HAStats;
@@ -253,7 +254,51 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
         hikariConfig.addDataSourceProperty("prepareThreshold", 3);
         hikariConfig.addDataSourceProperty("preparedStatementCacheQueries", 256);
 
-        return new HikariDataSource(hikariConfig);
+        try {
+            return new HikariDataSource(hikariConfig);
+        } catch (HikariPool.PoolInitializationException e) {
+            String errorMessage = formatConnectionFailureMessage(host, port, database, sslmode, e);
+            logger.error(errorMessage);
+            throw new RuntimeException(errorMessage, e);
+        }
+    }
+
+    static String formatConnectionFailureMessage(String host, String port, String database, String sslmode, Throwable failure) {
+        String rootCauseMessage = describeConnectionFailure(failure);
+        return String.format(
+                "Failed to connect to PostgreSQL for HA initialization (host=%s, port=%s, database=%s, sslmode=%s): %s. " +
+                        "Verify connection parameters and network reachability.",
+                host,
+                port,
+                database,
+                sslmode,
+                rootCauseMessage);
+    }
+
+    private static String describeConnectionFailure(Throwable failure) {
+        Throwable rootCause = rootCause(failure);
+        if (rootCause != null) {
+            String className = rootCause.getClass().getSimpleName();
+            String message = rootCause.getMessage();
+            if (message != null && !message.isBlank()) {
+                return className + ": " + message;
+            }
+            if (!className.isBlank()) {
+                return className;
+            }
+        }
+        if (failure != null && failure.getMessage() != null && !failure.getMessage().isBlank()) {
+            return failure.getMessage();
+        }
+        return "unknown connection error";
+    }
+
+    private static Throwable rootCause(Throwable failure) {
+        Throwable current = failure;
+        while (current != null && current.getCause() != null && current.getCause() != current) {
+            current = current.getCause();
+        }
+        return current;
     }
 
     // ── Leader management ───────────────────────────────────────────────
