@@ -20,15 +20,13 @@ class PostgreSQLConnectionFailureMessageTest {
                 new HikariPool.PoolInitializationException(driverFailure);
 
         String message = PostgreSQLStateManager.formatConnectionFailureMessage(
-                "54.164.199.254",
+                "198.51.100.10",
                 "5432",
                 "eda_ha",
                 "require",
                 poolFailure);
 
-        System.out.println(message);
-
-        assertThat(message).contains("host=54.164.199.254");
+        assertThat(message).contains("host=198.51.100.10");
         assertThat(message).contains("port=5432");
         assertThat(message).contains("database=eda_ha");
         assertThat(message).contains("sslmode=require");
