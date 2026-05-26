@@ -1,0 +1,31 @@
+[{
+  "RuleSet": {
+    "name": "migration partial match",
+    "hosts": ["all"],
+    "sources": [{
+      "EventSource": {
+        "name": "generic",
+        "source_name": "generic",
+        "source_args": {
+          "discard_matched_events": false,
+          "repeat_count": 10,
+          "payload": [{"a": 1}]
+        },
+        "source_filters": []
+      }
+    }],
+    "rules": [{
+      "Rule": {
+        "name": "r1",
+        "condition": {
+          "AllCondition": [
+            {"EqualsExpression": {"lhs": {"Event": "a"}, "rhs": {"Integer": 1}}},
+            {"EqualsExpression": {"lhs": {"Event": "b"}, "rhs": {"Integer": 1}}}
+          ]
+        },
+        "action": {"Action": {"action": "debug", "action_args": {}}},
+        "enabled": true
+      }
+    }]
+  }
+}]
