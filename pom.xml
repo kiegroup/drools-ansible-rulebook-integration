@@ -20,6 +20,7 @@
     <module>drools-ansible-rulebook-integration-main</module>
     <module>drools-ansible-rulebook-integration-ha</module>
     <module>drools-ansible-rulebook-integration-load-tests</module>
+    <module>drools-ansible-rulebook-integration-migration-tests</module>
   </modules>
   
   <name>Drools :: Ansible Rulebook Integration</name>

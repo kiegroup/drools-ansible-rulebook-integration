@@ -56,6 +56,21 @@ jobs:
           cd kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-ha
           mvn --batch-mode --update-snapshots verify -Dtest.db.type=postgres
 
+      - name: Run migration tests
+        run: |
+          cd kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-migration-tests
+          chmod +x migration_test.sh lib/common.sh
+          ./migration_test.sh
+
+      - name: Upload migration test logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: migration-test-results-${{ matrix.os }}-java${{ matrix.java-version }}
+          path: |
+            kiegroup_drools-ansible-rulebook-integration/drools-ansible-rulebook-integration-migration-tests/out_*.log
+          retention-days: 30
+
   memory-leak-test:
     name: Memory Leak Test
     runs-on: ubuntu-latest
