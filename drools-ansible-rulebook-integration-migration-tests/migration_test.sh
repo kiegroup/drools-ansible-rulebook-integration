@@ -15,14 +15,15 @@ source "$SCRIPT_DIR/lib/common.sh"
 LOG="$SCRIPT_DIR/out_migration.log"
 > "$LOG"
 
+THIN_JAR=$(find_thin_jar "$SCRIPT_DIR")
+
 run_migration_pair() {
   local from_version="$1"
   local to_version="$2"
-  local from_jar="$SCRIPT_DIR/versioned-jar/$from_version/migration-tests-jar-with-dependencies.jar"
-  local to_jar="$SCRIPT_DIR/versioned-jar/$to_version/migration-tests-jar-with-dependencies.jar"
-
-  require_jar "$from_jar"
-  require_jar "$to_jar"
+  local from_jar
+  from_jar=$(find_versioned_jar "$SCRIPT_DIR/versioned-jar/$from_version")
+  local to_jar
+  to_jar=$(find_versioned_jar "$SCRIPT_DIR/versioned-jar/$to_version")
 
   pg_truncate
   local ha_uuid
@@ -32,14 +33,14 @@ run_migration_pair() {
   local verify_result="OK"
   local overall="PASS"
 
-  if ! migration_run "persist ($from_version)" "$from_jar" \
+  if ! migration_run "persist ($from_version)" "$from_jar" "$THIN_JAR" \
       --persist --ha-db-params "$PG_PARAMS" --ha-uuid "$ha_uuid"; then
     persist_result="FAIL"
     overall="FAIL"
   fi
 
   if [ "$persist_result" = "OK" ]; then
-    if ! migration_run "verify ($to_version)" "$to_jar" \
+    if ! migration_run "verify ($to_version)" "$to_jar" "$THIN_JAR" \
         --verify --ha-db-params "$PG_PARAMS" --ha-uuid "$ha_uuid"; then
       verify_result="FAIL"
       overall="FAIL"
