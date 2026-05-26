@@ -402,6 +402,8 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
                         try {
                             List<EventRecord> partialEvents = OBJECT_MAPPER.readValue(partialEventsJson, EVENT_RECORD_LIST_TYPE);
                             sessionState.setPartialEvents(partialEvents);
+                            logger.info("Loaded {} event records from legacy partial_matching_events blob for '{}'; will migrate to drools_ansible_event_record table on next persist",
+                                        partialEvents.size(), ruleSetName);
                         } catch (Exception e) {
                             logger.error("Failed to deserialize partial events", e);
                         }
