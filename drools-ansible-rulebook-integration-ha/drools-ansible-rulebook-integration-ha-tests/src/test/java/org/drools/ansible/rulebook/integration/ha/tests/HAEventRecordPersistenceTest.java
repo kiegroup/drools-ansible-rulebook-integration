@@ -182,6 +182,43 @@ class HAEventRecordPersistenceTest extends HAStateManagerTestBase {
     }
 
     @Test
+    void sameEventStoredUnderDifferentRuleSetsWithoutPkConflict() {
+        String ruleSetA = "ruleset-alpha";
+        String ruleSetB = "ruleset-beta";
+        String sharedRecordId = "shared-event-1";
+        String sharedJson = "{\"temperature\":42}";
+
+        EventRecordEntry entryA = new EventRecordEntry(
+                sharedRecordId,
+                0L,
+                new EventRecord(sharedJson, 1_000L, EventRecord.RecordType.EVENT));
+        EventRecordEntry entryB = new EventRecordEntry(
+                sharedRecordId,
+                0L,
+                new EventRecord(sharedJson, 1_000L, EventRecord.RecordType.EVENT));
+
+        stateManager.persistEventRecordChanges(ruleSetA, List.of(EventRecordChange.upsert(entryA)));
+        stateManager.persistEventRecordChanges(ruleSetB, List.of(EventRecordChange.upsert(entryB)));
+
+        String totalRows = TestUtils.queryRawColumn(dbParams,
+                "SELECT COUNT(*) FROM drools_ansible_event_record WHERE ha_uuid = ?",
+                HA_UUID);
+        assertThat(totalRows).isEqualTo("2");
+
+        List<EventRecordEntry> loadedA = stateManager.getPersistedEventRecords(ruleSetA);
+        List<EventRecordEntry> loadedB = stateManager.getPersistedEventRecords(ruleSetB);
+
+        assertThat(loadedA).hasSize(1);
+        assertThat(loadedB).hasSize(1);
+
+        assertThat(loadedA.get(0).getRecordIdentifier()).isEqualTo(sharedRecordId);
+        assertThat(loadedB.get(0).getRecordIdentifier()).isEqualTo(sharedRecordId);
+
+        assertThat(loadedA.get(0).getRecord().getEventJson()).isEqualTo(sharedJson);
+        assertThat(loadedB.get(0).getRecord().getEventJson()).isEqualTo(sharedJson);
+    }
+
+    @Test
     void legacyBlobBackedStateMigratesToRowsOnNextRowAwarePersist() {
         EventRecord event1 = new EventRecord("{\"i\":1}", 1_000L, EventRecord.RecordType.EVENT);
         EventRecord event2 = new EventRecord("{\"j\":2}", 2_000L, EventRecord.RecordType.EVENT);
