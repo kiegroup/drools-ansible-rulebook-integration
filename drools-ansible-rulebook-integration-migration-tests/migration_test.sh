@@ -21,9 +21,9 @@ run_migration_pair() {
   local from_version="$1"
   local to_version="$2"
   local from_jar
-  from_jar=$(find_versioned_jar "$SCRIPT_DIR/versioned-jar/$from_version")
+  from_jar=$(find_versioned_jar "$SCRIPT_DIR/versioned-jar/$from_version") || return 1
   local to_jar
-  to_jar=$(find_versioned_jar "$SCRIPT_DIR/versioned-jar/$to_version")
+  to_jar=$(find_versioned_jar "$SCRIPT_DIR/versioned-jar/$to_version") || return 1
 
   pg_truncate
   local ha_uuid
