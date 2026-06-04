@@ -7,7 +7,7 @@
   
   <groupId>org.drools</groupId>
   <artifactId>drools-ansible-rulebook-integration</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -19,6 +19,8 @@
     <module>drools-ansible-rulebook-integration-tests</module>
     <module>drools-ansible-rulebook-integration-main</module>
     <module>drools-ansible-rulebook-integration-ha</module>
+    <module>drools-ansible-rulebook-integration-load-tests</module>
+    <module>drools-ansible-rulebook-integration-migration-tests</module>
   </modules>
   
   <name>Drools :: Ansible Rulebook Integration</name>
@@ -38,8 +40,8 @@
     <!-- HA dependencies -->
     <version.h2>2.3.232</version.h2>
     <version.hikaricp>5.0.1</version.hikaricp>
-    <version.bouncycastle>1.78.1</version.bouncycastle>
-    <version.postgresql>42.7.9</version.postgresql>
+    <version.bouncycastle>1.84</version.bouncycastle>
+    <version.postgresql>42.7.11</version.postgresql>
     <version.testcontainers>1.19.0</version.testcontainers>
   </properties>
 
@@ -117,6 +119,16 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk18on</artifactId>
+        <version>${version.bouncycastle}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk18on</artifactId>
+        <version>${version.bouncycastle}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcutil-jdk18on</artifactId>
         <version>${version.bouncycastle}</version>
       </dependency>
       <dependency>

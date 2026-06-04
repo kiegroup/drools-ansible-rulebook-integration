@@ -104,7 +104,8 @@ public final class PemToKeyStoreConverter {
         p12Path.toFile().deleteOnExit();
         tempDir.toFile().deleteOnExit();
 
-        logger.info("Created temporary PKCS#12 keystore at {}", p12Path);
+        logger.info("Created temporary PKCS#12 keystore at {}", redactPathForInfoLog(p12Path));
+        logger.debug("  --- keystore path: {}", p12Path);
         return p12Path;
     }
 
@@ -121,10 +122,32 @@ public final class PemToKeyStoreConverter {
             if (parentDir != null) {
                 Files.deleteIfExists(parentDir);
             }
-            logger.info("Cleaned up temporary PKCS#12 keystore at {}", p12Path);
+            logger.info("Cleaned up temporary PKCS#12 keystore at {}", redactPathForInfoLog(p12Path));
+            logger.debug("  --- keystore path: {}", p12Path);
         } catch (IOException e) {
-            logger.warn("Failed to clean up temporary PKCS#12 keystore at {}: {}", p12Path, e.getMessage());
+            logger.warn("Failed to clean up temporary PKCS#12 keystore at {}: {}",
+                    redactPathForInfoLog(p12Path), e.getMessage());
+            logger.debug("  --- keystore path: {}", p12Path, e);
         }
+    }
+
+    private static String redactPathForInfoLog(Path path) {
+        if (path == null) {
+            return "unknown";
+        }
+        Path fileName = path.getFileName();
+        if (fileName == null) {
+            return path.toString();
+        }
+        Path parent = path.getParent();
+        if (parent == null) {
+            return fileName.toString();
+        }
+        Path parentName = parent.getFileName();
+        if (parentName == null) {
+            return fileName.toString();
+        }
+        return ".../" + parentName + "/" + fileName;
     }
 
     private static PrivateKey readDerPrivateKey(String derKeyPath, char[] passphrase) throws Exception {

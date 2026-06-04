@@ -1,8 +1,8 @@
 package org.drools.ansible.rulebook.integration.ha.examples;
 
 import org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine;
-import org.drools.ansible.rulebook.integration.ha.tests.HAIntegrationTestBase;
-import org.drools.ansible.rulebook.integration.ha.tests.TestUtils;
+import org.drools.ansible.rulebook.integration.ha.tests.integration.HAIntegrationTestBase;
+import org.drools.ansible.rulebook.integration.ha.tests.support.TestUtils;
 
 /**
  * Node-1 in a file-backed H2 failover test.

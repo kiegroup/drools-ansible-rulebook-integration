@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.drools.ansible.rulebook.integration.api.RulesExecutor;
@@ -28,7 +29,7 @@ public abstract class AbstractHAStateManager implements HAStateManager {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractHAStateManager.class);
 
     protected static final String DROOLS_VERSION_KEY = "drools_version";
-    public static final String DROOLS_VERSION = "ha-poc-0.0.8";
+    public static final String DROOLS_VERSION = "2.0.1";
 
     private final Map<String, SessionState> sessionStateMap = new HashMap<>();
 
@@ -131,6 +132,34 @@ public abstract class AbstractHAStateManager implements HAStateManager {
 
     protected void ensureVersionInMetadata(Map<String, Object> metadata) {
         metadata.put(DROOLS_VERSION_KEY, DROOLS_VERSION);
+    }
+
+    protected final void validateSessionStateForPersist(SessionState sessionState, boolean isLeader) {
+        if (!isLeader) {
+            throw new IllegalStateException("Cannot persist SessionState - not leader");
+        }
+        if (sessionState == null) {
+            throw new IllegalArgumentException("SessionState must not be null");
+        }
+        if (sessionState.getRuleSetName() == null) {
+            throw new IllegalArgumentException("SessionState.ruleSetName must be set");
+        }
+        if (sessionState.getRulebookHash() == null || sessionState.getRulebookHash().isEmpty()) {
+            throw new IllegalArgumentException("SessionState.rulebookHash must be set");
+        }
+        if (sessionState.getCreatedTime() <= 0) {
+            throw new IllegalArgumentException("SessionState.createdTime must be > 0");
+        }
+
+        String currentStateSHA = sessionState.getCurrentStateSHA();
+        if (currentStateSHA == null || currentStateSHA.isEmpty()) {
+            throw new IllegalArgumentException("SessionState.currentStateSHA must be set");
+        }
+        String recalculatedSHA = HAUtils.calculateStateSHA(sessionState);
+        if (!currentStateSHA.equals(recalculatedSHA)) {
+            throw new IllegalArgumentException(
+                    "SessionState.currentStateSHA does not match calculated state SHA");
+        }
     }
 
     @Override
@@ -320,8 +349,11 @@ public abstract class AbstractHAStateManager implements HAStateManager {
 
             long expiredAgo = currentTimeAtNewNode - latestExpiry;
 
-            LOG.warn("all+timeout window expired during outage for rule '{}' (matched_patterns={}/{}, window={}ms, expired {}ms ago, matched_events={})",
-                    ruleName, matchedPatternIndices.size(), totalPatterns, windowMs, expiredAgo, matchedEvents);
+            LOG.warn("all+timeout window expired during outage for rule '{}' (matched_patterns={}/{}, window={}ms, expired {}ms ago, matched_event_count={}, matched_event_summaries={})",
+                    ruleName, matchedPatternIndices.size(), totalPatterns, windowMs, expiredAgo, matchedEvents.size(),
+                    summarizeEventObjects(matchedEvents));
+            LOG.debug("  --- payload details for rule '{}' (matched_events={})",
+                    ruleName, matchedEvents);
         }
     }
 
@@ -364,8 +396,11 @@ public abstract class AbstractHAStateManager implements HAStateManager {
                         matchRuleName, lateness, gracePeriodMs);
                 eligibleMatches.add(match);
             } else {
-                LOG.warn("Dropping expired recovery match for rule '{}' (expired {}ms ago, grace={}ms), events={}",
-                        matchRuleName, lateness, gracePeriodMs, match.getObjects());
+                List<Object> matchObjects = new ArrayList<>(match.getObjects());
+                LOG.warn("Dropping expired recovery match for rule '{}' (expired {}ms ago, grace={}ms, event_count={}, event_summaries={})",
+                        matchRuleName, lateness, gracePeriodMs, matchObjects.size(), summarizeEventObjects(matchObjects));
+                LOG.debug("  --- payload details for rule '{}' (events={})",
+                        matchRuleName, matchObjects);
             }
         }
 
@@ -407,6 +442,38 @@ public abstract class AbstractHAStateManager implements HAStateManager {
         return null;
     }
 
+    private static List<String> summarizeEventObjects(List<?> events) {
+        List<String> summaries = new ArrayList<>(events.size());
+        for (Object event : events) {
+            summaries.add(summarizeEventObject(event));
+        }
+        return summaries;
+    }
+
+    private static String summarizeEventObject(Object event) {
+        return "type=" + eventType(event) + ", uuid=" + eventUuid(event).orElse("unknown");
+    }
+
+    private static Optional<String> eventUuid(Object event) {
+        if (event instanceof PrototypeFactInstance prototypeFact) {
+            return HAUtils.getEventUuid(HAUtils.flattenPrototypeFact(prototypeFact));
+        }
+        if (event instanceof Map<?, ?> map) {
+            return HAUtils.getEventUuid((Map<String, Object>) map);
+        }
+        return Optional.empty();
+    }
+
+    private static String eventType(Object event) {
+        if (event instanceof PrototypeFactInstance prototypeFact) {
+            return prototypeFact.getPrototype().getName();
+        }
+        if (event instanceof Map<?, ?>) {
+            return "Map";
+        }
+        return event == null ? "null" : event.getClass().getSimpleName();
+    }
+
     @Override
     public void registerSessionState(String ruleSetName, SessionState sessionState) {
         sessionStateMap.put(ruleSetName, sessionState);
@@ -442,8 +509,9 @@ public abstract class AbstractHAStateManager implements HAStateManager {
 
         String storedSHA = sessionState.getCurrentStateSHA();
         if (storedSHA == null) {
-            LOG.warn("SessionState has no SHA - cannot verify integrity for {}", sessionState.getRuleSetName());
-            return true;  // Allow states without SHA (e.g., old persisted states before this feature)
+            LOG.error("SessionState integrity check FAILED! Missing SHA for {}", sessionState.getRuleSetName());
+            throw new IllegalStateException("SessionState integrity check failed: missing SHA for "
+                    + sessionState.getRuleSetName());
         }
 
         // Recalculate SHA from content
@@ -456,6 +524,7 @@ public abstract class AbstractHAStateManager implements HAStateManager {
                       storedSHA, recalculatedSHA);
             LOG.error("SessionState may be corrupted or tampered. RuleSetName: {}, HaUuid: {}",
                       sessionState.getRuleSetName(), sessionState.getHaUuid());
+            throw new IllegalStateException("SessionState integrity check failed for " + sessionState.getRuleSetName());
         } else {
             LOG.debug("SessionState integrity check passed for {}", sessionState.getRuleSetName());
         }

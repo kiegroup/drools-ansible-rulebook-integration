@@ -5,10 +5,16 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Comparator;
 
 import org.drools.ansible.rulebook.integration.api.rulesmodel.RulesModelUtil;
+import org.drools.ansible.rulebook.integration.api.io.JsonMapper;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecord;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordEntry;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
 import org.drools.model.prototype.impl.HashMapEventImpl;
 import org.kie.api.prototype.PrototypeFactInstance;
@@ -74,6 +80,45 @@ public class HAUtils {
 
         String hashableContent = sessionState.toHashableContent();
         return sha256(hashableContent);
+    }
+
+    public static String calculateEventRecordSHA(EventRecordEntry entry) {
+        if (entry == null || entry.getRecord() == null) {
+            return null;
+        }
+        return sha256(toEventRecordHashableContent(entry));
+    }
+
+    public static String calculateEventRecordsManifestSHA(List<EventRecordEntry> entries) {
+        if (entries == null) {
+            return sha256("[]");
+        }
+        List<Map<String, Object>> manifest = entries.stream()
+                .sorted(Comparator.comparingLong(EventRecordEntry::getRecordSequence)
+                                   .thenComparing(EventRecordEntry::getRecordIdentifier))
+                .map(entry -> {
+                    Map<String, Object> contentMap = new LinkedHashMap<>();
+                    contentMap.put("recordIdentifier", entry.getRecordIdentifier());
+                    contentMap.put("recordSequence", entry.getRecordSequence());
+                    contentMap.put("eventRecordSHA", entry.getEventRecordSHA() != null
+                            ? entry.getEventRecordSHA()
+                            : calculateEventRecordSHA(entry));
+                    return contentMap;
+                })
+                .toList();
+        return sha256(JsonMapper.toJson(manifest));
+    }
+
+    private static String toEventRecordHashableContent(EventRecordEntry entry) {
+        EventRecord record = entry.getRecord();
+        Map<String, Object> contentMap = new LinkedHashMap<>();
+        contentMap.put("recordIdentifier", entry.getRecordIdentifier());
+        contentMap.put("recordSequence", entry.getRecordSequence());
+        contentMap.put("insertedAt", record.getInsertedAt());
+        contentMap.put("recordType", record.getRecordType());
+        contentMap.put("eventJson", record.getEventJson());
+        contentMap.put("expirationDuration", record.getExpirationDuration());
+        return JsonMapper.toJson(contentMap);
     }
 
     /**

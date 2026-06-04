@@ -7,6 +7,8 @@ import org.drools.ansible.rulebook.integration.api.RulesExecutor;
 import org.drools.ansible.rulebook.integration.api.domain.RulesSet;
 import org.drools.ansible.rulebook.integration.ha.model.SessionState;
 import org.drools.ansible.rulebook.integration.ha.model.HAStats;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordChange;
+import org.drools.ansible.rulebook.integration.ha.model.EventRecordEntry;
 import org.drools.ansible.rulebook.integration.ha.model.MatchingEvent;
 
 /**
@@ -79,6 +81,22 @@ public interface HAStateManager {
      * @param sessionState The session state to persist
      */
     void persistSessionState(SessionState sessionState);
+
+    /**
+     * Persist row-level retained EventRecord changes for a ruleset.
+     *
+     * @param ruleSetName The ruleset name
+     * @param eventRecordChanges Row-level upsert/delete changes
+     */
+    void persistEventRecordChanges(String ruleSetName, List<EventRecordChange> eventRecordChanges);
+
+    /**
+     * Load retained EventRecord rows for a ruleset in recovery order.
+     *
+     * @param ruleSetName The ruleset name
+     * @return ordered retained EventRecord entries
+     */
+    List<EventRecordEntry> getPersistedEventRecords(String ruleSetName);
 
     /**
      * Recover drools session using session state from the database
@@ -197,6 +215,24 @@ public interface HAStateManager {
     void persistSessionStateStatsAndMatchingEvents(SessionState sessionState, List<MatchingEvent> matchingEvents);
 
     /**
+     * Persist session state, HA stats, row-level retained EventRecord changes,
+     * and matching events in a single transaction.
+     */
+    void persistSessionStateStatsEventRecordsAndMatchingEvents(SessionState sessionState,
+                                                               List<EventRecordChange> eventRecordChanges,
+                                                               List<MatchingEvent> matchingEvents);
+
+    /**
+     * Persist session state, HA stats, a full retained EventRecord row snapshot,
+     * and matching events in a single transaction.
+     * Intended for recovery/startup flows where the retained set may shrink
+     * without explicit delete deltas.
+     */
+    void persistSessionStateStatsEventRecordEntriesAndMatchingEvents(SessionState sessionState,
+                                                                     List<EventRecordEntry> eventRecordEntries,
+                                                                     List<MatchingEvent> matchingEvents);
+
+    /**
      * Delete the persisted SessionState record for a given ruleset.
      *
      * @param ruleSetName The name of the ruleset
@@ -213,6 +249,24 @@ public interface HAStateManager {
     void persistSessionStateAndMatchingEvents(SessionState sessionState, List<MatchingEvent> matchingEvents);
 
     /**
+     * Persist session state, row-level retained EventRecord changes, and matching
+     * events in a single transaction. Used after recovery.
+     */
+    void persistSessionStateEventRecordsAndMatchingEvents(SessionState sessionState,
+                                                          List<EventRecordChange> eventRecordChanges,
+                                                          List<MatchingEvent> matchingEvents);
+
+    /**
+     * Persist session state, a full retained EventRecord row snapshot, and
+     * matching events in a single transaction.
+     * Intended for recovery/startup flows where the retained set may shrink
+     * without explicit delete deltas.
+     */
+    void persistSessionStateEventRecordEntriesAndMatchingEvents(SessionState sessionState,
+                                                                List<EventRecordEntry> eventRecordEntries,
+                                                                List<MatchingEvent> matchingEvents);
+
+    /**
      * Persist all leader startup DB writes in a single transaction.
      * Called once at the end of enableLeader() after all in-memory recovery is complete.
      * <p>
@@ -227,6 +281,7 @@ public interface HAStateManager {
      * @param matchingEvents         recovery matching events to insert
      */
     void persistLeaderStartup(List<SessionState> sessionStatesToPersist,
+                              Map<String, List<EventRecordEntry>> eventRecordEntriesByRuleSet,
                               List<String> rulesetNamesToDelete,
                               List<MatchingEvent> matchingEvents);
 
