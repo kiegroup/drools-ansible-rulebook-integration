@@ -34,7 +34,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.drools>999-SNAPSHOT</version.drools>
+    <version.drools>111-SNAPSHOT</version.drools>
     <version.org.antlr4>4.13.0</version.org.antlr4><!-- antlr4 (and exec:java) maven plugins not managed in drools-build-parent -->
     <version.jmh>1.35</version.jmh>
 
@@ -57,9 +57,9 @@
       </snapshots>
     </repository>
     <repository>
-      <id>apache-public-repository-group</id>
-      <name>Apache Public Repository Group</name>
-      <url>https://repository.apache.org/content/groups/public/</url>
+      <id>github</id>
+      <name>GitHub Repository</name>
+      <url>https://maven.pkg.github.com/kubesmarts/logic-maven-repository</url>
       <layout>default</layout>
       <releases>
         <enabled>false</enabled>
@@ -82,9 +82,9 @@
       </snapshots>
     </pluginRepository>
     <pluginRepository>
-      <id>apache-public-repository-group</id>
-      <name>Apache Public Repository Group</name>
-      <url>https://repository.apache.org/content/groups/public/</url>
+      <id>github</id>
+      <name>GitHub Repository</name>
+      <url>https://maven.pkg.github.com/kubesmarts/logic-maven-repository</url>
       <releases>
         <enabled>false</enabled>
       </releases>
