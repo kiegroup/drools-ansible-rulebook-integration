@@ -25,7 +25,7 @@ import static org.drools.ansible.rulebook.integration.ha.tests.support.TestUtils
 class HAStateManagerDroolsVersionTest extends HAStateManagerTestBase {
 
     private static final String DROOLS_VERSION_KEY = "drools_version";
-    private static final String EXPECTED_VERSION = "2.0.0";
+    private static final String EXPECTED_VERSION = "2.0.1";
 
     private HAStateManager stateManager;
     private static final String HA_UUID = "test-ha-version";
