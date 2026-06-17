@@ -34,7 +34,7 @@ public class RulesExecutorSession {
 
     private static final Logger log = LoggerFactory.getLogger(RulesExecutorSession.class);
     private static final String PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD_PROPERTY = "drools.purge.cancelled.job.event.count.threshold";
-    private static final int DEFAULT_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD = 10;
+    private static final int DEFAULT_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD = 100;
     private static final int PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD;
 
     static {
@@ -135,7 +135,9 @@ public class RulesExecutorSession {
             if (timerService instanceof PseudoClockScheduler scheduler) {
                 Method purgeCancelledJob = PseudoClockScheduler.class.getDeclaredMethod("purgeCancelledJob");
                 purgeCancelledJob.setAccessible(true);
-                purgeCancelledJob.invoke(scheduler);
+                synchronized (scheduler) {
+                    purgeCancelledJob.invoke(scheduler);
+                }
             }
         } catch (ReflectiveOperationException e) {
             log.warn("Unable to purge cancelled pseudo-clock jobs after deleting event {}", fh.getId(), e);

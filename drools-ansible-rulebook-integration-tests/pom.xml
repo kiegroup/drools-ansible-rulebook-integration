@@ -38,6 +38,12 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-ansible-rulebook-integration-api</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-ansible-rulebook-integration-api</artifactId>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
