@@ -15,3 +15,7 @@ dependencies:
         default:
           - source: 2.0.x
             target: 9.106.x-prod
+      dependant:
+        default:
+          - source: 9.106.x-prod
+            target: 2.0.x
