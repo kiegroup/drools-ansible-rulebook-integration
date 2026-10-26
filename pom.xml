@@ -36,6 +36,7 @@
     <version.drools>9.106.0</version.drools> <!-- kiegroup/drools 9.106.x-prod branch-->
     <version.org.antlr4>4.13.0</version.org.antlr4><!-- antlr4 (and exec:java) maven plugins not managed in drools-build-parent -->
     <version.jmh>1.35</version.jmh>
+    <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson>
 
     <!-- HA dependencies -->
     <version.h2>2.3.232</version.h2>
@@ -100,6 +101,14 @@
         <groupId>org.antlr</groupId>
         <artifactId>antlr4-runtime</artifactId>
         <version>${version.org.antlr4}</version> <!-- this local dependency management takes precedence over the below import -->
+      </dependency>
+      <!-- overwrite drools specified jackson version for maintenance convenience. This project directly uses jackson -->
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
