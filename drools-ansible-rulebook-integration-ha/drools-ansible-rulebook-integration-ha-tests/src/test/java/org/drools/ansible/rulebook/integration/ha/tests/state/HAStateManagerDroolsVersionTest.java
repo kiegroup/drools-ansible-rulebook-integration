@@ -1,5 +1,6 @@
 package org.drools.ansible.rulebook.integration.ha.tests.state;
 
+import org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager;
 import org.drools.ansible.rulebook.integration.ha.tests.support.TestUtils;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import static org.drools.ansible.rulebook.integration.ha.tests.support.TestUtils
 class HAStateManagerDroolsVersionTest extends HAStateManagerTestBase {
 
     private static final String DROOLS_VERSION_KEY = "drools_version";
-    private static final String EXPECTED_VERSION = "2.0.1";
+    private static final String EXPECTED_VERSION = AbstractHAStateManager.DROOLS_VERSION;
 
     private HAStateManager stateManager;
     private static final String HA_UUID = "test-ha-version";
