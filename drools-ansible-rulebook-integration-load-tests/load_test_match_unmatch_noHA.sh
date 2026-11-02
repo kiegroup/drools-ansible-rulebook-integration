@@ -18,8 +18,8 @@ LOG="out_match_unmatch_noHA.log"
 
 require_jar
 
-for size in "${SIZES[@]}"; do
-  for scenario in "${SCENARIOS[@]}"; do
+for scenario in "${SCENARIOS[@]}"; do
+  for size in "${SIZES[@]}"; do
     if [ "$scenario" = "match" ]; then
       file="24kb_${size}_events.json"
     else

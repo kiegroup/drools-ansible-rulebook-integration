@@ -22,8 +22,8 @@ require_jar
 trap pg_cleanup EXIT
 pg_setup
 
-for size in "${SIZES[@]}"; do
-  for scenario in "${SCENARIOS[@]}"; do
+for scenario in "${SCENARIOS[@]}"; do
+  for size in "${SIZES[@]}"; do
     if [ "$scenario" = "match" ]; then
       file="24kb_${size}_events.json"
     else
