@@ -6,6 +6,8 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "main"
+    commit-message:
+      prefix: "[bot][main]"
     ignore:
       - dependency-name: "org.drools:*"
         update-types: ["version-update:semver-major"]
@@ -16,6 +18,8 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "main"
+    commit-message:
+      prefix: "[bot][main]"
 
   # 1.0.x branch
   - package-ecosystem: "maven"
@@ -23,6 +27,8 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "1.0.x"
+    commit-message:
+      prefix: "[bot][1.0.x]"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -31,6 +37,8 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "1.0.x"
+    commit-message:
+      prefix: "[bot][1.0.x]"
 
   # 2.0.x branch
   - package-ecosystem: "maven"
@@ -38,6 +46,8 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "2.0.x"
+    commit-message:
+      prefix: "[bot][2.0.x]"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -46,3 +56,5 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "2.0.x"
+    commit-message:
+      prefix: "[bot][2.0.x]"
