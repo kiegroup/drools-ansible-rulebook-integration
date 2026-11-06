@@ -77,24 +77,9 @@ cd drools-ansible-rulebook-integration-load-tests
 
 Record results from load_test_match_unmatch_noHA.sh and load_test_match_unmatch_HA-PG.sh in the "EDA Drools Memory consumption" spreadsheet.
 
-## 3. Update DROOLS_VERSION
+## 3. Create Tag and Push
 
-Before creating a tag, update `AbstractHAStateManager.DROOLS_VERSION` to match the release version. `DroolsVersionStalenessTest` will fail if this constant is behind the latest tag.
-
-```
-drools-ansible-rulebook-integration-ha/drools-ansible-rulebook-integration-ha-core/
-  src/main/java/org/drools/ansible/rulebook/integration/ha/api/AbstractHAStateManager.java
-```
-
-```java
-public static final String DROOLS_VERSION = "2.0.3";  // match the release version
-```
-
-Commit the change.
-
-## 4. Create Tag and Push
-
-Keep the pom.xml at SNAPSHOT and create the tag. After tagging, run tests again to verify DroolsVersionStalenessTest passes.
+Keep the pom.xml at SNAPSHOT and create the tag.
 
 ```bash
 git tag 2.0.3-beta1
@@ -125,11 +110,25 @@ git push upstream 2.0.3
 
 ### Version bump
 
-After ansible-rulebook is officially released, update to the next SNAPSHOT version.
+After ansible-rulebook is officially released, update to the next SNAPSHOT version and `DROOLS_VERSION`.
 
 ```bash
 # e.g. 2.0.3-SNAPSHOT -> 2.0.4-SNAPSHOT
 find . -name "pom.xml" -exec sed -i 's/2.0.3-SNAPSHOT/2.0.4-SNAPSHOT/g' {} +
+```
+
+Also update `AbstractHAStateManager.DROOLS_VERSION` to match the new version:
+
+```
+drools-ansible-rulebook-integration-ha/drools-ansible-rulebook-integration-ha-core/
+  src/main/java/org/drools/ansible/rulebook/integration/ha/api/AbstractHAStateManager.java
+```
+
+```java
+public static final String DROOLS_VERSION = "2.0.4";
+```
+
+```bash
 git add -A
 git commit -m "bump to 2.0.4-SNAPSHOT"
 git push origin 2.0.x
