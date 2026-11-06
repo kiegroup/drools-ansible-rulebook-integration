@@ -18,7 +18,7 @@ jobs:
 
 
       - name: Checkout Drools 9.106.0
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: kiegroup/drools
           path: drools
@@ -27,7 +27,7 @@ jobs:
       - name: Build Drools 9.106.0 with Maven
         run: cd drools && mvn --batch-mode --update-snapshots install -Dquickly && cd ..
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: 2.0.x
       - name: Build with Maven
