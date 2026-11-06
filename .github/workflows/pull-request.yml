@@ -78,7 +78,7 @@ jobs:
           ./load_test_all.sh
 
       - name: Upload load test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: memory-leak-test-results
