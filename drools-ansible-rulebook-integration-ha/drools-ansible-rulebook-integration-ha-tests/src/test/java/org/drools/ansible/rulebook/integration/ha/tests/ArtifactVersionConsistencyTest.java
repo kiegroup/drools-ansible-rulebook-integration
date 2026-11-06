@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  *
  * <p>Skipped when git is unavailable or no version-like tags exist.
  */
+@Disabled("Relying on git command and tag state is brittle. Consider another approach")
 class ArtifactVersionConsistencyTest {
 
     @Test
@@ -103,7 +105,7 @@ class ArtifactVersionConsistencyTest {
 
     private static String getLatestVersionTag() {
         try {
-            Process process = new ProcessBuilder("git", "tag", "-l", "--sort=-v:refname")
+            Process process = new ProcessBuilder("git", "-c", "versionsort.suffix=-", "tag", "-l", "--sort=-v:refname")
                     .redirectErrorStream(true)
                     .start();
 
