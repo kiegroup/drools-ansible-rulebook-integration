@@ -36,7 +36,7 @@
     <version.drools>9.106.0</version.drools> <!-- kiegroup/drools 9.106.x-prod branch-->
     <version.org.antlr4>4.13.2</version.org.antlr4><!-- antlr4 (and exec:java) maven plugins not managed in drools-build-parent -->
     <version.jmh>1.37</version.jmh>
-    <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson>
+    <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson> <!-- stay on 2.21.x (LTS); update only within 2.21.x -->
     <!-- override drools-build-parent so that these can be updated independently for security fixes -->
     <version.org.apache.commons.lang3>3.21.0</version.org.apache.commons.lang3>
     <version.org.apache.commons.text>1.15.0</version.org.apache.commons.text>
@@ -48,7 +48,7 @@
 
     <!-- HA dependencies -->
     <version.h2>2.5.252</version.h2>
-    <version.hikaricp>5.1.0</version.hikaricp>
+    <version.hikaricp>7.1.0</version.hikaricp>
     <version.bouncycastle>1.86</version.bouncycastle>
     <version.postgresql>42.7.14</version.postgresql>
     <version.testcontainers>1.21.4</version.testcontainers>
