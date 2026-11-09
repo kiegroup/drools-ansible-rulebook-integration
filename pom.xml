@@ -38,6 +38,10 @@
     <version.org.antlr4>4.13.2</version.org.antlr4><!-- antlr4 (and exec:java) maven plugins not managed in drools-build-parent -->
     <version.jmh>1.37</version.jmh>
     <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson>
+    <!-- override drools-build-parent so that these can be updated independently for security fixes -->
+    <version.org.apache.commons.lang3>3.21.0</version.org.apache.commons.lang3>
+    <version.org.apache.commons.text>1.15.0</version.org.apache.commons.text>
+    <version.org.yaml.snakeyaml>2.7</version.org.yaml.snakeyaml>
 
     <!-- HA dependencies -->
     <version.h2>2.5.252</version.h2>
@@ -110,6 +114,21 @@
         <version>${version.com.fasterxml.jackson}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${version.org.apache.commons.lang3}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${version.org.apache.commons.text}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>${version.org.yaml.snakeyaml}</version>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
