@@ -40,7 +40,7 @@
 
     <!-- HA dependencies -->
     <version.h2>2.5.252</version.h2>
-    <version.hikaricp>5.0.1</version.hikaricp>
+    <version.hikaricp>5.1.0</version.hikaricp>
     <version.bouncycastle>1.86</version.bouncycastle>
     <version.postgresql>42.7.13</version.postgresql>
     <version.testcontainers>1.21.4</version.testcontainers>
