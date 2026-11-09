@@ -43,7 +43,7 @@
     <version.hikaricp>5.0.1</version.hikaricp>
     <version.bouncycastle>1.86</version.bouncycastle>
     <version.postgresql>42.7.13</version.postgresql>
-    <version.testcontainers>1.19.0</version.testcontainers>
+    <version.testcontainers>1.21.4</version.testcontainers>
   </properties>
 
   <repositories>
