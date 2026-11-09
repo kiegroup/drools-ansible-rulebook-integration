@@ -32,12 +32,19 @@ Review and update the following as needed before release:
 | Dependency | Property Name |
 |-----------|--------------|
 | Drools | `version.drools` |
-| Jackson | `version.com.fasterxml.jackson` |
+| Jackson (stay on 2.21.x LTS) | `version.com.fasterxml.jackson` |
+| Apache Commons Lang | `version.org.apache.commons.lang3` |
+| Apache Commons Text | `version.org.apache.commons.text` |
+| Apache Commons Codec | `version.commons-codec` |
+| SnakeYAML | `version.org.yaml.snakeyaml` |
+| SLF4J | `version.org.slf4j` |
 | BouncyCastle | `version.bouncycastle` |
 | PostgreSQL JDBC | `version.postgresql` |
 | H2 | `version.h2` |
 | HikariCP | `version.hikaricp` |
-| ANTLR | `version.org.antlr4` |
+| ANTLR 4 | `version.org.antlr4` |
+| ANTLR 3 runtime | `version.org.antlr` |
+| Eclipse JDT Core Compiler (ECJ) | `version.org.eclipse.jdt` |
 | TestContainers | `version.testcontainers` |
 
 ### Update Drools Branch Mapping (if needed)
