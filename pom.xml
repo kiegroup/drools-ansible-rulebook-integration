@@ -39,7 +39,7 @@
     <version.jmh>1.37</version.jmh>
 
     <!-- HA dependencies -->
-    <version.h2>2.3.232</version.h2>
+    <version.h2>2.5.252</version.h2>
     <version.hikaricp>7.1.0</version.hikaricp>
     <version.bouncycastle>1.86</version.bouncycastle>
     <version.postgresql>42.7.14</version.postgresql>
