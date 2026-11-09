@@ -292,7 +292,7 @@
           <plugin>
             <groupId>org.openrewrite.maven</groupId>
             <artifactId>rewrite-maven-plugin</artifactId>
-            <version>4.42.0</version>
+            <version>6.46.1</version>
             <configuration>
               <activeRecipes>
                 <recipe>org.openrewrite.java.testing.junit5.JUnit4to5Migration</recipe>
