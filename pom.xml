@@ -36,15 +36,19 @@
     <version.drools>9.106.0</version.drools> <!-- kiegroup/drools 9.106.x-prod branch-->
     <version.org.antlr4>4.13.2</version.org.antlr4><!-- antlr4 (and exec:java) maven plugins not managed in drools-build-parent -->
     <version.jmh>1.37</version.jmh>
-    <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson>
+    <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson> <!-- stay on 2.21.x (LTS); update only within 2.21.x -->
     <!-- override drools-build-parent so that these can be updated independently for security fixes -->
     <version.org.apache.commons.lang3>3.21.0</version.org.apache.commons.lang3>
     <version.org.apache.commons.text>1.15.0</version.org.apache.commons.text>
     <version.org.yaml.snakeyaml>2.7</version.org.yaml.snakeyaml>
+    <version.org.slf4j>2.0.20</version.org.slf4j>
+    <version.commons-codec>1.23.0</version.commons-codec>
+    <version.org.antlr>3.5.3</version.org.antlr>
+    <version.org.eclipse.jdt>3.46.100</version.org.eclipse.jdt>
 
     <!-- HA dependencies -->
     <version.h2>2.5.252</version.h2>
-    <version.hikaricp>5.1.0</version.hikaricp>
+    <version.hikaricp>7.1.0</version.hikaricp>
     <version.bouncycastle>1.86</version.bouncycastle>
     <version.postgresql>42.7.14</version.postgresql>
     <version.testcontainers>1.21.4</version.testcontainers>
@@ -128,6 +132,28 @@
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
         <version>${version.org.yaml.snakeyaml}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-bom</artifactId>
+        <version>${version.org.slf4j}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${version.commons-codec}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr-runtime</artifactId>
+        <version>${version.org.antlr}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jdt</groupId>
+        <artifactId>ecj</artifactId>
+        <version>${version.org.eclipse.jdt}</version>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
