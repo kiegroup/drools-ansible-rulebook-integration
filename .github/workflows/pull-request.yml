@@ -63,7 +63,7 @@ jobs:
           ./migration_test.sh
 
       - name: Upload migration test logs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: migration-test-results-${{ matrix.os }}-java${{ matrix.java-version }}
@@ -123,7 +123,7 @@ jobs:
           ./load_test_failover_HA-PG.sh
 
       - name: Upload load test results
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: memory-leak-test-results-java${{ matrix.java-version }}
