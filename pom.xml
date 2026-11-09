@@ -40,9 +40,9 @@
 
     <!-- HA dependencies -->
     <version.h2>2.5.252</version.h2>
-    <version.hikaricp>5.0.1</version.hikaricp>
+    <version.hikaricp>7.1.0</version.hikaricp>
     <version.bouncycastle>1.86</version.bouncycastle>
-    <version.postgresql>42.7.13</version.postgresql>
+    <version.postgresql>42.7.14</version.postgresql>
     <version.testcontainers>1.19.0</version.testcontainers>
   </properties>
 
@@ -183,19 +183,19 @@
       <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.11.0</version>
+          <version>3.16.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.0</version>
           <executions>
               <execution>
                   <id>attach-sources</id>
@@ -207,7 +207,7 @@
         </plugin>
         <plugin>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.5.0</version>
+            <version>3.12.0</version>
             <executions>
                 <execution>
                     <id>attach-javadocs</id>
@@ -224,11 +224,11 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.1.2</version>
+          <version>3.6.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.5.1</version>
           <executions>
             <execution>
               <goals>
@@ -239,7 +239,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.antlr</groupId>
@@ -249,16 +249,16 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.6.4</version>
         </plugin>
         <plugin>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>3.6.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.8.0</version>
         </plugin>
       </plugins>
     </pluginManagement> 
