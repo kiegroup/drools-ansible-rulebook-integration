@@ -40,4 +40,5 @@ jobs:
         run: |
           gh release delete 2.0.x-latest --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes || true
           gh release create 2.0.x-latest staging/*.jar --repo "$GITHUB_REPOSITORY" \
-            --prerelease --title "2.0.x Development Build" --target "$GITHUB_SHA" --generate-notes
+            --prerelease --title "2.0.x Development Build" --target "$GITHUB_SHA" \
+            --notes "Development build of $GITHUB_REF_NAME at $GITHUB_SHA"
