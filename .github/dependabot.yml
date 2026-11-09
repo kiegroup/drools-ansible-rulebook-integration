@@ -19,9 +19,12 @@ updates:
         patterns:
           - "org.apache.maven.plugins:*"
           - "org.codehaus.mojo:*"
-          - "org.openrewrite*"
           - "io.github.git-commit-id:*"
         update-types: ["minor", "patch"]
+      # rewrite-maven-plugin and its recipes must be upgraded together (including major)
+      openrewrite:
+        patterns:
+          - "org.openrewrite*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
