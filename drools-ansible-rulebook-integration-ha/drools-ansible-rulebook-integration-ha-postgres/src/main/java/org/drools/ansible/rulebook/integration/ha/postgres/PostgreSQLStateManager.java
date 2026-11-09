@@ -257,8 +257,8 @@ public class PostgreSQLStateManager extends AbstractHAStateManager {
         logger.debug("PostgreSQL HAStateManager connecting to database with parameters: jdbcUrl={}, username={}, sslmode={}, applicationName={}",
             maskSensitiveParams(jdbcUrl), username, sslmode, applicationName);
 
-        hikariConfig.addDataSourceProperty("prepareThreshold", 3);
-        hikariConfig.addDataSourceProperty("preparedStatementCacheQueries", 256);
+        hikariConfig.addDataSourceProperty("prepareThreshold", "3");
+        hikariConfig.addDataSourceProperty("preparedStatementCacheQueries", "256");
 
         try {
             return new HikariDataSource(hikariConfig);
