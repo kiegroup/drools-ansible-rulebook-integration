@@ -85,6 +85,15 @@ cd drools-ansible-rulebook-integration-load-tests
 
 Record results from load_test_match_unmatch_noHA.sh and load_test_match_unmatch_HA-PG.sh in the "EDA Drools Memory consumption" spreadsheet.
 
+Save all load test outputs for the release record:
+
+```bash
+mkdir -p drools-ansible-rulebook-integration-load-tests/report/<version>
+cp drools-ansible-rulebook-integration-load-tests/out_*.log \
+   drools-ansible-rulebook-integration-load-tests/result_*.txt \
+   drools-ansible-rulebook-integration-load-tests/report/<version>/
+```
+
 ## 3. Create Tag and Push
 
 Keep the pom.xml at SNAPSHOT and create the tag.
