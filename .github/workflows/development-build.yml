@@ -1,4 +1,4 @@
-name: Java CI
+name: main Development Build
 
 on:
   push:
