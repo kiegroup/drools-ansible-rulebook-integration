@@ -47,6 +47,18 @@ These run one size in both noHA and HA-PG modes. Require Docker.
 - `result_*.txt` — tab-formatted metric summaries
 - `out_*.log` — full JVM stdout/stderr logs
 
+## Build Tips
+
+The fat JAR (`*-jar-with-dependencies.jar`) is built by `maven-assembly-plugin` and bundles all transitive dependencies — including the HA modules (`ha-core`, `ha-postgres`). These come via the `drools-ansible-rulebook-integration-runtime` dependency, which pulls in the HA PostgreSQL implementation through its own POM.
+
+If you modify HA code (e.g. `PostgreSQLStateManager`), you must rebuild with `-am` to pick up the change:
+
+```bash
+mvn -pl drools-ansible-rulebook-integration-load-tests -am clean package -DskipTests
+```
+
+Without `-am`, the assembly uses the previously installed artifacts from `~/.m2` and your changes won't be included. Without `clean`, the assembly plugin may reuse the old JAR.
+
 ## Structure
 
 ```

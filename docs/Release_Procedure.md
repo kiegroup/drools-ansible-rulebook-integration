@@ -27,7 +27,7 @@ Release procedure for drools-ansible-rulebook-integration.
 
 ### Dependency Updates
 
-Review and update the following as needed before release:
+Confirm that all dependencies are at their latest versions before release. If a dependency is intentionally kept at an older version, document the reason as a comment in the pom.xml next to the property. Review and update the following:
 
 | Dependency | Property Name |
 |-----------|--------------|
@@ -67,10 +67,11 @@ cd drools-ansible-rulebook-integration-ha
 mvn verify -Dtest.db.type=postgres
 
 # Memory leak tests
-cd drools-ansible-rulebook-integration-tests
+cd drools-ansible-rulebook-integration-api
 mvn -Pmemoryleak-tests test
 
 # Migration tests
+# Before running, verify that versioned-jar/ contains JARs for all existing released versions
 cd drools-ansible-rulebook-integration-migration-tests
 ./migration_test.sh
 
