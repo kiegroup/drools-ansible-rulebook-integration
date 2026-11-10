@@ -113,21 +113,40 @@ Use the `drools-ansible-rulebook-integration-runtime` HA uber-jar for drools_jpy
 
 Pass the tag to the PNC build. PNC performs the release build from the tagged source. This becomes the official EDA release.
 
+Post-release tasks other than the non-beta tag can proceed in parallel with the PNC build.
+
+### If PNC rejects the build
+
+If PNC returns the build for fixes, create a patch branch from the beta tag and continue there:
+
+```bash
+git checkout -b 2.0.3.x 2.0.3-beta1
+# apply fixes, then tag 2.0.3-beta2 and resubmit to PNC
+```
+
+Alternatively, skip the version entirely and advance to the next patch (e.g. 2.0.4) on the `2.0.x` branch.
+
 ## 6. Post-release
 
 ### Create non-beta tag
 
-Create a final release tag on the same commit as the beta tag used for the release (e.g. 2.0.3-beta1).
+Create a final release tag on the same commit as the beta tag used for the release (e.g. 2.0.3-beta1). This must wait until the PNC build succeeds.
 
 ```bash
-git tag 2.0.3
+git tag 2.0.3 2.0.3-beta1
 git push origin 2.0.3
 git push upstream 2.0.3
 ```
 
 ### Version bump
 
-After ansible-rulebook is officially released, update to the next SNAPSHOT version and `DROOLS_VERSION`.
+After the beta tag is pushed, update to the next SNAPSHOT version and `DROOLS_VERSION`. This can proceed without waiting for PNC.
+
+Create a branch for the post-release changes and submit as a PR:
+
+```bash
+git checkout -b bump-to-2.0.4 2.0.x
+```
 
 ```bash
 # e.g. 2.0.3-SNAPSHOT -> 2.0.4-SNAPSHOT
