@@ -1,3 +1,3 @@
-# Generated per-run load-test output
-result_*.txt
-out_*.log
+# Generated per-run load-test output (working directory only)
+/result_*.txt
+/out_*.log

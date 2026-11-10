@@ -1,0 +1,9 @@
+=== Temporal once_within Load Test (HA-PG) ===
+File                               Events  Memory(bytes)  Time(ms)  Per-Event(KB)   MATCHING  BlobSize(B)
+---------------------------------------------------------------------------------------------------------
+once_within_100_events.json (HA-PG), 11677712, 1062
+once_within_100_events.json           100       11677712      1062          114.0         10            0
+once_within_500_events.json (HA-PG), 11624776, 6606
+once_within_500_events.json           500       11624776      6606           22.7         10            0
+once_within_1k_events.json (HA-PG), 11513960, 11578
+once_within_1k_events.json           1000       11513960     11578           11.2         10            0

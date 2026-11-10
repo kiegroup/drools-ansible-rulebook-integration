@@ -1,0 +1,19 @@
+=== Failover Recovery Load Test (HA-PG) ===
+File                               Phase           Memory(bytes)  Time(ms)
+---------------------------------------------------------------------------
+retention_100_events.json          Load(PG)             13336016      1728
+retention_100_events.json (HA-PG) (failover-recovery), 13587816, 198
+retention_100_events.json          Recovery(PG)         13587816       198
+retention_500_events.json          Load(PG)             34792664      6150
+retention_500_events.json (HA-PG) (failover-recovery), 34497824, 448
+retention_500_events.json          Recovery(PG)         34497824       448
+retention_1k_events.json           Load(PG)             60730560     13779
+retention_1k_events.json (HA-PG) (failover-recovery), 60921032, 728
+retention_1k_events.json           Recovery(PG)         60921032       728
+
+=== Recovery Ratio ===
+Size     Load(ms)   Recovery(ms)    Ratio
+------------------------------------------
+100          1728            198    11.5%
+500          6150            448     7.3%
+1k          13779            728     5.3%

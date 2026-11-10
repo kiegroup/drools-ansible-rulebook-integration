@@ -1,0 +1,41 @@
+=== Event Retention Memory Analysis ===
+Event payload: ~24KB JSON each (2-condition join, all retained as partial matches)
+
+Mode       Events    Memory(bytes)  Time(ms)  Per-Event(KB)   MATCHING    BlobSize(B)
+----------------------------------------------------------------------------------------
+retention_100_events.json, 9472832, 39
+noHA       100             9472832        39           92.5          -              -
+retention_500_events.json, 20557752, 104
+noHA       500            20557752       104           40.2          -              -
+retention_1k_events.json, 34516848, 156
+noHA       1k             34516848       156           33.7          -              -
+
+retention_100_events.json (HA-PG), 13462808, 1234
+HA-PG      100            13462808      1234          131.5          0              0
+retention_500_events.json (HA-PG), 34901160, 6105
+HA-PG      500            34901160      6105           68.2          0              0
+retention_1k_events.json (HA-PG), 60814784, 13682
+HA-PG      1k             60814784     13682           59.4          0              0
+
+=== Incremental Per-Event Cost (delta between sizes) ===
+
+Mode       Range          Delta(bytes)  Per-Event(KB)
+------------------------------------------------------
+noHA       100-500            11084920           27.1
+noHA       500-1k             13959096           27.3
+HA-PG      100-500            21438352           52.3
+HA-PG      500-1k             25913624           50.6
+
+--- HA overhead (HA-PG minus noHA) ---
+Range          Delta(bytes)  Per-Event(KB)
+------------------------------------------
+100                 3989976           39.0
+500                14343408           28.0
+1k                 26297936           25.7
+
+--- Notes ---
+Incremental per-event cost eliminates JVM baseline overhead.
+  noHA delta   = M (Java Map in Drools working memory)
+  HA-PG delta  = M + J (Map + JSON string in EventRecord)
+  HA overhead  = J (the EventRecord JSON copy)
+
