@@ -44,6 +44,15 @@ require_python3() {
 pg_setup() {
   require_docker
   require_python3
+  local stale_containers
+  stale_containers=$(docker ps -a -q --filter ancestor=postgres:15-alpine 2>/dev/null)
+  if [ -n "$stale_containers" ]; then
+    local count
+    count=$(echo "$stale_containers" | wc -l)
+    echo "WARNING: Found $count existing postgres:15-alpine container(s). These can degrade performance."
+    echo "Removing stale containers..."
+    echo "$stale_containers" | xargs docker rm -f >/dev/null 2>&1 || true
+  fi
   local pg_port
   pg_port=$(python3 -c 'import socket; s=socket.socket(); s.bind(("",0)); print(s.getsockname()[1]); s.close()')
   echo "Starting PostgreSQL container on port $pg_port..."
