@@ -7,7 +7,7 @@
   
   <groupId>org.drools</groupId>
   <artifactId>drools-ansible-rulebook-integration</artifactId>
-  <version>1.0.12-SNAPSHOT</version>
+  <version>1.0.13-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
