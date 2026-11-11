@@ -12,17 +12,21 @@ Release procedure for drools-ansible-rulebook-integration 1.0.x branch.
 ## Branch Mapping
 
 | Branch | Version Example | Corresponding Drools Branch |
-|--------|----------------|----------------------------|
-| `1.0.x` | 1.0.13-SNAPSHOT | `9.103.x-prod-ansible` |
+|--------|----------------|-----------------------------|
+| `1.0.x` | 1.0.13-SNAPSHOT | `9.106.x-prod`      |
 
 ## Prerequisites
 
 - JDK 17 or later
 - Maven 3.9.x
 - Push access to the GitHub repository
-- The corresponding Drools branch (`9.103.x-prod-ansible`) must be in a buildable state
+- The corresponding Drools branch (`9.106.x-prod`) must be in a buildable state
 
 ## 1. Pre-release Preparation
+
+### Drools Branch Update
+
+Consider upgrading to the latest `9.X.x-prod` branch (e.g. `9.106.x-prod`) even if the current branch mapping points to an older one. Compare the branches to confirm that no ansible-specific fixes would be lost and that additional bug/memory fixes would be gained. If upgrading, update the Branch Mapping table above and follow "Update Drools Branch Mapping" below.
 
 ### Dependency Updates
 

@@ -30,7 +30,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.drools>9.103.1</version.drools> <!-- kiegroup/drools 9.103.x-prod-ansible branch-->
+    <version.drools>9.106.0</version.drools> <!-- kiegroup/drools 9.106.x-prod branch -->
     <version.org.antlr4>4.13.2</version.org.antlr4><!-- antlr4 (and exec:java) maven plugins not managed in drools-build-parent -->
     <version.jmh>1.37</version.jmh>
     <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson> <!-- stay on 2.21.x (LTS); update only within 2.21.x -->
