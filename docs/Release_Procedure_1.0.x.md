@@ -38,8 +38,12 @@ Confirm that all dependencies are at their latest versions before release. If a 
 | Jackson (stay on 2.21.x LTS) | `version.com.fasterxml.jackson` |
 | Apache Commons Lang | `version.org.apache.commons.lang3` |
 | Apache Commons Text | `version.org.apache.commons.text` |
+| Apache Commons Codec | `version.commons-codec` |
 | SnakeYAML | `version.org.yaml.snakeyaml` |
+| SLF4J | `version.org.slf4j` |
 | ANTLR 4 | `version.org.antlr4` |
+| ANTLR 3 runtime | `version.org.antlr` |
+| Eclipse JDT Core Compiler (ECJ) | `version.org.eclipse.jdt` |
 | JMH | `version.jmh` |
 
 ### Update Drools Branch Mapping (if needed)
@@ -61,6 +65,14 @@ cd drools-ansible-rulebook-integration-main
 ```
 
 Record results in the "EDA Drools Memory consumption" spreadsheet.
+
+Save load test output for the release record:
+
+```bash
+mkdir -p drools-ansible-rulebook-integration-main/report/<version>
+cp drools-ansible-rulebook-integration-main/result_all.txt \
+   drools-ansible-rulebook-integration-main/report/<version>/
+```
 
 ## 3. Create Tag and Push
 
