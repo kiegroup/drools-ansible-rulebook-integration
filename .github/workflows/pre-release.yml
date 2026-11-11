@@ -17,14 +17,14 @@ jobs:
           distribution: 'temurin'
 
 
-      - name: Checkout Drools 9.103.1
+      - name: Checkout Drools 9.106.0
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: kiegroup/drools
           path: drools
-          ref: 9.103.x-prod-ansible
+          ref: 9.106.x-prod
 
-      - name: Build Drools 9.103.1 with Maven
+      - name: Build Drools 9.106.0 with Maven
         run: cd drools && mvn --batch-mode --update-snapshots install -Dquickly && cd ..
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
