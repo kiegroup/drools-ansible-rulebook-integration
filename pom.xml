@@ -35,7 +35,7 @@
     <version.jmh>1.37</version.jmh>
     <version.com.fasterxml.jackson>2.21.8</version.com.fasterxml.jackson> <!-- stay on 2.21.x (LTS); update only within 2.21.x -->
     <!-- override drools-build-parent so that these can be updated independently for security fixes -->
-    <version.org.apache.commons.lang3>3.21.0</version.org.apache.commons.lang3>
+    <version.org.apache.commons.lang3>3.22.0</version.org.apache.commons.lang3>
     <version.org.apache.commons.text>1.15.0</version.org.apache.commons.text>
     <version.org.yaml.snakeyaml>2.7</version.org.yaml.snakeyaml>
     <version.org.slf4j>2.0.20</version.org.slf4j>
