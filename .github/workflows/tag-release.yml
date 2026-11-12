@@ -55,5 +55,5 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           gh release create "$RELEASE_TAG" staging/*.jar --repo "$GITHUB_REPOSITORY" \
-            --title "Release $RELEASE_TAG" --target "$RELEASE_TAG" \
+            --verify-tag --title "Release $RELEASE_TAG" \
             --notes "Release $RELEASE_TAG"
