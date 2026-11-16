@@ -77,7 +77,8 @@ cd drools-ansible-rulebook-integration-migration-tests
 
 # Load tests
 cd drools-ansible-rulebook-integration-load-tests
-./load_test_match_unmatch_noHA_HA-PG.sh
+./load_test_match_unmatch_HA-PG.sh
+./load_test_match_unmatch_noHA.sh
 ./load_test_retention_noHA_HA-PG.sh
 ./load_test_temporal_HA-PG.sh
 ./load_test_failover_HA-PG.sh
@@ -95,6 +96,8 @@ cp drools-ansible-rulebook-integration-load-tests/out_*.log \
 ```
 
 ## 3. Create Tag and Push
+
+Commit any pending changes (e.g. migration test JARs, load test reports) before creating the tag.
 
 Keep the pom.xml at SNAPSHOT and create the tag.
 
@@ -189,15 +192,21 @@ All 15 pom.xml files are affected:
 
 ### Update migration test JARs
 
-After the official release, update the JARs used for migration tests.
+As part of the version bump, add the previous version's HA uber-jar to `versioned-jar/` so migration tests cover it from the next release onward.
 
-Place the new version's uber-jar in:
+Check out the beta tag into a separate directory, build it, and copy the HA uber-jar:
 
+```bash
+git clone --branch 2.0.4-beta1 --depth 1 <repo> /path/to/drools-ansible-rulebook-integration-2.0.4-beta1
+cd /path/to/drools-ansible-rulebook-integration-2.0.4-beta1
+mvn clean install -DskipTests
 ```
-drools-ansible-rulebook-integration-migration-tests/lib/
-```
 
-and update the test scripts accordingly.
+```bash
+mkdir -p drools-ansible-rulebook-integration-migration-tests/versioned-jar/<previous-version>/
+cp /path/to/drools-ansible-rulebook-integration-2.0.4-beta1/drools-ansible-rulebook-integration-runtime/target/drools-ansible-rulebook-integration-runtime-*-HA.jar \
+   drools-ansible-rulebook-integration-migration-tests/versioned-jar/<previous-version>/
+```
 
 ### Forward port to main branch
 
