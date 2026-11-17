@@ -1,0 +1,222 @@
+=== 24kb_1k_events.json (HA-PG) ===
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Initializing HA mode with UUID: loadtest-ha-1794902894405 and workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory - Created PostgreSQLStateManager instance (db_type=postgres)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Initializing PostgreSQL HA mode with UUID: loadtest-ha-1794902894405, workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Connecting to PostgreSQL at localhost:37463/loadtest
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@dc7df28
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLSchema - PostgreSQL schema created successfully
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA initialization completed successfully
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager - HA encryption disabled (no encryption_key_primary in config)
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA deduplication buffer size set to 5
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA overwrite_if_rulebook_changes set to true
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA mode initialized successfully
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutorFactory - Cancelled pseudo-clock job purge threshold set to 100 for drools-core
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Enabling leader mode for: loadtest-worker
+[drools-async-evaluator-thread] INFO org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel - Async channel connected
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Restored HA stats from PostgreSQL database
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Leader mode enabled for: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Persisted leader startup in single transaction: 0 session states, 0 deletes, 0 matching events
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Checking for pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - No pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - HA startup summary [ha_uuid=loadtest-ha-1794902894405, leader=loadtest-worker]: 0 session(s), 0 partial event(s), 0 pending matching event(s), 0 pending action(s), leader switches: 1
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** End measuring execution time, duration = 12429 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - {"start":"2026-11-17T08:08:14.895941236Z","lastClockTime":"2026-11-17T08:08:27.304Z","clockAdvanceCount":124,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":1000,"eventsProcessed":1000,"eventsMatched":1000,"eventsSuppressed":0,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 1k events","lastRuleFired":"r1","lastRuleFiredAt":"2026-11-17T08:08:27.304Z","lastEventReceivedAt":"2026-11-17T08:08:27.304Z","baseLevelMemory":8625080,"peakMemory":34593296,"usedMemory":23247208,"maxAvailableMemory":1073741824}
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA state manager shut down
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T08:08:14.895941236Z', end='2026-11-17T08:08:28.407597203Z', lastClockTime='2026-11-17T08:08:28.304Z', clockAdvanceCount=134, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=1000, eventsProcessed=1000, eventsMatched=1000, eventsSuppressed=0, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 1k events', lastRuleFired='r1', lastRuleFiredAt='2026-11-17T08:08:27.304Z', lastEventReceivedAt='2026-11-17T08:08:27.304Z', baseLevelMemory='8625080', usedMemory='8633984', peakMemory='34593296', maxAvailableMemory='1073741824'}
+24kb_1k_events.json (HA-PG), 8115816, 12429
+
+EVENT_RECORD_COUNT [24kb_1k_events.json (HA-PG)]: 0
+=== 24kb_5k_events.json (HA-PG) ===
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Initializing HA mode with UUID: loadtest-ha-1794902909274 and workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory - Created PostgreSQLStateManager instance (db_type=postgres)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Initializing PostgreSQL HA mode with UUID: loadtest-ha-1794902909274, workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Connecting to PostgreSQL at localhost:37463/loadtest
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@dc7df28
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLSchema - PostgreSQL schema already exists (tables were likely created by another process)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA initialization completed successfully
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager - HA encryption disabled (no encryption_key_primary in config)
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA deduplication buffer size set to 5
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA overwrite_if_rulebook_changes set to true
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA mode initialized successfully
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutorFactory - Cancelled pseudo-clock job purge threshold set to 100 for drools-core
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Enabling leader mode for: loadtest-worker
+[drools-async-evaluator-thread] INFO org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel - Async channel connected
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Restored HA stats from PostgreSQL database
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Leader mode enabled for: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Persisted leader startup in single transaction: 0 session states, 0 deletes, 0 matching events
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Checking for pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - No pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - HA startup summary [ha_uuid=loadtest-ha-1794902909274, leader=loadtest-worker]: 0 session(s), 0 partial event(s), 0 pending matching event(s), 0 pending action(s), leader switches: 1
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** End measuring execution time, duration = 55153 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - {"start":"2026-11-17T08:08:29.595564247Z","lastClockTime":"2026-11-17T08:09:24.703Z","clockAdvanceCount":551,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":5000,"eventsProcessed":5000,"eventsMatched":5000,"eventsSuppressed":0,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 5k events","lastRuleFired":"r1","lastRuleFiredAt":"2026-11-17T08:09:24.703Z","lastEventReceivedAt":"2026-11-17T08:09:24.703Z","baseLevelMemory":8666688,"peakMemory":34954328,"usedMemory":16645240,"maxAvailableMemory":1073741824}
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA state manager shut down
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T08:08:29.595564247Z', end='2026-11-17T08:09:25.829206158Z', lastClockTime='2026-11-17T08:09:25.803Z', clockAdvanceCount=562, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=5000, eventsProcessed=5000, eventsMatched=5000, eventsSuppressed=0, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 5k events', lastRuleFired='r1', lastRuleFiredAt='2026-11-17T08:09:24.703Z', lastEventReceivedAt='2026-11-17T08:09:24.703Z', baseLevelMemory='8666688', usedMemory='8785504', peakMemory='34954328', maxAvailableMemory='1073741824'}
+24kb_5k_events.json (HA-PG), 8234280, 55153
+
+EVENT_RECORD_COUNT [24kb_5k_events.json (HA-PG)]: 0
+=== 24kb_10k_events.json (HA-PG) ===
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Initializing HA mode with UUID: loadtest-ha-1794902966784 and workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory - Created PostgreSQLStateManager instance (db_type=postgres)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Initializing PostgreSQL HA mode with UUID: loadtest-ha-1794902966784, workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Connecting to PostgreSQL at localhost:37463/loadtest
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@dc7df28
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLSchema - PostgreSQL schema already exists (tables were likely created by another process)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA initialization completed successfully
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager - HA encryption disabled (no encryption_key_primary in config)
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA deduplication buffer size set to 5
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA overwrite_if_rulebook_changes set to true
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA mode initialized successfully
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutorFactory - Cancelled pseudo-clock job purge threshold set to 100 for drools-core
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Enabling leader mode for: loadtest-worker
+[drools-async-evaluator-thread] INFO org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel - Async channel connected
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Restored HA stats from PostgreSQL database
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Leader mode enabled for: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Persisted leader startup in single transaction: 0 session states, 0 deletes, 0 matching events
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Checking for pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - No pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - HA startup summary [ha_uuid=loadtest-ha-1794902966784, leader=loadtest-worker]: 0 session(s), 0 partial event(s), 0 pending matching event(s), 0 pending action(s), leader switches: 1
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** End measuring execution time, duration = 107478 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - {"start":"2026-11-17T08:09:27.106325670Z","lastClockTime":"2026-11-17T08:11:14.615Z","clockAdvanceCount":1075,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":10000,"eventsProcessed":10000,"eventsMatched":10000,"eventsSuppressed":0,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 10k events","lastRuleFired":"r1","lastRuleFiredAt":"2026-11-17T08:11:14.615Z","lastEventReceivedAt":"2026-11-17T08:11:14.615Z","baseLevelMemory":8631536,"peakMemory":35094928,"usedMemory":9085720,"maxAvailableMemory":1073741824}
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA state manager shut down
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T08:09:27.106325670Z', end='2026-11-17T08:11:15.665236845Z', lastClockTime='2026-11-17T08:11:15.615Z', clockAdvanceCount=1085, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=10000, eventsProcessed=10000, eventsMatched=10000, eventsSuppressed=0, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 10k events', lastRuleFired='r1', lastRuleFiredAt='2026-11-17T08:11:14.615Z', lastEventReceivedAt='2026-11-17T08:11:14.615Z', baseLevelMemory='8631536', usedMemory='8751952', peakMemory='35094928', maxAvailableMemory='1073741824'}
+24kb_10k_events.json (HA-PG), 8237880, 107478
+
+EVENT_RECORD_COUNT [24kb_10k_events.json (HA-PG)]: 0
+=== 24kb_1k_events_unmatch.json (HA-PG) ===
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Initializing HA mode with UUID: loadtest-ha-1794903076830 and workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory - Created PostgreSQLStateManager instance (db_type=postgres)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Initializing PostgreSQL HA mode with UUID: loadtest-ha-1794903076830, workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Connecting to PostgreSQL at localhost:37463/loadtest
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@dc7df28
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLSchema - PostgreSQL schema already exists (tables were likely created by another process)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA initialization completed successfully
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager - HA encryption disabled (no encryption_key_primary in config)
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA deduplication buffer size set to 5
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA overwrite_if_rulebook_changes set to true
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA mode initialized successfully
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutorFactory - Cancelled pseudo-clock job purge threshold set to 100 for drools-core
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Enabling leader mode for: loadtest-worker
+[drools-async-evaluator-thread] INFO org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel - Async channel connected
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Restored HA stats from PostgreSQL database
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Leader mode enabled for: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Persisted leader startup in single transaction: 0 session states, 0 deletes, 0 matching events
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Checking for pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - No pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - HA startup summary [ha_uuid=loadtest-ha-1794903076830, leader=loadtest-worker]: 0 session(s), 0 partial event(s), 0 pending matching event(s), 0 pending action(s), leader switches: 1
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** End measuring execution time, duration = 10515 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - {"start":"2026-11-17T08:11:17.147727528Z","lastClockTime":"2026-11-17T08:11:27.655Z","clockAdvanceCount":105,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":0,"eventsProcessed":1000,"eventsMatched":0,"eventsSuppressed":1000,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 1k events unmatch","lastRuleFired":"","lastEventReceivedAt":"2026-11-17T08:11:27.655Z","baseLevelMemory":8643904,"peakMemory":32704688,"usedMemory":16111304,"maxAvailableMemory":1073741824}
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA state manager shut down
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T08:11:17.147727528Z', end='2026-11-17T08:11:28.741252398Z', lastClockTime='2026-11-17T08:11:28.655Z', clockAdvanceCount=115, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=0, eventsProcessed=1000, eventsMatched=0, eventsSuppressed=1000, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 1k events unmatch', lastRuleFired='', lastRuleFiredAt='null', lastEventReceivedAt='2026-11-17T08:11:27.655Z', baseLevelMemory='8643904', usedMemory='8561792', peakMemory='32704688', maxAvailableMemory='1073741824'}
+24kb_1k_events_unmatch.json (HA-PG), 8091768, 10515
+
+EVENT_RECORD_COUNT [24kb_1k_events_unmatch.json (HA-PG)]: 0
+=== 24kb_5k_events_unmatch.json (HA-PG) ===
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Initializing HA mode with UUID: loadtest-ha-1794903089595 and workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory - Created PostgreSQLStateManager instance (db_type=postgres)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Initializing PostgreSQL HA mode with UUID: loadtest-ha-1794903089595, workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Connecting to PostgreSQL at localhost:37463/loadtest
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@dc7df28
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLSchema - PostgreSQL schema already exists (tables were likely created by another process)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA initialization completed successfully
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager - HA encryption disabled (no encryption_key_primary in config)
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA deduplication buffer size set to 5
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA overwrite_if_rulebook_changes set to true
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA mode initialized successfully
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutorFactory - Cancelled pseudo-clock job purge threshold set to 100 for drools-core
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Enabling leader mode for: loadtest-worker
+[drools-async-evaluator-thread] INFO org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel - Async channel connected
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Restored HA stats from PostgreSQL database
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Leader mode enabled for: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Persisted leader startup in single transaction: 0 session states, 0 deletes, 0 matching events
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Checking for pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - No pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - HA startup summary [ha_uuid=loadtest-ha-1794903089595, leader=loadtest-worker]: 0 session(s), 0 partial event(s), 0 pending matching event(s), 0 pending action(s), leader switches: 1
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** End measuring execution time, duration = 50786 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - {"start":"2026-11-17T08:11:29.913107069Z","lastClockTime":"2026-11-17T08:12:20.720Z","clockAdvanceCount":508,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":0,"eventsProcessed":5000,"eventsMatched":0,"eventsSuppressed":5000,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 5k events unmatch","lastRuleFired":"","lastEventReceivedAt":"2026-11-17T08:12:20.720Z","baseLevelMemory":8650576,"peakMemory":30387288,"usedMemory":9081224,"maxAvailableMemory":1073741824}
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA state manager shut down
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T08:11:29.913107069Z', end='2026-11-17T08:12:21.772132409Z', lastClockTime='2026-11-17T08:12:21.720Z', clockAdvanceCount=518, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=0, eventsProcessed=5000, eventsMatched=0, eventsSuppressed=5000, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 5k events unmatch', lastRuleFired='', lastRuleFiredAt='null', lastEventReceivedAt='2026-11-17T08:12:20.720Z', baseLevelMemory='8650576', usedMemory='8682320', peakMemory='30387288', maxAvailableMemory='1073741824'}
+24kb_5k_events_unmatch.json (HA-PG), 8183928, 50786
+
+EVENT_RECORD_COUNT [24kb_5k_events_unmatch.json (HA-PG)]: 0
+=== 24kb_10k_events_unmatch.json (HA-PG) ===
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Initializing HA mode with UUID: loadtest-ha-1794903142664 and workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.HAStateManagerFactory - Created PostgreSQLStateManager instance (db_type=postgres)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Initializing PostgreSQL HA mode with UUID: loadtest-ha-1794903142664, workerName: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Connecting to PostgreSQL at localhost:37463/loadtest
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@dc7df28
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLSchema - PostgreSQL schema already exists (tables were likely created by another process)
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA initialization completed successfully
+[main] INFO org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager - HA encryption disabled (no encryption_key_primary in config)
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA deduplication buffer size set to 5
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA overwrite_if_rulebook_changes set to true
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - HA mode initialized successfully
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutorFactory - Cancelled pseudo-clock job purge threshold set to 100 for drools-core
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Enabling leader mode for: loadtest-worker
+[drools-async-evaluator-thread] INFO org.drools.ansible.rulebook.integration.api.io.RuleExecutorChannel - Async channel connected
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Restored HA stats from PostgreSQL database
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Leader mode enabled for: loadtest-worker
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - Persisted leader startup in single transaction: 0 session states, 0 deletes, 0 matching events
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - Checking for pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.core.jpy.AstRulesEngine - No pending matching events to recover
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - HA startup summary [ha_uuid=loadtest-ha-1794903142664, leader=loadtest-worker]: 0 session(s), 0 partial event(s), 0 pending matching event(s), 0 pending action(s), leader switches: 1
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - *** End measuring execution time, duration = 102010 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.HaLoadRunner - {"start":"2026-11-17T08:12:22.998583505Z","lastClockTime":"2026-11-17T08:14:05.006Z","clockAdvanceCount":1020,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":0,"eventsProcessed":10000,"eventsMatched":0,"eventsSuppressed":10000,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 10k events unmatch","lastRuleFired":"","lastEventReceivedAt":"2026-11-17T08:14:05.006Z","baseLevelMemory":8571648,"peakMemory":27243000,"usedMemory":12821792,"maxAvailableMemory":1073741824}
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+[main] INFO org.drools.ansible.rulebook.integration.ha.postgres.PostgreSQLStateManager - PostgreSQL HA state manager shut down
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T08:12:22.998583505Z', end='2026-11-17T08:14:06.082047076Z', lastClockTime='2026-11-17T08:14:06.006Z', clockAdvanceCount=1030, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=0, eventsProcessed=10000, eventsMatched=0, eventsSuppressed=10000, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 10k events unmatch', lastRuleFired='', lastRuleFiredAt='null', lastEventReceivedAt='2026-11-17T08:14:05.006Z', baseLevelMemory='8571648', usedMemory='8489480', peakMemory='27243000', maxAvailableMemory='1073741824'}
+24kb_10k_events_unmatch.json (HA-PG), 8142552, 102010
+
+EVENT_RECORD_COUNT [24kb_10k_events_unmatch.json (HA-PG)]: 0

@@ -84,8 +84,6 @@ cd drools-ansible-rulebook-integration-load-tests
 ./load_test_failover_HA-PG.sh
 ```
 
-Record results from load_test_match_unmatch_noHA.sh and load_test_match_unmatch_HA-PG.sh in the "EDA Drools Memory consumption" spreadsheet.
-
 Save all load test outputs for the release record:
 
 ```bash
@@ -94,6 +92,8 @@ cp drools-ansible-rulebook-integration-load-tests/out_*.log \
    drools-ansible-rulebook-integration-load-tests/result_*.txt \
    drools-ansible-rulebook-integration-load-tests/report/<version>/
 ```
+
+Use AI to update `drools-ansible-rulebook-integration-load-tests/report/Summary.md` with the results of load_test_match_unmatch_noHA.sh and load_test_match_unmatch_HA-PG.sh saved above.
 
 ## 3. Create Tag and Push
 
