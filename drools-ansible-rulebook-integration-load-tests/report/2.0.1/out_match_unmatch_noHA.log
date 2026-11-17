@@ -1,0 +1,96 @@
+=== 24kb_1k_events.json (noHA) ===
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession - Cancelled pseudo-clock job purge threshold set to 100
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** End measuring execution time, duration = 213 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - {"start":"2026-11-17T07:51:40.176417637Z","lastClockTime":"2026-11-17T07:51:40.385Z","clockAdvanceCount":2,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":1000,"eventsProcessed":1000,"eventsMatched":1000,"eventsSuppressed":0,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 1k events","lastRuleFired":"r1","lastRuleFiredAt":"2026-11-17T07:51:40.385Z","lastEventReceivedAt":"2026-11-17T07:51:40.385Z","baseLevelMemory":7424320,"peakMemory":39117696,"usedMemory":7727760,"maxAvailableMemory":1073741824}
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T07:51:40.176417637Z', end='2026-11-17T07:51:41.437482747Z', lastClockTime='2026-11-17T07:51:41.385Z', clockAdvanceCount=12, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=1000, eventsProcessed=1000, eventsMatched=1000, eventsSuppressed=0, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 1k events', lastRuleFired='r1', lastRuleFiredAt='2026-11-17T07:51:40.385Z', lastEventReceivedAt='2026-11-17T07:51:40.385Z', baseLevelMemory='7424320', usedMemory='7205224', peakMemory='39117696', maxAvailableMemory='1073741824'}
+24kb_1k_events.json, 6647472, 213
+
+=== 24kb_10k_events.json (noHA) ===
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession - Cancelled pseudo-clock job purge threshold set to 100
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** End measuring execution time, duration = 901 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - {"start":"2026-11-17T07:51:41.836310664Z","lastClockTime":"2026-11-17T07:51:42.745Z","clockAdvanceCount":9,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":10000,"eventsProcessed":10000,"eventsMatched":10000,"eventsSuppressed":0,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 10k events","lastRuleFired":"r1","lastRuleFiredAt":"2026-11-17T07:51:42.745Z","lastEventReceivedAt":"2026-11-17T07:51:42.745Z","baseLevelMemory":7162848,"peakMemory":328264680,"usedMemory":264243632,"maxAvailableMemory":1073741824}
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T07:51:41.836310664Z', end='2026-11-17T07:51:43.785676166Z', lastClockTime='2026-11-17T07:51:43.745Z', clockAdvanceCount=19, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=10000, eventsProcessed=10000, eventsMatched=10000, eventsSuppressed=0, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 10k events', lastRuleFired='r1', lastRuleFiredAt='2026-11-17T07:51:42.745Z', lastEventReceivedAt='2026-11-17T07:51:42.745Z', baseLevelMemory='7162848', usedMemory='7206736', peakMemory='328264680', maxAvailableMemory='1073741824'}
+24kb_10k_events.json, 6676432, 901
+
+=== 24kb_100k_events.json (noHA) ===
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession - Cancelled pseudo-clock job purge threshold set to 100
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** End measuring execution time, duration = 5471 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - {"start":"2026-11-17T07:51:44.181813532Z","lastClockTime":"2026-11-17T07:51:49.591Z","clockAdvanceCount":54,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":100000,"eventsProcessed":100000,"eventsMatched":100000,"eventsSuppressed":0,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 100k events","lastRuleFired":"r1","lastRuleFiredAt":"2026-11-17T07:51:49.591Z","lastEventReceivedAt":"2026-11-17T07:51:49.591Z","baseLevelMemory":7163032,"peakMemory":332974448,"usedMemory":204293464,"maxAvailableMemory":1073741824}
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T07:51:44.181813532Z', end='2026-11-17T07:51:50.694549704Z', lastClockTime='2026-11-17T07:51:50.591Z', clockAdvanceCount=64, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=100000, eventsProcessed=100000, eventsMatched=100000, eventsSuppressed=0, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 100k events', lastRuleFired='r1', lastRuleFiredAt='2026-11-17T07:51:49.591Z', lastEventReceivedAt='2026-11-17T07:51:49.591Z', baseLevelMemory='7163032', usedMemory='7204480', peakMemory='332974448', maxAvailableMemory='1073741824'}
+24kb_100k_events.json, 6677528, 5471
+
+=== 24kb_1m_events.json (noHA) ===
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession - Cancelled pseudo-clock job purge threshold set to 100
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** End measuring execution time, duration = 54177 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - {"start":"2026-11-17T07:51:51.090547618Z","lastClockTime":"2026-11-17T07:52:45.199Z","clockAdvanceCount":541,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":1000000,"eventsProcessed":1000000,"eventsMatched":1000000,"eventsSuppressed":0,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 1m events","lastRuleFired":"r1","lastRuleFiredAt":"2026-11-17T07:52:45.199Z","lastEventReceivedAt":"2026-11-17T07:52:45.199Z","baseLevelMemory":7425520,"peakMemory":342236640,"usedMemory":176948064,"maxAvailableMemory":1073741824}
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T07:51:51.090547618Z', end='2026-11-17T07:52:46.311605246Z', lastClockTime='2026-11-17T07:52:46.299Z', clockAdvanceCount=552, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=1000000, eventsProcessed=1000000, eventsMatched=1000000, eventsSuppressed=0, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 1m events', lastRuleFired='r1', lastRuleFiredAt='2026-11-17T07:52:45.199Z', lastEventReceivedAt='2026-11-17T07:52:45.199Z', baseLevelMemory='7425520', usedMemory='7201624', peakMemory='342236640', maxAvailableMemory='1073741824'}
+24kb_1m_events.json, 6739928, 54177
+
+=== 24kb_1k_events_unmatch.json (noHA) ===
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession - Cancelled pseudo-clock job purge threshold set to 100
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** End measuring execution time, duration = 133 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - {"start":"2026-11-17T07:52:46.690749491Z","lastClockTime":"2026-11-17T07:52:46.800Z","clockAdvanceCount":1,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":0,"eventsProcessed":1000,"eventsMatched":0,"eventsSuppressed":1000,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 1k events unmatch","lastRuleFired":"","lastEventReceivedAt":"2026-11-17T07:52:46.800Z","baseLevelMemory":7425520,"peakMemory":37319856,"usedMemory":10385048,"maxAvailableMemory":1073741824}
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T07:52:46.690749491Z', end='2026-11-17T07:52:47.873838545Z', lastClockTime='2026-11-17T07:52:47.800Z', clockAdvanceCount=11, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=0, eventsProcessed=1000, eventsMatched=0, eventsSuppressed=1000, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 1k events unmatch', lastRuleFired='', lastRuleFiredAt='null', lastEventReceivedAt='2026-11-17T07:52:46.800Z', baseLevelMemory='7425520', usedMemory='6874608', peakMemory='37319856', maxAvailableMemory='1073741824'}
+24kb_1k_events_unmatch.json, 6611088, 133
+
+=== 24kb_10k_events_unmatch.json (noHA) ===
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession - Cancelled pseudo-clock job purge threshold set to 100
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** End measuring execution time, duration = 479 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - {"start":"2026-11-17T07:52:48.259483861Z","lastClockTime":"2026-11-17T07:52:48.669Z","clockAdvanceCount":4,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":0,"eventsProcessed":10000,"eventsMatched":0,"eventsSuppressed":10000,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 10k events unmatch","lastRuleFired":"","lastEventReceivedAt":"2026-11-17T07:52:48.669Z","baseLevelMemory":7423760,"peakMemory":330996888,"usedMemory":80801712,"maxAvailableMemory":1073741824}
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T07:52:48.259483861Z', end='2026-11-17T07:52:49.785763984Z', lastClockTime='2026-11-17T07:52:49.769Z', clockAdvanceCount=15, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=0, eventsProcessed=10000, eventsMatched=0, eventsSuppressed=10000, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 10k events unmatch', lastRuleFired='', lastRuleFiredAt='null', lastEventReceivedAt='2026-11-17T07:52:48.669Z', baseLevelMemory='7423760', usedMemory='7179656', peakMemory='330996888', maxAvailableMemory='1073741824'}
+24kb_10k_events_unmatch.json, 6633496, 479
+
+=== 24kb_100k_events_unmatch.json (noHA) ===
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession - Cancelled pseudo-clock job purge threshold set to 100
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** End measuring execution time, duration = 2132 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - {"start":"2026-11-17T07:52:50.173732343Z","lastClockTime":"2026-11-17T07:52:52.284Z","clockAdvanceCount":21,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":0,"eventsProcessed":100000,"eventsMatched":0,"eventsSuppressed":100000,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 100k events unmatch","lastRuleFired":"","lastEventReceivedAt":"2026-11-17T07:52:52.284Z","baseLevelMemory":7424616,"peakMemory":332782928,"usedMemory":213453512,"maxAvailableMemory":1073741824}
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T07:52:50.173732343Z', end='2026-11-17T07:52:53.353343206Z', lastClockTime='2026-11-17T07:52:53.284Z', clockAdvanceCount=31, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=0, eventsProcessed=100000, eventsMatched=0, eventsSuppressed=100000, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 100k events unmatch', lastRuleFired='', lastRuleFiredAt='null', lastEventReceivedAt='2026-11-17T07:52:52.284Z', baseLevelMemory='7424616', usedMemory='7167760', peakMemory='332782928', maxAvailableMemory='1073741824'}
+24kb_100k_events_unmatch.json, 6638144, 2132
+
+=== 24kb_1m_events_unmatch.json (noHA) ===
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.RulesExecutorSession - Cancelled pseudo-clock job purge threshold set to 100
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory occupation threshold set to 90%
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Memory check event count threshold set to 64
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.MemoryMonitorUtil - Exit above memory occupation threshold set to false
+[main] INFO org.drools.ansible.rulebook.integration.api.rulesengine.AbstractRulesEvaluator - Start automatic pseudo clock with a tick every 100 milliseconds
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** Start measuring execution time
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - *** End measuring execution time, duration = 17582 ms
+[main] INFO org.drools.ansible.rulebook.integration.loadtests.LoadRunner - {"start":"2026-11-17T07:52:53.736748656Z","lastClockTime":"2026-11-17T07:53:11.246Z","clockAdvanceCount":175,"numberOfRules":1,"numberOfDisabledRules":0,"rulesTriggered":0,"eventsProcessed":1000000,"eventsMatched":0,"eventsSuppressed":1000000,"permanentStorageCount":0,"permanentStorageSize":0,"asyncResponses":0,"bytesSentOnAsync":0,"sessionId":1,"ruleSetName":"24kb 1m events unmatch","lastRuleFired":"","lastEventReceivedAt":"2026-11-17T07:53:11.246Z","baseLevelMemory":7163456,"peakMemory":342232592,"usedMemory":211265928,"maxAvailableMemory":1073741824}
+[main] INFO org.drools.ansible.rulebook.integration.api.RulesExecutor - Disposing session with id: 1; SessionStats{start='2026-11-17T07:52:53.736748656Z', end='2026-11-17T07:53:12.362702610Z', lastClockTime='2026-11-17T07:53:12.346Z', clockAdvanceCount=186, numberOfRules=1, numberOfDisabledRules=0, rulesTriggered=0, eventsProcessed=1000000, eventsMatched=0, eventsSuppressed=1000000, permanentStorageCount=0, permanentStorageSize=0, asyncResponses=0, bytesSentOnAsync=0, sessionId=1, ruleSetName='24kb 1m events unmatch', lastRuleFired='', lastRuleFiredAt='null', lastEventReceivedAt='2026-11-17T07:53:11.246Z', baseLevelMemory='7163456', usedMemory='7087352', peakMemory='342232592', maxAvailableMemory='1073741824'}
+24kb_1m_events_unmatch.json, 6689728, 17582
+
