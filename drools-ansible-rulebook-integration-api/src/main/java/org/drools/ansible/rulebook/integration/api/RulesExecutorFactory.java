@@ -24,6 +24,27 @@ import static org.drools.ansible.rulebook.integration.api.RuleConfigurationOptio
 public class RulesExecutorFactory {
     private static final Logger LOG = LoggerFactory.getLogger(RulesExecutorFactory.class);
 
+    private static final int DEFAULT_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD = 100;
+
+    static {
+        int threshold = DEFAULT_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD;
+        String purgeThresholdEnvValue = System.getenv("DROOLS_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD");
+        if (purgeThresholdEnvValue != null && !purgeThresholdEnvValue.isEmpty()) {
+            try {
+                int parsed = Integer.parseInt(purgeThresholdEnvValue);
+                if (parsed > 0) {
+                    threshold = parsed;
+                } else {
+                    LOG.warn("DROOLS_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD must be > 0, got {}. Using default {}", parsed, DEFAULT_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD);
+                }
+            } catch (NumberFormatException e) {
+                LOG.warn("DROOLS_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD is not a valid integer: '{}'. Using default {}", purgeThresholdEnvValue, DEFAULT_PURGE_CANCELLED_JOB_EVENT_COUNT_THRESHOLD);
+            }
+        }
+        System.setProperty("drools.pseudoclock.cancelledJobPurgeThreshold", String.valueOf(threshold));
+        LOG.info("Cancelled pseudo-clock job purge threshold set to {} for drools-core", threshold);
+    }
+
     private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
 
     static final long DEFAULT_AUTOMATIC_TICK_PERIOD_IN_MILLIS = 100; // 100 milliseconds
