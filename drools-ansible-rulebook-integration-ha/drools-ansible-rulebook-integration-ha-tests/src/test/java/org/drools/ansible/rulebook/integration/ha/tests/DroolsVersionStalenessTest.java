@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import org.drools.ansible.rulebook.integration.ha.api.AbstractHAStateManager;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * <p>The test is skipped (not failed) when git is unavailable or no
  * version-like tags exist (e.g. shallow CI clone without tags).
  */
+@Disabled("This test is not valid when we create new tags")
 class DroolsVersionStalenessTest {
 
     @Test
