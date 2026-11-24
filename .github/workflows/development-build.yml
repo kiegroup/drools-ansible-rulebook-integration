@@ -14,7 +14,7 @@ jobs:
         uses: kiegroup/kie-ci/.ci/actions/maven@main
         with:
           java-version: 17
-          maven-version: '3.9.11'
+          maven-version: '3.9.16'
 
       - name: Checkout Drools 9.106.0
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
